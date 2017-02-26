@@ -22,9 +22,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and().authorizeRequests()
                 .antMatchers("/index.html", "/home.html", "/login.html", "/", "/api/user").permitAll()
                 .anyRequest().authenticated()
+                .and().formLogin().loginPage("/#/login")
                 .and().addFilterAfter(new CsrfHeaderFilter(), CsrfFilter.class)
                 .csrf().csrfTokenRepository(csrfTokenRepository())
-                .and().logout();
+                .and().logout().logoutUrl("/#/logout");
     }
 
     private CsrfTokenRepository csrfTokenRepository() {

@@ -1,27 +1,41 @@
 package com.qprogramming.gifts.main;
 
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
-import java.security.Principal;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.ArrayList;
+import java.util.List;
 
-@RestController
-@RequestMapping("/api")
+/**
+ * Created by Remote on 26.02.2017.
+ */
+@Controller
 public class MainController {
 
-    @RequestMapping("/resource")
-    public Map<String, Object> home() {
-        Map<String, Object> model = new HashMap<>();
-        model.put("id", UUID.randomUUID().toString());
-        model.put("content", "Hello World");
-        return model;
+    @RequestMapping("/")
+    public String index() {
+        return "index";
     }
 
-    @RequestMapping("/user")
-    public Principal user(Principal user) {
-        return user;
+    @RequestMapping("/home")
+    public String home() {
+        return "home";
     }
+
+    @RequestMapping("/login")
+    public String login() {
+        return "login";
+    }
+
+    @RequestMapping("/list")
+    public String list(Model model) {
+        List<String> test = new ArrayList<>();
+        test.add("one");
+        test.add("two");
+        model.addAttribute("myList", test);
+        model.addAttribute("testmessage", "This is test message");
+        return "list/list";
+    }
+
 }

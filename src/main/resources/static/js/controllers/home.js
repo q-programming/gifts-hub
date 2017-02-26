@@ -8,7 +8,8 @@ app.controller('home', function ($rootScope, $scope, $http) {
                 console.log("Error while fetching resource: " + response);
             });
     }
-    $scope.dupa = function () {
-        alert("dupa");
+    $scope.testit = function () {
+        var test = /*[[testtext]]*/ '';
+        alert("some alert test contets:" + test);
     }
 });
