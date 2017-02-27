@@ -1,3 +1,8 @@
+.nav >li.active{
+    border: 1px solid black
+}
+
+
 .menu-list{
     padding-left: 30px;
     padding-top: 20px;

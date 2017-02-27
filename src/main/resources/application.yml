@@ -6,7 +6,7 @@ security:
     password: password
 logging:
   level:
-    org.springframework.security: DEBUG
+    org.springframework.security: ERROR
 spring:
   mvc:
     favicon:

@@ -11,7 +11,7 @@ app.config(function ($routeProvider, $httpProvider, $locationProvider) {
         })
         .when('/list', {
             templateUrl: 'list.html',
-            controller: 'home'
+            controller: 'list'
         })
         .otherwise('/');
     $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
