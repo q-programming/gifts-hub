@@ -41,7 +41,7 @@ app.controller('navigation', function ($scope, $rootScope, $http, $location, $ro
     };
     //LOGOUT
     $scope.logout = function () {
-        $http.post('logout', {}).then(
+        $http.post('/logout', {}).then(
             function successCallback() {
                 $rootScope.authenticated = false;
                 $location.path("/");

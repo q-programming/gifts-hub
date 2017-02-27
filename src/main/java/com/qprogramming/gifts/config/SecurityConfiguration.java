@@ -2,10 +2,12 @@ package com.qprogramming.gifts.config;
 
 import com.qprogramming.gifts.filters.CsrfHeaderFilter;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
@@ -15,6 +17,7 @@ import static com.qprogramming.gifts.filters.CsrfHeaderFilter.XSRF_TOKEN;
 @Configuration
 @Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
@@ -22,10 +25,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and().authorizeRequests()
                 .antMatchers("/index.html", "/home.html", "/login.html", "/", "/api/user").permitAll()
                 .anyRequest().authenticated()
-                .and().formLogin().loginPage("/#/login")
-                .and().addFilterAfter(new CsrfHeaderFilter(), CsrfFilter.class)
-                .csrf().csrfTokenRepository(csrfTokenRepository())
-                .and().logout().logoutUrl("/#/logout");
+                .and().formLogin()
+                .loginPage("/#/login")
+                .and().addFilterBefore(new CsrfHeaderFilter(), CsrfFilter.class)
+                .csrf()
+                .ignoringAntMatchers("/login", "/logout")
+                .csrfTokenRepository(csrfTokenRepository())
+                .and().logout().permitAll();
     }
 
     private CsrfTokenRepository csrfTokenRepository() {
