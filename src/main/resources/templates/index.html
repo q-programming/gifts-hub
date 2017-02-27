@@ -8,23 +8,50 @@
         }
     </style>
 </head>
+<!--CSS-->
 <link rel="icon" type="image/png" href="images/favicon.ico"/>
 <link rel="stylesheet" href="css/app.css"/>
+<link rel="stylesheet" href="webjars/bootstrap/3.3.7-1/css/bootstrap.css"/>
+<link rel="stylesheet" href="webjars/font-awesome/4.7.0/css/font-awesome.min.css"/>
+<link href="https://fonts.googleapis.com/css?family=Pacifico" rel="stylesheet"/>
+<!--BODY-->
 <body ng-app="app" ng-cloak="" class="ng-cloak">
 <div ng-controller="navigation" class="container-fluid">
     <div class="row">
+        <!--SIDEBAR-->
         <div class="col-sm-2 col-md-1 sidebar" id="sidebar-div">
-            <ul class="nav nav-sidebar hidden-print" role="tablist">
+            <ul class="nav nav-sidebar hidden-print text" role="tablist">
                 <li>
                     <a href="#/">
-                        <img src="images/logo.png" width="50px" height="50px"/>
+                        <img src="images/logo.png" width="40px" height="40px"/>
+                        <span class="stylish">Gifts hub</span>
                     </a></li>
                 <li ng-show="!authenticated" ng-class="{active:tab('navigation')}"><a href="#/login">login</a></li>
-                <li ng-show="authenticated" ng-class="{active:tab('list')}"><a href="#/list">List</a></li>
-                <li ng-show="authenticated"><a href="" ng-click="logout()">Logout</a></li>
+                <!--LOGGED IN-->
+                <img ng-show="authenticated" src="images/avatar-placeholder.png" class="center" width="50px"
+                     height="50px"/>
+                <li ng-show="authenticated" ng-class="{active:tab('user')}" class="text-center">
+                    <a href="#/settings">
+                        <p>
+                            <span class="text-center">John doe <span class="caret"></span></span>
+                        </p>
+                    </a>
+                </li>
+                <li role="presentation" class="divider"></li>
+                <li ng-show="authenticated" ng-class="{active:tab('list')}">
+                    <a href="#/list">
+                        <i class="fa fa-list" aria-hidden="true"></i>&nbsp;List
+                    </a>
+                </li>
+                <li ng-show="authenticated">
+                    <a href="" ng-click="logout()">
+                        <i class="fa fa-power-off" aria-hidden="true"></i>&nbsp;Logout
+                    </a>
+                </li>
             </ul>
         </div>
-        <div class="col-sm-10 col-md-11 main">
+        <!--CONTENT-->
+        <div class="col-sm-10 col-md-11 col-md-offset-1 col-sm-offset-2 main">
             <div ng-view="" class="main-container">
             </div>
         </div>
@@ -33,7 +60,6 @@
 <script src="webjars/angularjs/1.6.1/angular.js"></script>
 <script src="webjars/angularjs/1.6.1/angular-cookies.js"></script>
 <script src="webjars/angularjs/1.6.1/angular-route.js"></script>
-<link rel="stylesheet" href="webjars/bootstrap/3.3.7-1/css/bootstrap.css"/>
 <!--APP JS-->
 
 <script src="js/app.js"></script>
