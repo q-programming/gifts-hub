@@ -8,6 +8,13 @@ logging:
   level:
     org.springframework.security: ERROR
 spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/gifts
+    username: postgres
+    password: admin
   mvc:
     favicon:
       enabled: false
+  jpa:
+    hibernate:
+      ddl-auto: update
