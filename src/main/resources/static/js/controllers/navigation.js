@@ -14,6 +14,7 @@ app.controller('navigation', function ($scope, $rootScope, $http, $location, $ro
                 var data = response.data;
                 if (data.name) {
                     $rootScope.authenticated = true;
+                    $rootScope.principal = data;
                 } else {
                     $rootScope.authenticated = false;
                 }

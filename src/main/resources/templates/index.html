@@ -13,6 +13,7 @@
 <link rel="stylesheet" href="css/app.css"/>
 <link rel="stylesheet" href="webjars/bootstrap/3.3.7-1/css/bootstrap.css"/>
 <link rel="stylesheet" href="webjars/font-awesome/4.7.0/css/font-awesome.min.css"/>
+<link rel="stylesheet" href="css/bootstrap-social.css"/>
 <link href="https://fonts.googleapis.com/css?family=Pacifico" rel="stylesheet"/>
 <!--BODY-->
 <body ng-app="app" ng-cloak="" class="ng-cloak" ng-controller="navigation">
@@ -33,11 +34,10 @@
         <div id="navbar" class="navbar-collapse collapse">
             <ul ng-if="authenticated" class="nav navbar-nav navbar-right hidden-xs">
                 <li>
-                    <a href="#/settings" class="white">John doe</a>
+                    <a href="#/settings" class="white nav-username">{{principal.name}}</a>
                 </li>
                 <li class="nav-avatar">
-                    <img src="images/avatar-placeholder.png" width="40px"
-                         height="40px"/>
+                    <img ng-src="{{principal.photoUrl || 'images/avatar-placeholder.png'}}" class="avatar"/>
                 </li>
             </ul>
         </div>
