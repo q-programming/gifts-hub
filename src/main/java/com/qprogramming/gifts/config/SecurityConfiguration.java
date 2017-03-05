@@ -1,5 +1,6 @@
 package com.qprogramming.gifts.config;
 
+import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.filters.CsrfHeaderFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
@@ -10,9 +11,16 @@ import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configurers.GlobalAuthenticationConfigurerAdapter;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.OAuth2ClientContext;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.client.filter.OAuth2ClientAuthenticationProcessingFilter;
@@ -39,27 +47,38 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
     private OAuth2ClientContext oauth2ClientContext;
 
+    @Autowired
+    private AccountService accountService;
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        //@formatter:off
         http
                 .httpBasic()
                 .and().authorizeRequests()
-                .antMatchers("/index.html", "/home.html", "/login.html", "/", "/api/user").permitAll()
-                .anyRequest().authenticated()
+                    .antMatchers("/index.html", "/home.html", "/login.html", "/", "/register.html", "/api/user/*").permitAll()
+                    .anyRequest().authenticated()
                 .and().formLogin()
-                .loginPage("/#/login")
+                    .loginPage("/#/login")
                 .and().addFilterBefore(new CsrfHeaderFilter(), CsrfFilter.class)
                 .csrf()
-                .ignoringAntMatchers("/login", "/logout")
-                .csrfTokenRepository(csrfTokenRepository())
-                .and().logout().logoutSuccessUrl("/").permitAll()
+                    .ignoringAntMatchers("/login", "/logout", "/api/user/register")
+                    .csrfTokenRepository(csrfTokenRepository())
+                .and().logout()
+                    .logoutSuccessUrl("/").permitAll()
                 .and().addFilterBefore(ssoFilter(), BasicAuthenticationFilter.class);
+        //@formatter:on
     }
 
     private CsrfTokenRepository csrfTokenRepository() {
         HttpSessionCsrfTokenRepository repository = new HttpSessionCsrfTokenRepository();
         repository.setHeaderName(XSRF_TOKEN);
         return repository;
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
     @Bean
@@ -75,6 +94,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     public ClientResources facebook() {
         return new ClientResources();
     }
+
     @Bean
     @ConfigurationProperties("google")
     public ClientResources google() {
@@ -98,6 +118,22 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         filter.setTokenServices(new UserInfoTokenServices(
                 client.getResource().getUserInfoUri(), client.getClient().getClientId()));
         return filter;
+    }
+
+    @Order(Ordered.HIGHEST_PRECEDENCE)
+    @Configuration
+    @EnableGlobalMethodSecurity(prePostEnabled = true)
+    protected class AuthenticationSecurity extends GlobalAuthenticationConfigurerAdapter {
+
+        @Override
+        public void init(AuthenticationManagerBuilder auth) throws Exception {
+            auth.userDetailsService(userDetailsService()).passwordEncoder(passwordEncoder());
+        }
+
+        @Bean
+        public UserDetailsService userDetailsService() {
+            return accountService;
+        }
     }
 
     class ClientResources {

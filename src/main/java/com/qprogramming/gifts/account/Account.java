@@ -1,9 +1,11 @@
 package com.qprogramming.gifts.account;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.hibernate.validator.constraints.NotEmpty;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import java.time.Instant;
 
 /**
  * Created by Khobar on 28.02.2017.
@@ -12,12 +14,8 @@ import javax.persistence.*;
 public class Account {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "account_seq_gen")
-    @SequenceGenerator(name = "account_seq_gen", sequenceName = "account_id_seq", allocationSize = 1)
-    private Long id;
-    @Column(unique = true)
-    @NotEmpty
-    private String username;
+    private String id;
+
     @Column(unique = true)
     private String email;
     @JsonIgnore
@@ -29,20 +27,44 @@ public class Account {
     @Column
     private String surname;
 
-    public Long getId() {
+
+    private String role = "ROLE_USER";
+
+    private Instant created;
+
+    public Account() {
+    }
+
+    public Account(String email, String password, String role_user) {
+        this.email = email;
+        this.password = password;
+        this.role = role;
+        this.created = Instant.now();
+
+    }
+
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public String getUsername() {
-        return username;
+    public Instant getCreated() {
+        return created;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setCreated(Instant created) {
+        this.created = created;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public String getEmail() {
@@ -87,37 +109,27 @@ public class Account {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
         Account account = (Account) o;
 
-        if (!id.equals(account.id)) {
-            return false;
-        }
-        if (!username.equals(account.username)) {
-            return false;
-        }
-        if (email != null ? !email.equals(account.email) : account.email != null) {
-            return false;
-        }
-        if (name != null ? !name.equals(account.name) : account.name != null) {
-            return false;
-        }
-        return surname != null ? surname.equals(account.surname) : account.surname == null;
+        if (!id.equals(account.id)) return false;
+        if (!email.equals(account.email)) return false;
+        if (language != null ? !language.equals(account.language) : account.language != null) return false;
+        if (name != null ? !name.equals(account.name) : account.name != null) return false;
+        if (surname != null ? !surname.equals(account.surname) : account.surname != null) return false;
+        return created != null ? created.equals(account.created) : account.created == null;
     }
 
     @Override
     public int hashCode() {
         int result = id.hashCode();
-        result = 31 * result + username.hashCode();
-        result = 31 * result + (email != null ? email.hashCode() : 0);
+        result = 31 * result + email.hashCode();
+        result = 31 * result + (language != null ? language.hashCode() : 0);
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (surname != null ? surname.hashCode() : 0);
+        result = 31 * result + (created != null ? created.hashCode() : 0);
         return result;
     }
 }

@@ -9,6 +9,10 @@ app.config(function ($routeProvider, $httpProvider, $locationProvider) {
             templateUrl: 'login.html',
             controller: 'navigation'
         })
+        .when('/register', {
+            templateUrl: 'register.html',
+            controller: 'register'
+        })
         .when('/list', {
             templateUrl: 'list.html',
             controller: 'list'

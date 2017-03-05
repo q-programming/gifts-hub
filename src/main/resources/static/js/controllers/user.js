@@ -9,7 +9,7 @@ app.controller('navigation', function ($scope, $rootScope, $http, $location, $ro
             + btoa(credentials.username + ":" + credentials.password)
         } : {};
 
-        $http.get('api/user', {headers: headers}).then(
+        $http.get('api/user/', {headers: headers}).then(
             function (response) {
                 var data = response.data;
                 if (data.name) {
@@ -51,4 +51,19 @@ app.controller('navigation', function ($scope, $rootScope, $http, $location, $ro
                 $rootScope.authenticated = false;
             });
     };
+});
+
+app.controller('register', function ($scope, $rootScope, $http) {
+    $scope.formData = {};
+    $scope.register = function () {
+        $http.post('api/user/register', $scope.formData).then(
+            function (resposne) {
+                console.log("registered");
+                console.log(resposne);
+            },
+            function (response) {
+                console.log("Register error")
+            }
+        )
+    }
 });

@@ -28,6 +28,11 @@ public class MainController {
         return "login";
     }
 
+    @RequestMapping("/register")
+    public String register() {
+        return "user/register";
+    }
+
     @RequestMapping("/list")
     public String list(Model model) {
         List<String> test = new ArrayList<>();
