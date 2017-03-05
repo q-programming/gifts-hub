@@ -2,6 +2,7 @@ package com.qprogramming.gifts.config;
 
 import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.filters.CsrfHeaderFilter;
+import com.qprogramming.gifts.login.OAuthLoginSuccessHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
@@ -49,6 +50,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private AccountService accountService;
+
+    @Autowired
+    private OAuthLoginSuccessHandler oAuthLoginSuccessHandler;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -117,6 +121,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         filter.setRestTemplate(template);
         filter.setTokenServices(new UserInfoTokenServices(
                 client.getResource().getUserInfoUri(), client.getClient().getClientId()));
+        filter.setAuthenticationSuccessHandler(oAuthLoginSuccessHandler);
         return filter;
     }
 

@@ -33,6 +33,7 @@ public class Account {
     private Instant created;
 
     public Account() {
+        this.created = Instant.now();
     }
 
     public Account(String email, String password, String role_user) {

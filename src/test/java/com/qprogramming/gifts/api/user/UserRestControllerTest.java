@@ -1,9 +1,11 @@
 package com.qprogramming.gifts.api.user;
 
 import com.qprogramming.gifts.TestUtil;
+import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.account.RegisterForm;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -18,11 +20,13 @@ public class UserRestControllerTest {
 
     public static final String API_USER_REGISTER = "/api/user/register";
     private MockMvc userRestCtrl;
+    @Mock
+    private AccountService accSrvMock;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        UserRestController userCtrl = new UserRestController();
+        UserRestController userCtrl = new UserRestController(accSrvMock);
         this.userRestCtrl = MockMvcBuilders.standaloneSetup(userCtrl).build();
     }
 

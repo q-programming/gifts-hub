@@ -55,15 +55,24 @@ app.controller('navigation', function ($scope, $rootScope, $http, $location, $ro
 
 app.controller('register', function ($scope, $rootScope, $http) {
     $scope.formData = {};
+    $scope.success = null;
+    $scope.doNotMatch = null;
+    $scope.error = null;
+    $scope.errorUserExists = null;
+
     $scope.register = function () {
         $http.post('api/user/register', $scope.formData).then(
-            function (resposne) {
-                console.log("registered");
-                console.log(resposne);
-            },
-            function (response) {
-                console.log("Register error")
+            function () {
+                $scope.success = true;
+            }).catch(function (resposne) {
+            $scope.success = null;
+            if (response.status === 400 && response.data === 'login already in use') {
+                $scope.errorUserExists = 'ERROR';
+            } else if (response.status === 400 && response.data === 'e-mail address already in use') {
+                $scope.errorEmailExists = 'ERROR';
+            } else {
+                $scope.error = 'ERROR';
             }
-        )
+        });
     }
 });

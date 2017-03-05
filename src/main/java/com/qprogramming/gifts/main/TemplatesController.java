@@ -11,7 +11,7 @@ import java.util.List;
  * Created by Remote on 26.02.2017.
  */
 @Controller
-public class MainController {
+public class TemplatesController {
 
     @RequestMapping("/")
     public String index() {
@@ -25,7 +25,7 @@ public class MainController {
 
     @RequestMapping("/login")
     public String login() {
-        return "login";
+        return "user/login";
     }
 
     @RequestMapping("/register")

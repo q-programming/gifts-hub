@@ -1,7 +1,10 @@
 <div class="alert alert-danger" ng-show="error">
     There was a problem registering. Please try again.
 </div>
-<form role="form" name="userForm" ng-submit="register()">
+<div class="alert alert-success" ng-show="success">
+    <strong>Succesfully registered.</strong> Please check your email for confirmation.
+</div>
+<form ng-show="!success" role="form" name="userForm" ng-submit="register()">
     <div class="form-group">
         <label for="name">Name:</label>
         <input type="text" class="form-control" id="name" name="name" ng-model="formData.name"/>

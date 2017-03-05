@@ -66,4 +66,13 @@ public class RegisterForm {
     public void setConfirmpassword(String confirmpassword) {
         this.confirmpassword = confirmpassword;
     }
+
+    public Account createAccount() {
+        Account account = new Account();
+        account.setName(getName());
+        account.setSurname(getSurname());
+        account.setEmail(getEmail());
+        account.setPassword(getPassword());
+        return account;
+    }
 }
