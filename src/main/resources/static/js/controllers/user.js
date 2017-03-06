@@ -1,4 +1,4 @@
-app.controller('navigation', function ($scope, $rootScope, $http, $location, $route) {
+app.controller('navigation', function ($scope, $rootScope, $http, $location, $route, avatarService) {
     $scope.tab = function (route) {
         return $route.current && route === $route.current.controller;
     };
@@ -15,6 +15,9 @@ app.controller('navigation', function ($scope, $rootScope, $http, $location, $ro
                 if (data.name) {
                     $rootScope.authenticated = true;
                     $rootScope.principal = data;
+                    avatarService.getAvatar($rootScope.principal.id).then(function (result) {
+                        $rootScope.principal.avatar = result;
+                    });
                 } else {
                     $rootScope.authenticated = false;
                 }
@@ -40,6 +43,7 @@ app.controller('navigation', function ($scope, $rootScope, $http, $location, $ro
             }
         });
     };
+
     //LOGOUT
     $scope.logout = function () {
         $http.post('/logout', {}).then(
@@ -64,7 +68,7 @@ app.controller('register', function ($scope, $rootScope, $http) {
         $http.post('api/user/register', $scope.formData).then(
             function () {
                 $scope.success = true;
-            }).catch(function (resposne) {
+            }).catch(function (response) {
             $scope.success = null;
             if (response.status === 400 && response.data === 'login already in use') {
                 $scope.errorUserExists = 'ERROR';

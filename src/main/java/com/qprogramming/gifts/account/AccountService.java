@@ -1,8 +1,9 @@
 package com.qprogramming.gifts.account;
 
+import com.qprogramming.gifts.account.avatar.Avatar;
+import com.qprogramming.gifts.account.avatar.AvatarRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -31,11 +32,15 @@ import java.util.UUID;
 public class AccountService implements UserDetailsService {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    @Autowired
     private AccountRepository accountRepository;
-
-    @Autowired
     private PasswordEncoder passwordEncoder;
+    private AvatarRepository avatarRepository;
+
+    public AccountService(AccountRepository accountRepository, PasswordEncoder passwordEncoder, AvatarRepository avatarRepository) {
+        this.accountRepository = accountRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.avatarRepository = avatarRepository;
+    }
 
     @PostConstruct
     protected void initialize() {
@@ -78,5 +83,22 @@ public class AccountService implements UserDetailsService {
 
     private GrantedAuthority createAuthority(Account account) {
         return new SimpleGrantedAuthority(account.getRole());
+    }
+
+    public Account findById(String id) {
+        return accountRepository.findOneById(id);
+    }
+
+    //User avatar handling
+
+    public Avatar getAccountAvatar(Account account) {
+        return avatarRepository.findOneById(account.getId());
+    }
+
+    public Avatar createAvatar(Account account, byte[] imgBytes) {
+        Avatar avatar = new Avatar();
+        avatar.setId(account.getId());
+        avatar.setImage(imgBytes);
+        return avatarRepository.save(avatar);
     }
 }

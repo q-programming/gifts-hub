@@ -27,7 +27,6 @@ public class Account {
     @Column
     private String surname;
 
-
     private String role = "ROLE_USER";
 
     private Instant created;

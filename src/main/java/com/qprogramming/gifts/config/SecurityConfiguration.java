@@ -28,6 +28,7 @@ import org.springframework.security.oauth2.client.filter.OAuth2ClientAuthenticat
 import org.springframework.security.oauth2.client.filter.OAuth2ClientContextFilter;
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
+import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
@@ -64,6 +65,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .anyRequest().authenticated()
                 .and().formLogin()
                     .loginPage("/#/login")
+                .and().rememberMe()
+                    .rememberMeServices(rememberMeServices())
+                    .key("remember-me-key")
                 .and().addFilterBefore(new CsrfHeaderFilter(), CsrfFilter.class)
                 .csrf()
                     .ignoringAntMatchers("/login", "/logout", "/api/user/register")
@@ -103,6 +107,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @ConfigurationProperties("google")
     public ClientResources google() {
         return new ClientResources();
+    }
+
+    @Bean
+    public TokenBasedRememberMeServices rememberMeServices() {
+        return new TokenBasedRememberMeServices("remember-me-key", accountService);
     }
 
     private Filter ssoFilter() {

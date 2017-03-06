@@ -1,5 +1,5 @@
-var app = angular.module('app', ['ngRoute']);
-app.config(function ($routeProvider, $httpProvider, $locationProvider) {
+var app = angular.module('app', ['ngRoute', 'avatarService']);
+app.config(function ($routeProvider, $httpProvider, $locationProvider,$logProvider) {
     $routeProvider
         .when('/', {
             templateUrl: 'home.html',
@@ -20,4 +20,8 @@ app.config(function ($routeProvider, $httpProvider, $locationProvider) {
         .otherwise('/');
     $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
     $locationProvider.hashPrefix('');
+    $logProvider.debugEnabled(true);
+});
+app.factory('avatarCache', function ($cacheFactory) {
+    return $cacheFactory('avatarCache');
 });

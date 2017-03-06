@@ -8,7 +8,7 @@ public class DisplayAccount {
     private String name;
     private String id;
     private String email;
-    private String photoUrl;
+    private String avatar;
 
     public String getName() {
         return name;
@@ -34,11 +34,11 @@ public class DisplayAccount {
         this.email = email;
     }
 
-    public String getPhotoUrl() {
-        return photoUrl;
+    public String getAvatar() {
+        return avatar;
     }
 
-    public void setPhotoUrl(String photoUrl) {
-        this.photoUrl = photoUrl;
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 }
