@@ -12,12 +12,10 @@ app.controller('navigation', function ($scope, $rootScope, $http, $location, $ro
         $http.get('api/user/', {headers: headers}).then(
             function (response) {
                 var data = response.data;
-                if (data.name) {
+                if (data.id) {
                     $rootScope.authenticated = true;
                     $rootScope.principal = data;
-                    avatarService.getAvatar($rootScope.principal.id).then(function (result) {
-                        $rootScope.principal.avatar = result;
-                    });
+                    avatarService.getAvatar($rootScope.principal.id);
                 } else {
                     $rootScope.authenticated = false;
                 }

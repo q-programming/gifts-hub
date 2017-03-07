@@ -2,7 +2,6 @@ package com.qprogramming.gifts.api.user;
 
 import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.AccountService;
-import com.qprogramming.gifts.account.DisplayAccount;
 import com.qprogramming.gifts.account.RegisterForm;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -11,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -49,10 +49,10 @@ public class UserRestController {
     }
 
     @RequestMapping("/{id}/avatar")
-    public ResponseEntity user(@PathVariable(value = "id") String id) {
+    public ResponseEntity<?> user(@PathVariable(value = "id") String id) {
         Account account = accountService.findById(id);
         if (account == null) {
-            return ResponseEntity.badRequest().body("Account with id not found");
+            return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(accountService.getAccountAvatar(account));
     }
@@ -64,18 +64,20 @@ public class UserRestController {
     }
 
     @RequestMapping("/")
-    public DisplayAccount user(Principal user) {
-        DisplayAccount acc = new DisplayAccount();
-        //TODO move filling of user to LoginSuccessHandler
+    public Account user(Principal user) {
+        //TODO move filling of user to LoginSuccessHandler and save to DB
+        //TODO move to PrincipalExtractor
         if (user != null && user instanceof OAuth2Authentication) {
+            Account account = new Account();
             Map<String, String> details = (Map) ((OAuth2Authentication) user).getUserAuthentication().getDetails();
-            acc.setName(details.get("name"));
-            acc.setId(details.get("id"));
-            if (StringUtils.isBlank(acc.getId())) {
-                acc.setId(details.get("sub"));
+            account.setName(details.get("name"));
+            account.setId(details.get("id"));
+            if (StringUtils.isBlank(account.getId())) {
+                account.setId(details.get("sub"));
             }
-            acc.setEmail(details.get("email"));
-            acc.setAvatar(details.get("picture"));
+            account.setEmail(details.get("email"));
+            //TODO save picture to DB , refresh once a week
+//            account.setAvatar(details.get("picture"));
 //            if facebook data not recived
 //            if (acc.getAvatar() == null) {
 //                FBGraph fbGraph = new FBGraph(((OAuth2AuthenticationDetails) ((OAuth2Authentication) user).getDetails()).getTokenValue());
@@ -83,11 +85,11 @@ public class UserRestController {
 //                Map<String, String> graphData = fbGraph.getGraphData(graph);
 //                acc.setEmail(graphData.get("email"));
 //            }
-        } else if (user != null) {
-            acc.setName(user.getName());
-            acc.setId("18576b3b-ba4f-4b23-aef7-b19eb5ee8590");//TODO remove
+            return account;
+        } else if (user != null && user instanceof UsernamePasswordAuthenticationToken) {
+            return (Account) ((UsernamePasswordAuthenticationToken) user).getPrincipal();
         }
-        return acc;
+        return null;
     }
 
 }

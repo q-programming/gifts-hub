@@ -11,7 +11,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -66,7 +65,8 @@ public class AccountService implements UserDetailsService {
         if (account == null) {
             throw new UsernameNotFoundException("user not found");
         }
-        return createUser(account);
+        account.setAuthority(account.getRole());
+        return account;
     }
 
     public void signin(Account account) {
@@ -74,15 +74,15 @@ public class AccountService implements UserDetailsService {
     }
 
     private Authentication authenticate(Account account) {
-        return new UsernamePasswordAuthenticationToken(createUser(account), null, Collections.singleton(createAuthority(account)));
+        return new UsernamePasswordAuthenticationToken(account, null, Collections.singleton(createAuthority(account)));
     }
 
-    private User createUser(Account account) {
-        return new User(account.getEmail(), account.getPassword(), Collections.singleton(createAuthority(account)));
-    }
+//    private Account createUser(Account account) {
+//        return new User(account.getEmail(), account.getPassword(), Collections.singleton(createAuthority(account)));
+//    }
 
     private GrantedAuthority createAuthority(Account account) {
-        return new SimpleGrantedAuthority(account.getRole());
+        return new SimpleGrantedAuthority(account.getRole().toString());
     }
 
     public Account findById(String id) {

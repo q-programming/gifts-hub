@@ -1,21 +1,24 @@
 package com.qprogramming.gifts.account;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.io.Serializable;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Created by Khobar on 28.02.2017.
  */
 @Entity
-public class Account {
+public class Account implements Serializable, UserDetails {
 
     @Id
     private String id;
-
     @Column(unique = true)
     private String email;
     @JsonIgnore
@@ -26,8 +29,11 @@ public class Account {
     private String name;
     @Column
     private String surname;
+    @Transient
+    private Collection<GrantedAuthority> authorities = new ArrayList<>();
 
-    private String role = "ROLE_USER";
+    @Enumerated(EnumType.STRING)
+    private Roles role;
 
     private Instant created;
 
@@ -35,10 +41,10 @@ public class Account {
         this.created = Instant.now();
     }
 
-    public Account(String email, String password, String role_user) {
+    public Account(String email, String password) {
         this.email = email;
         this.password = password;
-        this.role = role;
+        setAuthority(Roles.ROLE_USER);
         this.created = Instant.now();
 
     }
@@ -59,11 +65,11 @@ public class Account {
         this.created = created;
     }
 
-    public String getRole() {
+    public Roles getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(Roles role) {
         this.role = role;
     }
 
@@ -73,14 +79,6 @@ public class Account {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public String getLanguage() {
@@ -106,6 +104,89 @@ public class Account {
     public void setSurname(String surname) {
         this.surname = surname;
     }
+
+    public void setAuthority(Roles role) {
+        this.authorities.add(createAuthority(role));
+    }
+
+    private GrantedAuthority createAuthority(Roles role) {
+        return new SimpleGrantedAuthority(role.toString());
+    }
+
+    @Override
+    @JsonIgnore
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return authorities;
+    }
+
+    public void setAuthorities(Collection<GrantedAuthority> authorities) {
+        this.authorities = authorities;
+    }
+
+    @JsonIgnore
+    public String getPassword() {
+        return password;
+    }
+
+    @JsonIgnore
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    @JsonIgnore
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    @JsonIgnore
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    @JsonIgnore
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    @JsonIgnore
+    public boolean isEnabled() {
+        return true;
+    }
+
+    @JsonIgnore
+    public boolean getIsUser() {
+        return getIsPowerUser() || role.equals(Roles.ROLE_USER);
+    }
+
+    /**
+     * Checks if currently logged user have ROLE_USER authority
+     *
+     * @return
+     */
+    @JsonIgnore
+    public boolean getIsPowerUser() {
+        return getIsAdmin() || role.equals(Roles.ROLE_POWERUSER);
+    }
+
+    /**
+     * Checks if currently logged user have ROLE_ADMIN authority
+     *
+     * @return
+     */
+    @JsonIgnore
+    public boolean getIsAdmin() {
+        return role.equals(Roles.ROLE_ADMIN);
+    }
+
 
     @Override
     public boolean equals(Object o) {
