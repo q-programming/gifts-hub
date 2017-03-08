@@ -1,7 +1,7 @@
 <div ng-if="authenticated" xmlns:th="http://www.w3.org/1999/xhtml">
     <h1>
         This is some sample list</h1>
-    <button ng-click="testit()" th:text="${testmessage}">test</button>
+    <button ng-click="testEmail()" th:text="${testmessage}">test</button>
     model iter
     <table>
         <tr th:each="message : ${myList}">

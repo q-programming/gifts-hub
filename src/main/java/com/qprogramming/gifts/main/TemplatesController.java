@@ -5,7 +5,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Remote on 26.02.2017.
@@ -41,6 +43,16 @@ public class TemplatesController {
         model.addAttribute("myList", test);
         model.addAttribute("testmessage", "This is test message");
         return "list/list";
+    }
+
+    @RequestMapping("/settings")
+    public String settings(Model model) {
+        //TODO add real languages map after localisation is done
+        Map<String, String> languages = new HashMap<>();
+        languages.put("pl", "Polski");
+        languages.put("en", "English");
+        model.addAttribute("languages", languages);
+        return "user/settings";
     }
 
 }

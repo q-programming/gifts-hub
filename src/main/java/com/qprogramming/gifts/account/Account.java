@@ -197,7 +197,6 @@ public class Account implements Serializable, UserDetails {
 
         if (!id.equals(account.id)) return false;
         if (!email.equals(account.email)) return false;
-        if (language != null ? !language.equals(account.language) : account.language != null) return false;
         if (name != null ? !name.equals(account.name) : account.name != null) return false;
         if (surname != null ? !surname.equals(account.surname) : account.surname != null) return false;
         return created != null ? created.equals(account.created) : account.created == null;
@@ -207,7 +206,6 @@ public class Account implements Serializable, UserDetails {
     public int hashCode() {
         int result = id.hashCode();
         result = 31 * result + email.hashCode();
-        result = 31 * result + (language != null ? language.hashCode() : 0);
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (surname != null ? surname.hashCode() : 0);
         result = 31 * result + (created != null ? created.hashCode() : 0);

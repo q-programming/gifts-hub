@@ -1,11 +1,12 @@
-var avatarService = angular.module('avatarService', []);
-avatarService.factory('avatarService', function ($http, $log, avatarCache, $rootScope) {
-    var avatarService = {};
+var AvatarService = angular.module('AvatarService', []);
+AvatarService.factory('AvatarService', function ($http, $log, avatarCache, $rootScope) {
+    var AvatarService = {};
     var avatars = {};
 
-    avatarService.getAvatar = function (id) {
+    AvatarService.getAvatar = function (id) {
         var image = avatarCache.get(id);
         if (!image) {
+            $log.debug("[DEBUG] Getting avatar from DB");
             $http.get('api/user/' + id + '/avatar').then(function (result) {
                 image = result.data.image;
                 avatarCache.put(id, image);
@@ -19,6 +20,6 @@ avatarService.factory('avatarService', function ($http, $log, avatarCache, $root
             $rootScope.principal.avatar = image;
         }
     };
-    return avatarService;
+    return AvatarService;
 });
 

@@ -3,8 +3,10 @@ package com.qprogramming.gifts.api.user;
 import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.account.RegisterForm;
+import com.qprogramming.gifts.support.Utils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,11 +59,25 @@ public class UserRestController {
         return ResponseEntity.ok(accountService.getAccountAvatar(account));
     }
 
-
-    @RequestMapping(value = "/validate-email", method = RequestMethod.POST)
-    public ResponseEntity validateEmail(@RequestBody String email) {
+    @RequestMapping(value = "/validate-email", method = RequestMethod.GET)
+    public ResponseEntity validateEmail(@RequestParam String email) {
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+
+    @RequestMapping(value = "/language", method = RequestMethod.POST)
+    public ResponseEntity changeLanguage(@RequestBody String jsonObj) {
+        JSONObject object = new JSONObject(jsonObj);
+        Account currentAccount = Utils.getCurrentAccount();
+        Account account = accountService.findById(object.getString("id"));
+        if (account == null || !account.equals(currentAccount)) {
+            return ResponseEntity.notFound().build();
+        }
+        account.setLanguage((String) object.getString("language"));
+        accountService.update(account);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 
     @RequestMapping("/")
     public Account user(Principal user) {

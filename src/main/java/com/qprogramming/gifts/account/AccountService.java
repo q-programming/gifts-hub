@@ -101,4 +101,14 @@ public class AccountService implements UserDetailsService {
         avatar.setImage(imgBytes);
         return avatarRepository.save(avatar);
     }
+
+    /**
+     * Just save passed account
+     *
+     * @param account account to be saved
+     * @return updated account
+     */
+    public Account update(Account account) {
+        return accountRepository.save(account);
+    }
 }

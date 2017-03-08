@@ -1,15 +1,20 @@
 package com.qprogramming.gifts.api.user;
 
+import com.qprogramming.gifts.MockSecurityContext;
 import com.qprogramming.gifts.TestUtil;
+import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.account.RegisterForm;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -19,14 +24,26 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class UserRestControllerTest {
 
     public static final String API_USER_REGISTER = "/api/user/register";
+    public static final String API_USER_LANGUAGE = "/api/user/language";
     private MockMvc userRestCtrl;
     @Mock
     private AccountService accSrvMock;
+    @Mock
+    private MockSecurityContext securityMock;
+    @Mock
+    private Authentication authMock;
+
+
+    private Account testAccount;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         UserRestController userCtrl = new UserRestController(accSrvMock);
+        testAccount = TestUtil.createAccount();
+        when(securityMock.getAuthentication()).thenReturn(authMock);
+        when(authMock.getPrincipal()).thenReturn(testAccount);
+        SecurityContextHolder.setContext(securityMock);
         this.userRestCtrl = MockMvcBuilders.standaloneSetup(userCtrl).build();
     }
 
@@ -71,6 +88,23 @@ public class UserRestControllerTest {
         form.setConfirmpassword("password");
         userRestCtrl.perform(post(API_USER_REGISTER).contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(form)))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void languageChangedForUser() throws Exception {
+        when(accSrvMock.findById(TestUtil.USER_RANDOM_ID)).thenReturn(testAccount);
+        userRestCtrl.perform(post(API_USER_LANGUAGE)
+                .param("id", TestUtil.USER_RANDOM_ID)
+                .param("language", "pl")).andExpect(status().isOk());
+        verify(accSrvMock, times(1)).update(testAccount);
+    }
+
+    @Test
+    public void languageChangedButNoUserFound() throws Exception {
+        userRestCtrl.perform(post(API_USER_LANGUAGE)
+                .sessionAttr("principal", testAccount)
+                .param("id", TestUtil.USER_RANDOM_ID)
+                .param("language", "pl")).andExpect(status().isNotFound());
     }
 
 

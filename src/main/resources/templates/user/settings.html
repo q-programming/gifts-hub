@@ -1,0 +1,18 @@
+<div ng-if="authenticated" xmlns:th="http://www.w3.org/1999/xhtml">
+    <div class="alert alert-success" ng-show="lang_success">
+        Succesfully updated user language.
+    </div>
+    <div class="alert alert-danger" ng-show="lang_error">
+        Failed to update user language.
+    </div>
+
+    <div ng-if="authenticated" xmlns:th="http://www.w3.org/1999/xhtml" class="row">
+        <div class="form-group col-md-6">
+            <select class="form-control input-sm" name="language" th:field="*{languages}"
+                    ng-model="principal.language" ng-change="update()">
+                <option th:each="lang : ${languages}" th:value="${lang.key}" th:text="${lang.value}">
+                </option>
+            </select>
+        </div>
+    </div>
+</div>

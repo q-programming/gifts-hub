@@ -1,5 +1,5 @@
-var app = angular.module('app', ['ngRoute', 'avatarService']);
-app.config(function ($routeProvider, $httpProvider, $locationProvider,$logProvider) {
+var app = angular.module('app', ['ngRoute', 'AvatarService', 'AuthService']);
+app.config(function ($routeProvider, $httpProvider, $locationProvider, $logProvider) {
     $routeProvider
         .when('/', {
             templateUrl: 'home.html',
@@ -16,6 +16,10 @@ app.config(function ($routeProvider, $httpProvider, $locationProvider,$logProvid
         .when('/list', {
             templateUrl: 'list.html',
             controller: 'list'
+        })
+        .when('/settings', {
+            templateUrl: 'settings.html',
+            controller: 'settings'
         })
         .otherwise('/');
     $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';

@@ -1,37 +1,13 @@
-app.controller('navigation', function ($scope, $rootScope, $http, $location, $route, avatarService) {
+app.controller('navigation', function ($scope, $rootScope, $http, $location, $route, AvatarService,AuthService) {
     $scope.tab = function (route) {
         return $route.current && route === $route.current.controller;
     };
 
-    var authenticate = function (credentials, callback) {
-        var headers = credentials ? {
-            authorization: "Basic "
-            + btoa(credentials.username + ":" + credentials.password)
-        } : {};
-
-        $http.get('api/user/', {headers: headers}).then(
-            function (response) {
-                var data = response.data;
-                if (data.id) {
-                    $rootScope.authenticated = true;
-                    $rootScope.principal = data;
-                    avatarService.getAvatar($rootScope.principal.id);
-                } else {
-                    $rootScope.authenticated = false;
-                }
-                callback && callback();
-            },
-            function () {
-                $rootScope.authenticated = false;
-                callback && callback();
-            });
-    };
-
-    authenticate();
+    AuthService.authenticate();
     $scope.credentials = {};
     //LOGIN
     $scope.login = function () {
-        authenticate($scope.credentials, function () {
+        AuthService.authenticate($scope.credentials, function () {
             if ($rootScope.authenticated) {
                 $location.path("/");
                 $scope.error = false;
