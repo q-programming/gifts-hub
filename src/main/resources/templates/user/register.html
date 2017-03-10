@@ -4,27 +4,38 @@
 <div class="alert alert-success" ng-show="success">
     <strong>Succesfully registered.</strong> Please check your email for confirmation.
 </div>
+<div class="text-center">
+    <img src="images/register.png"/>
+</div>
 <form ng-show="!success" role="form" name="userForm" ng-submit="register()">
-    <div class="form-group">
+    <div class="form-group" show-errors="">
         <label for="name">Name:</label>
-        <input type="text" class="form-control" id="name" name="name" ng-model="formData.name"/>
+        <input type="text" class="form-control" id="name" name="name" ng-model="formData.name" required="required"/>
     </div>
-    <div class="form-group">
-        <label for="name">Surname:</label>
-        <input type="text" class="form-control" id="surname" name="surname" ng-model="formData.surname"/>
+    <div class="form-group" show-errors="">
+        <label for="surname">Surname:</label>
+        <input type="text" class="form-control" id="surname" name="surname" ng-model="formData.surname"
+               required="required"/>
     </div>
-    <div class="form-group">
-        <label for="name">Email:</label>
-        <input type="text" class="form-control" id="email" name="email" ng-model="formData.email"/>
+    <div class="form-group" show-errors="">
+        <label for="email">Email:</label>
+        <input type="email" class="form-control" id="email" name="email" ng-model="formData.email" required="required"
+               ng-change="createUsername()"/>
     </div>
-    <div class="form-group">
+    <div class="form-group" show-errors="">
+        <label for="username">Username:</label>
+        <input type="text" class="form-control" id="username" name="username" ng-model="formData.username"
+               required="required"/>
+    </div>
+    <div class="form-group" show-errors="">
         <label for="password">Password:</label>
-        <input type="password" class="form-control" id="password" name="password" ng-model="formData.password"/>
+        <input type="password" class="form-control" id="password" name="password" ng-model="formData.password"
+               required="required"/>
     </div>
-    <div class="form-group">
+    <div class="form-group" show-errors="">
         <label for="confirmPassword">Password:</label>
         <input type="password" class="form-control" id="confirmpassword" name="confirmpassword"
-               ng-model="formData.confirmpassword"/>
+               ng-model="formData.confirmpassword" required="required"/>
     </div>
     <button type="submit" class="btn btn-primary">Submit</button>
 </form>

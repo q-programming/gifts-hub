@@ -29,6 +29,8 @@ public class Account implements Serializable, UserDetails {
     private String name;
     @Column
     private String surname;
+    @Column
+    private String username;
     @Transient
     private Collection<GrantedAuthority> authorities = new ArrayList<>();
 
@@ -135,7 +137,11 @@ public class Account implements Serializable, UserDetails {
 
     @Override
     public String getUsername() {
-        return email;
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     @Override

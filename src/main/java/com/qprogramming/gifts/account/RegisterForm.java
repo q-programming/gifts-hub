@@ -22,6 +22,9 @@ public class RegisterForm {
     private String surname;
 
     @NotBlank(message = RegisterForm.NOT_BLANK_MESSAGE)
+    private String username;
+
+    @NotBlank(message = RegisterForm.NOT_BLANK_MESSAGE)
     private String password;
 
     @NotBlank(message = RegisterForm.NOT_BLANK_MESSAGE)
@@ -67,11 +70,20 @@ public class RegisterForm {
         this.confirmpassword = confirmpassword;
     }
 
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
     public Account createAccount() {
         Account account = new Account();
         account.setName(getName());
         account.setSurname(getSurname());
         account.setEmail(getEmail());
+        account.setUsername(getUsername());
         account.setPassword(getPassword());
         return account;
     }

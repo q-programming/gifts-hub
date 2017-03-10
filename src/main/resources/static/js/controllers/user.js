@@ -1,4 +1,4 @@
-app.controller('navigation', function ($scope, $rootScope, $http, $location, $route, AvatarService,AuthService) {
+app.controller('navigation', function ($scope, $rootScope, $http, $location, $route, AvatarService, AuthService) {
     $scope.tab = function (route) {
         return $route.current && route === $route.current.controller;
     };
@@ -39,6 +39,10 @@ app.controller('register', function ($scope, $rootScope, $http) {
     $scope.errorUserExists = null;
 
     $scope.register = function () {
+        $scope.showErrorsCheckValidity = true;
+        if ($scope.formData.$invalid) {
+            return;
+        }
         $http.post('api/user/register', $scope.formData).then(
             function () {
                 $scope.success = true;
@@ -52,5 +56,35 @@ app.controller('register', function ($scope, $rootScope, $http) {
                 $scope.error = 'ERROR';
             }
         });
+    }
+
+    $scope.createUsername = function () {
+        if (!$scope.formData.email.$invalid) {
+            $scope.formData.username = $scope.formData.email.split("@")[0];
+
+        }
+
+    }
+});
+app.directive('showErrors', function () {
+    return {
+        restrict: 'A',
+        require: '^form',
+        link: function (scope, el, attrs, formCtrl) {
+            var inputEl = el[0].querySelector("[name]");
+            var inputNgEl = angular.element(inputEl);
+            var inputName = inputNgEl.attr('name');
+            inputNgEl.bind('blur', function () {
+                el.toggleClass('has-error', formCtrl[inputName].$invalid);
+            });
+            scope.$watch(function () {
+                return scope.showErrorsCheckValidity;
+            }, function (newVal, oldVal) {
+                if (!newVal) {
+                    return;
+                }
+                el.toggleClass('has-error', formCtrl[inputName].$invalid);
+            });
+        }
     }
 });

@@ -64,7 +64,10 @@ public class AccountService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Account account = accountRepository.findOneByEmail(username);
         if (account == null) {
-            throw new UsernameNotFoundException("user not found");
+            account = accountRepository.findOneByUsername(username);
+            if (account == null) {
+                throw new UsernameNotFoundException("user not found");
+            }
         }
         account.setAuthority(account.getRole());
         return account;

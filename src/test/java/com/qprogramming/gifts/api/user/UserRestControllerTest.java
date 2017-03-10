@@ -19,9 +19,6 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/**
- * Created by Khobar on 05.03.2017.
- */
 public class UserRestControllerTest {
 
     public static final String API_USER_REGISTER = "/api/user/register";
@@ -33,7 +30,6 @@ public class UserRestControllerTest {
     private MockSecurityContext securityMock;
     @Mock
     private Authentication authMock;
-
 
     private Account testAccount;
 
