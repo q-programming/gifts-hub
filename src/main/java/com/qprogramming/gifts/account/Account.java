@@ -29,7 +29,7 @@ public class Account implements Serializable, UserDetails {
     private String name;
     @Column
     private String surname;
-    @Column
+    @Column(unique = true)
     private String username;
     @Transient
     private Collection<GrantedAuthority> authorities = new ArrayList<>();

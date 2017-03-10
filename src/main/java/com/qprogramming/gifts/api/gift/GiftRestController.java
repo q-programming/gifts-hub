@@ -33,10 +33,19 @@ public class GiftRestController {
         JSONObject giftObj = new JSONObject(giftString);
         Gift newGift = new Gift();
         newGift.setName(giftObj.getString("name"));
-        newGift.setLink(giftObj.getString("link"));
+        if (giftObj.has("link")) {
+            newGift.setLink(giftObj.getString("link"));
+        }
         //TODO add category later on
-        giftObj.getString("category");
+        if (giftObj.has("category")) {
+            giftObj.getString("category");
+        }
         Gift gift = giftService.create(newGift);
         return new ResponseEntity<>(gift, HttpStatus.CREATED);
+    }
+
+    @RequestMapping("/mine")
+    public ResponseEntity getUserGifts() {
+        return new ResponseEntity<>(giftService.findAllByCurrentUser(), HttpStatus.CREATED);
     }
 }

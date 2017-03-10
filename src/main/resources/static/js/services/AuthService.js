@@ -15,7 +15,7 @@ AuthService.factory('AuthService', function ($http, $log, avatarCache, $rootScop
                     $rootScope.authenticated = true;
                     $rootScope.principal = data;
                     AvatarService.getAvatar($rootScope.principal.id);
-                    $log.debug("User logged in " + $rootScope.principal.id);
+                    $log.debug("[DEBUG] User logged in " + $rootScope.principal.id);
                 } else {
                     $rootScope.authenticated = false;
                 }

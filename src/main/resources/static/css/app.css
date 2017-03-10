@@ -100,3 +100,18 @@ img.center {
     display: block;
     margin: 0 auto;
 }
+
+/*show/hide*/
+.animate {
+    -webkit-transition:0.5s linear all;
+    transition:0.5s linear all;
+    opacity:1;
+}
+
+.animate.ng-hide {
+    opacity:0;
+}
+
+.animate.ng-hide-add, .animate.ng-hide-remove {
+    display:block!important;
+}

@@ -5,6 +5,8 @@ import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.support.Utils;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * Created by Khobar on 10.03.2017.
  */
@@ -24,5 +26,9 @@ public class GiftService {
         gift.setUserId(currentAccount.getId());
         gift.setStatus(GiftStatus.NEW);
         return giftRepository.save(gift);
+    }
+
+    public List<Gift> findAllByCurrentUser() {
+        return giftRepository.findByUserId(Utils.getCurrentAccount().getId());
     }
 }

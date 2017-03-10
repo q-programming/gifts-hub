@@ -1,4 +1,4 @@
-var app = angular.module('app', ['ngRoute', 'AvatarService', 'AuthService']);
+var app = angular.module('app', ['ngRoute', 'ngAnimate', 'AvatarService', 'AuthService']);
 app.config(function ($routeProvider, $httpProvider, $locationProvider, $logProvider) {
     $routeProvider
         .when('/', {
@@ -15,7 +15,7 @@ app.config(function ($routeProvider, $httpProvider, $locationProvider, $logProvi
         })
         .when('/list', {
             templateUrl: 'list.html',
-            controller: 'list'
+            controller: 'gift'
         })
         .when('/settings', {
             templateUrl: 'settings.html',
@@ -28,4 +28,26 @@ app.config(function ($routeProvider, $httpProvider, $locationProvider, $logProvi
 });
 app.factory('avatarCache', function ($cacheFactory) {
     return $cacheFactory('avatarCache');
+});
+app.directive('showErrors', function () {
+    return {
+        restrict: 'A',
+        require: '^form',
+        link: function (scope, el, attrs, formCtrl) {
+            var inputEl = el[0].querySelector("[name]");
+            var inputNgEl = angular.element(inputEl);
+            var inputName = inputNgEl.attr('name');
+            inputNgEl.bind('blur', function () {
+                el.toggleClass('has-error', formCtrl[inputName].$invalid);
+            });
+            scope.$watch(function () {
+                return scope.showErrorsCheckValidity;
+            }, function (newVal, oldVal) {
+                if (!newVal) {
+                    return;
+                }
+                el.toggleClass('has-error', formCtrl[inputName].$invalid);
+            });
+        }
+    }
 });

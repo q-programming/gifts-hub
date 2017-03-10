@@ -56,35 +56,11 @@ app.controller('register', function ($scope, $rootScope, $http) {
                 $scope.error = 'ERROR';
             }
         });
-    }
+    };
 
     $scope.createUsername = function () {
-        if (!$scope.formData.email.$invalid) {
+        if (!$scope.formData.username && !$scope.formData.email.$invalid) {
             $scope.formData.username = $scope.formData.email.split("@")[0];
-
-        }
-
-    }
-});
-app.directive('showErrors', function () {
-    return {
-        restrict: 'A',
-        require: '^form',
-        link: function (scope, el, attrs, formCtrl) {
-            var inputEl = el[0].querySelector("[name]");
-            var inputNgEl = angular.element(inputEl);
-            var inputName = inputNgEl.attr('name');
-            inputNgEl.bind('blur', function () {
-                el.toggleClass('has-error', formCtrl[inputName].$invalid);
-            });
-            scope.$watch(function () {
-                return scope.showErrorsCheckValidity;
-            }, function (newVal, oldVal) {
-                if (!newVal) {
-                    return;
-                }
-                el.toggleClass('has-error', formCtrl[inputName].$invalid);
-            });
         }
     }
 });

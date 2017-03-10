@@ -4,9 +4,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -35,15 +33,21 @@ public class TemplatesController {
         return "user/register";
     }
 
+//    @RequestMapping("/list")
+//    public String list(Model model) {
+//        List<String> test = new ArrayList<>();
+//        test.add("one");
+//        test.add("two");
+//        model.addAttribute("myList", test);
+//        model.addAttribute("testmessage", "This is test message");
+//        return "list/list";
+//    }
+
     @RequestMapping("/list")
-    public String list(Model model) {
-        List<String> test = new ArrayList<>();
-        test.add("one");
-        test.add("two");
-        model.addAttribute("myList", test);
-        model.addAttribute("testmessage", "This is test message");
-        return "list/list";
+    public String list() {
+        return "gifts/list";
     }
+
 
     @RequestMapping("/settings")
     public String settings(Model model) {
