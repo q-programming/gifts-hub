@@ -55,6 +55,7 @@ public class AccountService implements UserDetailsService {
         }
         account.setId(uuid);
         account.setPassword(passwordEncoder.encode(account.getPassword()));
+        account.setRole(Roles.ROLE_USER);
         accountRepository.save(account);
         return account;
     }

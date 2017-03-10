@@ -15,9 +15,12 @@ logging:
     org.springframework.security: DEBUG
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/gifts
-    username: postgres
-    password: admin
+    url: jdbc:h2:./db/h2databaseFile;AUTO_SERVER=TRUE
+    username: sa
+    password:
+#    url: jdbc:postgresql://localhost:5432/gifts
+#    username: postgres
+#    password: admin
   mvc:
     favicon:
       enabled: false

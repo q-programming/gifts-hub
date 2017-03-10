@@ -73,7 +73,7 @@ public class UserRestController {
         if (account == null || !account.equals(currentAccount)) {
             return ResponseEntity.notFound().build();
         }
-        account.setLanguage((String) object.getString("language"));
+        account.setLanguage(object.getString("language"));
         accountService.update(account);
         return new ResponseEntity<>(HttpStatus.OK);
     }

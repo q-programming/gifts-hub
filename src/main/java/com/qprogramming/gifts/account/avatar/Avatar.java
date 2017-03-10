@@ -3,6 +3,7 @@ package com.qprogramming.gifts.account.avatar;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 
 /**
  * Created by Khobar on 06.03.2017.
@@ -12,7 +13,7 @@ public class Avatar {
 
     @Id
     private String id;
-    @Column
+    @Lob
     private byte[] image;
 
     public byte[] getImage() {

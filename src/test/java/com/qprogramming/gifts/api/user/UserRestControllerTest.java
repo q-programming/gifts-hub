@@ -5,6 +5,7 @@ import com.qprogramming.gifts.TestUtil;
 import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.account.RegisterForm;
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -93,18 +94,23 @@ public class UserRestControllerTest {
     @Test
     public void languageChangedForUser() throws Exception {
         when(accSrvMock.findById(TestUtil.USER_RANDOM_ID)).thenReturn(testAccount);
+        JSONObject object = new JSONObject();
+        object.put("id", TestUtil.USER_RANDOM_ID);
+        object.put("language", "pl");
         userRestCtrl.perform(post(API_USER_LANGUAGE)
-                .param("id", TestUtil.USER_RANDOM_ID)
-                .param("language", "pl")).andExpect(status().isOk());
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(object.toString())).andExpect(status().isOk());
         verify(accSrvMock, times(1)).update(testAccount);
     }
 
     @Test
     public void languageChangedButNoUserFound() throws Exception {
+        JSONObject object = new JSONObject();
+        object.put("id", TestUtil.USER_RANDOM_ID);
+        object.put("language", "pl");
         userRestCtrl.perform(post(API_USER_LANGUAGE)
-                .sessionAttr("principal", testAccount)
-                .param("id", TestUtil.USER_RANDOM_ID)
-                .param("language", "pl")).andExpect(status().isNotFound());
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(object.toString())).andExpect(status().isNotFound());
     }
 
 
