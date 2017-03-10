@@ -70,7 +70,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .key("remember-me-key")
                 .and().addFilterBefore(new CsrfHeaderFilter(), CsrfFilter.class)
                     .csrf()
-                    .ignoringAntMatchers("/login", "/logout", "/api/user/*")
+                    .ignoringAntMatchers("/login", "/logout", "/api/user/*","/api/gift/*")
                     .csrfTokenRepository(csrfTokenRepository())
                 .and().logout()
                     .logoutSuccessUrl("/").permitAll()

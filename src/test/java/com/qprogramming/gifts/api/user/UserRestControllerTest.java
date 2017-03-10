@@ -46,11 +46,18 @@ public class UserRestControllerTest {
 
     @Test
     public void registerSuccess() throws Exception {
+        when(accSrvMock.create(any(Account.class))).thenReturn(testAccount);
         RegisterForm form = new RegisterForm();
-        form.setName("Name");
-        form.setSurname("Surname");
+        form.setName(testAccount.getName());
+        form.setSurname(testAccount.getSurname());
+        form.setUsername(testAccount.getUsername());
+        form.setEmail(testAccount.getEmail());
+        form.setPassword("password");
+        form.setConfirmpassword("password");
         userRestCtrl.perform(post(API_USER_REGISTER).contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(form)))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
+        verify(accSrvMock, times(1)).create(any(Account.class));
+
     }
 
     @Test

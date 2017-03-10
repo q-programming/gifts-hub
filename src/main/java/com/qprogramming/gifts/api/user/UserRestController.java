@@ -4,7 +4,6 @@ import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.account.RegisterForm;
 import com.qprogramming.gifts.support.Utils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -16,8 +15,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.io.IOException;
-import java.io.InputStream;
 import java.security.Principal;
 import java.util.Map;
 
@@ -34,15 +33,12 @@ public class UserRestController {
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
-    public ResponseEntity register(@RequestBody RegisterForm userform) {
+    public ResponseEntity register(@Valid @RequestBody RegisterForm userform) {
         //TODO validation
-        Account formAccount = userform.createAccount();
-        formAccount = accountService.create(formAccount);
+        Account newAccount = userform.createAccount();
+        newAccount = accountService.create(newAccount);
         try {
-            ClassLoader loader = this.getClass().getClassLoader();
-            InputStream avatarFile = loader.getResourceAsStream("static/images/logo-white.png");
-            byte[] bytes = IOUtils.toByteArray(avatarFile);
-            accountService.createAvatar(formAccount, bytes);
+            accountService.createAvatar(newAccount);
         } catch (IOException e) {
             LOG.error(e.getLocalizedMessage());
             return ResponseEntity.badRequest().body("Failed to read default avatar file");

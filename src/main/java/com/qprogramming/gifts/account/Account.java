@@ -7,9 +7,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 
 /**
  * Created by Khobar on 28.02.2017.
@@ -37,17 +37,18 @@ public class Account implements Serializable, UserDetails {
     @Enumerated(EnumType.STRING)
     private Roles role;
 
-    private Instant created;
+    private Date created;
 
     public Account() {
-        this.created = Instant.now();
+        this.created = new Date();
     }
 
-    public Account(String email, String password) {
+    public Account(String username, String email, String password) {
+        this.username = username;
         this.email = email;
         this.password = password;
         setAuthority(Roles.ROLE_USER);
-        this.created = Instant.now();
+        this.created = new Date();
 
     }
 
@@ -59,11 +60,11 @@ public class Account implements Serializable, UserDetails {
         this.id = id;
     }
 
-    public Instant getCreated() {
+    public Date getCreated() {
         return created;
     }
 
-    public void setCreated(Instant created) {
+    public void setCreated(Date created) {
         this.created = created;
     }
 

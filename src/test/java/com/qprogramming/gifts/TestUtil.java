@@ -21,6 +21,7 @@ public class TestUtil {
             MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
     public static final String EMAIL = "user@test.com";
+    public static final String USERNAME = "user";
     public static final String USER_RANDOM_ID = "USER-RANDOM-ID";
 
     public static byte[] convertObjectToJsonBytes(Object object)
@@ -35,12 +36,12 @@ public class TestUtil {
     }
 
     public static Account createAccount() {
-        Account testAccount = new Account(EMAIL, "password");
-        return createAccount("user", "surname");
+        Account testAccount = new Account(USERNAME, EMAIL, "password");
+        return createAccount("name", "surname");
     }
 
     public static Account createAccount(String name, String surname) {
-        Account account = new Account(EMAIL, "password");
+        Account account = new Account(USERNAME, EMAIL, "password");
         account.setName(name);
         account.setSurname(surname);
         account.setLanguage("en");

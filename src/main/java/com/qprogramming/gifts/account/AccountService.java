@@ -2,6 +2,7 @@ package com.qprogramming.gifts.account;
 
 import com.qprogramming.gifts.account.avatar.Avatar;
 import com.qprogramming.gifts.account.avatar.AvatarRepository;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
@@ -19,6 +20,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.UUID;
 
@@ -99,7 +102,10 @@ public class AccountService implements UserDetailsService {
         return avatarRepository.findOneById(account.getId());
     }
 
-    public Avatar createAvatar(Account account, byte[] imgBytes) {
+    public Avatar createAvatar(Account account) throws IOException {
+        ClassLoader loader = this.getClass().getClassLoader();
+        InputStream avatarFile = loader.getResourceAsStream("static/images/logo-white.png");
+        byte[] imgBytes = IOUtils.toByteArray(avatarFile);
         Avatar avatar = new Avatar();
         avatar.setId(account.getId());
         avatar.setImage(imgBytes);
