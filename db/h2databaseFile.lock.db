@@ -1,6 +1,6 @@
 #FileLock
-#Fri Mar 10 23:52:39 CET 2017
-hostName=192.168.1.3
-id=15aba6c809ad78a886edd5513be67e1062f79f9bd25
+#Sat Mar 11 10:11:21 CET 2017
+hostName=BLASZAK
+id=15abca2f15efa112cdf9e16581b1f6a351d915572f7
 method=file
-server=192.168.1.3\:53575
+server=192.168.1.3\:56098

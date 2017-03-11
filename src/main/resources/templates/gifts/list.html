@@ -3,7 +3,7 @@
     <div class="alert alert-success" ng-show="success_added">
         New gift added to Your wish list
     </div>
-    <div class="animate" ng-show="addNew">
+    <div class="animate" ng-show="showAddNew">
         <form role="form" name="newGift" ng-submit="create()">
             <div class="form-group" show-errors="">
                 <label for="name">Name:</label>
@@ -22,7 +22,7 @@
             <button type="submit" class="btn btn-primary">Create</button>
         </form>
     </div>
-    <button type="button" class="btn btn-success" ng-click="addNew=true" ng-show="!addNew">
+    <button type="button" class="btn btn-success" ng-click="show()" ng-show="!showAddNew">
         <i class="fa fa-plus" aria-hidden="true"></i>
         Add new
     </button>

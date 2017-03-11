@@ -3,24 +3,27 @@ app.controller('gift', function ($rootScope, $scope, $http, $log) {
     $scope.giftsList = [];
     $scope.error = null;
     $scope.success_added = null;
-    $scope.addNew = false;
+    $scope.showAddNew = false;
     if ($rootScope.authenticated) {
         getMyGifts();
     }
 
+    $scope.show = function () {
+        $scope.showAddNew = true;
+    };
+
     $scope.reset = function () {
         $scope.giftForm = {};
-        $scope.addNew = false;
-        $log.debug($scope.addNew);
+        $scope.showAddNew = false;
     };
 
     $scope.create = function () {
+        $scope.showAddNew = true;
         $http.post('api/gift/create', $scope.giftForm).then(
             function (response) {
                 $scope.success_added = true;
                 $scope.giftsList.push(response.data);
                 $scope.reset();
-                $scope.$digest();
             }).catch(function (response) {
             $scope.success_added = null;
             $scope.error = 'ERROR';
