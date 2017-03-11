@@ -1,12 +1,6 @@
 <div class="text-center">
     <img src="images/register.png"/>
 </div>
-<div class="alert alert-danger" ng-show="error">
-    There was a problem registering. Please try again.
-</div>
-<div class="alert alert-success" ng-show="success">
-    <strong>Succesfully registered.</strong> Please check your email for confirmation.
-</div>
 <form ng-show="!success" role="form" name="userForm" ng-submit="register()">
     <div class="form-group" show-errors="">
         <label for="name">Name:</label>

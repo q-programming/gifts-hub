@@ -33,7 +33,7 @@ li.nav-avatar {
 }
 
 a.nav-username {
-    border-bottom: 0!important;
+    border-bottom: 0 !important;
 }
 
 img.avatar {
@@ -101,17 +101,46 @@ img.center {
     margin: 0 auto;
 }
 
-/*show/hide*/
+/*ANIMATION*/
 .animate {
-    -webkit-transition:0.5s linear all;
-    transition:0.5s linear all;
-    opacity:1;
+    -webkit-transition: 0.5s linear all;
+    transition: 0.5s linear all;
+    opacity: 1;
 }
 
 .animate.ng-hide {
-    opacity:0;
+    opacity: 0;
 }
 
 .animate.ng-hide-add, .animate.ng-hide-remove {
-    display:block!important;
+    display: block !important;
+}
+
+.alert.ng-enter,
+.alert.ng-enter ~ .alert {
+    transform: translateY(-100%);
+}
+
+.alert.ng-enter.ng-enter-active,
+.alert.ng-enter.ng-enter-active ~ li {
+    transform: translateY(0);
+}
+
+.alert.ng-animate {
+    z-index: -1;
+}
+
+.alert.ng-animate,
+.alert.ng-animate ~ .alert {
+    transition: transform 0.6s;
+}
+
+.alert.ng-leave,
+.alert.ng-leave ~ .alert {
+    transform: translateY(0);
+}
+
+.alert.ng-leave.ng-leave-active,
+.alert.ng-leave.ng-leave-active ~ .alert {
+    transform: translateY(-100%);
 }

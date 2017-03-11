@@ -55,6 +55,11 @@ public class UserRestController {
         return ResponseEntity.ok(accountService.getAccountAvatar(account));
     }
 
+    @RequestMapping("/users")
+    public ResponseEntity<?> userList() {
+        return ResponseEntity.ok(accountService.findAll());
+    }
+
     @RequestMapping(value = "/validate-email", method = RequestMethod.GET)
     public ResponseEntity validateEmail(@RequestParam String email) {
         return new ResponseEntity<>(HttpStatus.OK);

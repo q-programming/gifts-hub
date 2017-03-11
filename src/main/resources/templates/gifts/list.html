@@ -1,5 +1,5 @@
 <div ng-if="authenticated">
-    <h1>Gifts list</h1>
+    <h1>{{listTitle}}</h1>
     <div class="animate" ng-show="showAddNew">
         <form role="form" name="newGift" ng-submit="create()">
             <div class="form-group" show-errors="">
@@ -19,9 +19,13 @@
             <button type="submit" class="btn btn-primary">Create</button>
         </form>
     </div>
-    <button type="button" class="btn btn-success" ng-click="show()" ng-show="!showAddNew">
+    <button type="button" class="btn btn-success" ng-click="show()" ng-show="!showAddNew &amp;&amp; userList">
         <i class="fa fa-plus" aria-hidden="true"></i>
         Add new
+    </button>
+    <button type="button" class="btn btn-success" ng-click="showAlert()">
+        <i class="fa fa-plus" aria-hidden="true"></i>
+        Add alert
     </button>
     <table class="table animate">
         <tr ng-repeat="gift in giftsList">

@@ -1,0 +1,10 @@
+<div ng-if="authenticated">
+    <h1>User list</h1>
+    <table class="table animate">
+        <tr ng-repeat="user in users">
+            <td><a ng-href="#/list/{{user.username}}">{{user.username}}</a></td>
+            <td>{{user.name}}</td>
+            <td>{{user.surname}}</td>
+        </tr>
+    </table>
+</div>

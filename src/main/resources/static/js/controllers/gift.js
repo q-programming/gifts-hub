@@ -1,15 +1,21 @@
-app.controller('gift', function ($rootScope, $scope, $http, $log, MESSAGES) {
+app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, $route, AlertService) {
     $scope.giftForm = {};
     $scope.giftsList = [];
-    $scope.error = null;
-    $scope.success_added = null;
+
     $scope.showAddNew = false;
+    $scope.userList = false;
+    $scope.listTitle = "";
+
     if ($rootScope.authenticated) {
-        getMyGifts();
+        $scope.userList = !$routeParams.username || $routeParams.username === $rootScope.principal.username;
+        getGiftList($routeParams.username);
     }
 
     $scope.show = function () {
         $scope.showAddNew = true;
+    };
+    $scope.showAlert = function () {
+        AlertService.addSuccess("test!");
     };
 
     $scope.reset = function () {
@@ -21,24 +27,32 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, MESSAGES) {
         $scope.showAddNew = true;
         $http.post('api/gift/create', $scope.giftForm).then(
             function (response) {
-                $rootScope.addAlert(MESSAGES.SUCCESS, "New gift added to Your wish list");
+                AlertService.addSuccess("New gift added to Your wish list");
                 $scope.giftsList.push(response.data);
                 $scope.reset();
             }).catch(function (response) {
-            $rootScope.addAlert(MESSAGES.ERROR, "Something went wrong");
+            AlertService.addError("Something went wrong");
         });
     };
 
-    function getMyGifts() {
-        $http.get('api/gift/mine', $scope.giftForm).then(
+    function getGiftList(username) {
+        var url;
+        if (username) {
+            $scope.listTitle = username + "'s gift list";
+            url = 'api/gift/user/' + username;
+        } else {
+            $scope.listTitle = "My wish list";
+            url = 'api/gift/mine';
+        }
+        $http.get(url).then(
             function (response) {
                 $scope.giftsList = [];
                 $log.debug("[DEBUG] User gifts loaded");
-                angular.forEach(response.data, function (value, key) {
+                angular.forEach(response.data, function (value) {
                     $scope.giftsList.push(value);
                 });
             }).catch(function (response) {
-            $rootScope.addAlert(MESSAGES.ERROR, "Something went wrong");
+            AlertService.addError("Something went wrong");
         });
     }
 });

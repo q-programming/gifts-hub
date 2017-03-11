@@ -48,6 +48,12 @@ public class TemplatesController {
         return "gifts/list";
     }
 
+    @RequestMapping("/userlits")
+    public String userList() {
+        return "user/list";
+    }
+
+
 
     @RequestMapping("/settings")
     public String settings(Model model) {

@@ -1,5 +1,6 @@
 package com.qprogramming.gifts.api.gift;
 
+import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.gift.Gift;
 import com.qprogramming.gifts.gift.GiftService;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -46,6 +48,15 @@ public class GiftRestController {
 
     @RequestMapping("/mine")
     public ResponseEntity getUserGifts() {
-        return new ResponseEntity<>(giftService.findAllByCurrentUser(), HttpStatus.CREATED);
+        return new ResponseEntity<>(giftService.findAllByCurrentUser(), HttpStatus.OK);
+    }
+
+    @RequestMapping("/user/{username}")
+    public ResponseEntity getUserGifts(@PathVariable String username) {
+        Account account = accountService.findByUsername(username);
+        if (account == null) {
+            return new ResponseEntity<>("Account not found", HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(giftService.findAllByUser(account.getId()), HttpStatus.OK);
     }
 }

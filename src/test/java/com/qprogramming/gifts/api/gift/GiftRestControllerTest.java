@@ -26,6 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 public class GiftRestControllerTest {
     public static final String API_GIFT_CREATE = "/api/gift/create";
+    public static final String API_GIFT_LIST = "/api/gift/user";
     private MockMvc giftsRestCtrl;
     @Mock
     private AccountService accSrvMock;
@@ -67,6 +68,12 @@ public class GiftRestControllerTest {
         object.put("link", "http://google.com");
         giftsRestCtrl.perform(post(API_GIFT_CREATE).contentType(TestUtil.APPLICATION_JSON_UTF8).content(object.toString()))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void getGiiftsAccountNotFound() throws Exception {
+        giftsRestCtrl.perform(post(API_GIFT_LIST + "notExisting"))
+                .andExpect(status().isNotFound());
     }
 
 

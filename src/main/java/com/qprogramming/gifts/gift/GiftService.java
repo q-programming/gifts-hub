@@ -31,4 +31,8 @@ public class GiftService {
     public List<Gift> findAllByCurrentUser() {
         return giftRepository.findByUserId(Utils.getCurrentAccount().getId());
     }
+
+    public List<Gift> findAllByUser(String id) {
+        return giftRepository.findByUserId(id);
+    }
 }

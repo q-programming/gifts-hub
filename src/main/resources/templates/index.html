@@ -45,12 +45,13 @@
     </div>
 </nav>
 <div class="container-fluid">
+    <!--ALERTS-->
     <div class="row">
         <div class="col-sm-10 col-md-11 col-md-offset-1 col-sm-offset-2">
             <div ng-repeat="alert in alerts" ng-class="'alert alert-' + (alert.type || 'warning')">
                 <button type="button" class="close theme-close" ng-click="dismissAlert($index)">&times;</button>
-            <!--ng-show="message_success"-->
-                {{alert.msg}}
+                <!--ng-show="message_success"-->
+                <span ng-bind-html="alert.msg"></span>
             </div>
         </div>
     </div>
@@ -63,8 +64,8 @@
             <!--</div>-->
             <ul class="nav nav-sidebar hidden-print text" role="tablist">
                 <li ng-show="!authenticated" ng-class="{active:tab('navigation')}"><a href="#/login">login</a></li>
-                <li ng-show="authenticated" ng-class="{active:tab('add-gift')}" class="text-center side-menu">
-                    <a href="#/add-gift">
+                <li ng-show="authenticated" ng-class="{active:tab('userlist')}" class="text-center side-menu">
+                    <a href="#/users">
                         <span>
                             <i class="fa fa-gift" aria-hidden="true"></i>
                             <i class="fa fa-2x fa-user" aria-hidden="true"></i>
@@ -72,17 +73,17 @@
                         </span>
                     </a>
                 </li>
-                <li ng-show="authenticated" ng-class="{active:tab('list')}" class="text-center">
+                <li ng-show="authenticated" ng-class="{active:tab('gift')}" class="text-center">
                     <a href="#/list">
                         <span>
                             <i class="fa fa-list" aria-hidden="true"></i>&nbsp;
                             <i class="fa fa-2x fa-gift" aria-hidden="true"></i>
-                            <p>My wish list</p>
+                            <p>Wish list</p>
                         </span>
                     </a>
                 </li>
 
-                <li ng-show="authenticated" class="text-center">
+                <li ng-show="authenticated" class="text-center" ng-class="{active:tab('settings')}">
                     <a href="#/settings">
                         <i class="fa fa-cog" aria-hidden="true"></i>&nbsp;Settings
                     </a>
@@ -107,11 +108,12 @@
 <script src="webjars/angularjs/1.6.1/angular-cookies.min.js"></script>
 <script src="webjars/angularjs/1.6.1/angular-route.min.js"></script>
 <script src="webjars/angularjs/1.6.1/angular-resource.min.js"></script>
-<script src="webjars/angularjs/1.6.1/angular-touch.min.js"></script>
+<script src="webjars/angularjs/1.6.1/angular-sanitize.min.js"></script>
 <!--APP JS-->
 <script src="js/app.js"></script>
 <script src="js/services/AvatarService.js"></script>
 <script src="js/services/AuthService.js"></script>
+<script src="js/services/AlertService.js"></script>
 <script src="js/controllers/home.js"></script>
 <script src="js/controllers/user.js"></script>
 <script src="js/controllers/list.js"></script>

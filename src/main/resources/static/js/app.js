@@ -1,4 +1,4 @@
-var app = angular.module('app', ['ngRoute', 'ngAnimate', 'AvatarService', 'AuthService']);
+var app = angular.module('app', ['ngRoute', 'ngAnimate', 'ngSanitize', 'AvatarService', 'AuthService', 'AlertService']);
 app.constant("MESSAGES", {
     SUCCESS: "success",
     ERROR: "danger",
@@ -18,9 +18,13 @@ app.config(function ($routeProvider, $httpProvider, $locationProvider, $logProvi
             templateUrl: 'register.html',
             controller: 'register'
         })
-        .when('/list', {
+        .when('/list/:username?', {
             templateUrl: 'list.html',
             controller: 'gift'
+        })
+        .when('/users', {
+            templateUrl: 'userlits.html',
+            controller: 'userlist'
         })
         .when('/settings', {
             templateUrl: 'settings.html',
@@ -58,26 +62,4 @@ app.directive('showErrors', function () {
 });
 app.run(function ($rootScope) {
     $rootScope.alerts = [];
-    $rootScope.addAlert = function (type, message) {
-        var alert = {};
-        var exists = false;
-        alert.type = type;
-        alert.msg = message;
-        angular.forEach($rootScope.alerts, function (value) {
-            if (value.msg = alert.msg) {
-                exists = true;
-                return false;
-            }
-        });
-        if (!exists) {
-            $rootScope.alerts.push(alert);
-        }
-    };
-    $rootScope.clearAlerts = function () {
-        $rootScope.alerts = [];
-    };
-
-    $rootScope.dismissAlert = function ($index) {
-        $rootScope.alerts.splice($index, 1)
-    }
 });

@@ -23,6 +23,7 @@ import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -120,5 +121,14 @@ public class AccountService implements UserDetailsService {
      */
     public Account update(Account account) {
         return accountRepository.save(account);
+    }
+
+    public Account findByUsername(String username) {
+        return accountRepository.findOneByUsername(username);
+
+    }
+
+    public List<Account> findAll() {
+        return accountRepository.findAll();
     }
 }
