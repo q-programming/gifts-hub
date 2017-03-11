@@ -1,4 +1,4 @@
-app.controller('navigation', function ($scope, $rootScope, $http, $location, $route, AvatarService, AuthService) {
+app.controller('navigation', function ($scope, $rootScope, $http, $location, $route, AvatarService, AuthService, MESSAGES) {
     $scope.tab = function (route) {
         return $route.current && route === $route.current.controller;
     };
@@ -10,10 +10,10 @@ app.controller('navigation', function ($scope, $rootScope, $http, $location, $ro
         AuthService.authenticate($scope.credentials, function () {
             if ($rootScope.authenticated) {
                 $location.path("/");
-                $scope.error = false;
+                $rootScope.clearAlerts();
             } else {
                 $location.path("/login");
-                $scope.error = true;
+                $rootScope.addAlert(MESSAGES.ERROR, 'There was a problem logging in. Please try again.');
             }
         });
     };
@@ -31,12 +31,8 @@ app.controller('navigation', function ($scope, $rootScope, $http, $location, $ro
     };
 });
 
-app.controller('register', function ($scope, $rootScope, $http) {
+app.controller('register', function ($scope, $rootScope, $http, MESSAGES) {
     $scope.formData = {};
-    $scope.success = null;
-    $scope.doNotMatch = null;
-    $scope.error = null;
-    $scope.errorUserExists = null;
 
     $scope.register = function () {
         $scope.showErrorsCheckValidity = true;
@@ -45,16 +41,16 @@ app.controller('register', function ($scope, $rootScope, $http) {
         }
         $http.post('api/user/register', $scope.formData).then(
             function () {
-                $scope.success = true;
+                $rootScope.addAlert(MESSAGES.SUCCESS, '<strong>Successfully registered.</strong> Please check your email for confirmation.');
             }).catch(function (response) {
-            $scope.success = null;
-            if (response.status === 400 && response.data === 'login already in use') {
-                $scope.errorUserExists = 'ERROR';
-            } else if (response.status === 400 && response.data === 'e-mail address already in use') {
-                $scope.errorEmailExists = 'ERROR';
-            } else {
-                $scope.error = 'ERROR';
-            }
+            $rootScope.addAlert(MESSAGES.ERROR, 'There was a problem registering. Please try again.');
+            // if (response.status === 400 && response.data === 'login already in use') {
+            //     $scope.errorUserExists = 'ERROR';
+            // } else if (response.status === 400 && response.data === 'e-mail address already in use') {
+            //     $scope.errorEmailExists = 'ERROR';
+            // } else {
+            //     $scope.error = 'ERROR';
+            // }
         });
     };
 

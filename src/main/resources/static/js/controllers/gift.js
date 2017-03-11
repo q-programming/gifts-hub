@@ -1,4 +1,4 @@
-app.controller('gift', function ($rootScope, $scope, $http, $log) {
+app.controller('gift', function ($rootScope, $scope, $http, $log, MESSAGES) {
     $scope.giftForm = {};
     $scope.giftsList = [];
     $scope.error = null;
@@ -21,12 +21,11 @@ app.controller('gift', function ($rootScope, $scope, $http, $log) {
         $scope.showAddNew = true;
         $http.post('api/gift/create', $scope.giftForm).then(
             function (response) {
-                $scope.success_added = true;
+                $rootScope.addAlert(MESSAGES.SUCCESS, "New gift added to Your wish list");
                 $scope.giftsList.push(response.data);
                 $scope.reset();
             }).catch(function (response) {
-            $scope.success_added = null;
-            $scope.error = 'ERROR';
+            $rootScope.addAlert(MESSAGES.ERROR, "Something went wrong");
         });
     };
 
@@ -39,7 +38,7 @@ app.controller('gift', function ($rootScope, $scope, $http, $log) {
                     $scope.giftsList.push(value);
                 });
             }).catch(function (response) {
-            $scope.error = 'ERROR';
+            $rootScope.addAlert(MESSAGES.ERROR, "Something went wrong");
         });
     }
 });

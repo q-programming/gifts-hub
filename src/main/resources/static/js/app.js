@@ -1,4 +1,9 @@
 var app = angular.module('app', ['ngRoute', 'ngAnimate', 'AvatarService', 'AuthService']);
+app.constant("MESSAGES", {
+    SUCCESS: "success",
+    ERROR: "danger",
+    WARNING: "warning"
+});
 app.config(function ($routeProvider, $httpProvider, $locationProvider, $logProvider) {
     $routeProvider
         .when('/', {
@@ -49,5 +54,30 @@ app.directive('showErrors', function () {
                 el.toggleClass('has-error', formCtrl[inputName].$invalid);
             });
         }
+    }
+});
+app.run(function ($rootScope) {
+    $rootScope.alerts = [];
+    $rootScope.addAlert = function (type, message) {
+        var alert = {};
+        var exists = false;
+        alert.type = type;
+        alert.msg = message;
+        angular.forEach($rootScope.alerts, function (value) {
+            if (value.msg = alert.msg) {
+                exists = true;
+                return false;
+            }
+        });
+        if (!exists) {
+            $rootScope.alerts.push(alert);
+        }
+    };
+    $rootScope.clearAlerts = function () {
+        $rootScope.alerts = [];
+    };
+
+    $rootScope.dismissAlert = function ($index) {
+        $rootScope.alerts.splice($index, 1)
     }
 });

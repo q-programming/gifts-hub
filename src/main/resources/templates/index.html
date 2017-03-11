@@ -46,6 +46,15 @@
 </nav>
 <div class="container-fluid">
     <div class="row">
+        <div class="col-sm-10 col-md-11 col-md-offset-1 col-sm-offset-2">
+            <div ng-repeat="alert in alerts" ng-class="'alert alert-' + (alert.type || 'warning')">
+                <button type="button" class="close theme-close" ng-click="dismissAlert($index)">&times;</button>
+            <!--ng-show="message_success"-->
+                {{alert.msg}}
+            </div>
+        </div>
+    </div>
+    <div class="row">
         <!--SIDEBAR-->
         <div class="col-sm-2 col-md-1 sidebar" id="sidebar-div">
             <!--<div class="brand text-center">-->
@@ -91,12 +100,14 @@
             </div>
         </div>
     </div>
+
 </div>
 <script src="webjars/angularjs/1.6.1/angular.min.js"></script>
 <script src="webjars/angularjs/1.6.1/angular-animate.min.js"></script>
 <script src="webjars/angularjs/1.6.1/angular-cookies.min.js"></script>
 <script src="webjars/angularjs/1.6.1/angular-route.min.js"></script>
 <script src="webjars/angularjs/1.6.1/angular-resource.min.js"></script>
+<script src="webjars/angularjs/1.6.1/angular-touch.min.js"></script>
 <!--APP JS-->
 <script src="js/app.js"></script>
 <script src="js/services/AvatarService.js"></script>
