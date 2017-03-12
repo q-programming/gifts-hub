@@ -19,7 +19,7 @@ public class Account implements Serializable, UserDetails {
 
     @Id
     private String id;
-    @Column(unique = true)
+    @Column
     private String email;
     @JsonIgnore
     private String password;
@@ -37,7 +37,11 @@ public class Account implements Serializable, UserDetails {
     @Enumerated(EnumType.STRING)
     private Roles role;
 
+    @Column
     private Date created;
+
+    @Enumerated(EnumType.STRING)
+    private AccountType type;
 
     public Account() {
         this.created = new Date();
@@ -144,6 +148,18 @@ public class Account implements Serializable, UserDetails {
     public void setUsername(String username) {
         this.username = username;
     }
+
+    public AccountType getType() {
+        return type;
+    }
+
+    public void setType(AccountType type) {
+        this.type = type;
+    }
+    public String getFullname() {
+        return getName() + " " + getSurname();
+    }
+
 
     @Override
     @JsonIgnore

@@ -16,7 +16,6 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.io.IOException;
 import java.security.Principal;
 import java.util.Map;
 
@@ -37,12 +36,7 @@ public class UserRestController {
         //TODO validation
         Account newAccount = userform.createAccount();
         newAccount = accountService.create(newAccount);
-        try {
-            accountService.createAvatar(newAccount);
-        } catch (IOException e) {
-            LOG.error(e.getLocalizedMessage());
-            return ResponseEntity.badRequest().body("Failed to read default avatar file");
-        }
+        accountService.createAvatar(newAccount);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 

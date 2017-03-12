@@ -21,8 +21,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -34,7 +39,7 @@ import java.util.UUID;
 @Service
 @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class AccountService implements UserDetailsService {
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
+    private final Logger LOG = LoggerFactory.getLogger(this.getClass());
 
     private AccountRepository accountRepository;
     private PasswordEncoder passwordEncoder;
@@ -54,15 +59,20 @@ public class AccountService implements UserDetailsService {
 
     @Transactional
     public Account create(Account account) {
+        generateID(account);
+        account.setPassword(passwordEncoder.encode(account.getPassword()));
+        account.setRole(Roles.ROLE_USER);
+        account.setType(AccountType.LOCAL);
+        accountRepository.save(account);
+        return account;
+    }
+
+    private void generateID(Account account) {
         String uuid = UUID.randomUUID().toString();
         while (accountRepository.findOneById(uuid) != null) {
             uuid = UUID.randomUUID().toString();
         }
         account.setId(uuid);
-        account.setPassword(passwordEncoder.encode(account.getPassword()));
-        account.setRole(Roles.ROLE_USER);
-        accountRepository.save(account);
-        return account;
     }
 
     @Override
@@ -104,15 +114,60 @@ public class AccountService implements UserDetailsService {
         return avatarRepository.findOneById(account.getId());
     }
 
-    public Avatar createAvatar(Account account) throws IOException {
+    public Avatar createAvatar(Account account) {
         ClassLoader loader = this.getClass().getClassLoader();
-        InputStream avatarFile = loader.getResourceAsStream("static/images/logo-white.png");
-        byte[] imgBytes = IOUtils.toByteArray(avatarFile);
+        byte[] imgBytes = new byte[0];
+        try (InputStream avatarFile = loader.getResourceAsStream("static/images/logo-white.png")) {
+            imgBytes = IOUtils.toByteArray(avatarFile);
+            return avatarRepository.save(createAvatar(account, imgBytes));
+        } catch (IOException e) {
+            LOG.error("Failed to get avatar from resources");
+        }
+        return null;
+    }
+
+    public Avatar createAvatar(Account account, String url) throws MalformedURLException {
+        byte[] bytes = downloadFromUrl(new URL(url));
+        return createAvatar(account, bytes);
+    }
+
+
+    /**
+     * Creates avatar from bytes
+     *
+     * @param account
+     * @param bytes
+     * @return
+     * @throws IOException
+     */
+    public Avatar createAvatar(Account account, byte[] bytes) {
         Avatar avatar = new Avatar();
         avatar.setId(account.getId());
-        avatar.setImage(imgBytes);
-        avatar.setType(MediaType.IMAGE_PNG_VALUE);
+        avatar.setImage(bytes);
+        String type;
+        try {
+            type = URLConnection.guessContentTypeFromStream(new ByteArrayInputStream(bytes));
+        } catch (IOException e) {
+            LOG.error("Failed to determine type from bytes, presuming jpg");
+            type = MediaType.IMAGE_JPEG_VALUE;
+        }
+        avatar.setType(type);
         return avatarRepository.save(avatar);
+    }
+
+    private byte[] downloadFromUrl(URL url) {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        try (InputStream stream = url.openStream()) {
+            byte[] chunk = new byte[4096];
+            int bytesRead;
+            while ((bytesRead = stream.read(chunk)) > 0) {
+                outputStream.write(chunk, 0, bytesRead);
+            }
+        } catch (IOException e) {
+            LOG.error("Failed to download from URL ");
+            return null;
+        }
+        return outputStream.toByteArray();
     }
 
     /**

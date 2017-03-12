@@ -99,13 +99,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Bean
     @ConfigurationProperties("facebook")
-    public ClientResources facebook() {
+    public ClientResources facebookResource() {
         return new ClientResources();
     }
 
     @Bean
     @ConfigurationProperties("google")
-    public ClientResources google() {
+    public ClientResources googleResource() {
         return new ClientResources();
     }
 
@@ -117,8 +117,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private Filter ssoFilter() {
         CompositeFilter filter = new CompositeFilter();
         List<Filter> filters = new ArrayList<>();
-        filters.add(ssoFilter(facebook(), "/login/facebook"));
-        filters.add(ssoFilter(google(), "/login/google"));
+        filters.add(ssoFilter(facebookResource(), "/login/facebook"));
+        filters.add(ssoFilter(googleResource(), "/login/google"));
         filter.setFilters(filters);
         return filter;
     }

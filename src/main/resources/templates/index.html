@@ -34,7 +34,7 @@
         <div id="navbar" class="navbar-collapse collapse">
             <ul ng-if="authenticated" class="nav navbar-nav navbar-right hidden-xs">
                 <li>
-                    <a href="#/settings" class="white nav-username">{{principal.name}}</a>
+                    <a href="#/settings" class="white nav-username">{{principal.fullname}}</a>
                 </li>
                 <li class="nav-avatar">
                     <img ng-if="principal.avatar" ng-src="{{principal.avatar}}" class="avatar"/>
