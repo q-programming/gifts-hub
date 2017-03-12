@@ -2,6 +2,8 @@
     <h1>User list</h1>
     <table class="table animate">
         <tr ng-repeat="user in users">
+            <td><img ng-if="user.avatar" ng-src="{{user.avatar}}" class="avatar"/>
+                <img ng-if="!user.avatar" src='images/avatar-placeholder.png' class="avatar"/></td>
             <td><a ng-href="#/list/{{user.username}}">{{user.username}}</a></td>
             <td>{{user.name}}</td>
             <td>{{user.surname}}</td>

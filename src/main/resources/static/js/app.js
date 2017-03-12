@@ -1,10 +1,10 @@
-var app = angular.module('app', ['ngRoute', 'ngAnimate', 'ngSanitize', 'AvatarService', 'AuthService', 'AlertService']);
+var app = angular.module('app', ['ngRoute', 'ngAnimate', 'ngSanitize', 'LocalStorageModule', 'AvatarService', 'AuthService', 'AlertService']);
 app.constant("MESSAGES", {
     SUCCESS: "success",
     ERROR: "danger",
     WARNING: "warning"
 });
-app.config(function ($routeProvider, $httpProvider, $locationProvider, $logProvider) {
+app.config(function ($routeProvider, $httpProvider, $locationProvider, $logProvider, localStorageServiceProvider) {
     $routeProvider
         .when('/', {
             templateUrl: 'home.html',
@@ -34,6 +34,9 @@ app.config(function ($routeProvider, $httpProvider, $locationProvider, $logProvi
     $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
     $locationProvider.hashPrefix('');
     $logProvider.debugEnabled(true);
+    localStorageServiceProvider
+        .setStorageType('sessionStorage')
+        .setPrefix('gifts-hub');
 });
 app.factory('avatarCache', function ($cacheFactory) {
     return $cacheFactory('avatarCache');

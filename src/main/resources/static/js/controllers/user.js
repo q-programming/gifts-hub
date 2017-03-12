@@ -22,6 +22,7 @@ app.controller('navigation', function ($scope, $rootScope, $http, $location, $ro
     $scope.logout = function () {
         $http.post('/logout', {}).then(
             function successCallback() {
+                AvatarService.clearCache();
                 $rootScope.authenticated = false;
                 $location.path("/");
             },
@@ -63,7 +64,7 @@ app.controller('register', function ($scope, $rootScope, $http, AlertService) {
     }
 });
 
-app.controller('userlist', function ($scope, $rootScope, $http, $log, AlertService) {
+app.controller('userlist', function ($scope, $rootScope, $http, $log, AlertService, AvatarService) {
     $scope.users = [];
     if ($rootScope.authenticated) {
         $http.get('api/user/users').then(
@@ -72,6 +73,7 @@ app.controller('userlist', function ($scope, $rootScope, $http, $log, AlertServi
                 $log.debug("[DEBUG] Loaded users");
                 angular.forEach(response.data, function (value) {
                     var user = value;
+                    AvatarService.getUserAvatar(user);
                     //TODO get avatars
                     $scope.users.push(user);
                 });
