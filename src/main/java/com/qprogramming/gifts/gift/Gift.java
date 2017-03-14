@@ -9,6 +9,10 @@ import java.util.Date;
 @Entity
 public class Gift {
 
+    public static final String NAME = "name";
+    public static final String LINK = "link";
+    public static final String CATEGORY = "category";
+    public static final String DESCRIPTION = "description";
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "gift_seq_gen")
     @SequenceGenerator(name = "gift_seq_gen", sequenceName = "gift_id_seq", allocationSize = 1)
@@ -16,6 +20,9 @@ public class Gift {
 
     @Column(columnDefinition = "text")
     private String name;
+
+    @Column(columnDefinition = "text")
+    private String description;
 
     @Column(columnDefinition = "text")
     private String link;
@@ -78,6 +85,14 @@ public class Gift {
 
     public void setStatus(GiftStatus status) {
         this.status = status;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     @Override

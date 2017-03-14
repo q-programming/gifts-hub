@@ -10,5 +10,5 @@ import java.util.List;
 public interface GiftRepository extends JpaRepository<Gift, Long> {
 
     Gift findOne(Long aLong);
-    List<Gift> findByUserId(String id);
+    List<Gift> findByUserIdOrderByCreatedDesc(String id);
 }

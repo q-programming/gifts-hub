@@ -53,9 +53,10 @@ public class GiftRestControllerTest {
     @Test
     public void createGiftSuccess() throws Exception {
         JSONObject object = new JSONObject();
-        object.put("name", "Gift");
-        object.put("category", "Some Category");
-        object.put("link", "http://google.com");
+        object.put(Gift.NAME, "Gift");
+        object.put(Gift.DESCRIPTION, "Some sample description");
+        object.put(Gift.CATEGORY, "Some Category");
+        object.put(Gift.LINK, "http://google.com");
         giftsRestCtrl.perform(post(API_GIFT_CREATE).contentType(TestUtil.APPLICATION_JSON_UTF8).content(object.toString()))
                 .andExpect(status().isCreated());
         verify(giftServiceMock, times(1)).create(any(Gift.class));
@@ -64,8 +65,8 @@ public class GiftRestControllerTest {
     @Test
     public void createGiftEmptyName() throws Exception {
         JSONObject object = new JSONObject();
-        object.put("category", "new");
-        object.put("link", "http://google.com");
+        object.put(Gift.CATEGORY, "new");
+        object.put(Gift.LINK, "http://google.com");
         giftsRestCtrl.perform(post(API_GIFT_CREATE).contentType(TestUtil.APPLICATION_JSON_UTF8).content(object.toString()))
                 .andExpect(status().isBadRequest());
     }

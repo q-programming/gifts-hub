@@ -144,3 +144,23 @@ img.center {
 .alert.ng-leave.ng-leave-active ~ .alert {
     transform: translateY(-100%);
 }
+
+/*GIFTS*/
+.gift-status{
+    font-size: xx-small;
+}
+.gift-status.new-gift {
+    color: green;
+}
+
+.gift-status.claimed-gift {
+    color: orange;
+}
+
+.gift-status.realised-gift {
+    color: gray;
+}
+
+.fa-spacer {
+    margin-right: 9px;
+}

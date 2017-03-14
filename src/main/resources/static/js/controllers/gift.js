@@ -14,9 +14,46 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
     $scope.show = function () {
         $scope.showAddNew = true;
     };
-    $scope.showAlert = function () {
-        AlertService.addSuccess("test!");
+
+    $scope.getSearchGiftLink = function (gift) {
+        var serachEngine = "http://www.google.com/search?q=";
+        return serachEngine + gift.name;
     };
+    $scope.getGiftDate = function (gift) {
+        var date = new Date(gift.created);
+        var dateString = ('0' + date.getDate()).slice(-2) + '-' + ('0' + (date.getMonth() + 1)).slice(-2) + '-' + date.getFullYear() + ' ' + date.getHours() + ':' + date.getMinutes();
+        return dateString;
+    };
+
+    $scope.getGiftStatus = function (gift) {
+        var newGift = '<span class="gift-status new-gift" data-toggle="tooltip" data-placement="top" title="New">' +
+            '<i class="fa fa-fw fa-certificate" aria-hidden="true"></i>' +
+            '<i class="fa fa-fw fa-2x fa-gift" aria-hidden="true"></i>' +
+            '</span>';
+        var claimedGift = '<span class="gift-status claimed-gift" data-toggle="tooltip" data-placement="top" title="New">' +
+            '<i class="fa fa-fw fa-exclamation" aria-hidden="true"></i>' +
+            '<i class="fa fa-fw fa-2x fa-gift" aria-hidden="true"></i>' +
+            '</span>';
+        var realisedGift = '<span class="gift-status realised-gift" data-toggle="tooltip" data-placement="top" title="New">' +
+            '<i class="fa fa-fw fa-check" aria-hidden="true"></i>' +
+            '<i class="fa fa-fw fa-2x fa-gift" aria-hidden="true"></i>' +
+            '</span>';
+        var other = '<span class="gift-status" data-toggle="tooltip" data-placement="top" title="New">' +
+            '<i class="fa-spacer">&nbsp;</i>' +
+            '<i class="fa fa-fw fa-2x fa-gift" aria-hidden="true"></i>' +
+            '</span>';
+
+        if (gift.status === 'NEW') {
+            return newGift;
+        } else if (gift.status === 'CLAIMED' && gift.userId !== $rootScope.principal.id) {
+            return claimedGift;
+        } else if (gift.status === 'REALISED') {
+            return realisedGift;
+        } else {
+            return other;
+        }
+    };
+
 
     $scope.reset = function () {
         $scope.giftForm = {};
@@ -34,6 +71,7 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
             AlertService.addError("Something went wrong");
         });
     };
+
 
     function getGiftList(username) {
         var url;

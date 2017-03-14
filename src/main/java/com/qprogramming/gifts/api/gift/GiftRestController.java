@@ -22,7 +22,6 @@ public class GiftRestController {
 
     private AccountService accountService;
     private GiftService giftService;
-    private Class<Gift> giftClass;
 
     @Autowired
     public GiftRestController(AccountService accountService, GiftService giftService) {
@@ -33,14 +32,16 @@ public class GiftRestController {
     @RequestMapping("/create")
     public ResponseEntity createGift(@RequestBody String giftString) {
         JSONObject giftObj = new JSONObject(giftString);
-        Gift newGift = new Gift();
-        newGift.setName(giftObj.getString("name"));
-        if (giftObj.has("link")) {
-            newGift.setLink(giftObj.getString("link"));
+        if(!giftObj.has(Gift.NAME)){
+            return new ResponseEntity<>("Name field is required",HttpStatus.BAD_REQUEST);
         }
+        Gift newGift = new Gift();
+        newGift.setName(giftObj.getString(Gift.NAME));
+        newGift.setDescription(getIfExists(giftObj, Gift.DESCRIPTION));
+        newGift.setLink(getIfExists(giftObj, Gift.LINK));
         //TODO add category later on
-        if (giftObj.has("category")) {
-            giftObj.getString("category");
+        if (giftObj.has(Gift.CATEGORY)) {
+            giftObj.getString(Gift.CATEGORY);
         }
         Gift gift = giftService.create(newGift);
         return new ResponseEntity<>(gift, HttpStatus.CREATED);
@@ -58,5 +59,9 @@ public class GiftRestController {
             return new ResponseEntity<>("Account not found", HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(giftService.findAllByUser(account.getId()), HttpStatus.OK);
+    }
+
+    private String getIfExists(JSONObject jsonObject, String key) {
+        return jsonObject.has(key) ? jsonObject.getString(key) : null;
     }
 }
