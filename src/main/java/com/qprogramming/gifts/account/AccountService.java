@@ -116,7 +116,7 @@ public class AccountService implements UserDetailsService {
 
     public Avatar createAvatar(Account account) {
         ClassLoader loader = this.getClass().getClassLoader();
-        byte[] imgBytes = new byte[0];
+        byte[] imgBytes;
         try (InputStream avatarFile = loader.getResourceAsStream("static/images/logo-white.png")) {
             imgBytes = IOUtils.toByteArray(avatarFile);
             return avatarRepository.save(createAvatar(account, imgBytes));

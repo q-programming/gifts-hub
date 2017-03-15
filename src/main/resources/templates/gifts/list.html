@@ -32,17 +32,16 @@
     </button>
     <div class="row" ng-repeat="gift in giftsList">
         <!--STATUS-->
-        <div class="col-md-1 text-center" ng-bind-html="getGiftStatus(gift)">
-        </div>
-        <div class="col-md-3">{{gift.name}}</div>
-        <div class="col-md-3">{{gift.description}}</div>
-        <div class="col-md-3">
+        <!--<div class="col-sm-1 text-center" ng-bind-html="getGiftStatus(gift)">-->
+        <!--</div>-->
+        <div class="col-xs-12 col-sm-3"><span ng-bind-html="getGiftStatus(gift)"></span><strong>{{gift.name}}</strong></div>
+        <div class="col-xs-12 col-sm-3">{{gift.description}}</div>
+        <div class="col-xs-6 col-sm-3">
             <a ng-if="gift.link" ng-href="{{gift.link}}">{{ gift.name }}</a>
             <a class="pull-right" ng-href="{{getSearchGiftLink(gift)}}" target="_blank"><i class="fa fa-google" aria-hidden="true"
                                                                   title="Search with google"></i></a>
-
         </div>
-        <div class="col-md-2">{{ getGiftDate(gift) }}</div>
+        <div class="col-xs-6 col-md-2">{{ getGiftDate(gift) }}</div>
     </div>
     <!--<table class="table animate">-->
     <!--<tr ng-repeat="gift in giftsList">-->

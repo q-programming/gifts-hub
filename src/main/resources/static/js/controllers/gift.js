@@ -64,9 +64,9 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
         $scope.showAddNew = true;
         $http.post('api/gift/create', $scope.giftForm).then(
             function (response) {
-                AlertService.addSuccess("New gift added to Your wish list");
-                $scope.giftsList.push(response.data);
+                $scope.giftsList.unshift(response.data);
                 $scope.reset();
+                AlertService.addSuccess("New gift added to Your wish list");
             }).catch(function (response) {
             AlertService.addError("Something went wrong");
         });
