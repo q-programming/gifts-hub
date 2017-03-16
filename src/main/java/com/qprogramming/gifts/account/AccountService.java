@@ -182,7 +182,10 @@ public class AccountService implements UserDetailsService {
 
     public Account findByUsername(String username) {
         return accountRepository.findOneByUsername(username);
+    }
 
+    public Account findByEmail(String email) {
+        return accountRepository.findOneByEmail(email);
     }
 
     public List<Account> findAll() {

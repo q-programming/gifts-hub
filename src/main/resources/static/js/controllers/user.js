@@ -36,15 +36,42 @@ app.controller('register', function ($scope, $rootScope, $http, AlertService) {
     $scope.formData = {};
     $scope.success = false;
 
+    $scope.passwordStrength = function () {
+        var strRegexp = [/[0-9]/, /[a-z]/, /[A-Z]/, /[^A-Z-0-9]/i];
+        var pass = $scope.formData.password;
+        var confirmPass = $scope.formData.confirmpassword;
+        if (!pass) {
+            return -1;
+        }
+        var s = 0;
+        if (pass.length < 8)
+            return 0;
+        for (var i in strRegexp) {
+            if (strRegexp[i].test(pass)) {
+                s++;
+            }
+        }
+        return s;
+
+    };
+
     $scope.register = function () {
         $scope.showErrorsCheckValidity = true;
-        if ($scope.formData.$invalid) {
+        //call all checks once more
+        $scope.checkEmail();
+        $scope.checkPasswords();
+        $scope.checkUsername();
+        if ($scope.userForm.$invalid) {
             return;
         }
         $http.post('api/user/register', $scope.formData).then(
-            function () {
-                AlertService.addSuccess('<strong>Successfully registered.</strong> Please check your email for confirmation.');
-                $scope.success = true;
+            function (response) {
+                if (response.data.body.code === 'ERROR') {
+                    AlertService.addError("Unable to register user : " + response.data.body.message);
+                } else {
+                    AlertService.addSuccess('<strong>Successfully registered.</strong> Please check your email for confirmation.');
+                    $scope.success = true;
+                }
             }).catch(function (response) {
             AlertService.addError('There was a problem registering. Please try again.');
             // if (response.status === 400 && response.data === 'login already in use') {
@@ -55,6 +82,38 @@ app.controller('register', function ($scope, $rootScope, $http, AlertService) {
             //     $scope.error = 'ERROR';
             // }
         });
+    };
+
+    $scope.checkEmail = function () {
+        $http.post('api/user/validate-email', $scope.formData.email).then(
+            function (response) {
+                if (response.data.body.code === 'ERROR') {
+                    $scope.userForm.email.$setValidity("exists", false);
+                } else {
+                    $scope.userForm.email.$setValidity("exists", true);
+                }
+            }).catch(function (response) {
+            AlertService.addError("Something went wrong: " + response.data);
+        });
+    };
+    $scope.checkUsername = function () {
+        $http.post('api/user/validate-username', $scope.formData.username).then(
+            function (response) {
+                if (response.data.body.code === 'ERROR') {
+                    $scope.userForm.username.$setValidity("exists", false);
+                } else {
+                    $scope.userForm.username.$setValidity("exists", true);
+                }
+            }).catch(function (response) {
+            AlertService.addError("Something went wrong: " + response.data);
+        });
+    };
+    $scope.checkPasswords = function () {
+        if ($scope.formData.password !== $scope.formData.confirmpassword) {
+            $scope.userForm.confirmpassword.$setValidity("passDontMatch", false);
+        } else {
+            $scope.userForm.confirmpassword.$setValidity("passDontMatch", true);
+        }
     };
 
     $scope.createUsername = function () {

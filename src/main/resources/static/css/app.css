@@ -146,9 +146,10 @@ img.center {
 }
 
 /*GIFTS*/
-.gift-status{
+.gift-status {
     font-size: xx-small;
 }
+
 .gift-status.new-gift {
     color: green;
 }
@@ -163,4 +164,8 @@ img.center {
 
 .fa-spacer {
     margin-right: 9px;
+}
+
+.validation-error {
+    color: darkred;
 }

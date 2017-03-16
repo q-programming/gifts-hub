@@ -3,6 +3,7 @@ package com.qprogramming.gifts.api.user;
 import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.account.RegisterForm;
+import com.qprogramming.gifts.support.ResultData;
 import com.qprogramming.gifts.support.Utils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
@@ -18,11 +19,15 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/api/user")
 public class UserRestController {
 
+    public static final String EXISTS = "exists";
+    public static final String PASSWORD_REGEXP = "^^(?=.*[A-Z])(?=.*[0-9])(?=.*[a-z].*[a-z].*[a-z]).{8,}$";
     private static final Logger LOG = LoggerFactory.getLogger(UserRestController.class);
     private AccountService accountService;
 
@@ -33,7 +38,20 @@ public class UserRestController {
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     public ResponseEntity register(@Valid @RequestBody RegisterForm userform) {
-        //TODO validation
+        if (accountService.findByEmail(userform.getEmail()) != null) {
+            return new ResultData.ResultBuilder().error().message("User already existst").build();
+        }
+        if (accountService.findByUsername(userform.getUsername()) != null) {
+            return new ResultData.ResultBuilder().error().message("User already existst").build();
+        }
+        if (!userform.getPassword().equals(userform.getConfirmpassword())) {
+            return new ResultData.ResultBuilder().error().message("Passwords don't match").build();
+        }
+        Pattern pattern = Pattern.compile(PASSWORD_REGEXP);
+        Matcher matcher = pattern.matcher(userform.getPassword());
+        if (!matcher.matches()) {
+            return new ResultData.ResultBuilder().error().message("Passwords too weak").build();
+        }
         Account newAccount = userform.createAccount();
         newAccount = accountService.create(newAccount);
         accountService.createAvatar(newAccount);
@@ -54,9 +72,22 @@ public class UserRestController {
         return ResponseEntity.ok(accountService.findAll());
     }
 
-    @RequestMapping(value = "/validate-email", method = RequestMethod.GET)
-    public ResponseEntity validateEmail(@RequestParam String email) {
-        return new ResponseEntity<>(HttpStatus.OK);
+    @RequestMapping(value = "/validate-email", method = RequestMethod.POST)
+    public ResponseEntity validateEmail(@RequestBody String email) {
+        Account acc = accountService.findByEmail(email);
+        if (acc == null) {
+            return ResponseEntity.ok(new ResultData.ResultBuilder().ok().build());
+        }
+        return ResponseEntity.ok(new ResultData.ResultBuilder().error().message("User exists").build());
+    }
+
+    @RequestMapping(value = "/validate-username", method = RequestMethod.POST)
+    public ResponseEntity validateUsername(@RequestBody String username) {
+        Account acc = accountService.findByUsername(username);
+        if (acc == null) {
+            return ResponseEntity.ok(new ResultData.ResultBuilder().ok().build());
+        }
+        return ResponseEntity.ok(new ResultData.ResultBuilder().error().message("User exists").build());
     }
 
 
@@ -87,15 +118,6 @@ public class UserRestController {
                 account.setId(details.get("sub"));
             }
             account.setEmail(details.get("email"));
-            //TODO save picture to DB , refresh once a week
-//            account.setAvatar(details.get("picture"));
-//            if facebook data not recived
-//            if (acc.getAvatar() == null) {
-//                FBGraph fbGraph = new FBGraph(((OAuth2AuthenticationDetails) ((OAuth2Authentication) user).getDetails()).getTokenValue());
-//                String graph = fbGraph.getFBGraph();
-//                Map<String, String> graphData = fbGraph.getGraphData(graph);
-//                acc.setEmail(graphData.get("email"));
-//            }
             return account;
         } else if (user != null && user instanceof UsernamePasswordAuthenticationToken) {
             return (Account) ((UsernamePasswordAuthenticationToken) user).getPrincipal();

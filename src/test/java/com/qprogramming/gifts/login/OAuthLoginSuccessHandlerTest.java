@@ -101,7 +101,7 @@ public class OAuthLoginSuccessHandlerTest {
         doReturn(facebookTemplateMock).when(handler).getFacebookTemplate(anyString());
         String[] fields = {OAuthLoginSuccessHandler.FB.ID, OAuthLoginSuccessHandler.EMAIL
                 , OAuthLoginSuccessHandler.FB.FIRST_NAME, OAuthLoginSuccessHandler.FB.LAST_NAME
-                , "fr"};
+                ,  OAuthLoginSuccessHandler.LOCALE};
         User fbUser = spy(new User(testAccount.getId(), testAccount.getFullname()
                 , testAccount.getName(), testAccount.getSurname()
                 , "Male", new Locale(testAccount.getLanguage())));
