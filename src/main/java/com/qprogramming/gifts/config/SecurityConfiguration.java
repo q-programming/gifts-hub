@@ -68,6 +68,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                             , "/register.html"
                             , "/api/user/"
                             , "/api/user/register"
+                            , "/api/messages"
                             , "/api/user/validate-email"
                             , "/api/user/validate-username").permitAll()
                     .anyRequest().authenticated()
@@ -78,7 +79,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .key("remember-me-key")
                 .and().addFilterBefore(new CsrfHeaderFilter(), CsrfFilter.class)
                     .csrf()
-                    .ignoringAntMatchers("/login", "/logout", "/api/user/*","/api/gift/*")
+                    .ignoringAntMatchers(
+                              "/login"
+                            , "/logout"
+                            , "/api/user/*"
+                            , "/api/gift/*"
+                            , "/api/messages")
                     .csrfTokenRepository(csrfTokenRepository())
                 .and().logout()
                     .logoutSuccessUrl("/").permitAll()

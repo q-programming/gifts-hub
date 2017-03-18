@@ -3,44 +3,45 @@
     <div class="animate" ng-show="showAddNew">
         <form role="form" name="newGift" ng-submit="create()">
             <div class="form-group" show-errors="">
-                <label for="name">Name:</label>
+                <label for="name" translate="gift.name"></label>
                 <input type="text" class="form-control" id="name" name="name" ng-model="giftForm.name"
                        required="required"/>
             </div>
             <div class="form-group" show-errors="">
-                <label for="description">Description:</label>
+                <label for="description" translate="gift.description"></label>
                 <textarea class="form-control" id="description" name="description" ng-model="giftForm.description">
                 </textarea>
             </div>
             <div class="form-group" show-errors="">
-                <label for="link">Link:</label>
+                <label for="link" translate="gift.link"></label>
                 <input type="url" class="form-control" id="link" name="link" ng-model="giftForm.link"/>
-                <span style="color:red" ng-show="newGift.link.$error.url">
-                    Wrong url format. Please remmeber to use full address including http://
+                <span class="validation-error" ng-show="newGift.link.$error.url" translate="gift.link.error">
                 </span>
             </div>
             <div class="form-group">
-                <label for="category">Category:</label>
+                <label for="category" translate="gift.category"></label>
                 <input type="text" class="form-control" id="category" name="category" ng-model="giftForm.category"/>
             </div>
-            <a href="" class="btn btn-default" ng-click="reset()">Cancel</a>
-            <button type="submit" class="btn btn-primary">Create</button>
+            <a href="" class="btn btn-default" ng-click="reset()" translate="main.cancel"></a>
+            <button type="submit" class="btn btn-primary" translate="main.create"></button>
         </form>
     </div>
     <button type="button" class="btn btn-success" ng-click="show()" ng-show="!showAddNew &amp;&amp; userList">
         <i class="fa fa-plus" aria-hidden="true"></i>
-        Add new
+        <span translate="gift.new.add"></span>
     </button>
     <div class="row" ng-repeat="gift in giftsList">
         <!--STATUS-->
         <!--<div class="col-sm-1 text-center" ng-bind-html="getGiftStatus(gift)">-->
         <!--</div>-->
-        <div class="col-xs-12 col-sm-3"><span ng-bind-html="getGiftStatus(gift)"></span><strong>{{gift.name}}</strong></div>
+        <div class="col-xs-12 col-sm-3"><span ng-bind-html="getGiftStatus(gift)"></span><strong>{{gift.name}}</strong>
+        </div>
         <div class="col-xs-12 col-sm-3">{{gift.description}}</div>
         <div class="col-xs-6 col-sm-3">
             <a ng-if="gift.link" ng-href="{{gift.link}}">{{ gift.name }}</a>
-            <a class="pull-right" ng-href="{{getSearchGiftLink(gift)}}" target="_blank"><i class="fa fa-google" aria-hidden="true"
-                                                                  title="Search with google"></i></a>
+            <a class="pull-right" ng-href="{{getSearchGiftLink(gift)}}" target="_blank"><i class="fa fa-google"
+                                                                                           aria-hidden="true"
+                                                                                           title="Search with google"></i></a>
         </div>
         <div class="col-xs-6 col-md-2">{{ getGiftDate(gift) }}</div>
     </div>

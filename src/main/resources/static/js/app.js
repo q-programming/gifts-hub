@@ -1,10 +1,10 @@
-var app = angular.module('app', ['ngRoute', 'ngAnimate', 'ngSanitize', 'LocalStorageModule', 'AvatarService', 'AuthService', 'AlertService']);
+var app = angular.module('app', ['ngRoute', 'ngAnimate', 'ngSanitize', 'LocalStorageModule', 'pascalprecht.translate', 'AvatarService', 'AuthService', 'AlertService']);
 app.constant("MESSAGES", {
     SUCCESS: "success",
     ERROR: "danger",
     WARNING: "warning"
 });
-app.config(function ($routeProvider, $httpProvider, $locationProvider, $logProvider, localStorageServiceProvider) {
+app.config(function ($routeProvider, $httpProvider, $locationProvider, $logProvider, localStorageServiceProvider, $translateProvider) {
     $routeProvider
         .when('/', {
             templateUrl: 'home.html',
@@ -37,6 +37,10 @@ app.config(function ($routeProvider, $httpProvider, $locationProvider, $logProvi
     localStorageServiceProvider
         .setStorageType('sessionStorage')
         .setPrefix('gifts-hub');
+    $translateProvider.useUrlLoader('/api/messages');
+    $translateProvider.useStorage('UrlLanguageStorage');
+    $translateProvider.preferredLanguage('pl');
+    $translateProvider.fallbackLanguage('pl');
 });
 app.factory('avatarCache', function ($cacheFactory) {
     return $cacheFactory('avatarCache');

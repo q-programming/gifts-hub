@@ -3,6 +3,7 @@ package com.qprogramming.gifts.api.user;
 import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.account.RegisterForm;
+import com.qprogramming.gifts.messages.MessagesService;
 import com.qprogramming.gifts.support.ResultData;
 import com.qprogramming.gifts.support.Utils;
 import org.apache.commons.lang3.StringUtils;
@@ -30,27 +31,31 @@ public class UserRestController {
     public static final String PASSWORD_REGEXP = "^^(?=.*[A-Z])(?=.*[0-9])(?=.*[a-z].*[a-z].*[a-z]).{8,}$";
     private static final Logger LOG = LoggerFactory.getLogger(UserRestController.class);
     private AccountService accountService;
+    private MessagesService msgSrv;
 
     @Autowired
-    public UserRestController(AccountService accountService) {
+    public UserRestController(AccountService accountService, MessagesService msgSrv) {
         this.accountService = accountService;
+        this.msgSrv = msgSrv;
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     public ResponseEntity register(@Valid @RequestBody RegisterForm userform) {
         if (accountService.findByEmail(userform.getEmail()) != null) {
-            return new ResultData.ResultBuilder().error().message("User already existst").build();
+            String message = msgSrv.getMessage("user.register.email.exists") + " " + msgSrv.getMessage("user.register.alreadyexists");
+            return new ResultData.ResultBuilder().error().message(message).build();
         }
         if (accountService.findByUsername(userform.getUsername()) != null) {
-            return new ResultData.ResultBuilder().error().message("User already existst").build();
+            String message = msgSrv.getMessage("user.register.username.exists") + " " + msgSrv.getMessage("user.register.alreadyexists");
+            return new ResultData.ResultBuilder().error().message(msgSrv.getMessage(message)).build();
         }
         if (!userform.getPassword().equals(userform.getConfirmpassword())) {
-            return new ResultData.ResultBuilder().error().message("Passwords don't match").build();
+            return new ResultData.ResultBuilder().error().message(msgSrv.getMessage("user.register.password.nomatch")).build();
         }
         Pattern pattern = Pattern.compile(PASSWORD_REGEXP);
         Matcher matcher = pattern.matcher(userform.getPassword());
         if (!matcher.matches()) {
-            return new ResultData.ResultBuilder().error().message("Passwords too weak").build();
+            return new ResultData.ResultBuilder().error().message(msgSrv.getMessage("user.register.password.tooweak")).build();
         }
         Account newAccount = userform.createAccount();
         newAccount = accountService.create(newAccount);

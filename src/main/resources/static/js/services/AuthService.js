@@ -1,5 +1,5 @@
 var AuthService = angular.module('AuthService', []);
-AuthService.factory('AuthService', function ($http, $log, avatarCache, $rootScope, AvatarService) {
+AuthService.factory('AuthService', function ($http, $log, avatarCache, $rootScope,$translate,$location, AvatarService) {
     var AuthService = {};
 
     AuthService.authenticate = function (credentials, callback) {
@@ -14,6 +14,8 @@ AuthService.factory('AuthService', function ($http, $log, avatarCache, $rootScop
                 if (data.id) {
                     $rootScope.authenticated = true;
                     $rootScope.principal = data;
+                    $translate.use($rootScope.principal.language);
+                    $location.search('lang', $rootScope.principal.language);
                     AvatarService.getUserAvatar($rootScope.principal);
                     $log.debug("[DEBUG] User logged in " + $rootScope.principal.id);
                 } else {

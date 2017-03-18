@@ -3,46 +3,46 @@
 </div>
 <form ng-show="!success" role="form" name="userForm" ng-submit="register()">
     <div class="form-group" show-errors="">
-        <label for="name">Name:</label>
+        <label for="name" translate="user.firstname"></label>
         <input type="text" class="form-control" id="name" name="name" ng-model="formData.name" required="required"/>
     </div>
     <div class="form-group" show-errors="">
-        <label for="surname">Surname:</label>
+        <label for="surname" translate="user.surname"></label>
         <input type="text" class="form-control" id="surname" name="surname" ng-model="formData.surname"
                required="required"/>
     </div>
     <div class="form-group" show-errors="">
-        <label for="email">Email:</label>
+        <label for="email" translate="user.email"></label>
         <input type="email" class="form-control" id="email" name="email" ng-model="formData.email" required="required"
-               ng-change="checkEmail();createUsername()" ng-model-options="{ debounce: 1000 }"/>
-        <span class="validation-error" ng-show="userForm.email.$error.email">
-            Not valid email!
+               ng-change="checkEmail();createUsername()" ng-model-options="{ debounce: 500 }"/>
+        <span class="validation-error" ng-show="userForm.email.$error.email" translate="user.register.email.invalid">
         </span>
         <span class="validation-error" ng-show="userForm.email.$error.exists">
-            User with email <strong>{{formData.email}}</strong> already exists. Please use different.
+            <span translate="user.register.email.exists"></span>&nbsp;<strong>{{formData.email}}</strong>&nbsp;<span
+                translate="user.register.alreadyexists"></span>
         </span>
     </div>
     <div class="form-group" show-errors="">
-        <label for="username">Username:</label>
+        <label for="username" translate="user.username"></label>
         <input type="text" class="form-control" id="username" name="username" ng-model="formData.username"
                ng-change="checkUsername()" required="required" ng-model-options="{ debounce: 1000 }"/>
         <span class="validation-error" ng-show="userForm.username.$error.exists">
-            User with username <strong>{{formData.username}}</strong> already exists. Please use different.
+            <span translate="user.register.username.exists"></span>&nbsp;<strong>{{formData.username}}</strong>&nbsp;<span
+                translate="user.register.alreadyexists"></span>
         </span>
     </div>
     <div class="form-group" show-errors="">
-        <label for="password">Password:</label>
+        <label for="password" translate="user.password"></label>
         <input type="password" class="form-control" id="password" name="password" ng-model="formData.password"
                required="required"/>
     </div>
     <div class="form-group" show-errors="">
-        <label for="confirmpassword">Confirm Password:</label>
+        <label for="confirmpassword" translate="user.register.password.confirm">Confirm Password:</label>
         <input type="password" class="form-control" id="confirmpassword" name="confirmpassword"
                ng-change="checkPasswords()"
-               ng-model="formData.confirmpassword" required="required" ng-model-options="{ debounce: 1000 }"/>
-        <span class="validation-error" ng-show="userForm.confirmpassword.$error.passDontMatch">
-                    Passwords don't match
-                </span>
+               ng-model="formData.confirmpassword" required="required" ng-model-options="{ debounce: 500 }"/>
+        <span class="validation-error" ng-show="userForm.confirmpassword.$error.passDontMatch"
+              translate="user.register.password.nomatch"></span>
     </div>
     <div class="progress" style="height: 10px;">
         <div class="progress-bar" role="progressbar" aria-valuenow="{{passwordStrength()}}" aria-valuemin="0"
@@ -50,5 +50,5 @@
              aria-valuemax="100" style="min-width: 2em;">
         </div>
     </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
+    <button type="submit" class="btn btn-primary" translate="user.register"></button>
 </form>

@@ -1,4 +1,4 @@
-app.controller('navigation', function ($scope, $rootScope, $http, $location, $route, AvatarService, AuthService, AlertService) {
+app.controller('navigation', function ($scope, $rootScope, $http, $location, $route, $log, AvatarService, AuthService, AlertService) {
     $scope.tab = function (route) {
         return $route.current && route === $route.current.controller;
     };
@@ -13,7 +13,7 @@ app.controller('navigation', function ($scope, $rootScope, $http, $location, $ro
                 AlertService.clearAlerts();
             } else {
                 $location.path("/login");
-                AlertService.addError('There was a problem logging in. Please try again.');
+                AlertService.addError('user.login.failed');
             }
         });
     };
@@ -32,14 +32,13 @@ app.controller('navigation', function ($scope, $rootScope, $http, $location, $ro
     };
 });
 
-app.controller('register', function ($scope, $rootScope, $http, AlertService) {
+app.controller('register', function ($scope, $rootScope, $http, $log, AlertService) {
     $scope.formData = {};
     $scope.success = false;
 
     $scope.passwordStrength = function () {
         var strRegexp = [/[0-9]/, /[a-z]/, /[A-Z]/, /[^A-Z-0-9]/i];
         var pass = $scope.formData.password;
-        var confirmPass = $scope.formData.confirmpassword;
         if (!pass) {
             return -1;
         }
@@ -66,14 +65,16 @@ app.controller('register', function ($scope, $rootScope, $http, AlertService) {
         }
         $http.post('api/user/register', $scope.formData).then(
             function (response) {
-                if (response.data.body.code === 'ERROR') {
-                    AlertService.addError("Unable to register user : " + response.data.body.message);
+                if (response.data.code === 'ERROR') {
+                    $log.debug(response.data);
+                    AlertService.addError("user.register.failed", response.data.message);
                 } else {
-                    AlertService.addSuccess('<strong>Successfully registered.</strong> Please check your email for confirmation.');
+                    AlertService.addSuccess('user.register.success');
                     $scope.success = true;
                 }
             }).catch(function (response) {
-            AlertService.addError('There was a problem registering. Please try again.');
+            AlertService.addError('user.register.failed');
+            $log.debug(response);
             // if (response.status === 400 && response.data === 'login already in use') {
             //     $scope.errorUserExists = 'ERROR';
             // } else if (response.status === 400 && response.data === 'e-mail address already in use') {
@@ -133,11 +134,11 @@ app.controller('userlist', function ($scope, $rootScope, $http, $log, AlertServi
                 angular.forEach(response.data, function (value) {
                     var user = value;
                     AvatarService.getUserAvatar(user);
-                    //TODO get avatars
                     $scope.users.push(user);
                 });
             }).catch(function (response) {
-            AlertService.addError("Something went wrong: " + response.data);
+            AlertService.addError("error.general", response.data);
+            $log.debug(response);
         });
     }
 });

@@ -1,4 +1,4 @@
-app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, $route, AlertService) {
+app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, $route, $translate,AlertService) {
     $scope.giftForm = {};
     $scope.giftsList = [];
 
@@ -66,9 +66,10 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
             function (response) {
                 $scope.giftsList.unshift(response.data);
                 $scope.reset();
-                AlertService.addSuccess("New gift added to Your wish list");
+                AlertService.addSuccess("gift.new.added");
             }).catch(function (response) {
-            AlertService.addError("Something went wrong");
+            AlertService.addError("error.general");
+            $log.debug(response);
         });
     };
 
@@ -76,10 +77,16 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
     function getGiftList(username) {
         var url;
         if (username) {
-            $scope.listTitle = username + "'s gift list";
+            $translate("gift.list").then(function (translation) {
+                $scope.listTitle = translation + username;
+
+            });
             url = 'api/gift/user/' + username;
         } else {
-            $scope.listTitle = "My wish list";
+            $translate("gift.list.mine").then(function (translation) {
+                $scope.listTitle = translation;
+
+            });
             url = 'api/gift/mine';
         }
         $http.get(url).then(
@@ -90,7 +97,8 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
                     $scope.giftsList.push(value);
                 });
             }).catch(function (response) {
-            AlertService.addError("Something went wrong");
+            AlertService.addError("error.general");
+            $log.debug(response);
         });
     }
 });

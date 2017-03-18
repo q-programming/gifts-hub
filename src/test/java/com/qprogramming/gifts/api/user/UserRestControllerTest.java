@@ -5,6 +5,7 @@ import com.qprogramming.gifts.TestUtil;
 import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.account.RegisterForm;
+import com.qprogramming.gifts.messages.MessagesService;
 import com.qprogramming.gifts.support.ResultData;
 import org.json.JSONObject;
 import org.junit.Before;
@@ -36,16 +37,19 @@ public class UserRestControllerTest {
     private MockSecurityContext securityMock;
     @Mock
     private Authentication authMock;
+    @Mock
+    private MessagesService msgSrvMock;
 
     private Account testAccount;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        UserRestController userCtrl = new UserRestController(accSrvMock);
+        UserRestController userCtrl = new UserRestController(accSrvMock, msgSrvMock);
         testAccount = TestUtil.createAccount();
         when(securityMock.getAuthentication()).thenReturn(authMock);
         when(authMock.getPrincipal()).thenReturn(testAccount);
+        when(msgSrvMock.getMessage(anyString())).thenReturn("MESSAGE");
         SecurityContextHolder.setContext(securityMock);
         this.userRestCtrl = MockMvcBuilders.standaloneSetup(userCtrl).build();
     }

@@ -10,4 +10,18 @@ app.controller('home', function ($rootScope, $scope, $http, $location) {
     } else {
         $location.path("/login");
     }
+
+    $scope.getLocale = function () {
+        $http.get('api/messages', {
+            params: {
+                lang: $rootScope.principal.language
+            }
+        }).then(
+            function successCallback() {
+                console.log("Got it")
+            },
+            function errorCallback() {
+                console.log("error")
+            });
+    }
 });
