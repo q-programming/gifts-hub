@@ -1,4 +1,4 @@
-app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, $route, $translate,AlertService) {
+app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, $route, $translate, AlertService) {
     $scope.giftForm = {};
     $scope.giftsList = [];
 
@@ -78,7 +78,7 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
         var url;
         if (username) {
             $translate("gift.list").then(function (translation) {
-                $scope.listTitle = translation + username;
+                $scope.listTitle = translation + " " + username;
 
             });
             url = 'api/gift/user/' + username;
