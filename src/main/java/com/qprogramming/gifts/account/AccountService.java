@@ -119,11 +119,28 @@ public class AccountService implements UserDetailsService {
         byte[] imgBytes;
         try (InputStream avatarFile = loader.getResourceAsStream("static/images/logo-white.png")) {
             imgBytes = IOUtils.toByteArray(avatarFile);
-            return avatarRepository.save(createAvatar(account, imgBytes));
+            return createAvatar(account, imgBytes);
         } catch (IOException e) {
             LOG.error("Failed to get avatar from resources");
         }
         return null;
+    }
+
+    /**
+     * Update user avatar with passed bytes.
+     * In case of avatar was not there, it will be created out of passed bytes
+     *
+     * @param account updated account
+     * @param bytes   image bytes
+     */
+    public void updateAvatar(Account account, byte[] bytes) {
+        Avatar avatar = avatarRepository.findOneById(account.getId());
+        if (avatar == null) {
+            createAvatar(account, bytes);
+        } else {
+            setAvatarTypeAndBytes(bytes, avatar);
+            avatarRepository.save(avatar);
+        }
     }
 
     public Avatar createAvatar(Account account, String url) throws MalformedURLException {
@@ -143,6 +160,11 @@ public class AccountService implements UserDetailsService {
     public Avatar createAvatar(Account account, byte[] bytes) {
         Avatar avatar = new Avatar();
         avatar.setId(account.getId());
+        setAvatarTypeAndBytes(bytes, avatar);
+        return avatarRepository.save(avatar);
+    }
+
+    private void setAvatarTypeAndBytes(byte[] bytes, Avatar avatar) {
         avatar.setImage(bytes);
         String type;
         try {
@@ -152,7 +174,6 @@ public class AccountService implements UserDetailsService {
             type = MediaType.IMAGE_JPEG_VALUE;
         }
         avatar.setType(type);
-        return avatarRepository.save(avatar);
     }
 
     private byte[] downloadFromUrl(URL url) {

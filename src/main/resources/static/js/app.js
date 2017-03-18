@@ -1,4 +1,13 @@
-var app = angular.module('app', ['ngRoute', 'ngAnimate', 'ngSanitize', 'LocalStorageModule', 'pascalprecht.translate', 'AvatarService', 'AuthService', 'AlertService']);
+var app = angular.module('app', [
+    'ngRoute'
+    , 'ngAnimate'
+    , 'ngSanitize'
+    , 'LocalStorageModule'
+    , 'pascalprecht.translate'
+    , 'ngImgCrop'
+    , 'AvatarService'
+    , 'AuthService'
+    , 'AlertService']);
 app.constant("MESSAGES", {
     SUCCESS: "success",
     ERROR: "danger",

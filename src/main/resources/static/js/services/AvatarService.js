@@ -1,5 +1,5 @@
 var AvatarService = angular.module('AvatarService', []);
-AvatarService.factory('AvatarService', function ($http, $log, localStorageService) {
+AvatarService.factory('AvatarService', function ($http, $log, $rootScope, localStorageService) {
     var AvatarService = {};
 
     AvatarService.getUserAvatar = function (user) {
@@ -23,6 +23,16 @@ AvatarService.factory('AvatarService', function ($http, $log, localStorageServic
             $log.debug("[DEBUG] Fetching avatar from localStorage");
             user.avatar = image;
         }
+    };
+
+    AvatarService.uploadAvatar = function (avatarSource) {
+        $http.put('api/user/avatar-upload', avatarSource).then(function () {
+            localStorageService.clearAll("avatar:" + $rootScope.principal.id);
+            AvatarService.getUserAvatar($rootScope.principal);
+        }).catch(function (response) {
+            $log.error("Failed to upload avatar");
+            $log.error(response);
+        })
     };
 
     AvatarService.clearCache = function () {

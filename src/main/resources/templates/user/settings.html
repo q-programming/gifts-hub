@@ -1,6 +1,35 @@
 <div ng-if="authenticated" xmlns:th="http://www.w3.org/1999/xhtml">
+    <div class="row">
+        <div class="col-md-offset-4 col-md-4 text-center">
+            <div class="row">
+                <div class="col-md-offset-3 col-md-6">
+                    <div class="cropAvatar-area">
+                        <div class="cropArea">
+                            <img ng-src="{{principal.avatar}}" ng-hide="avatarUploadInProgress"/>
+                            <img-crop image="avatarImage" result-image="croppedAvatar"></img-crop>
+                        </div>
+                        <div class="cropAvatar">
+                            <img id="croppedAvatar" ng-src="{{croppedAvatar}}"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <label for="avatarFileInput" class="btn btn-default clickable">
+                    <i class="fa fa-upload"></i>&nbsp;<span translate="user.settings.avatar.upload"></span>
+                </label>
+                <input type="file" id="avatarFileInput"
+                       onchange="angular.element(this).scope().handleFileSelect(this)"/>
+                <button class="btn btn-success" ng-show="avatarUploadInProgress" ng-click="uploadAvatarFile()">
+                    <i class="fa fa-floppy-o" aria-hidden="true"></i>&nbsp;
+                    <span translate="user.settings.avatar.save"></span>
+                </button>
+            </div>
+            <hr/>
+        </div>
+    </div>
     <div ng-if="authenticated" xmlns:th="http://www.w3.org/1999/xhtml" class="row">
-        <div class="form-group col-md-6">
+        <div class="form-group col-md-offset-4 col-md-4">
             <select class="form-control input-sm" name="language" th:field="*{languages}"
                     ng-model="principal.language" ng-change="update()">
                 <option th:each="lang : ${languages}" th:value="${lang.key}" th:text="${lang.value}">

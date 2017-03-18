@@ -14,7 +14,6 @@
 <link rel="stylesheet" href="css/app.css"/>
 <link rel="stylesheet" href="webjars/bootstrap/3.3.7-1/css/bootstrap.css"/>
 <link rel="stylesheet" href="webjars/font-awesome/4.7.0/css/font-awesome.min.css"/>
-<link rel="stylesheet" href="css/bootstrap-social.css"/>
 <link href="https://fonts.googleapis.com/css?family=Pacifico" rel="stylesheet"/>
 <!--BODY-->
 <body ng-app="app" ng-cloak="" class="ng-cloak" ng-controller="navigation">
@@ -64,7 +63,8 @@
             <!--<p class="stylish">Gifts hub</p>-->
             <!--</div>-->
             <ul class="nav nav-sidebar hidden-print text" role="tablist">
-                <li ng-show="!authenticated" ng-class="{active:tab('navigation')}"><a href="#/login" translate="menu.login"></a></li>
+                <li ng-show="!authenticated" ng-class="{active:tab('navigation')}"><a href="#/login"
+                                                                                      translate="menu.login"></a></li>
                 <li ng-show="authenticated" ng-class="{active:tab('userlist')}" class="text-center side-menu">
                     <a href="#/users">
                         <span>
@@ -112,6 +112,7 @@
 <script src="webjars/angular-local-storage/0.5.2/dist/angular-local-storage.min.js"></script>
 <script src="webjars/angular-translate/2.13.1/angular-translate.min.js"></script>
 <script src="webjars/angular-translate-loader-url/2.13.1/angular-translate-loader-url.min.js"></script>
+<script src="webjars/github-com-alexk111-ngImgCrop/0.3.2/minified/ng-img-crop.js"></script>
 
 
 <!--APP JS-->

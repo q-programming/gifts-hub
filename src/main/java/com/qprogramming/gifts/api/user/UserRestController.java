@@ -6,6 +6,7 @@ import com.qprogramming.gifts.account.RegisterForm;
 import com.qprogramming.gifts.messages.MessagesService;
 import com.qprogramming.gifts.support.ResultData;
 import com.qprogramming.gifts.support.Utils;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -64,12 +65,23 @@ public class UserRestController {
     }
 
     @RequestMapping("/{id}/avatar")
-    public ResponseEntity<?> user(@PathVariable(value = "id") String id) {
+    public ResponseEntity<?> userAvatar(@PathVariable(value = "id") String id) {
         Account account = accountService.findById(id);
         if (account == null) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(accountService.getAccountAvatar(account));
+    }
+
+    @RequestMapping("/avatar-upload")
+    public ResponseEntity<?> uploadNewAvatar(@RequestBody String avatarStream) {
+        Account account = Utils.getCurrentAccount();
+        if (account == null) {
+            return ResponseEntity.notFound().build();
+        }
+        byte[] data = Base64.decodeBase64(avatarStream);
+        accountService.updateAvatar(account, data);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @RequestMapping("/users")
