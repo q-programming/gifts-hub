@@ -5,7 +5,8 @@
                 <div class="col-md-offset-3 col-md-6">
                     <div class="cropAvatar-area">
                         <div class="cropArea">
-                            <img ng-src="{{principal.avatar}}" ng-hide="avatarUploadInProgress"/>
+                            <img class="img-responsive" ng-src="{{principal.avatar}}" ng-hide="avatarUploadInProgress"
+                                 style="margin: 0 auto;"/>
                             <img-crop image="avatarImage" result-image="croppedAvatar"></img-crop>
                         </div>
                         <div class="cropAvatar">

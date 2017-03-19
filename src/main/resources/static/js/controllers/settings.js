@@ -21,6 +21,7 @@ app.controller('settings', function ($rootScope, $scope, $http, $location, $tran
             AvatarService.uploadAvatar(JSON.stringify(source));
             $scope.avatarUploadInProgress = false;
             document.getElementById("avatarFileInput").value = "";
+            AlertService.addSuccess('user.settings.avatar.success');
         }
     };
     function getBase64Image(imgElem) {

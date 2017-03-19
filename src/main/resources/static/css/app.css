@@ -11,6 +11,10 @@ body {
     cursor: pointer;
 }
 
+.main-container {
+    margin-top: 15px;
+}
+
 /*Start Side bar styling*/
 .sidebar {
     display: none;
@@ -32,11 +36,15 @@ body {
     color: white !important;
 }
 
-li.nav-avatar {
-    padding: 5px 5px;
+.nav-avatar {
+    margin-bottom: -10px;
+    margin-top: -10px;
+    /*padding: 5px 5px;*/
 }
 
 a.nav-username {
+    margin-top: 0 !important;
+    min-height: 50px;
     border-bottom: 0 !important;
 }
 
@@ -47,25 +55,47 @@ img.avatar {
 }
 
 .nav > li > a {
-    color: #414141;
-    border-bottom: 1px solid darkgray;
+    margin-top: -7px;
+    color: white;
+    min-width: 50px;
+    /*border-bottom: 1px solid darkgray;*/
 }
 
-/*.nav > li.active > a {*/
-/*!*color: white;*!*/
-/*}*/
+.nav > li.active > a {
+    color: #f6f6f6;
+}
 
 .nav > li :hover,
 .nav > li :focus {
-    background: #2c5aa0 !important;
+    background: #3b62ae !important;
     color: white;
 }
 
 .nav > li.active,
 .nav > li.active:focus,
 .nav > li.active:hover {
-    background: white !important;
+    background: #3b62ae !important;
 
+}
+
+.nav .open > a, .nav .open > a:hover, .nav .open > a:focus {
+    background: #2c5aa0 !important;
+    border-color: #337ab7;
+}
+
+.navbar-nav > li > .dropdown-menu {
+    background: #2c5aa0 !important;
+    border-radius: 0;
+    border: 0 !important;
+}
+
+.navbar-nav > li > a {
+    padding-top: 15px !important;
+    padding-bottom: 10px !important;
+}
+
+.dropdown-menu > li > a {
+    color: white !important;
 }
 
 @media ( min-width: 768px) {
@@ -149,6 +179,12 @@ img.center {
     transform: translateY(-100%);
 }
 
+.alert-row {
+    position: absolute;
+    z-index: 1000;
+    width: 100%;
+}
+
 /*GIFTS*/
 .gift-status {
     font-size: xx-small;
@@ -210,7 +246,7 @@ img-crop canvas {
 
 .cropArea {
     position: relative;
-    background: #E4E4E4;
+    background: white;
     overflow: hidden;
     top: 0;
     left: 0;

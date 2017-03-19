@@ -30,6 +30,10 @@ app.controller('navigation', function ($scope, $rootScope, $http, $location, $ro
                 $rootScope.authenticated = false;
             });
     };
+
+    $scope.dismissAlert = function (index) {
+        AlertService.dismissAlert(index)
+    }
 });
 
 app.controller('register', function ($scope, $rootScope, $http, $log, AlertService) {
