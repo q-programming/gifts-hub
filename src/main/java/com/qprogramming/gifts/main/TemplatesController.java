@@ -1,9 +1,13 @@
 package com.qprogramming.gifts.main;
 
+import com.qprogramming.gifts.config.property.Property;
+import com.qprogramming.gifts.config.property.PropertyRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.annotation.security.RolesAllowed;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,6 +16,10 @@ import java.util.Map;
  */
 @Controller
 public class TemplatesController {
+
+    @Autowired
+    private PropertyRepository propertyRepository;
+
 
     @RequestMapping("/")
     public String index() {
@@ -53,7 +61,17 @@ public class TemplatesController {
         return "user/list";
     }
 
-
+    @RequestMapping("/manage")
+    @RolesAllowed("ROLE_ADMIN")
+    public String manage(Model model) {
+        Property lang = propertyRepository.findByKey("app.language");
+        Map<String, String> languages = new HashMap<>();
+        languages.put("pl", "Polski");
+        languages.put("en", "English");
+        model.addAttribute("languages", languages);
+        model.addAttribute("appLang", lang);
+        return "app/manage";
+    }
 
     @RequestMapping("/settings")
     public String settings(Model model) {

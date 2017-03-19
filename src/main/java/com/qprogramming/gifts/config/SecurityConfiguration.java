@@ -84,6 +84,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                             , "/logout"
                             , "/api/user/*"
                             , "/api/gift/*"
+                            , "/api/manage/*"
                             , "/api/messages")
                     .csrfTokenRepository(csrfTokenRepository())
                 .and().logout()

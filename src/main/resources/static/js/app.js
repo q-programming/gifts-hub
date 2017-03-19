@@ -40,6 +40,10 @@ app.config(function ($routeProvider, $httpProvider, $locationProvider, $logProvi
             templateUrl: 'settings.html',
             controller: 'settings'
         })
+        .when('/manage', {
+            templateUrl: 'manage.html',
+            controller: 'manage'
+        })
         .otherwise('/');
     $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
     $locationProvider.hashPrefix('');

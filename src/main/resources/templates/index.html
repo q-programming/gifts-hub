@@ -55,6 +55,16 @@
                         </span>
                     </a>
                 </li>
+                <li ng-if="authenticated &amp;&amp; principal.role === 'ROLE_ADMIN'" ng-class="{active:tab('gift')}"
+                    class="text-center">
+                    <a href="#/manage">
+                        <span>
+                            <i class="fa fa-columns" aria-hidden="true"></i>&nbsp;
+                            <i class="fa fa-2x fa-wrench" aria-hidden="true"></i>
+                            <span translate="menu.manage"></span>
+                        </span>
+                    </a>
+                </li>
 
                 <li ng-if="authenticated" uib-dropdown="" is-open="status.isopen" class="clickable">
                     <a class="white nav-username" uib-dropdown-toggle="">
@@ -173,7 +183,7 @@
 <script src="js/controllers/list.js"></script>
 <script src="js/controllers/gift.js"></script>
 <script src="js/controllers/settings.js"></script>
+<script src="js/controllers/manage.js"></script>
 <script src="js/directives/progressbar.js"></script>
-<!--<script src="js/directives/popup.js"></script>-->
 </body>
 </html>

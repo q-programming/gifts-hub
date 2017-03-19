@@ -26,19 +26,19 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
     };
 
     $scope.getGiftStatus = function (gift) {
-        var newGift = '<span class="gift-status new-gift" data-toggle="tooltip" data-placement="top" title="New">' +
+        var newGift = '<span class="gift-status new-gift" uib-tooltip="New">' +
             '<i class="fa fa-fw fa-certificate" aria-hidden="true"></i>' +
             '<i class="fa fa-fw fa-2x fa-gift" aria-hidden="true"></i>' +
             '</span>';
-        var claimedGift = '<span class="gift-status claimed-gift" data-toggle="tooltip" data-placement="top" title="New">' +
+        var claimedGift = '<span class="gift-status claimed-gift" uib-tooltip="Claimed">' +
             '<i class="fa fa-fw fa-exclamation" aria-hidden="true"></i>' +
             '<i class="fa fa-fw fa-2x fa-gift" aria-hidden="true"></i>' +
             '</span>';
-        var realisedGift = '<span class="gift-status realised-gift" data-toggle="tooltip" data-placement="top" title="New">' +
+        var realisedGift = '<span class="gift-status realised-gift" uib-tooltip="Realised">' +
             '<i class="fa fa-fw fa-check" aria-hidden="true"></i>' +
             '<i class="fa fa-fw fa-2x fa-gift" aria-hidden="true"></i>' +
             '</span>';
-        var other = '<span class="gift-status" data-toggle="tooltip" data-placement="top" title="New">' +
+        var other = '<span class="gift-status">' +
             '<i class="fa-spacer">&nbsp;</i>' +
             '<i class="fa fa-fw fa-2x fa-gift" aria-hidden="true"></i>' +
             '</span>';

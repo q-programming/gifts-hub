@@ -1,0 +1,14 @@
+<div ng-if="authenticated" xmlns:th="http://www.w3.org/1999/xhtml">
+    <h1 translate="app.manage"></h1>
+    <div class="form-group col-md-offset-2 col-md-4">
+        <label for="app-lang">
+            <i class="fa fa-globe" aria-hidden="true"></i>
+            &nbsp;<span translate="app.manage.language"></span>
+        </label>
+        <select id="app-lang" class="form-control input-sm" name="language" th:field="*{languages}"
+                ng-model="appLang" ng-change="update()">
+            <option th:each="lang : ${languages}" th:value="${lang.key}" th:text="${lang.value}">
+            </option>
+        </select>
+    </div>
+</div>
