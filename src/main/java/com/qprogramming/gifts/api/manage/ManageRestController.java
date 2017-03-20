@@ -1,7 +1,6 @@
 package com.qprogramming.gifts.api.manage;
 
-import com.qprogramming.gifts.config.property.Property;
-import com.qprogramming.gifts.config.property.PropertyRepository;
+import com.qprogramming.gifts.config.property.PropertyService;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.security.RolesAllowed;
 
+import static com.qprogramming.gifts.config.property.Property.APP_DEFAULT_LANG;
+
 /**
  * Created by Khobar on 19.03.2017.
  */
@@ -22,29 +23,20 @@ import javax.annotation.security.RolesAllowed;
 @RequestMapping("/api/manage")
 public class ManageRestController {
 
-    public static final String LANG = "app.language";
     private final Logger LOG = LoggerFactory.getLogger(this.getClass());
-    private PropertyRepository propertyRepository;
+    private PropertyService propertyService;
 
     @Autowired
-    public ManageRestController(PropertyRepository propertyRepository) {
-        this.propertyRepository = propertyRepository;
+    public ManageRestController(PropertyService propertyService) {
+        this.propertyService = propertyService;
     }
 
     @RolesAllowed("ROLE_ADMIN")
     @RequestMapping(value = "/language", method = RequestMethod.POST)
     public ResponseEntity changeLanguage(@RequestBody String jsonObj) {
         JSONObject object = new JSONObject(jsonObj);
-        if (object.has(LANG)) {
-            //TODO Move to service
-            Property langProperty = propertyRepository.findByKey(LANG);
-            if (langProperty == null) {
-                langProperty = new Property();
-                langProperty.setKey(LANG);
-            }
-            String language = object.getString(LANG);
-            langProperty.setValue(language);
-            propertyRepository.save(langProperty);
+        if (object.has(APP_DEFAULT_LANG)) {
+            propertyService.update(APP_DEFAULT_LANG, object.getString(APP_DEFAULT_LANG));
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }

@@ -30,4 +30,8 @@ public class MessagesService {
         Properties messages = messageSource.getMessages(locale);
         return messages;
     }
+
+    public String getMessage(String string, Object[] objects, String defaultMessage, Locale locale) {
+        return messageSource.getMessage(string, objects, defaultMessage, locale);
+    }
 }

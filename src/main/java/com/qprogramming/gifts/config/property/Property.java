@@ -6,6 +6,9 @@ import javax.persistence.Id;
 
 @Entity
 public class Property {
+    public static final String APP_DEFAULT_LANG = "app.default.lang";
+    public static final String APP_AVAILABLE_LANGS = "app.available.langs";
+
 
     @Id
     private String key;
