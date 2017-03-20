@@ -1,7 +1,9 @@
 package com.qprogramming.gifts.api.manage;
 
+import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.config.property.PropertyService;
-import org.json.JSONObject;
+import com.qprogramming.gifts.support.Utils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.security.RolesAllowed;
 
-import static com.qprogramming.gifts.config.property.Property.APP_DEFAULT_LANG;
+import static com.qprogramming.gifts.api.manage.Settings.APP_DEFAULT_LANG;
 
-/**
- * Created by Khobar on 19.03.2017.
- */
 @RestController
 @RequestMapping("/api/manage")
 public class ManageRestController {
@@ -32,12 +31,24 @@ public class ManageRestController {
     }
 
     @RolesAllowed("ROLE_ADMIN")
-    @RequestMapping(value = "/language", method = RequestMethod.POST)
-    public ResponseEntity changeLanguage(@RequestBody String jsonObj) {
-        JSONObject object = new JSONObject(jsonObj);
-        if (object.has(APP_DEFAULT_LANG)) {
-            propertyService.update(APP_DEFAULT_LANG, object.getString(APP_DEFAULT_LANG));
+    @RequestMapping(value = "/settings", method = RequestMethod.POST)
+    public ResponseEntity changeSettings(@RequestBody Settings settings) {
+        if (StringUtils.isNotBlank(settings.getLanguage())) {
+            propertyService.update(APP_DEFAULT_LANG, settings.getLanguage());
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @RolesAllowed("ROLE_ADMIN")
+    @RequestMapping(value = "/settings", method = RequestMethod.GET)
+    public ResponseEntity applicationSettings() {
+        Account currentAccount = Utils.getCurrentAccount();
+        if (currentAccount == null || !currentAccount.getIsAdmin()) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+        Settings settings = new Settings();
+        settings.setLanguage(propertyService.getProperty(APP_DEFAULT_LANG));
+        return ResponseEntity.ok(settings);
+    }
+
 }

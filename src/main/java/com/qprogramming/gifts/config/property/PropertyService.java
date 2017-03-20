@@ -3,6 +3,7 @@ package com.qprogramming.gifts.config.property;
 import com.qprogramming.gifts.messages.MessagesService;
 import com.qprogramming.gifts.support.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -18,11 +19,13 @@ public class PropertyService {
 
     private PropertyRepository propertyRepository;
     private MessagesService msgSrv;
+    private Environment env;
 
     @Autowired
-    public PropertyService(PropertyRepository propertyRepository, MessagesService msgSrv) {
+    public PropertyService(PropertyRepository propertyRepository, MessagesService msgSrv, Environment env) {
         this.propertyRepository = propertyRepository;
         this.msgSrv = msgSrv;
+        this.env = env;
     }
 
     /**
@@ -56,5 +59,15 @@ public class PropertyService {
             languages.put(c, availableLocales.get(c).getDisplayLanguage(Utils.getCurrentLocale()));
         }
         return languages;
+    }
+
+    /**
+     * Returns property. As database property is first in order it will be first place to look. Otherwise , file based properties will be searched
+     *
+     * @param key key for which value will be searched
+     * @return String representation of parameter
+     */
+    public String getProperty(String key) {
+        return env.getProperty(key);
     }
 }

@@ -6,7 +6,7 @@
             &nbsp;<span translate="app.manage.language"></span>
         </label>
         <select id="app-lang" class="form-control input-sm" name="language" th:field="*{languages}"
-                ng-model="appLang" ng-change="update()">
+                ng-model="settings.language" ng-change="update()">
             <option th:each="lang : ${languages}" th:value="${lang.key}" th:text="${lang.value}">
             </option>
         </select>
