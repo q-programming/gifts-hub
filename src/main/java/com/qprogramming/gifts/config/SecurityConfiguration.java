@@ -1,6 +1,7 @@
 package com.qprogramming.gifts.config;
 
 import com.qprogramming.gifts.account.AccountService;
+import com.qprogramming.gifts.account.Roles;
 import com.qprogramming.gifts.filters.CsrfHeaderFilter;
 import com.qprogramming.gifts.login.OAuthLoginSuccessHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,6 +72,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                             , "/api/messages"
                             , "/api/user/validate-email"
                             , "/api/user/validate-username").permitAll()
+                    .antMatchers("/api/manage/*").hasAuthority(Roles.ROLE_ADMIN.toString())
                     .anyRequest().authenticated()
                 .and().formLogin()
                     .loginPage("/#/login")
@@ -84,6 +86,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                             , "/logout"
                             , "/api/user/*"
                             , "/api/gift/*"
+                            , "/api/manage/*"
                             , "/api/messages")
                     .csrfTokenRepository(csrfTokenRepository())
                 .and().logout()

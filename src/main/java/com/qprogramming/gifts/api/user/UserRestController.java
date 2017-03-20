@@ -7,7 +7,6 @@ import com.qprogramming.gifts.messages.MessagesService;
 import com.qprogramming.gifts.support.ResultData;
 import com.qprogramming.gifts.support.Utils;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,12 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.security.Principal;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -124,19 +121,7 @@ public class UserRestController {
 
     @RequestMapping("/")
     public Account user(Principal user) {
-        //TODO move filling of user to LoginSuccessHandler and save to DB
-        //TODO move to PrincipalExtractor
-        if (user != null && user instanceof OAuth2Authentication) {
-            Account account = new Account();
-            Map<String, String> details = (Map) ((OAuth2Authentication) user).getUserAuthentication().getDetails();
-            account.setName(details.get("name"));
-            account.setId(details.get("id"));
-            if (StringUtils.isBlank(account.getId())) {
-                account.setId(details.get("sub"));
-            }
-            account.setEmail(details.get("email"));
-            return account;
-        } else if (user != null && user instanceof UsernamePasswordAuthenticationToken) {
+        if (user != null && user instanceof UsernamePasswordAuthenticationToken) {
             return (Account) ((UsernamePasswordAuthenticationToken) user).getPrincipal();
         }
         return null;

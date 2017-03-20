@@ -27,6 +27,7 @@ public class LocaleConfig {
         ReloadableResourceBundleMessageSource messageSource = new ResourceMessageBundle();
         messageSource.setBasename("classpath:lang/messages");
         messageSource.setCacheSeconds(3600); //refresh cache once per hour
+        messageSource.setFallbackToSystemLocale(false);
         return messageSource;
     }
 }

@@ -13,10 +13,10 @@ import java.util.Properties;
 
 @RestController
 @RequestMapping("/api/messages")
-public class MessagesController {
+public class MessagesRestController {
     private MessagesService msgSrv;
 
-    public MessagesController(MessagesService msgSrv) {
+    public MessagesRestController(MessagesService msgSrv) {
         this.msgSrv = msgSrv;
     }
 

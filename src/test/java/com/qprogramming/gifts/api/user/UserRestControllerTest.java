@@ -7,6 +7,8 @@ import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.account.RegisterForm;
 import com.qprogramming.gifts.messages.MessagesService;
 import com.qprogramming.gifts.support.ResultData;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,8 +20,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import java.io.IOException;
+import java.io.InputStream;
+
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -30,6 +34,8 @@ public class UserRestControllerTest {
     public static final String API_USER_LANGUAGE = "/api/user/language";
     public static final String API_USER_VALIDATE_EMAIL = "/api/user/validate-email";
     public static final String API_USER_VALIDATE_USERNAME = "/api/user/validate-username";
+    public static final String API_USER_UPDATE_AVATAR = "/api/user//avatar-upload";
+
     private MockMvc userRestCtrl;
     @Mock
     private AccountService accSrvMock;
@@ -185,4 +191,19 @@ public class UserRestControllerTest {
         assertFalse(contentAsString.contains(ResultData.Code.ERROR.toString()));
     }
 
+    @Test
+    public void updateAvatar() throws Exception {
+        ClassLoader loader = this.getClass().getClassLoader();
+        byte[] imgBytes;
+        try (InputStream avatarFile = loader.getResourceAsStream("static/images/logo-white.png")) {
+            imgBytes = IOUtils.toByteArray(avatarFile);
+            String imgStream = Base64.encodeBase64String(imgBytes);
+            userRestCtrl.perform(post(API_USER_UPDATE_AVATAR)
+                    .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                    .content(imgStream)).andExpect(status().isOk());
+            verify(accSrvMock, times(1)).updateAvatar(testAccount, imgBytes);
+        } catch (IOException e) {
+            fail("IOEXception thrown " + e);
+        }
+    }
 }
