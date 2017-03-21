@@ -1,8 +1,10 @@
 app.controller('manage', function ($rootScope, $scope, $http, $log, AlertService) {
     if ($rootScope.authenticated && $rootScope.principal.role === 'ROLE_ADMIN') {
         $scope.settings = {};
-        $scope.newsearch = {};
+        $scope.searchEngine = {};
         $scope.searchEngineList = [];
+        $scope.showSearchForm = null;
+        $scope.editSearch = false;
 
         $http.get('api/manage/settings').then(
             function (result) {
@@ -13,26 +15,55 @@ app.controller('manage', function ($rootScope, $scope, $http, $log, AlertService
 
 
         $scope.update = function () {
+            $scope.showSearchForm = false;
+            $scope.editSearch = false;
             $http.post('api/manage/settings', $scope.settings).then(
                 function () {
-                    AlertService.addSuccess('user.settings.language.set');
+                    AlertService.addSuccess('app.manage.saved');
                 }).catch(function (response) {
-                AlertService.addError('user.settings.language.error')
+                AlertService.addError('error.general', response)
             });
         }
 
         $scope.show = function () {
-            $scope.showAddNewSearch = true;
+            $scope.showSearchForm = true;
         };
         $scope.reset = function () {
-            $scope.newsearch = {};
-            $scope.showAddNewSearch = false;
+            $scope.searchEngine = {};
+            $scope.showSearchForm = false;
+            $scope.editSearch = false;
         };
-        $scope.createNewSearchEngine = function () {
+
+        $scope.updateSearchEngine = function () {
+            if (!$scope.editSearch) {
+                $scope.settings.searchEngines.unshift($scope.searchEngine);
+                $scope.searchEngine = {};
+                $scope.showSearchForm = false;
+            } else {
+                var indexes = $.map($scope.settings.searchEngines, function (engine, index) {
+                    if (engine.id === $scope.searchEngine.id) {
+                        return index;
+                    }
+                });
+                $scope.settings.searchEngines[indexes[0]] = $scope.searchEngine;
+            }
             //TODO validation
-            $scope.settings.searchEngines.unshift($scope.newsearch);
-            $scope.newsearch = {};
-            $scope.showAddNewSearch = false;
+            $scope.update();
+        };
+
+        $scope.deleteSearchEngine = function (engine) {
+            if ($scope.settings.searchEngines) {
+                var index = $scope.settings.searchEngines.indexOf(engine);
+                $scope.settings.searchEngines.splice(index, 1)
+            }
+            $scope.update();
+        };
+
+        $scope.editSearchEngine = function (engine) {
+            $scope.searchEngine = engine;
+            $scope.showSearchForm = true;
+            $scope.editSearch = true;
+            // $scope.update();
         }
     }
 });

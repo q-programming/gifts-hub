@@ -54,21 +54,20 @@ public class SearchEngine {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         SearchEngine that = (SearchEngine) o;
-
-        if (id != null ? !id.equals(that.id) : that.id != null) return false;
-        if (name != null ? !name.equals(that.name) : that.name != null) return false;
-        if (searchString != null ? !searchString.equals(that.searchString) : that.searchString != null) return false;
-        return icon != null ? icon.equals(that.icon) : that.icon == null;
+        return id != null ? id.equals(that.id) : that.id == null;
     }
 
     @Override
     public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (searchString != null ? searchString.hashCode() : 0);
-        result = 31 * result + (icon != null ? icon.hashCode() : 0);
-        return result;
+        return id != null ? id.hashCode() : 0;
+    }
+
+    @Override
+    public String toString() {
+        return "SearchEngine{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
     }
 }
