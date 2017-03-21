@@ -5,6 +5,9 @@ import com.qprogramming.gifts.TestUtil;
 import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.Roles;
 import com.qprogramming.gifts.config.property.PropertyService;
+import com.qprogramming.gifts.settings.SearchEngine;
+import com.qprogramming.gifts.settings.SearchEngineService;
+import com.qprogramming.gifts.settings.Settings;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -15,7 +18,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static com.qprogramming.gifts.api.manage.Settings.APP_DEFAULT_LANG;
+import static com.qprogramming.gifts.settings.Settings.APP_DEFAULT_LANG;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -31,6 +34,8 @@ public class ManageRestControllerTest {
     @Mock
     private PropertyService propertyServiceMock;
     @Mock
+    private SearchEngineService searchEngineServiceMock;
+    @Mock
     private MockSecurityContext securityMock;
     @Mock
     private Authentication authMock;
@@ -40,7 +45,7 @@ public class ManageRestControllerTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        ManageRestController mngCtrl = new ManageRestController(propertyServiceMock);
+        ManageRestController mngCtrl = new ManageRestController(propertyServiceMock, searchEngineServiceMock);
         testAccount = TestUtil.createAccount();
         when(securityMock.getAuthentication()).thenReturn(authMock);
         when(authMock.getPrincipal()).thenReturn(testAccount);
@@ -49,15 +54,44 @@ public class ManageRestControllerTest {
     }
 
     @Test
-    public void changeSettings() throws Exception {
+    public void changeSettingsLanguage() throws Exception {
+        testAccount.setRole(Roles.ROLE_ADMIN);
         Settings settings = new Settings();
         settings.setLanguage("en");
         manageRestController.perform(
                 post(API_APPLICATION_SETTINGS)
-                    .contentType(TestUtil.APPLICATION_JSON_UTF8)
-                    .content(TestUtil.convertObjectToJsonBytes(settings)))
+                        .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                        .content(TestUtil.convertObjectToJsonBytes(settings)))
                 .andExpect(status().isOk());
         verify(propertyServiceMock, times(1)).update(Settings.APP_DEFAULT_LANG, "en");
+    }
+
+    @Test
+    public void changeSettingsAddSearchEngine() throws Exception {
+        testAccount.setRole(Roles.ROLE_ADMIN);
+        SearchEngine engine = new SearchEngine();
+        engine.setName("google");
+        engine.setSearchString("http://www.google.com/search?q=");
+        engine.setIcon("icon");
+        Settings settings = new Settings();
+        settings.addSearchEngine(engine);
+        manageRestController.perform(
+                post(API_APPLICATION_SETTINGS)
+                        .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                        .content(TestUtil.convertObjectToJsonBytes(settings)))
+                .andExpect(status().isOk());
+        verify(searchEngineServiceMock, times(1)).updateSearchEngines(settings.getSearchEngines());
+    }
+
+    @Test
+    public void setApplicationSettingsBadAuth() throws Exception {
+        testAccount.setRole(Roles.ROLE_USER);
+        Settings settings = new Settings();
+        manageRestController.perform(
+                post(API_APPLICATION_SETTINGS)
+                        .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                        .content(TestUtil.convertObjectToJsonBytes(settings)))
+                .andExpect(status().isForbidden());
     }
 
     @Test

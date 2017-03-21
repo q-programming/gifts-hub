@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.annotation.security.RolesAllowed;
 import java.util.Map;
 
-import static com.qprogramming.gifts.api.manage.Settings.APP_DEFAULT_LANG;
+import static com.qprogramming.gifts.settings.Settings.APP_DEFAULT_LANG;
 
 /**
  * Created by Remote on 26.02.2017.
