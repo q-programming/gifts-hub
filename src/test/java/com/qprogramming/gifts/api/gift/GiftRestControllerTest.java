@@ -14,10 +14,16 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -73,8 +79,25 @@ public class GiftRestControllerTest {
 
     @Test
     public void getGiiftsAccountNotFound() throws Exception {
-        giftsRestCtrl.perform(post(API_GIFT_LIST + "notExisting"))
+        giftsRestCtrl.perform(post(API_GIFT_LIST + "/notExisting"))
                 .andExpect(status().isNotFound());
+    }
+
+
+    @Test
+    public void getGiftsAccount() throws Exception {
+        Gift gift = new Gift();
+        gift.setId(1L);
+        gift.setName("name");
+        gift.setUserId(testAccount.getId());
+        List<Gift> giftList = new ArrayList<>();
+        giftList.add(gift);
+        when(accSrvMock.findByUsername(testAccount.getUsername())).thenReturn(testAccount);
+        when(giftServiceMock.findAllByUser(testAccount.getId())).thenReturn(giftList);
+        MvcResult mvcResult = giftsRestCtrl.perform(get(API_GIFT_LIST + "/" + testAccount.getUsername())).andExpect(status().isOk()).andReturn();
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        List<Gift> results = TestUtil.convertJsonToList(contentAsString, List.class, Gift.class);
+        assertEquals(giftList, results);
     }
 
 

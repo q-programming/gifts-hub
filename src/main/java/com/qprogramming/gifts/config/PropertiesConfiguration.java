@@ -32,7 +32,6 @@ public class PropertiesConfiguration {
 
 
     @Bean
-    @Lazy(false)
     public DataBasePropertySource dataBasePropertySource() {
         DataBasePropertySource propertySource = new DataBasePropertySource("database-properties", propertyRepository);
         MutablePropertySources sources = env.getPropertySources();

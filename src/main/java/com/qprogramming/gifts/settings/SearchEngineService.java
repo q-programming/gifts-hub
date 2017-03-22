@@ -2,7 +2,9 @@ package com.qprogramming.gifts.settings;
 
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 
@@ -20,23 +22,15 @@ public class SearchEngineService {
     }
 
     public void updateSearchEngines(List<SearchEngine> searchEngines) {
-
-        List<SearchEngine> allSearchEngines = searchEngineRepository.findAll();
-        List<SearchEngine> stillExisting = allSearchEngines.stream().filter(searchEngines::contains).collect(Collectors.toList());
-        searchEngines.removeAll(stillExisting);
-        allSearchEngines.removeAll(stillExisting);
-        //save allSearchEngines stillExisting and update them if needed
-        searchEngineRepository.save(stillExisting);//TODO save passed version instead of old one
-        //remove not present in passed list
-        searchEngineRepository.delete(allSearchEngines);
-        //iterate over rest( only new should remain)
-        for (SearchEngine searchEngine : searchEngines) {
-            SearchEngine engine = new SearchEngine();
-            engine.setName(searchEngine.getName());
-            engine.setIcon(searchEngine.getIcon());
-            engine.setSearchString(searchEngine.getSearchString());
-            searchEngineRepository.save(searchEngine);
-
-        }
+        Set<SearchEngine> dbSearchEngines = new HashSet<>(searchEngineRepository.findAll());
+        List<SearchEngine> toUpdate = dbSearchEngines.stream().filter(searchEngines::contains).collect(Collectors.toList());
+        //remove updated items and replace them with new version from passed list
+        dbSearchEngines.removeAll(toUpdate);
+        dbSearchEngines.addAll(searchEngines);
+        //collect items that will be deleted
+        List<SearchEngine> toRemove = dbSearchEngines.stream().filter(o -> !searchEngines.contains(o)).collect(Collectors.toList());
+        dbSearchEngines.removeAll(toRemove);
+        searchEngineRepository.delete(toRemove);
+        searchEngineRepository.save(dbSearchEngines);
     }
 }

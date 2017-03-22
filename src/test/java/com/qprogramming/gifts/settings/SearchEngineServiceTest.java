@@ -6,8 +6,11 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import static com.qprogramming.gifts.TestUtil.createSearchEngine;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -40,30 +43,39 @@ public class SearchEngineServiceTest {
 
     @Test
     public void updateSearchEngines() throws Exception {
-        SearchEngine engine = createSearchEngine("google", "link", "icon");
-        SearchEngine engine2 = createSearchEngine("bing", "link", "icon");
-        engine2.setId(1L);
-        SearchEngine engine3 = createSearchEngine("yahoo", "link", "icon");
-        engine3.setId(2L);
+        SearchEngine newEngine = createSearchEngine("google", "link", "icon");
+
+        SearchEngine intactEngine = createSearchEngine("bing", "link", "icon");
+        intactEngine.setId(1L);
+
+        SearchEngine editedEngine = createSearchEngine("yahoo", "link", "icon");
+        editedEngine.setId(2L);
+
+        SearchEngine editedEngineNew = createSearchEngine("edited_yahoo", "editedLink", "icon");
+        editedEngineNew.setId(2L);
+
+        SearchEngine deletedEngine = createSearchEngine("wolfram", "link", "icon");
+        deletedEngine.setId(3L);
+
+        //passed params
         List<SearchEngine> passed = new ArrayList<>();
-        passed.add(engine);
-        passed.add(engine2);
+        passed.add(newEngine);
+        passed.add(intactEngine);
+        passed.add(editedEngineNew);
+        //Db contets
         List<SearchEngine> dbContents = new ArrayList<>();
-        dbContents.add(engine2);
-        dbContents.add(engine3);
+        dbContents.add(intactEngine);
+        dbContents.add(editedEngine);
+        dbContents.add(deletedEngine);
         when(searchEngineRepositoryMock.findAll()).thenReturn(dbContents);
         searchEngineService.updateSearchEngines(passed);
-        verify(searchEngineRepositoryMock, times(1)).save(anyCollectionOf(SearchEngine.class));
-        verify(searchEngineRepositoryMock, times(1)).delete(anyCollectionOf(SearchEngine.class));
-        verify(searchEngineRepositoryMock, times(1)).save(any(SearchEngine.class));
+        Set<SearchEngine> expectedUpdateIntactOrNew = new HashSet<>();
+        expectedUpdateIntactOrNew.add(newEngine);
+        expectedUpdateIntactOrNew.add(intactEngine);
+        expectedUpdateIntactOrNew.add(editedEngineNew);
+        List<SearchEngine> expectedDelete = new ArrayList<>();
+        expectedDelete.add(deletedEngine);
+        verify(searchEngineRepositoryMock, times(1)).save(expectedUpdateIntactOrNew);
+        verify(searchEngineRepositoryMock, times(1)).delete(expectedDelete);
     }
-
-    private SearchEngine createSearchEngine(String name, String link, String icon) {
-        SearchEngine engine = new SearchEngine();
-        engine.setName(name);
-        engine.setSearchString(link);
-        engine.setIcon(icon);
-        return engine;
-    }
-
 }

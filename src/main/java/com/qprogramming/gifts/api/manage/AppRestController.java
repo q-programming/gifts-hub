@@ -2,6 +2,7 @@ package com.qprogramming.gifts.api.manage;
 
 import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.config.property.PropertyService;
+import com.qprogramming.gifts.settings.SearchEngine;
 import com.qprogramming.gifts.settings.SearchEngineService;
 import com.qprogramming.gifts.settings.Settings;
 import com.qprogramming.gifts.support.Utils;
@@ -19,18 +20,21 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.security.RolesAllowed;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static com.qprogramming.gifts.settings.Settings.APP_DEFAULT_LANG;
 
 @RestController
-@RequestMapping("/api/manage")
-public class ManageRestController {
+@RequestMapping("/api/app")
+public class AppRestController {
 
     private final Logger LOG = LoggerFactory.getLogger(this.getClass());
     private PropertyService propertyService;
     private SearchEngineService searchEngineService;
 
     @Autowired
-    public ManageRestController(PropertyService propertyService, SearchEngineService searchEngineService) {
+    public AppRestController(PropertyService propertyService, SearchEngineService searchEngineService) {
         this.propertyService = propertyService;
         this.searchEngineService = searchEngineService;
     }
@@ -63,6 +67,11 @@ public class ManageRestController {
         settings.setLanguage(propertyService.getProperty(APP_DEFAULT_LANG));
         settings.setSearchEngines(searchEngineService.getAllSearchEngines());
         return ResponseEntity.ok(settings);
+    }
+
+    @RequestMapping(value = "/search-engines", method = RequestMethod.GET)
+    public ResponseEntity getAllSearchEngines() {
+        return ResponseEntity.ok(searchEngineService.getAllSearchEngines());
     }
 
 }

@@ -39,19 +39,14 @@
         <div class="col-xs-12 col-sm-3">{{gift.description}}</div>
         <div class="col-xs-6 col-sm-3">
             <a ng-if="gift.link" ng-href="{{gift.link}}">{{ gift.name }}</a>
-            <a class="pull-right" ng-href="{{getSearchGiftLink(gift)}}" target="_blank"><i class="fa fa-google"
-                                                                                           aria-hidden="true"
-                                                                                           title="Search with google"></i></a>
+            <span ng-repeat="engine in searchEngines">
+                <a class="pull-right" ng-href="{{engine.searchString + gift.name}}" target="_blank">
+                <i ng-class="'fa fa-fw '+ engine.icon"
+                   aria-hidden="true"
+                   title="{{searchWith + engine.name}}"></i>
+                </a>
+            </span>
         </div>
         <div class="col-xs-6 col-md-2">{{ getGiftDate(gift) }}</div>
     </div>
-    <!--<table class="table animate">-->
-    <!--<tr ng-repeat="gift in giftsList">-->
-    <!--<td>{{gift.status}}</td>-->
-    <!--<td></td>-->
-    <!--<td>{{gift.description}}</td>-->
-    <!--<td></td>-->
-    <!--<td>{{gift.created}}</td>-->
-    <!--</tr>-->
-    <!--</table>-->
 </div>

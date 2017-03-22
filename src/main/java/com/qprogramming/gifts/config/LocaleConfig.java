@@ -1,9 +1,8 @@
 package com.qprogramming.gifts.config;
 
-import com.qprogramming.gifts.messages.ResourceMessageBundle;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.context.annotation.Import;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
@@ -13,6 +12,7 @@ import java.util.Locale;
  * Created by XE050991499 on 2017-03-17.
  */
 @Configuration
+@Import({PropertiesConfiguration.class})
 public class LocaleConfig {
 
     @Bean
@@ -22,12 +22,4 @@ public class LocaleConfig {
         return slr;
     }
 
-    @Bean
-    public ReloadableResourceBundleMessageSource messageSource() {
-        ReloadableResourceBundleMessageSource messageSource = new ResourceMessageBundle();
-        messageSource.setBasename("classpath:lang/messages");
-        messageSource.setCacheSeconds(3600); //refresh cache once per hour
-        messageSource.setFallbackToSystemLocale(false);
-        return messageSource;
-    }
 }

@@ -72,7 +72,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                             , "/api/messages"
                             , "/api/user/validate-email"
                             , "/api/user/validate-username").permitAll()
-                    .antMatchers("/api/manage/*").hasAuthority(Roles.ROLE_ADMIN.toString())
+                    .antMatchers("/api/manage/settings").hasAuthority(Roles.ROLE_ADMIN.toString())
                     .anyRequest().authenticated()
                 .and().formLogin()
                     .loginPage("/#/login")
@@ -86,7 +86,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                             , "/logout"
                             , "/api/user/*"
                             , "/api/gift/*"
-                            , "/api/manage/*"
+                            , "/api/app/*"
                             , "/api/messages")
                     .csrfTokenRepository(csrfTokenRepository())
                 .and().logout()

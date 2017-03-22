@@ -6,7 +6,7 @@ app.controller('manage', function ($rootScope, $scope, $http, $log, AlertService
         $scope.showSearchForm = null;
         $scope.editSearch = false;
 
-        $http.get('api/manage/settings').then(
+        $http.get('api/app/settings').then(
             function (result) {
                 $scope.settings = result.data;
             }).catch(function (response) {
@@ -17,7 +17,7 @@ app.controller('manage', function ($rootScope, $scope, $http, $log, AlertService
         $scope.update = function () {
             $scope.showSearchForm = false;
             $scope.editSearch = false;
-            $http.post('api/manage/settings', $scope.settings).then(
+            $http.post('api/app/settings', $scope.settings).then(
                 function () {
                     AlertService.addSuccess('app.manage.saved');
                 }).catch(function (response) {
@@ -36,7 +36,7 @@ app.controller('manage', function ($rootScope, $scope, $http, $log, AlertService
 
         $scope.updateSearchEngine = function () {
             if (!$scope.editSearch) {
-                $scope.settings.searchEngines.unshift($scope.searchEngine);
+                $scope.settings.searchEngines.push($scope.searchEngine);
                 $scope.searchEngine = {};
                 $scope.showSearchForm = false;
             } else {
@@ -60,7 +60,7 @@ app.controller('manage', function ($rootScope, $scope, $http, $log, AlertService
         };
 
         $scope.editSearchEngine = function (engine) {
-            $scope.searchEngine = engine;
+            $scope.searchEngine = $.extend({}, engine);
             $scope.showSearchForm = true;
             $scope.editSearch = true;
             // $scope.update();

@@ -1,14 +1,22 @@
 app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, $route, $translate, AlertService) {
     $scope.giftForm = {};
     $scope.giftsList = [];
+    $scope.searchEngines = [];
 
     $scope.showAddNew = false;
     $scope.userList = false;
     $scope.listTitle = "";
 
+    $scope.searchWith = '';
+
+    //init
     if ($rootScope.authenticated) {
         $scope.userList = !$routeParams.username || $routeParams.username === $rootScope.principal.username;
+        $translate("gift.search").then(function (translation) {
+            $scope.searchWith = translation;
+        });
         getGiftList($routeParams.username);
+        getSearchEngines();
     }
 
     $scope.show = function () {
@@ -96,6 +104,22 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
                 angular.forEach(response.data, function (value) {
                     $scope.giftsList.push(value);
                 });
+            }).catch(function (response) {
+            AlertService.addError("error.general");
+            $log.debug(response);
+        });
+    }
+
+    function getSearchEngines() {
+        var url = 'api/app/search-engines';
+        $http.get(url).then(
+            function (response) {
+                // $scope.searchEngines = [];
+                $log.debug("[DEBUG] Search engines loaded");
+                $scope.searchEngines = response.data;
+                // angular.forEach(response.data, function (value) {
+                //     $scope.giftsList.push(value);
+                // });
             }).catch(function (response) {
             AlertService.addError("error.general");
             $log.debug(response);
