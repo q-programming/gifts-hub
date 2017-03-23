@@ -17,8 +17,8 @@ app.constant("MESSAGES", {
 app.config(function ($routeProvider, $httpProvider, $locationProvider, $logProvider, localStorageServiceProvider, $translateProvider) {
     $routeProvider
         .when('/', {
-            templateUrl: 'home.html',
-            controller: 'home'
+            templateUrl: 'list.html',
+            controller: 'gift'
         })
         .when('/login', {
             templateUrl: 'login.html',
