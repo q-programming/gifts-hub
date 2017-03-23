@@ -3,7 +3,10 @@ package com.qprogramming.gifts.api.gift;
 import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.gift.Gift;
+import com.qprogramming.gifts.gift.GiftForm;
 import com.qprogramming.gifts.gift.GiftService;
+import com.qprogramming.gifts.settings.SearchEngineService;
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,27 +25,26 @@ public class GiftRestController {
 
     private AccountService accountService;
     private GiftService giftService;
+    private SearchEngineService searchEngineService;
 
     @Autowired
-    public GiftRestController(AccountService accountService, GiftService giftService) {
+    public GiftRestController(AccountService accountService, GiftService giftService, SearchEngineService searchEngineService) {
         this.accountService = accountService;
         this.giftService = giftService;
+        this.searchEngineService = searchEngineService;
     }
 
     @RequestMapping("/create")
-    public ResponseEntity createGift(@RequestBody String giftString) {
-        JSONObject giftObj = new JSONObject(giftString);
-        if(!giftObj.has(Gift.NAME)){
-            return new ResponseEntity<>("Name field is required",HttpStatus.BAD_REQUEST);
-        }
-        Gift newGift = new Gift();
-        newGift.setName(giftObj.getString(Gift.NAME));
-        newGift.setDescription(getIfExists(giftObj, Gift.DESCRIPTION));
-        newGift.setLink(getIfExists(giftObj, Gift.LINK));
+    public ResponseEntity createGift(@RequestBody GiftForm giftForm) {
+        Gift newGift = giftForm.createGift();
         //TODO add category later on
-        if (giftObj.has(Gift.CATEGORY)) {
-            giftObj.getString(Gift.CATEGORY);
+//        if (giftObj.has(Gift.CATEGORY)) {
+//            giftObj.getString(Gift.CATEGORY);
+//        }
+        if (StringUtils.isEmpty(giftForm.getName())) {
+            return new ResponseEntity<>("Name field is required", HttpStatus.BAD_REQUEST);
         }
+        newGift.setEngines(searchEngineService.getSearchEngines(giftForm.getSearchEngines()));
         Gift gift = giftService.create(newGift);
         return new ResponseEntity<>(gift, HttpStatus.CREATED);
     }

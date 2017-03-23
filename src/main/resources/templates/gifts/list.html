@@ -1,45 +1,74 @@
 <div ng-if="authenticated">
     <h1>{{listTitle}}</h1>
-    <div class="animate" ng-show="showAddNew">
-        <form role="form" name="newGift" ng-submit="create()">
-            <div class="form-group" show-errors="">
-                <label for="name" translate="gift.name"></label>
-                <input type="text" class="form-control" id="name" name="name" ng-model="giftForm.name"
-                       required="required"/>
-            </div>
-            <div class="form-group" show-errors="">
-                <label for="description" translate="gift.description"></label>
-                <textarea class="form-control" id="description" name="description" ng-model="giftForm.description">
+    <div class="animate row" ng-show="showAddNew">
+        <div class="col-md-offset-2 col-md-6">
+            <form role="form" name="newGift" ng-submit="create()">
+                <div class="form-group" show-errors="">
+                    <label for="name" translate="gift.name"></label>
+                    <input type="text" class="form-control" id="name" name="name" ng-model="giftForm.name"
+                           required="required"/>
+                </div>
+                <div class="form-group" show-errors="">
+                    <label for="description" translate="gift.description"></label>
+                    <textarea class="form-control" id="description" name="description" ng-model="giftForm.description">
                 </textarea>
-            </div>
-            <div class="form-group" show-errors="">
-                <label for="link" translate="gift.link"></label>
-                <input type="url" class="form-control" id="link" name="link" ng-model="giftForm.link"/>
-                <span class="validation-error" ng-show="newGift.link.$error.url" translate="gift.link.error">
+                </div>
+                <div class="form-group" show-errors="">
+                    <label for="link" translate="gift.link"></label>
+                    <input type="url" class="form-control" id="link" name="link" ng-model="giftForm.link"/>
+                    <span class="validation-error" ng-show="newGift.link.$error.url" translate="gift.link.error">
                 </span>
-            </div>
-            <div class="form-group">
-                <label for="category" translate="gift.category"></label>
-                <input type="text" class="form-control" id="category" name="category" ng-model="giftForm.category"/>
-            </div>
-            <a href="" class="btn btn-default" ng-click="reset()" translate="main.cancel"></a>
-            <button type="submit" class="btn btn-primary" translate="main.create"></button>
-        </form>
+                </div>
+                <div class="form-group">
+                    <label for="category" translate="gift.category"></label>
+                    <input type="text" class="form-control" id="category" name="category" ng-model="giftForm.category"/>
+                </div>
+                <label translate="app.manage.search.engine"></label>
+                <div class="form-group">
+                <span ng-repeat="engine in searchEngines">
+                    <label>
+                        <input type="checkbox" ng-model="giftForm.searchEngines[engine.id]" name="searchEngines"
+                               id="{{engine.id}}"/>
+                        <i ng-class="'fa fa-fw '+ engine.icon"></i>{{engine.name}}
+                    </label><br/>
+                </span>
+                    <span class="help-block" translate="gift.search.help"></span>
+                </div>
+                <div class="pull-right">
+                    <a href="" class="btn btn-default" ng-click="reset()" translate="main.cancel"></a>
+                    <button type="submit" class="btn btn-primary" translate="main.create"></button>
+                </div>
+            </form>
+        </div>
     </div>
-    <button type="button" class="btn btn-success" ng-click="show()" ng-show="!showAddNew &amp;&amp; userList">
-        <i class="fa fa-plus" aria-hidden="true"></i>
-        <span translate="gift.new.add"></span>
-    </button>
+    <div class="row">
+        <button type="button" class="btn btn-success pull-right" ng-click="show()"
+                ng-show="!showAddNew &amp;&amp; userList">
+            <i class="fa fa-plus" aria-hidden="true"></i>
+            <span translate="gift.new.add"></span>
+        </button>
+    </div>
+    <div class="row header hidden-xs">
+        <div class="col-sm-3">
+            <strong translate="gift.name"></strong>
+        </div>
+        <div class="col-sm-3 hidden-xs">
+            <strong translate="gift.description"></strong>
+        </div>
+        <div class="col-sm-3 hidden-xs">
+            <strong translate="gift.link"></strong>
+        </div>
+        <div class="col-sm-2 hidden-xs">
+            <strong translate="gift.add.date"></strong>
+        </div>
+    </div>
     <div class="row" ng-repeat="gift in giftsList">
-        <!--STATUS-->
-        <!--<div class="col-sm-1 text-center" ng-bind-html="getGiftStatus(gift)">-->
-        <!--</div>-->
         <div class="col-xs-12 col-sm-3"><span ng-bind-html="getGiftStatus(gift)"></span><strong>{{gift.name}}</strong>
         </div>
         <div class="col-xs-12 col-sm-3">{{gift.description}}</div>
         <div class="col-xs-6 col-sm-3">
             <a ng-if="gift.link" ng-href="{{gift.link}}">{{ gift.name }}</a>
-            <span ng-repeat="engine in searchEngines">
+            <span ng-repeat="engine in gift.engines">
                 <a class="pull-right" ng-href="{{engine.searchString + gift.name}}" target="_blank">
                 <i ng-class="'fa fa-fw '+ engine.icon"
                    aria-hidden="true"

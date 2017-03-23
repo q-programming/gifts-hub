@@ -5,7 +5,9 @@ import com.qprogramming.gifts.TestUtil;
 import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.gift.Gift;
+import com.qprogramming.gifts.gift.GiftForm;
 import com.qprogramming.gifts.gift.GiftService;
+import com.qprogramming.gifts.settings.SearchEngineService;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,13 +44,15 @@ public class GiftRestControllerTest {
     private MockSecurityContext securityMock;
     @Mock
     private Authentication authMock;
+    @Mock
+    private SearchEngineService searchEngineServiceMock;
 
     private Account testAccount;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        GiftRestController giftsCtrl = new GiftRestController(accSrvMock, giftServiceMock);
+        GiftRestController giftsCtrl = new GiftRestController(accSrvMock, giftServiceMock, searchEngineServiceMock);
         testAccount = TestUtil.createAccount();
         when(securityMock.getAuthentication()).thenReturn(authMock);
         when(authMock.getPrincipal()).thenReturn(testAccount);
@@ -58,22 +62,24 @@ public class GiftRestControllerTest {
 
     @Test
     public void createGiftSuccess() throws Exception {
-        JSONObject object = new JSONObject();
-        object.put(Gift.NAME, "Gift");
-        object.put(Gift.DESCRIPTION, "Some sample description");
-        object.put(Gift.CATEGORY, "Some Category");
-        object.put(Gift.LINK, "http://google.com");
-        giftsRestCtrl.perform(post(API_GIFT_CREATE).contentType(TestUtil.APPLICATION_JSON_UTF8).content(object.toString()))
+        GiftForm form = new GiftForm();
+        form.setName("GIft");
+        form.setDescription("Some sample description");
+        form.setLink("http://google.com");
+        List<Long> idList = new ArrayList<>();
+        idList.add(1L);
+        idList.add(2L);
+        form.setSearchEngines(idList);
+        giftsRestCtrl.perform(post(API_GIFT_CREATE).contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(form)))
                 .andExpect(status().isCreated());
         verify(giftServiceMock, times(1)).create(any(Gift.class));
     }
 
     @Test
     public void createGiftEmptyName() throws Exception {
-        JSONObject object = new JSONObject();
-        object.put(Gift.CATEGORY, "new");
-        object.put(Gift.LINK, "http://google.com");
-        giftsRestCtrl.perform(post(API_GIFT_CREATE).contentType(TestUtil.APPLICATION_JSON_UTF8).content(object.toString()))
+        GiftForm form = new GiftForm();
+        form.setLink("http://google.com");
+        giftsRestCtrl.perform(post(API_GIFT_CREATE).contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(form)))
                 .andExpect(status().isBadRequest());
     }
 

@@ -1,7 +1,10 @@
 package com.qprogramming.gifts.gift;
 
+import com.qprogramming.gifts.settings.SearchEngine;
+
 import javax.persistence.*;
 import java.util.Date;
+import java.util.Set;
 
 /**
  * Created by Khobar on 10.03.2017.
@@ -30,8 +33,13 @@ public class Gift {
     @Column
     private String userId;
 
+    @ManyToMany
+    @JoinColumn(name = "earch_engines")
+    private Set<SearchEngine> engines;
+
     @Column
     private Date created;
+
     @Enumerated(EnumType.STRING)
     private GiftStatus status;
 
@@ -93,6 +101,14 @@ public class Gift {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Set<SearchEngine> getEngines() {
+        return engines;
+    }
+
+    public void setEngines(Set<SearchEngine> engines) {
+        this.engines = engines;
     }
 
     @Override

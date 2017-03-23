@@ -71,7 +71,7 @@ app.controller('register', function ($scope, $rootScope, $http, $log, AlertServi
             function (response) {
                 if (response.data.code === 'ERROR') {
                     $log.debug(response.data);
-                    AlertService.addError("user.register.failed", response.data.message);
+                    AlertService.addError("user.register.failed", response);
                 } else {
                     AlertService.addSuccess('user.register.success');
                     $scope.success = true;
@@ -98,7 +98,7 @@ app.controller('register', function ($scope, $rootScope, $http, $log, AlertServi
                     $scope.userForm.email.$setValidity("exists", true);
                 }
             }).catch(function (response) {
-            AlertService.addError("Something went wrong: " + response.data);
+            AlertService.addError("error.general", response);
         });
     };
     $scope.checkUsername = function () {
@@ -110,7 +110,7 @@ app.controller('register', function ($scope, $rootScope, $http, $log, AlertServi
                     $scope.userForm.username.$setValidity("exists", true);
                 }
             }).catch(function (response) {
-            AlertService.addError("Something went wrong: " + response.data);
+            AlertService.addError("error.general", response);
         });
     };
     $scope.checkPasswords = function () {
@@ -141,7 +141,7 @@ app.controller('userlist', function ($scope, $rootScope, $http, $log, AlertServi
                     $scope.users.push(user);
                 });
             }).catch(function (response) {
-            AlertService.addError("error.general", response.data);
+            AlertService.addError("error.general", response);
             $log.debug(response);
         });
     }

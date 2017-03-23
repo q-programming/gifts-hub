@@ -15,7 +15,7 @@ body {
     margin-top: 15px;
 }
 
-/*Start Side bar styling*/
+/*NAVBAR*/
 .sidebar {
     display: none;
     padding: 0 !important;
@@ -98,42 +98,7 @@ img.avatar {
     color: white !important;
 }
 
-@media ( min-width: 768px) {
-    .sidebar {
-        position: fixed !important;
-        top: 51px;
-        bottom: 0;
-        left: 0;
-        z-index: 1000;
-        display: block;
-        overflow-x: hidden;
-        overflow-y: auto;
-        /* Scrollable contents if viewport is shorter than content. */
-        background-color: #c4c4c4;
-        /*border-right: 1px solid #eee;*/
-    }
-
-    .sidebar.smaller {
-        top: 52px;
-        padding: -1px;
-        display: none;
-    }
-}
-
-/*End Side bar styling*/
-
-a.white {
-    color: white !important;
-}
-
-a.black {
-    color: #000;
-}
-
-img.center {
-    display: block;
-    margin: 0 auto;
-}
+/*END NAVBAR*/
 
 /*ANIMATION*/
 .animate {
@@ -262,4 +227,25 @@ img-crop canvas {
     width: 200px;
     height: 200px;
     z-index: -1;
+}
+
+/*END UPLOAD*/
+/*MISC*/
+a.white {
+    color: white !important;
+}
+
+a.black {
+    color: #000;
+}
+
+img.center {
+    display: block;
+    margin: 0 auto;
+}
+
+.row.header {
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid lightgray;
 }

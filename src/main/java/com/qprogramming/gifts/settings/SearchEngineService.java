@@ -33,4 +33,12 @@ public class SearchEngineService {
         searchEngineRepository.delete(toRemove);
         searchEngineRepository.save(dbSearchEngines);
     }
+
+    public SearchEngine findById(Long id) {
+        return searchEngineRepository.findById(id);
+    }
+
+    public Set<SearchEngine> getSearchEngines(List<Long> searchEngines) {
+        return searchEngines.stream().map(this::findById).collect(Collectors.toSet());
+    }
 }

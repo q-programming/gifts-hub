@@ -21,15 +21,15 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
 
     $scope.show = function () {
         $scope.showAddNew = true;
+        $scope.giftForm.searchEngines = {};
+        angular.forEach($scope.searchEngines, function (engine) {
+            $scope.giftForm.searchEngines[engine.id] = true;
+        });
     };
 
-    $scope.getSearchGiftLink = function (gift) {
-        var serachEngine = "http://www.google.com/search?q=";
-        return serachEngine + gift.name;
-    };
     $scope.getGiftDate = function (gift) {
         var date = new Date(gift.created);
-        var dateString = ('0' + date.getDate()).slice(-2) + '-' + ('0' + (date.getMonth() + 1)).slice(-2) + '-' + date.getFullYear() + ' ' + date.getHours() + ':' + date.getMinutes();
+        var dateString = ('0' + date.getDate()).slice(-2) + '-' + ('0' + (date.getMonth() + 1)).slice(-2) + '-' + date.getFullYear();
         return dateString;
     };
 
@@ -70,13 +70,20 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
 
     $scope.create = function () {
         $scope.showAddNew = true;
-        $http.post('api/gift/create', $scope.giftForm).then(
-            function (response) {
-                $scope.giftsList.unshift(response.data);
+        $scope.newCreateGift = $.extend({}, $scope.giftForm);
+        $scope.newCreateGift.searchEngines = [];
+        angular.forEach($scope.giftForm.searchEngines, function (val, key) {
+            if (val === true) {
+                $scope.newCreateGift.searchEngines.push(key)
+            }
+        });
+        $http.post('api/gift/create', angular.toJson($scope.newCreateGift)).then(
+            function () {
                 $scope.reset();
+                getGiftList();
                 AlertService.addSuccess("gift.new.added");
             }).catch(function (response) {
-            AlertService.addError("error.general");
+            AlertService.addError("error.general", response);
             $log.debug(response);
         });
     };

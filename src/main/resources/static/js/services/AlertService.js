@@ -23,9 +23,9 @@ AlertService.factory('AlertService', function ($http, $log, $rootScope, $timeout
             AlertService.addAlert(MESSAGES.ERROR, translation);
         });
     };
-    AlertService.addError = function (code, message) {
+    AlertService.addError = function (code, response) {
         $translate(code).then(function (translation) {
-            AlertService.addAlert(MESSAGES.ERROR, translation + "</br>" + message);
+            AlertService.addAlert(MESSAGES.ERROR, translation + "</br>" + response.message);
         });
     };
 
