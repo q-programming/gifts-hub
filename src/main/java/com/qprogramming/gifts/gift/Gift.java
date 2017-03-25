@@ -1,5 +1,6 @@
 package com.qprogramming.gifts.gift;
 
+import com.qprogramming.gifts.gift.category.Category;
 import com.qprogramming.gifts.settings.SearchEngine;
 
 import javax.persistence.*;
@@ -36,6 +37,9 @@ public class Gift {
     @ManyToMany
     @JoinColumn(name = "earch_engines")
     private Set<SearchEngine> engines;
+
+    @ManyToOne
+    private Category category;
 
     @Column
     private Date created;
@@ -109,6 +113,14 @@ public class Gift {
 
     public void setEngines(Set<SearchEngine> engines) {
         this.engines = engines;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
     }
 
     @Override

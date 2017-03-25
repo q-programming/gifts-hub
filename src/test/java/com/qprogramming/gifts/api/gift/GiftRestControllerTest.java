@@ -7,8 +7,9 @@ import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.gift.Gift;
 import com.qprogramming.gifts.gift.GiftForm;
 import com.qprogramming.gifts.gift.GiftService;
+import com.qprogramming.gifts.gift.category.Category;
+import com.qprogramming.gifts.gift.category.CategoryRepository;
 import com.qprogramming.gifts.settings.SearchEngineService;
-import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -46,13 +47,15 @@ public class GiftRestControllerTest {
     private Authentication authMock;
     @Mock
     private SearchEngineService searchEngineServiceMock;
+    @Mock
+    private CategoryRepository categoryRepositoryMock;
 
     private Account testAccount;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        GiftRestController giftsCtrl = new GiftRestController(accSrvMock, giftServiceMock, searchEngineServiceMock);
+        GiftRestController giftsCtrl = new GiftRestController(accSrvMock, giftServiceMock, searchEngineServiceMock, categoryRepositoryMock);
         testAccount = TestUtil.createAccount();
         when(securityMock.getAuthentication()).thenReturn(authMock);
         when(authMock.getPrincipal()).thenReturn(testAccount);
@@ -69,10 +72,14 @@ public class GiftRestControllerTest {
         List<Long> idList = new ArrayList<>();
         idList.add(1L);
         idList.add(2L);
+        Category cat2 = new Category("cat2");
         form.setSearchEngines(idList);
+        form.setCategory("cat2");
+        when(categoryRepositoryMock.findByName(cat2.getName())).thenReturn(cat2);
         giftsRestCtrl.perform(post(API_GIFT_CREATE).contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(form)))
                 .andExpect(status().isCreated());
         verify(giftServiceMock, times(1)).create(any(Gift.class));
+        verify(categoryRepositoryMock, times(1)).save(any(Category.class));
     }
 
     @Test

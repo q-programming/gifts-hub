@@ -9,6 +9,13 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
 
     $scope.searchWith = '';
 
+    $scope.itemArray = [
+        {id: 1, name: 'first'},
+        {id: 2, name: 'second'},
+        {id: 3, name: 'third'},
+        {id: 4, name: 'fourth'},
+        {id: 5, name: 'fifth'},
+    ];
     //init
     if ($rootScope.authenticated) {
         $scope.userList = !$routeParams.username || $routeParams.username === $rootScope.principal.username;
@@ -17,6 +24,7 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
         });
         getGiftList($routeParams.username);
         getSearchEngines();
+        getCategories();
     }
 
     $scope.show = function () {
@@ -77,15 +85,42 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
                 $scope.newCreateGift.searchEngines.push(key)
             }
         });
+        $scope.newCreateGift.categories = [];
+        $scope.newCreateGift.category = $scope.giftForm.category.name;
         $http.post('api/gift/create', angular.toJson($scope.newCreateGift)).then(
             function () {
                 $scope.reset();
                 getGiftList();
+                getCategories();
                 AlertService.addSuccess("gift.new.added");
             }).catch(function (response) {
             AlertService.addError("error.general", response);
             $log.debug(response);
         });
+    };
+
+    $scope.refreshResults = function ($select) {
+        var search = $select.search,
+            list = angular.copy($select.items),
+            FLAG = -1;
+        //remove last user input
+        list = list.filter(function (item) {
+            return item.id !== FLAG;
+        });
+
+        if (!search) {
+            //use the predefined list
+            $select.items = list;
+        }
+        else {
+            //manually add user input and set selection
+            var userInputItem = {
+                id: FLAG,
+                name: search
+            };
+            $select.items = [userInputItem].concat(list);
+            $select.selected = userInputItem;
+        }
     };
 
 
@@ -127,6 +162,21 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
                 // angular.forEach(response.data, function (value) {
                 //     $scope.giftsList.push(value);
                 // });
+            }).catch(function (response) {
+            AlertService.addError("error.general");
+            $log.debug(response);
+        });
+    }
+
+    function getCategories() {
+        var url = 'api/gift/categories';
+        $http.get(url).then(
+            function (response) {
+                $scope.categories = []
+                $log.debug("[DEBUG] Categories loaded");
+                angular.forEach(response.data, function (cat) {
+                    $scope.categories.push({id: cat.id, name: cat.name})
+                });
             }).catch(function (response) {
             AlertService.addError("error.general");
             $log.debug(response);

@@ -14,6 +14,16 @@ public class GiftForm {
     private String link;
     private List<Long> searchEngines;
 
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    private String category;
+
     public String getName() {
         return name;
     }
