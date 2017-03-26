@@ -6,6 +6,7 @@ var app = angular.module('app', [
     , 'pascalprecht.translate'
     , 'ngImgCrop'
     , 'ui.bootstrap'
+    , 'ui.select'
     , 'AvatarService'
     , 'AuthService'
     , 'AlertService']);
