@@ -9,6 +9,8 @@ import org.springframework.http.MediaType;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 //import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -41,6 +43,11 @@ public class TestUtil {
     public static <T> List<T> convertJsonToList(String json, Class<List> listClass, Class<T> elementClass) throws java.io.IOException {
         ObjectMapper mapper = new org.codehaus.jackson.map.ObjectMapper();
         return mapper.readValue(json, TypeFactory.defaultInstance().constructCollectionType(listClass, elementClass));
+    }
+
+    public static <T, V> Map<T, V> convertJsonToTreeMap(String json, Class<T> keyClass, Class<V> valueClass) throws java.io.IOException {
+        ObjectMapper mapper = new org.codehaus.jackson.map.ObjectMapper();
+        return mapper.readValue(json, TypeFactory.defaultInstance().constructMapType(TreeMap.class, keyClass, valueClass));
     }
 
 

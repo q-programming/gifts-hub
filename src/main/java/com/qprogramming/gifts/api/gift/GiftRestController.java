@@ -77,10 +77,6 @@ public class GiftRestController {
         return new ResponseEntity<>(giftService.findAllByUser(account.getId()), HttpStatus.OK);
     }
 
-    private String getIfExists(JSONObject jsonObject, String key) {
-        return jsonObject.has(key) ? jsonObject.getString(key) : null;
-    }
-
     @RequestMapping("/categories")
     public ResponseEntity getCategories(@RequestParam(required = false) String term) {
         if (StringUtils.isBlank(term)) {

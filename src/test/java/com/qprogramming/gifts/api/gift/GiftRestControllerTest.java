@@ -10,6 +10,8 @@ import com.qprogramming.gifts.gift.GiftService;
 import com.qprogramming.gifts.gift.category.Category;
 import com.qprogramming.gifts.gift.category.CategoryRepository;
 import com.qprogramming.gifts.settings.SearchEngineService;
+import com.qprogramming.gifts.support.Utils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -22,8 +24,12 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -105,12 +111,13 @@ public class GiftRestControllerTest {
         gift.setUserId(testAccount.getId());
         List<Gift> giftList = new ArrayList<>();
         giftList.add(gift);
+        Map<Category, List<Gift>> expected = Utils.toGiftTreeMap(giftList);
         when(accSrvMock.findByUsername(testAccount.getUsername())).thenReturn(testAccount);
-        when(giftServiceMock.findAllByUser(testAccount.getId())).thenReturn(giftList);
+        when(giftServiceMock.findAllByUser(testAccount.getId())).thenReturn(expected);
         MvcResult mvcResult = giftsRestCtrl.perform(get(API_GIFT_LIST + "/" + testAccount.getUsername())).andExpect(status().isOk()).andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
-        List<Gift> results = TestUtil.convertJsonToList(contentAsString, List.class, Gift.class);
-        assertEquals(giftList, results);
+        assertTrue(contentAsString.contains(testAccount.getId()));
+        assertTrue(contentAsString.contains("name"));
     }
 
 

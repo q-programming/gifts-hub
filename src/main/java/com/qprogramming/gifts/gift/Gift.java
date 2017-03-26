@@ -2,6 +2,7 @@ package com.qprogramming.gifts.gift;
 
 import com.qprogramming.gifts.gift.category.Category;
 import com.qprogramming.gifts.settings.SearchEngine;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -116,6 +117,11 @@ public class Gift {
     }
 
     public Category getCategory() {
+        if (category == null) {
+            Category category = new Category(StringUtils.EMPTY);
+            category.setPriority(Integer.MIN_VALUE);
+            return category;
+        }
         return category;
     }
 

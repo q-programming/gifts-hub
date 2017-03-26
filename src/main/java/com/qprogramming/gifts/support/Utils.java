@@ -1,6 +1,8 @@
 package com.qprogramming.gifts.support;
 
 import com.qprogramming.gifts.account.Account;
+import com.qprogramming.gifts.gift.Gift;
+import com.qprogramming.gifts.gift.category.Category;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.slf4j.Logger;
@@ -18,12 +20,10 @@ import javax.servlet.http.HttpSession;
 import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Locale;
-import java.util.UUID;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class Utils {
     private static final String DATE_FORMAT = "dd-MM-yyyy";
@@ -204,4 +204,20 @@ public class Utils {
             }
         }
     }
+
+    /**
+     * Converts gifts list to TreeMap based on their's category
+     *
+     * @param gifts list of gifts to put into TreeMap
+     * @return TreeMap with gifts sorted by categories ( based on priorities)
+     */
+    public static Map<Category, List<Gift>> toGiftTreeMap(List<Gift> gifts) {
+        Map<Category, List<Gift>> result = new TreeMap<>();
+        gifts.forEach(gift -> {
+            result.computeIfAbsent(gift.getCategory(), k -> new ArrayList<>());
+            result.get(gift.getCategory()).add(gift);
+        });
+        return result;
+    }
+
 }

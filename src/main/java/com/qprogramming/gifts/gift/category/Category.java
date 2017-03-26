@@ -1,9 +1,11 @@
 package com.qprogramming.gifts.gift.category;
 
+import org.apache.commons.lang3.StringUtils;
+
 import javax.persistence.*;
 
 @Entity
-public class Category {
+public class Category implements Comparable<Category> {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "cat_seq_gen")
     @SequenceGenerator(name = "cat_seq_gen", sequenceName = "cat_id_seq", allocationSize = 1)
@@ -21,6 +23,8 @@ public class Category {
     }
 
     public Category() {
+        this.id = (long) Integer.MIN_VALUE;
+        this.priority = Integer.MIN_VALUE;
     }
 
     public Long getId() {
@@ -51,19 +55,33 @@ public class Category {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
-        Category category1 = (Category) o;
-
-        if (id != null ? !id.equals(category1.id) : category1.id != null) return false;
-        if (name != null ? !name.equals(category1.name) : category1.name != null) return false;
-        return priority != null ? priority.equals(category1.priority) : category1.priority == null;
+        Category category = (Category) o;
+        return id.equals(category.id);
     }
 
     @Override
     public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
+        int result = id.hashCode();
         result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (priority != null ? priority.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public int compareTo(Category o) {
+        if (this.priority < o.priority) {
+            return 1;
+        } else if (this.priority > o.priority) {
+            return -1;
+        }
+        return this.name.compareTo(o.getName());
+    }
+
+    @Override
+    public String toString() {
+        if (StringUtils.isEmpty(name)) {
+            return StringUtils.EMPTY;
+        } else {
+            return name;
+        }
     }
 }

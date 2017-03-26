@@ -25,8 +25,9 @@
                         <ui-select-match placeholder="Select category or add new one...">
                             <span ng-bind="$select.selected.name"></span>
                         </ui-select-match>
-                        <ui-select-choices repeat="category in (categories | filter: $select.search) track by category.id"
-                            refresh="refreshResults($select)" refresh-delay="0">
+                        <ui-select-choices
+                                repeat="category in (categories | filter: $select.search) track by category.id"
+                                refresh="refreshResults($select)" refresh-delay="0">
                             <span ng-bind="category.name"></span>
                         </ui-select-choices>
                     </ui-select>
@@ -72,20 +73,24 @@
             <strong translate="gift.add.date"></strong>
         </div>
     </div>
-    <div class="row" ng-repeat="gift in giftsList">
-        <div class="col-xs-12 col-sm-3"><span ng-bind-html="getGiftStatus(gift)"></span><strong>{{gift.name}}</strong>
-        </div>
-        <div class="col-xs-12 col-sm-3">{{gift.description}}</div>
-        <div class="col-xs-6 col-sm-3">
-            <a ng-if="gift.link" ng-href="{{gift.link}}">{{ gift.name }}</a>
-            <span ng-repeat="engine in gift.engines">
+    <div ng-repeat="(key, value) in giftsList">
+        <h4><strong translate="{{key}}">{{key}}</strong></h4>
+        <div class="row" ng-repeat="gift in value">
+            <div class="col-xs-12 col-sm-3"><span
+                    ng-bind-html="getGiftStatus(gift)"></span><strong>{{gift.name}}</strong>
+            </div>
+            <div class="col-xs-12 col-sm-3">{{gift.description}}</div>
+            <div class="col-xs-6 col-sm-3">
+                <a ng-if="gift.link" ng-href="{{gift.link}}">{{ gift.name }}</a>
+                <span ng-repeat="engine in gift.engines">
                 <a class="pull-right" ng-href="{{engine.searchString + gift.name}}" target="_blank">
                 <i ng-class="'fa fa-fw '+ engine.icon"
                    aria-hidden="true"
                    title="{{searchWith + engine.name}}"></i>
                 </a>
             </span>
+            </div>
+            <div class="col-xs-6 col-md-2">{{ getGiftDate(gift) }}</div>
         </div>
-        <div class="col-xs-6 col-md-2">{{ getGiftDate(gift) }}</div>
     </div>
 </div>

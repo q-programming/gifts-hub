@@ -35,7 +35,7 @@ public class GiftServiceTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        giftService = new GiftService(accSrvMock, giftRepositoryMock);
+        giftService = new GiftService(giftRepositoryMock);
         testAccount = TestUtil.createAccount();
         when(securityMock.getAuthentication()).thenReturn(authMock);
         when(authMock.getPrincipal()).thenReturn(testAccount);

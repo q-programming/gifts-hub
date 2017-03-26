@@ -6,16 +6,13 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
     $scope.showAddNew = false;
     $scope.userList = false;
     $scope.listTitle = "";
+    $scope.categoryOther = "";
 
     $scope.searchWith = '';
 
-    $scope.itemArray = [
-        {id: 1, name: 'first'},
-        {id: 2, name: 'second'},
-        {id: 3, name: 'third'},
-        {id: 4, name: 'fourth'},
-        {id: 5, name: 'fifth'},
-    ];
+    $translate("gift.category.other").then(function (translation) {
+        $scope.categoryOther = translation;
+    });
     //init
     if ($rootScope.authenticated) {
         $scope.userList = !$routeParams.username || $routeParams.username === $rootScope.principal.username;
@@ -85,8 +82,9 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
                 $scope.newCreateGift.searchEngines.push(key)
             }
         });
-        $scope.newCreateGift.categories = [];
-        $scope.newCreateGift.category = $scope.giftForm.category.name;
+        if ($scope.giftForm.category) {
+            $scope.newCreateGift.category = $scope.giftForm.category.name;
+        }
         $http.post('api/gift/create', angular.toJson($scope.newCreateGift)).then(
             function () {
                 $scope.reset();
@@ -141,11 +139,15 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
         }
         $http.get(url).then(
             function (response) {
-                $scope.giftsList = [];
+                $scope.giftsList = {};
                 $log.debug("[DEBUG] User gifts loaded");
-                angular.forEach(response.data, function (value) {
-                    $scope.giftsList.push(value);
+                angular.forEach(response.data, function (value, key) {
+                    if (key === '') {
+                        key = $scope.categoryOther;
+                    }
+                    $scope.giftsList[key] = value;
                 });
+                $log.debug($scope.giftsList);
             }).catch(function (response) {
             AlertService.addError("error.general");
             $log.debug(response);
