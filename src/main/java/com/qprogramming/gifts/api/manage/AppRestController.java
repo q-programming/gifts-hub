@@ -2,7 +2,6 @@ package com.qprogramming.gifts.api.manage;
 
 import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.config.property.PropertyService;
-import com.qprogramming.gifts.settings.SearchEngine;
 import com.qprogramming.gifts.settings.SearchEngineService;
 import com.qprogramming.gifts.settings.Settings;
 import com.qprogramming.gifts.support.Utils;
@@ -19,9 +18,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.security.RolesAllowed;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static com.qprogramming.gifts.settings.Settings.APP_DEFAULT_LANG;
 
@@ -72,6 +68,11 @@ public class AppRestController {
     @RequestMapping(value = "/search-engines", method = RequestMethod.GET)
     public ResponseEntity getAllSearchEngines() {
         return ResponseEntity.ok(searchEngineService.getAllSearchEngines());
+    }
+
+    @RequestMapping(value = "/languages", method = RequestMethod.GET)
+    public ResponseEntity getAllLanguages() {
+        return ResponseEntity.ok(propertyService.getLanguages());
     }
 
 }

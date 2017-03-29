@@ -52,45 +52,47 @@
             </form>
         </div>
     </div>
-    <div class="row">
-        <button type="button" class="btn btn-success pull-right" ng-click="show()"
-                ng-show="!showAddNew &amp;&amp; userList">
-            <i class="fa fa-plus" aria-hidden="true"></i>
-            <span translate="gift.new.add"></span>
-        </button>
-    </div>
-    <div class="row header hidden-xs">
-        <div class="col-sm-3">
-            <strong translate="gift.name"></strong>
+    <div class="animate" ng-show="!showAddNew">
+        <div class="row">
+            <button type="button" class="btn btn-success pull-right" ng-click="show()"
+                    ng-show="!showAddNew &amp;&amp; userList">
+                <i class="fa fa-plus" aria-hidden="true"></i>
+                <span translate="gift.new.add"></span>
+            </button>
         </div>
-        <div class="col-sm-3 hidden-xs">
-            <strong translate="gift.description"></strong>
-        </div>
-        <div class="col-sm-3 hidden-xs">
-            <strong translate="gift.link"></strong>
-        </div>
-        <div class="col-sm-2 hidden-xs">
-            <strong translate="gift.add.date"></strong>
-        </div>
-    </div>
-    <div ng-repeat="(key, value) in giftsList">
-        <h4><strong translate="{{key}}">{{key}}</strong></h4>
-        <div class="row" ng-repeat="gift in value">
-            <div class="col-xs-12 col-sm-3"><span
-                    ng-bind-html="getGiftStatus(gift)"></span><strong>{{gift.name}}</strong>
+        <div class="row header hidden-xs">
+            <div class="col-sm-3">
+                <strong translate="gift.name"></strong>
             </div>
-            <div class="col-xs-12 col-sm-3">{{gift.description}}</div>
-            <div class="col-xs-6 col-sm-3">
-                <a ng-if="gift.link" ng-href="{{gift.link}}">{{ gift.name }}</a>
-                <span ng-repeat="engine in gift.engines">
+            <div class="col-sm-3 hidden-xs">
+                <strong translate="gift.description"></strong>
+            </div>
+            <div class="col-sm-3 hidden-xs">
+                <strong translate="gift.link"></strong>
+            </div>
+            <div class="col-sm-2 hidden-xs">
+                <strong translate="gift.add.date"></strong>
+            </div>
+        </div>
+        <div ng-repeat="(key, value) in giftsList">
+            <h4><strong translate="{{key}}">{{key}}</strong></h4>
+            <div class="row" ng-repeat="gift in value">
+                <div class="col-xs-12 col-sm-3"><span
+                        ng-bind-html="getGiftStatus(gift)"></span><strong>{{gift.name}}</strong>
+                </div>
+                <div class="col-xs-12 col-sm-3">{{gift.description}}</div>
+                <div class="col-xs-6 col-sm-3">
+                    <a ng-if="gift.link" ng-href="{{gift.link}}">{{ gift.name }}</a>
+                    <span ng-repeat="engine in gift.engines">
                 <a class="pull-right" ng-href="{{engine.searchString + gift.name}}" target="_blank">
                 <i ng-class="'fa fa-fw '+ engine.icon"
                    aria-hidden="true"
                    title="{{searchWith + engine.name}}"></i>
                 </a>
             </span>
+                </div>
+                <div class="col-xs-6 col-md-2">{{ getGiftDate(gift) }}</div>
             </div>
-            <div class="col-xs-6 col-md-2">{{ getGiftDate(gift) }}</div>
         </div>
     </div>
 </div>

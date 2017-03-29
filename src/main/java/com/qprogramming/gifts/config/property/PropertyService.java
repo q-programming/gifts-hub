@@ -47,7 +47,6 @@ public class PropertyService {
 
     public Map<String, String> getLanguages() {
         Map<String, String> languages = new HashMap<>();
-
         Map<String, Locale> availableLocales = new HashMap<>();
         for (Locale locale : Locale.getAvailableLocales()) {
             String msg = msgSrv.getMessage("main.language.name", null, LANG_DEFAULT_MSG, locale);

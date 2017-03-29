@@ -1,4 +1,4 @@
-<div ng-if="authenticated" xmlns:th="http://www.w3.org/1999/xhtml">
+<div ng-if="authenticated">
     <div class="row">
         <div class="col-md-offset-4 col-md-4 text-center">
             <div class="row">
@@ -29,12 +29,10 @@
             <hr/>
         </div>
     </div>
-    <div ng-if="authenticated" xmlns:th="http://www.w3.org/1999/xhtml" class="row">
+    <div ng-if="authenticated" class="row">
         <div class="form-group col-md-offset-4 col-md-4">
-            <select class="form-control input-sm" name="language" th:field="*{languages}"
-                    ng-model="principal.language" ng-change="update()">
-                <option th:each="lang : ${languages}" th:value="${lang.key}" th:text="${lang.value}">
-                </option>
+            <select class="form-control input-sm" name="language" ng-model="principal.language" ng-change="update()">
+                <option ng-repeat="(lang, languageString) in languages" ng-value="lang">{{languageString}}</option>
             </select>
         </div>
     </div>

@@ -9,7 +9,8 @@ var app = angular.module('app', [
     , 'ui.select'
     , 'AvatarService'
     , 'AuthService'
-    , 'AlertService']);
+    , 'AlertService'
+    , 'AppService']);
 app.constant("MESSAGES", {
     SUCCESS: "success",
     ERROR: "danger",
@@ -18,31 +19,31 @@ app.constant("MESSAGES", {
 app.config(function ($routeProvider, $httpProvider, $locationProvider, $logProvider, localStorageServiceProvider, $translateProvider) {
     $routeProvider
         .when('/', {
-            templateUrl: 'home.html',
+            templateUrl: '/home.html',
             controller: 'home'
         })
         .when('/login', {
-            templateUrl: 'login.html',
+            templateUrl: '/user/login.html',
             controller: 'navigation'
         })
         .when('/register', {
-            templateUrl: 'register.html',
+            templateUrl: '/user/register.html',
             controller: 'register'
         })
         .when('/list/:username?', {
-            templateUrl: 'list.html',
+            templateUrl: '/gifts/list.html',
             controller: 'gift'
         })
         .when('/users', {
-            templateUrl: 'userlits.html',
+            templateUrl: '/user/list.html',
             controller: 'userlist'
         })
         .when('/settings', {
-            templateUrl: 'settings.html',
+            templateUrl: '/user/settings.html',
             controller: 'settings'
         })
         .when('/manage', {
-            templateUrl: 'manage.html',
+            templateUrl: '/app/manage.html',
             controller: 'manage'
         })
         .otherwise('/');

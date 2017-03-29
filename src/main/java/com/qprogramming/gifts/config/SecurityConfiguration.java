@@ -64,9 +64,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and().authorizeRequests()
                     .antMatchers("/index.html"
                             , "/home.html"
-                            , "/login.html"
+                            , "/user/login.html"
                             , "/"
-                            , "/register.html"
+                            , "/user/register.html"
                             , "/api/user/"
                             , "/api/user/register"
                             , "/api/messages"

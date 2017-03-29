@@ -38,6 +38,7 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
         return dateString;
     };
 
+    //TODO move to directive
     $scope.getGiftStatus = function (gift) {
         var newGift = '<span class="gift-status new-gift" uib-tooltip="New">' +
             '<i class="fa fa-fw fa-certificate" aria-hidden="true"></i>' +

@@ -1,7 +1,12 @@
-app.controller('settings', function ($rootScope, $scope, $http, $location, $translate, AlertService, AvatarService) {
+app.controller('settings', function ($rootScope, $scope, $http, $location, $translate, $log, AlertService, AvatarService,AppService) {
     $scope.avatarUploadInProgress = false;
-    $scope.avatarImage = ''
+    $scope.avatarImage = '';
     $scope.croppedAvatar = '';
+    $scope.languages = {};
+    if ($rootScope.authenticated) {
+        getLanguages()
+    }
+
     $scope.handleFileSelect = function (evt) {
         $scope.avatarUploadInProgress = true;
         var file = evt.files[0];
@@ -24,6 +29,19 @@ app.controller('settings', function ($rootScope, $scope, $http, $location, $tran
             AlertService.addSuccess('user.settings.avatar.success');
         }
     };
+    //TODO move to service
+    function getLanguages() {
+        var url = 'api/app/languages';
+        $http.get(url).then(
+            function (response) {
+                $log.debug("[DEBUG] Languages loaded");
+                $scope.languages = response.data;
+            }).catch(function (response) {
+            AlertService.addError("error.general");
+            $log.debug(response);
+        });
+    }
+
     function getBase64Image(imgElem) {
         var canvas = document.createElement("canvas");
         canvas.width = imgElem.clientWidth;

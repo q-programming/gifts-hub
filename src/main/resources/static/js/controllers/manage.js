@@ -1,17 +1,14 @@
 app.controller('manage', function ($rootScope, $scope, $http, $log, AlertService) {
+    $scope.settings = {};
+    $scope.searchEngine = {};
+    $scope.searchEngineList = [];
+    $scope.showSearchForm = null;
+    $scope.editSearch = false;
+    $scope.languages = {};
     if ($rootScope.authenticated && $rootScope.principal.role === 'ROLE_ADMIN') {
-        $scope.settings = {};
-        $scope.searchEngine = {};
-        $scope.searchEngineList = [];
-        $scope.showSearchForm = null;
-        $scope.editSearch = false;
 
-        $http.get('api/app/settings').then(
-            function (result) {
-                $scope.settings = result.data;
-            }).catch(function (response) {
-            AlertService.addError('error.general', response)
-        });
+        getLanguages();
+        getAppSettings();
 
 
         $scope.update = function () {
@@ -63,7 +60,28 @@ app.controller('manage', function ($rootScope, $scope, $http, $log, AlertService
             $scope.searchEngine = $.extend({}, engine);
             $scope.showSearchForm = true;
             $scope.editSearch = true;
-            // $scope.update();
         }
     }
+    //TODO move to service and eliminate duplication
+    function getLanguages() {
+        var url = 'api/app/languages';
+        $http.get(url).then(
+            function (response) {
+                $log.debug("[DEBUG] Languages loaded");
+                $scope.languages = response.data;
+            }).catch(function (response) {
+            AlertService.addError("error.general");
+            $log.debug(response);
+        });
+    }
+
+    function getAppSettings() {
+        $http.get('api/app/settings').then(
+            function (result) {
+                $scope.settings = result.data;
+            }).catch(function (response) {
+            AlertService.addError('error.general', response)
+        });
+    }
+
 });
