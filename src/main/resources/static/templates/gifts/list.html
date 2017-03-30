@@ -77,8 +77,10 @@
         <div ng-repeat="(key, value) in giftsList">
             <h4><strong translate="{{key}}">{{key}}</strong></h4>
             <div class="row" ng-repeat="gift in value">
-                <div class="col-xs-12 col-sm-3"><span
-                        ng-bind-html="getGiftStatus(gift)"></span><strong>{{gift.name}}</strong>
+                <div class="col-xs-12 col-sm-3">
+                    <gift-status gift="gift"></gift-status>
+                    <!--<span ng-bind-html="getGiftStatus(gift)"></span>-->
+                    <strong>{{gift.name}}</strong>
                 </div>
                 <div class="col-xs-12 col-sm-3">{{gift.description}}</div>
                 <div class="col-xs-6 col-sm-3">

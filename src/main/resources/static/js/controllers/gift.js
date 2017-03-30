@@ -38,37 +38,6 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
         return dateString;
     };
 
-    //TODO move to directive
-    $scope.getGiftStatus = function (gift) {
-        var newGift = '<span class="gift-status new-gift" uib-tooltip="New">' +
-            '<i class="fa fa-fw fa-certificate" aria-hidden="true"></i>' +
-            '<i class="fa fa-fw fa-2x fa-gift" aria-hidden="true"></i>' +
-            '</span>';
-        var claimedGift = '<span class="gift-status claimed-gift" uib-tooltip="Claimed">' +
-            '<i class="fa fa-fw fa-exclamation" aria-hidden="true"></i>' +
-            '<i class="fa fa-fw fa-2x fa-gift" aria-hidden="true"></i>' +
-            '</span>';
-        var realisedGift = '<span class="gift-status realised-gift" uib-tooltip="Realised">' +
-            '<i class="fa fa-fw fa-check" aria-hidden="true"></i>' +
-            '<i class="fa fa-fw fa-2x fa-gift" aria-hidden="true"></i>' +
-            '</span>';
-        var other = '<span class="gift-status">' +
-            '<i class="fa-spacer">&nbsp;</i>' +
-            '<i class="fa fa-fw fa-2x fa-gift" aria-hidden="true"></i>' +
-            '</span>';
-
-        if (gift.status === 'NEW') {
-            return newGift;
-        } else if (gift.status === 'CLAIMED' && gift.userId !== $rootScope.principal.id) {
-            return claimedGift;
-        } else if (gift.status === 'REALISED') {
-            return realisedGift;
-        } else {
-            return other;
-        }
-    };
-
-
     $scope.reset = function () {
         $scope.giftForm = {};
         $scope.showAddNew = false;

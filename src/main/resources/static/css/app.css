@@ -179,7 +179,7 @@ img.avatar {
 }
 
 .fa-spacer {
-    margin-right: 9px;
+    color: transparent !important;
 }
 
 .validation-error {
