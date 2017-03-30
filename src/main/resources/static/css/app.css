@@ -1,5 +1,6 @@
 body {
     padding-top: 60px;
+    font-family: 'Open Sans', sans-serif !important;
 }
 
 .stylish {
@@ -22,7 +23,7 @@ body {
 }
 
 .navbar.theme {
-    background: #2c5aa0 !important;
+    background: rgba(44, 90, 160, 0.8) !important;
 
 }
 
@@ -54,11 +55,13 @@ img.avatar {
     width: 45px;
 }
 
+.nav > li {
+    min-height: 50px !important;
+}
+
 .nav > li > a {
     margin-top: -7px;
     color: white;
-    min-width: 50px;
-    /*border-bottom: 1px solid darkgray;*/
 }
 
 .nav > li.active > a {
@@ -96,6 +99,14 @@ img.avatar {
 
 .dropdown-menu > li > a {
     color: white !important;
+}
+
+.navbar-toggle {
+    border: 1px solid rgba(255, 255, 255, 0.46) !important;
+}
+
+.navbar-toggle .icon-bar {
+    background: rgba(255, 255, 255, 0.46)
 }
 
 /*END NAVBAR*/

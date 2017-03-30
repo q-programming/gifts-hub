@@ -106,3 +106,9 @@ Feature not supported: "getFunctionColumns" [50100-192]
 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
 	at java.lang.Thread.run(Thread.java:745)
+2017-03-24 19:34:41 jdbc[11]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement "CREATE TABLE CATEGORY (ID BIGINT NOT NULL, NAME VARCHAR(255), ORDER[*] INTEGER, PRIMARY KEY (ID)) "; expected "identifier"; SQL statement:
+create table category (id bigint not null, name varchar(255), order integer, primary key (id)) [42001-193]
+2017-03-24 19:36:29 jdbc[11]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement "CREATE TABLE CATEGORY (ID BIGINT NOT NULL, NAME VARCHAR(255), ORDER[*] INTEGER, PRIMARY KEY (ID)) "; expected "identifier"; SQL statement:
+create table category (id bigint not null, name varchar(255), order integer, primary key (id)) [42001-193]

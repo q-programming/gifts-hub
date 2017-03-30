@@ -45,8 +45,6 @@ public class AccountService implements UserDetailsService {
     private PasswordEncoder passwordEncoder;
     private AvatarRepository avatarRepository;
 
-    private String someProperty;
-
     public AccountService(AccountRepository accountRepository, PasswordEncoder passwordEncoder, AvatarRepository avatarRepository) {
         this.accountRepository = accountRepository;
         this.passwordEncoder = passwordEncoder;
@@ -83,7 +81,6 @@ public class AccountService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        LOG.info("####Custom property: " + someProperty);
         Account account = accountRepository.findOneByEmail(username);
         if (account == null) {
             account = accountRepository.findOneByUsername(username);

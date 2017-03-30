@@ -148,7 +148,6 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
                     }
                     $scope.giftsList[key] = value;
                 });
-                $log.debug($scope.giftsList);
             }).catch(function (response) {
             AlertService.addError("error.general");
             $log.debug(response);
@@ -159,12 +158,8 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
         var url = 'api/app/search-engines';
         $http.get(url).then(
             function (response) {
-                // $scope.searchEngines = [];
                 $log.debug("[DEBUG] Search engines loaded");
                 $scope.searchEngines = response.data;
-                // angular.forEach(response.data, function (value) {
-                //     $scope.giftsList.push(value);
-                // });
             }).catch(function (response) {
             AlertService.addError("error.general");
             $log.debug(response);
@@ -175,7 +170,7 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
         var url = 'api/gift/categories';
         $http.get(url).then(
             function (response) {
-                $scope.categories = []
+                $scope.categories = [];
                 $log.debug("[DEBUG] Categories loaded");
                 angular.forEach(response.data, function (cat) {
                     $scope.categories.push({id: cat.id, name: cat.name})
