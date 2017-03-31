@@ -32,4 +32,12 @@ public class GiftService {
     public Map<Category, List<Gift>> findAllByUser(String id) {
         return Utils.toGiftTreeMap(giftRepository.findByUserIdOrderByCreatedDesc(id));
     }
+
+    public Gift findById(Long id) {
+        return giftRepository.findOne(id);
+    }
+
+    public Gift update(Gift gift) {
+        return giftRepository.save(gift);
+    }
 }

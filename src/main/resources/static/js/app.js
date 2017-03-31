@@ -16,6 +16,11 @@ app.constant("MESSAGES", {
     ERROR: "danger",
     WARNING: "warning"
 });
+app.constant("GIFT_STATUS", {
+    NEW: "NEW",
+    REALISED: "REALISED",
+    CLAIMED: "CLAIMED"
+});
 app.config(function ($routeProvider, $httpProvider, $locationProvider, $logProvider, localStorageServiceProvider, $translateProvider) {
     $routeProvider
         .when('/', {

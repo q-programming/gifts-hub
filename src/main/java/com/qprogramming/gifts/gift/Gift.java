@@ -1,5 +1,6 @@
 package com.qprogramming.gifts.gift;
 
+import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.gift.category.Category;
 import com.qprogramming.gifts.settings.SearchEngine;
 import org.apache.commons.lang3.StringUtils;
@@ -14,10 +15,6 @@ import java.util.Set;
 @Entity
 public class Gift {
 
-    public static final String NAME = "name";
-    public static final String LINK = "link";
-    public static final String CATEGORY = "category";
-    public static final String DESCRIPTION = "description";
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "gift_seq_gen")
     @SequenceGenerator(name = "gift_seq_gen", sequenceName = "gift_id_seq", allocationSize = 1)
@@ -41,6 +38,9 @@ public class Gift {
 
     @ManyToOne
     private Category category;
+
+    @ManyToOne
+    private Account claimed;
 
     @Column
     private Date created;
@@ -127,6 +127,14 @@ public class Gift {
 
     public void setCategory(Category category) {
         this.category = category;
+    }
+
+    public Account getClaimed() {
+        return claimed;
+    }
+
+    public void setClaimed(Account claimed) {
+        this.claimed = claimed;
     }
 
     @Override

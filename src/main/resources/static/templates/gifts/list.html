@@ -76,7 +76,7 @@
         </div>
         <div ng-repeat="(key, value) in giftsList">
             <h4><strong translate="{{key}}">{{key}}</strong></h4>
-            <div class="row" ng-repeat="gift in value">
+            <div class="row margin-bottom10" ng-repeat="gift in value">
                 <div class="col-xs-12 col-sm-3">
                     <gift-status gift="gift"></gift-status>
                     <!--<span ng-bind-html="getGiftStatus(gift)"></span>-->
@@ -93,8 +93,22 @@
                 </a>
             </span>
                 </div>
-                <div class="col-xs-6 col-md-2">{{ getGiftDate(gift) }}</div>
+                <div class="col-xs-5 col-md-2">{{ getGiftDate(gift) }}</div>
+                <div class="col-xs-1 col-md-1 text-center">
+                    <span class="fa-stack clickable" ng-if="canBeClaimed(gift)"
+                          uib-tooltip="{{'gift.claim' | translate}}" ng-click="claimGift(gift)">
+                        <i class="fa fa-fw fa-lg fa-hand-paper-o" aria-hidden="true">
+                        </i>
+                    </span>
+                    <span class="fa-stack fa-lg clickable" ng-if="canBeUnClaimed(gift)"
+                          uib-tooltip="{{'gift.unclaim' | translate}}" ng-click="unClaimGift(gift)">
+                        <i class="fa fa-times fa-stack-1x"></i>
+                        <i class="fa fa-hand-paper-o fa-stack-1x"></i>
+                    </span>
+                    </i>
+                </div>
             </div>
         </div>
     </div>
 </div>
+

@@ -1,4 +1,4 @@
-app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, $route, $translate, AlertService) {
+app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, $route, $translate, AlertService, GIFT_STATUS) {
     $scope.giftForm = {};
     $scope.giftsList = [];
     $scope.searchEngines = [];
@@ -37,7 +37,36 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
         var dateString = ('0' + date.getDate()).slice(-2) + '-' + ('0' + (date.getMonth() + 1)).slice(-2) + '-' + date.getFullYear();
         return dateString;
     };
-
+    $scope.canBeClaimed = function (gift) {
+        return (gift.status !== GIFT_STATUS.REALISED && !gift.claimed && gift.userId !== $rootScope.principal.id)
+    };
+    $scope.canBeUnClaimed = function (gift) {
+        return (gift.status !== GIFT_STATUS.REALISED && (gift.claimed && gift.claimed.id === $rootScope.principal.id))
+    };
+    $scope.claimGift = function (gift) {
+        var url = 'api/gift/claim?gift=' + gift.id;
+        $http.get(url).then(
+            function (response) {
+                $log.debug("[DEBUG] Gift claimed");
+                AlertService.addSuccessMessage(response.data.body.message);
+                getGiftList($routeParams.username);
+            }).catch(function (response) {
+            AlertService.addError("error.general", response);
+            $log.debug(response);
+        });
+    };
+    $scope.unClaimGift = function (gift) {
+        var url = 'api/gift/unclaim?gift=' + gift.id;
+        $http.get(url).then(
+            function (response) {
+                $log.debug("[DEBUG] Gift unclaimed");
+                AlertService.addSuccessMessage(response.data.body.message);
+                getGiftList($routeParams.username);
+            }).catch(function (response) {
+            AlertService.addError("error.general", response);
+            $log.debug(response);
+        });
+    };
     $scope.reset = function () {
         $scope.giftForm = {};
         $scope.showAddNew = false;

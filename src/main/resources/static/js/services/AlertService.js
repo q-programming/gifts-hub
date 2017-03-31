@@ -11,6 +11,13 @@ AlertService.factory('AlertService', function ($http, $log, $rootScope, $timeout
             AlertService.addAlert(MESSAGES.SUCCESS, translation);
         });
     };
+    /**
+     * Add success message without translation key
+     * @param message message to be printed
+     */
+    AlertService.addSuccessMessage = function (message) {
+        AlertService.addAlert(MESSAGES.SUCCESS, message);
+    };
 
     AlertService.addWarning = function (code) {
         $translate(code).then(function (translation) {
