@@ -1,6 +1,9 @@
 #server:
 #  port: 8080
 #  context-path: /gifts
+app:
+  gift:
+    age: 30
 security:
 #  user:
 #    password: password

@@ -6,11 +6,8 @@ app.controller('manage', function ($rootScope, $scope, $http, $log, AlertService
     $scope.editSearch = false;
     $scope.languages = {};
     if ($rootScope.authenticated && $rootScope.principal.role === 'ROLE_ADMIN') {
-
         getLanguages();
         getAppSettings();
-
-
         $scope.update = function () {
             $scope.showSearchForm = false;
             $scope.editSearch = false;
@@ -20,7 +17,7 @@ app.controller('manage', function ($rootScope, $scope, $http, $log, AlertService
                 }).catch(function (response) {
                 AlertService.addError('error.general', response)
             });
-        }
+        };
 
         $scope.show = function () {
             $scope.showSearchForm = true;

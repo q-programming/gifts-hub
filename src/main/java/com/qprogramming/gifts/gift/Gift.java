@@ -33,7 +33,7 @@ public class Gift {
     private String userId;
 
     @ManyToMany
-    @JoinColumn(name = "earch_engines")
+    @JoinColumn(name = "search_engines")
     private Set<SearchEngine> engines;
 
     @ManyToOne
@@ -45,7 +45,6 @@ public class Gift {
     @Column
     private Date created;
 
-    @Enumerated(EnumType.STRING)
     private GiftStatus status;
 
     public Gift() {

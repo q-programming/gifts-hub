@@ -9,8 +9,10 @@ import java.util.List;
 public class Settings {
     public static final String APP_DEFAULT_LANG = "app.default.lang";
     public static final String APP_AVAILABLE_LANGS = "app.available.langs";
+    public static final String APP_GIFT_AGE ="app.gift.age";
     private String language;
     private List<SearchEngine> searchEngines;
+    private String giftAge;
 
     public String getLanguage() {
         return language;
@@ -33,5 +35,13 @@ public class Settings {
             searchEngines = new ArrayList<>();
         }
         searchEngines.add(engine);
+    }
+
+    public String getGiftAge() {
+        return giftAge;
+    }
+
+    public void setGiftAge(String giftAge) {
+        this.giftAge = giftAge;
     }
 }

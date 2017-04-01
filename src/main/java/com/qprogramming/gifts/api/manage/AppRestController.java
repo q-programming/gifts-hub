@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.security.RolesAllowed;
 
 import static com.qprogramming.gifts.settings.Settings.APP_DEFAULT_LANG;
+import static com.qprogramming.gifts.settings.Settings.APP_GIFT_AGE;
 
 @RestController
 @RequestMapping("/api/app")
@@ -45,6 +46,9 @@ public class AppRestController {
         if (StringUtils.isNotBlank(settings.getLanguage())) {
             propertyService.update(APP_DEFAULT_LANG, settings.getLanguage());
         }
+        if (StringUtils.isNotBlank(settings.getGiftAge())) {
+            propertyService.update(APP_GIFT_AGE, settings.getGiftAge());
+        }
         if (!CollectionUtils.isEmpty(settings.getSearchEngines())) {
             searchEngineService.updateSearchEngines(settings.getSearchEngines());
 
@@ -62,6 +66,7 @@ public class AppRestController {
         Settings settings = new Settings();
         settings.setLanguage(propertyService.getProperty(APP_DEFAULT_LANG));
         settings.setSearchEngines(searchEngineService.getAllSearchEngines());
+        settings.setGiftAge(propertyService.getProperty(APP_GIFT_AGE));
         return ResponseEntity.ok(settings);
     }
 
