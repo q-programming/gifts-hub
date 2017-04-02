@@ -36,7 +36,10 @@ public class GiftService {
     public Map<Category, List<Gift>> findAllByCurrentUser() {
         int giftAge = Integer.valueOf(propertyService.getProperty(APP_GIFT_AGE));
         List<Gift> giftList = giftRepository.findByUserIdOrderByCreatedDesc(Utils.getCurrentAccount().getId());
-        giftList.forEach(gift -> setGiftStatus(gift, giftAge));
+        giftList.forEach(gift -> {
+            setGiftStatus(gift, giftAge);
+            gift.setClaimed(null);//remove claimed as current user shouldn't see it
+        });
         return Utils.toGiftTreeMap(giftList);
 
     }

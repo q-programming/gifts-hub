@@ -47,13 +47,28 @@ public class GiftRestController {
 
     @RequestMapping("/create")
     public ResponseEntity createGift(@RequestBody GiftForm giftForm) {
-        Gift newGift = giftForm.createGift();
+        Gift newGift = new Gift();
         if (StringUtils.isEmpty(giftForm.getName())) {
             return new ResponseEntity<>("Name field is required", HttpStatus.BAD_REQUEST);
         }
-        Gift gift = createGiftFromForm(giftForm, newGift);
+        Gift gift = updateGiftFromForm(giftForm, newGift);
         return new ResponseEntity<>(gift, HttpStatus.CREATED);
     }
+
+    @RequestMapping("/edit")
+    public ResponseEntity editGift(@RequestBody GiftForm giftForm) {
+        Gift gift = giftService.findById(giftForm.getId());
+        if (gift == null) {
+            return ResponseEntity.notFound().build();
+        }
+        if (!gift.getUserId().equals(Utils.getCurrentAccount().getId())) {
+            return ResponseEntity.badRequest().body(msgSrv.getMessage("error.edit.gift"));
+        }
+        gift = updateGiftFromForm(giftForm, gift);
+        //TODO add edition to newsletter
+        return new ResponseEntity<>(gift, HttpStatus.OK);
+    }
+
 
     @RequestMapping("/claim")
     public ResponseEntity clameGift(@RequestParam(value = "gift") String id) {
@@ -89,18 +104,32 @@ public class GiftRestController {
                 .build(), HttpStatus.OK);
     }
 
-    //TODO move to service
-    private Gift createGiftFromForm(@RequestBody GiftForm giftForm, Gift newGift) {
+    /**
+     * Update gift with data from {@link GiftForm}
+     *
+     * @param giftForm form from which data will updated
+     * @param gift     updated  created gift
+     * @return updated {@link Gift}
+     */
+    private Gift updateGiftFromForm(GiftForm giftForm, Gift gift) {
+        gift.setName(giftForm.getName());
+        gift.setDescription(giftForm.getDescription());
+        gift.setLink(giftForm.getLink());
         if (StringUtils.isNotBlank(giftForm.getCategory())) {
             String name = giftForm.getCategory();
             Category category = categoryRepository.findByName(name);
             if (category == null) {
                 category = categoryRepository.save(new Category(name));
             }
-            newGift.setCategory(category);
+            gift.setCategory(category);
         }
-        newGift.setEngines(searchEngineService.getSearchEngines(giftForm.getSearchEngines()));
-        return giftService.create(newGift);
+        gift.setEngines(searchEngineService.getSearchEngines(giftForm.getSearchEngines()));
+        //update or create
+        if (gift.getId() == null) {
+            return giftService.create(gift);
+        } else {
+            return giftService.update(gift);
+        }
     }
 
     @RequestMapping("/mine")

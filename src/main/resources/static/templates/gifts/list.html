@@ -1,8 +1,9 @@
 <div ng-if="authenticated">
     <h1>{{listTitle}}</h1>
-    <div class="animate row" ng-show="showAddNew">
+    <div class="animate row" ng-show="showGiftForm">
         <div class="col-md-offset-2 col-md-6">
-            <form role="form" name="newGift" ng-submit="create()">
+            <form role="form" name="mainGiftForm" ng-submit="sendGiftData()">
+                <input type="hidden" ng-model="giftForm.id">
                 <div class="form-group" show-errors="">
                     <label for="name" translate="gift.name"></label>
                     <input type="text" class="form-control" id="name" name="name" ng-model="giftForm.name"
@@ -16,7 +17,7 @@
                 <div class="form-group" show-errors="">
                     <label for="link" translate="gift.link"></label>
                     <input type="url" class="form-control" id="link" name="link" ng-model="giftForm.link"/>
-                    <span class="validation-error" ng-show="newGift.link.$error.url" translate="gift.link.error">
+                    <span class="validation-error" ng-show="mainGiftForm.link.$error.url" translate="gift.link.error">
                 </span>
                 </div>
                 <div class="form-group">
@@ -31,8 +32,6 @@
                             <span ng-bind="category.name"></span>
                         </ui-select-choices>
                     </ui-select>
-                    <!--<tags-input id="category" ng-model="giftForm.category"></tags-input>-->
-                    <!--<input type="text" class="form-control" id="category" name="category" ng-model="giftForm.category"/>-->
                 </div>
                 <label translate="app.manage.search.engine"></label>
                 <div class="form-group">
@@ -47,15 +46,17 @@
                 </div>
                 <div class="pull-right">
                     <a href="" class="btn btn-default" ng-click="reset()" translate="main.cancel"></a>
-                    <button type="submit" class="btn btn-primary" translate="main.create"></button>
+                    <button type="submit" class="btn btn-primary">
+                        {{editInProgress? 'main.edit':'main.create' | translate}}
+                    </button>
                 </div>
             </form>
         </div>
     </div>
-    <div class="animate" ng-show="!showAddNew">
+    <div class="animate" ng-show="!showGiftForm">
         <div class="row">
-            <button type="button" class="btn btn-success pull-right" ng-click="show()"
-                    ng-show="!showAddNew &amp;&amp; userList">
+            <button type="button" class="btn btn-success pull-right" ng-click="showCreate()"
+                    ng-show="!showGiftForm &amp;&amp; userList">
                 <i class="fa fa-plus" aria-hidden="true"></i>
                 <span translate="gift.new.add"></span>
             </button>
@@ -93,8 +94,9 @@
                 </a>
             </span>
                 </div>
-                <div class="col-xs-5 col-md-2">{{ getGiftDate(gift) }}</div>
+                <div class="col-xs-5 col-md-2" format-date date="gift.created"></div>
                 <div class="col-xs-1 col-md-1 text-center">
+                    <!--CLAIM/EDIT-->
                     <span class="fa-stack clickable" ng-if="canBeClaimed(gift)"
                           uib-tooltip="{{'gift.claim' | translate}}" ng-click="claimGift(gift)">
                         <i class="fa fa-fw fa-lg fa-hand-paper-o" aria-hidden="true">
@@ -105,6 +107,12 @@
                         <i class="fa fa-times fa-stack-1x"></i>
                         <i class="fa fa-hand-paper-o fa-stack-1x"></i>
                     </span>
+                    <span class="fa-stack clickable" ng-if="canBeEdited(gift)"
+                          uib-tooltip="{{'gift.edit' | translate}}" ng-click="showEdit(gift)">
+                        <i class="fa fa-fw fa-lg fa-pencil" aria-hidden="true"></i>
+                        </i>
+                    </span>
+
                     </i>
                 </div>
             </div>

@@ -8,11 +8,13 @@ import java.util.List;
  * Created by Khobar on 23.03.2017.
  */
 public class GiftForm {
+    private Long id;
     @NotBlank
     private String name;
     private String description;
     private String link;
     private List<Long> searchEngines;
+    private String category;
 
     public String getCategory() {
         return category;
@@ -21,8 +23,6 @@ public class GiftForm {
     public void setCategory(String category) {
         this.category = category;
     }
-
-    private String category;
 
     public String getName() {
         return name;
@@ -56,11 +56,11 @@ public class GiftForm {
         this.searchEngines = searchEngines;
     }
 
-    public Gift createGift() {
-        Gift gift = new Gift();
-        gift.setName(getName());
-        gift.setDescription(getDescription());
-        gift.setLink(getLink());
-        return gift;
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }

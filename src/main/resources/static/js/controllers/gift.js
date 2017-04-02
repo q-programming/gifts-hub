@@ -3,7 +3,8 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
     $scope.giftsList = [];
     $scope.searchEngines = [];
 
-    $scope.showAddNew = false;
+    $scope.showGiftForm = false;
+    $scope.editInProgress = false;
     $scope.userList = false;
     $scope.listTitle = "";
     $scope.categoryOther = "";
@@ -13,7 +14,7 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
     $translate("gift.category.other").then(function (translation) {
         $scope.categoryOther = translation;
     });
-    //init
+    //INIT
     if ($rootScope.authenticated) {
         $scope.userList = !$routeParams.username || $routeParams.username === $rootScope.principal.username;
         $translate("gift.search").then(function (translation) {
@@ -24,19 +25,118 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
         getCategories();
     }
 
-    $scope.show = function () {
-        $scope.showAddNew = true;
+    /**
+     * Show gift form, pre-filled with search engines selected
+     */
+    $scope.showCreate = function () {
+        $scope.showGiftForm = true;
+        $scope.editInProgress = false;
         $scope.giftForm.searchEngines = {};
         angular.forEach($scope.searchEngines, function (engine) {
             $scope.giftForm.searchEngines[engine.id] = true;
         });
     };
-
-    $scope.getGiftDate = function (gift) {
-        var date = new Date(gift.created);
-        var dateString = ('0' + date.getDate()).slice(-2) + '-' + ('0' + (date.getMonth() + 1)).slice(-2) + '-' + date.getFullYear();
-        return dateString;
+    /**
+     * Show gift form, pre-filled with search engines selected
+     */
+    $scope.showEdit = function (gift) {
+        $scope.showGiftForm = true;
+        $scope.editInProgress = true;
+        $scope.giftForm = $.extend({}, gift);
+        $scope.giftForm.searchEngines = {};
+        angular.forEach(gift.engines, function (engine) {
+            $scope.giftForm.searchEngines[engine.id] = true;
+        });
     };
+
+    /**
+     * Reset gift form
+     */
+    $scope.reset = function () {
+        $scope.giftForm = {};
+        $scope.showGiftForm = false;
+        $scope.editInProgress = false;
+    };
+
+    /**
+     * Send gift data from form. It can be either new or update of existing
+     */
+    $scope.sendGiftData = function () {
+        $scope.showGiftForm = true;
+        //clone original data that will be sent
+        $scope.apiSendGift = $.extend({}, $scope.giftForm);
+        $scope.apiSendGift.searchEngines = [];
+        angular.forEach($scope.giftForm.searchEngines, function (val, key) {
+            if (val === true) {
+                $scope.apiSendGift.searchEngines.push(key)
+            }
+        });
+        if ($scope.giftForm.category) {
+            $scope.apiSendGift.category = $scope.giftForm.category.name;
+        }
+        //existing gift was chosen to be sent ( edit )
+        var url;
+        if ($scope.apiSendGift.id && $scope.editInProgress) {
+            url = 'api/gift/edit';
+        }
+        else if (!$scope.editInProgress) {
+            url = 'api/gift/create';
+        }
+        else {
+            //Should not happen
+            AlertService.addError("error.general");
+            return
+        }
+        $http.post(url, angular.toJson($scope.apiSendGift)).then(
+            function () {
+                getGiftList();
+                getCategories();
+                if ($scope.editInProgress) {
+                    AlertService.addSuccess("gift.edit.success");
+                } else {
+                    AlertService.addSuccess("gift.new.added");
+                }
+                $scope.reset();
+            }).catch(function (response) {
+            AlertService.addError("error.general", response);
+            $log.debug(response);
+        });
+    };
+
+    $scope.canBeEdited = function (gift) {
+        return gift.status !== GIFT_STATUS.REALISED && gift.userId === $rootScope.principal.id
+    };
+
+    /**
+     * Refresh autofill result of category searc
+     * @param $select
+     */
+    $scope.refreshResults = function ($select) {
+        var search = $select.search,
+            list = angular.copy($select.items),
+            FLAG = -1;
+        //remove last user input
+        list = list.filter(function (item) {
+            return item.id !== FLAG;
+        });
+
+        if (!search) {
+            //use the predefined list
+            $select.items = list;
+        }
+        else {
+            //manually add user input and set selection
+            var userInputItem = {
+                id: FLAG,
+                name: search
+            };
+            $select.items = [userInputItem].concat(list);
+            $select.selected = userInputItem;
+        }
+    };
+
+    // CLAIM
+
     $scope.canBeClaimed = function (gift) {
         return (gift.status !== GIFT_STATUS.REALISED && !gift.claimed && gift.userId !== $rootScope.principal.id)
     };
@@ -67,59 +167,8 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
             $log.debug(response);
         });
     };
-    $scope.reset = function () {
-        $scope.giftForm = {};
-        $scope.showAddNew = false;
-    };
 
-    $scope.create = function () {
-        $scope.showAddNew = true;
-        $scope.newCreateGift = $.extend({}, $scope.giftForm);
-        $scope.newCreateGift.searchEngines = [];
-        angular.forEach($scope.giftForm.searchEngines, function (val, key) {
-            if (val === true) {
-                $scope.newCreateGift.searchEngines.push(key)
-            }
-        });
-        if ($scope.giftForm.category) {
-            $scope.newCreateGift.category = $scope.giftForm.category.name;
-        }
-        $http.post('api/gift/create', angular.toJson($scope.newCreateGift)).then(
-            function () {
-                $scope.reset();
-                getGiftList();
-                getCategories();
-                AlertService.addSuccess("gift.new.added");
-            }).catch(function (response) {
-            AlertService.addError("error.general", response);
-            $log.debug(response);
-        });
-    };
-
-    $scope.refreshResults = function ($select) {
-        var search = $select.search,
-            list = angular.copy($select.items),
-            FLAG = -1;
-        //remove last user input
-        list = list.filter(function (item) {
-            return item.id !== FLAG;
-        });
-
-        if (!search) {
-            //use the predefined list
-            $select.items = list;
-        }
-        else {
-            //manually add user input and set selection
-            var userInputItem = {
-                id: FLAG,
-                name: search
-            };
-            $select.items = [userInputItem].concat(list);
-            $select.selected = userInputItem;
-        }
-    };
-
+    // HELPER FUNCTIONS
 
     function getGiftList(username) {
         var url;

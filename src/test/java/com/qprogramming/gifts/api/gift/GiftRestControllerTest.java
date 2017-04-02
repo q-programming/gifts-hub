@@ -10,6 +10,7 @@ import com.qprogramming.gifts.gift.GiftService;
 import com.qprogramming.gifts.gift.category.Category;
 import com.qprogramming.gifts.gift.category.CategoryRepository;
 import com.qprogramming.gifts.messages.MessagesService;
+import com.qprogramming.gifts.settings.SearchEngine;
 import com.qprogramming.gifts.settings.SearchEngineService;
 import com.qprogramming.gifts.support.Utils;
 import org.json.JSONObject;
@@ -23,12 +24,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -40,6 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 public class GiftRestControllerTest {
     public static final String API_GIFT_CREATE = "/api/gift/create";
+    public static final String API_GIFT_EDIT = "/api/gift/edit";
     public static final String API_GIFT_LIST = "/api/gift/user";
     public static final String API_GIFT_CLAIM = "/api/gift/claim";
     public static final String API_GIFT_UNCLAIM = "/api/gift/unclaim";
@@ -79,7 +80,6 @@ public class GiftRestControllerTest {
         form.setDescription("Some sample description");
         form.setLink("http://google.com");
         List<Long> idList = Arrays.asList(1L, 2L);
-        Category cat2 = new Category("cat2");
         form.setSearchEngines(idList);
         form.setCategory("cat2");
         giftsRestCtrl.perform(post(API_GIFT_CREATE).contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(form)))
@@ -95,6 +95,62 @@ public class GiftRestControllerTest {
         giftsRestCtrl.perform(post(API_GIFT_CREATE).contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(form)))
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    public void editGiftSuccess() throws Exception {
+        Gift gift = new Gift();
+        gift.setId(1L);
+        gift.setName("Name");
+        gift.setUserId(testAccount.getId());
+        GiftForm form = new GiftForm();
+        form.setId(1L);
+        form.setName("Gift");
+        form.setDescription("Some sample new description");
+        form.setLink("http://google.com");
+        List<Long> idList = Collections.singletonList(1L);
+        form.setSearchEngines(idList);
+        form.setCategory("cat2");
+        Set<SearchEngine> engines = new HashSet<>();
+        engines.add(TestUtil.createSearchEngine("name", "link", "icon"));
+        when(giftServiceMock.findById(1L)).thenReturn(gift);
+        when(giftServiceMock.update(any(Gift.class))).then(returnsFirstArg());
+        when(searchEngineServiceMock.getSearchEngines(form.getSearchEngines()))
+                .thenReturn(engines);
+        when(categoryRepositoryMock.save(any(Category.class))).then(returnsFirstArg());
+        MvcResult mvcResult = giftsRestCtrl.perform(post(API_GIFT_EDIT).contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(form)))
+                .andExpect(status().isOk()).andReturn();
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        Gift result = TestUtil.convertJsonToObject(contentAsString, Gift.class);
+        verify(giftServiceMock, times(1)).update(any(Gift.class));
+        verify(categoryRepositoryMock, times(1)).save(any(Category.class));
+        assertEquals(form.getName(), result.getName());
+        assertEquals(form.getDescription(), result.getDescription());
+        assertTrue(result.getEngines().size() == 1);
+
+    }
+
+    @Test
+    public void editGiftNotFound() throws Exception {
+        GiftForm form = new GiftForm();
+        form.setId(1L);
+        giftsRestCtrl.perform(post(API_GIFT_EDIT).contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(form)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void editGiftNotOwner() throws Exception {
+        GiftForm form = new GiftForm();
+        form.setId(1L);
+        form.setName("New Name");
+        Gift gift = new Gift();
+        gift.setId(1L);
+        gift.setName("Name");
+        gift.setUserId("other");
+        when(giftServiceMock.findById(1L)).thenReturn(gift);
+        giftsRestCtrl.perform(post(API_GIFT_EDIT).contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(form)))
+                .andExpect(status().isBadRequest());
+    }
+
 
     @Test
     public void getGiiftsAccountNotFound() throws Exception {
