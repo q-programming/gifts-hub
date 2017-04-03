@@ -291,3 +291,10 @@ img.center {
 .margin-bottom20 {
     margin-bottom: 20px;
 }
+.row.gift-row{
+    padding: 10px;
+}
+
+.row.row-color {
+    background-color: #f3f3f3
+}

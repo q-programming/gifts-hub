@@ -107,6 +107,10 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
         return gift.status !== GIFT_STATUS.REALISED && gift.userId === $rootScope.principal.id
     };
 
+    $scope.canBeUndoRealised = function (gift) {
+        return gift.status === GIFT_STATUS.REALISED && gift.userId === $rootScope.principal.id
+    };
+
     /**
      * Refresh autofill result of category searc
      * @param $select
@@ -167,6 +171,32 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
             $log.debug(response);
         });
     };
+    //Realised
+    $scope.realiseGift = function (gift) {
+        var url = 'api/gift/complete?gift=' + gift.id;
+        $http.get(url).then(
+            function (response) {
+                $log.debug("[DEBUG] Gift realised");
+                AlertService.addSuccessMessage(response.data.body.message);
+                getGiftList($routeParams.username);
+            }).catch(function (response) {
+            AlertService.addError("error.general", response);
+            $log.debug(response);
+        });
+    };
+    $scope.undoRealiseGift = function (gift) {
+        var url = 'api/gift/undo-complete?gift=' + gift.id;
+        $http.get(url).then(
+            function (response) {
+                $log.debug("[DEBUG] Gift undo realised");
+                AlertService.addSuccessMessage(response.data.body.message);
+                getGiftList($routeParams.username);
+            }).catch(function (response) {
+            AlertService.addError("error.general", response);
+            $log.debug(response);
+        });
+    };
+
 
     // HELPER FUNCTIONS
 

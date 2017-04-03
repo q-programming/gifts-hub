@@ -7,6 +7,7 @@ import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.gift.Gift;
 import com.qprogramming.gifts.gift.GiftForm;
 import com.qprogramming.gifts.gift.GiftService;
+import com.qprogramming.gifts.gift.GiftStatus;
 import com.qprogramming.gifts.gift.category.Category;
 import com.qprogramming.gifts.gift.category.CategoryRepository;
 import com.qprogramming.gifts.messages.MessagesService;
@@ -27,6 +28,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.Matchers.any;
@@ -44,6 +46,8 @@ public class GiftRestControllerTest {
     public static final String API_GIFT_LIST = "/api/gift/user";
     public static final String API_GIFT_CLAIM = "/api/gift/claim";
     public static final String API_GIFT_UNCLAIM = "/api/gift/unclaim";
+    public static final String API_GIFT_COMPLETE = "/api/gift/complete";
+    public static final String API_GIFT_UNDO_COMPLETE = "/api/gift/undo-complete";
     private MockMvc giftsRestCtrl;
     @Mock
     private AccountService accSrvMock;
@@ -240,6 +244,61 @@ public class GiftRestControllerTest {
         when(accSrvMock.findByUsername(testAccount.getUsername())).thenReturn(testAccount);
         giftsRestCtrl.perform(
                 get(API_GIFT_CLAIM + "?gift=" + gift.getId()))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void completeGift() throws Exception {
+        Gift gift = new Gift();
+        gift.setId(1L);
+        gift.setName("name");
+        gift.setUserId(testAccount.getId());
+        when(giftServiceMock.findById(gift.getId())).thenReturn(gift);
+        when(giftServiceMock.update(any(Gift.class))).then(returnsFirstArg());
+        giftsRestCtrl.perform(
+                get(API_GIFT_COMPLETE + "?gift=" + gift.getId()))
+                .andExpect(status().isOk());
+        verify(giftServiceMock, times(1)).update(any(Gift.class));
+        assertTrue(GiftStatus.REALISED.equals(gift.getStatus()));
+    }
+
+    @Test
+    public void completeGiftWrongUser() throws Exception {
+        Gift gift = new Gift();
+        gift.setId(1L);
+        gift.setName("name");
+        gift.setUserId("OTHER");
+        when(giftServiceMock.findById(gift.getId())).thenReturn(gift);
+        giftsRestCtrl.perform(
+                get(API_GIFT_COMPLETE + "?gift=" + gift.getId()))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void undoCompleteGift() throws Exception {
+        Gift gift = new Gift();
+        gift.setId(1L);
+        gift.setName("name");
+        gift.setUserId(testAccount.getId());
+        gift.setStatus(GiftStatus.REALISED);
+        when(giftServiceMock.findById(gift.getId())).thenReturn(gift);
+        when(giftServiceMock.update(any(Gift.class))).then(returnsFirstArg());
+        giftsRestCtrl.perform(
+                get(API_GIFT_UNDO_COMPLETE + "?gift=" + gift.getId()))
+                .andExpect(status().isOk());
+        verify(giftServiceMock, times(1)).update(any(Gift.class));
+        assertNull(gift.getStatus());
+    }
+
+    @Test
+    public void undoCompleteGiftWrongUser() throws Exception {
+        Gift gift = new Gift();
+        gift.setId(1L);
+        gift.setName("name");
+        gift.setUserId("OTHER_USER");
+        when(giftServiceMock.findById(gift.getId())).thenReturn(gift);
+        giftsRestCtrl.perform(
+                get(API_GIFT_UNDO_COMPLETE + "?gift=" + gift.getId()))
                 .andExpect(status().isBadRequest());
     }
 

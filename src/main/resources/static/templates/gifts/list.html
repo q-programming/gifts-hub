@@ -77,7 +77,8 @@
         </div>
         <div ng-repeat="(key, value) in giftsList">
             <h4><strong translate="{{key}}">{{key}}</strong></h4>
-            <div class="row margin-bottom10" ng-repeat="gift in value">
+            <div ng-class-odd="'row gift-row row-color'"
+                 ng-class-even="'row gift-row'" ng-repeat="gift in value">
                 <div class="col-xs-12 col-sm-3">
                     <gift-status gift="gift"></gift-status>
                     <!--<span ng-bind-html="getGiftStatus(gift)"></span>-->
@@ -95,25 +96,34 @@
             </span>
                 </div>
                 <div class="col-xs-5 col-md-2" format-date date="gift.created"></div>
-                <div class="col-xs-1 col-md-1 text-center">
-                    <!--CLAIM/EDIT-->
-                    <span class="fa-stack clickable" ng-if="canBeClaimed(gift)"
+                <div class="col-xs-1 col-md-1">
+                    <!--CLAIM-->
+                    <span class="fa-stack clickable pull-right" ng-if="canBeClaimed(gift)"
                           uib-tooltip="{{'gift.claim' | translate}}" ng-click="claimGift(gift)">
-                        <i class="fa fa-fw fa-lg fa-hand-paper-o" aria-hidden="true">
-                        </i>
+                        <i class="fa fa-fw fa-lg fa-hand-paper-o" aria-hidden="true"></i>
                     </span>
-                    <span class="fa-stack fa-lg clickable" ng-if="canBeUnClaimed(gift)"
+                    <span class="fa-stack fa-lg clickable pull-right" ng-if="canBeUnClaimed(gift)"
                           uib-tooltip="{{'gift.unclaim' | translate}}" ng-click="unClaimGift(gift)">
                         <i class="fa fa-times fa-stack-1x"></i>
                         <i class="fa fa-hand-paper-o fa-stack-1x"></i>
                     </span>
-                    <span class="fa-stack clickable" ng-if="canBeEdited(gift)"
+                    <!--COMPLETE-->
+                    <span class="clickable pull-right" ng-if="canBeEdited(gift)"
+                          ng-click="realiseGift(gift)">
+                        <i class="fa fa-fw fa-lg fa-check-circle-o" aria-hidden="true"
+                           uib-tooltip="{{'gift.complete' | translate}}"></i>
+                    </span>
+                    <!--UNCOMPLETE-->
+                    <span class="clickable pull-right" ng-if="canBeUndoRealised(gift)"
+                          ng-click="undoRealiseGift(gift)">
+                        <i class="fa fa-fw fa-lg fa-circle-o" aria-hidden="true"
+                           uib-tooltip="{{'gift.complete.undo' | translate}}"></i>
+                    </span>
+                    <!--EDIT-->
+                    <span class="clickable pull-right" ng-if="canBeEdited(gift)"
                           uib-tooltip="{{'gift.edit' | translate}}" ng-click="showEdit(gift)">
                         <i class="fa fa-fw fa-lg fa-pencil" aria-hidden="true"></i>
-                        </i>
                     </span>
-
-                    </i>
                 </div>
             </div>
         </div>

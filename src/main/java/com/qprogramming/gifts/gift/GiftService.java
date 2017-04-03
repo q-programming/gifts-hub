@@ -29,7 +29,6 @@ public class GiftService {
         Account currentAccount = Utils.getCurrentAccount();
         gift.setUserId(currentAccount.getId());
         gift.setCreated(new Date());
-        gift.setStatus(GiftStatus.NEW);
         return giftRepository.save(gift);
     }
 
@@ -41,7 +40,6 @@ public class GiftService {
             gift.setClaimed(null);//remove claimed as current user shouldn't see it
         });
         return Utils.toGiftTreeMap(giftList);
-
     }
 
     public Map<Category, List<Gift>> findAllByUser(String id) {
@@ -61,9 +59,11 @@ public class GiftService {
 
     private void setGiftStatus(Gift gift, int giftAge) {
         //TODO set realised
-        Days giftDays = Days.daysBetween(new LocalDate(gift.getCreated()), new LocalDate());
-        if (giftDays.getDays() < giftAge) {
-            gift.setStatus(GiftStatus.NEW);
+        if (!GiftStatus.REALISED.equals(gift.getStatus())) {
+            Days giftDays = Days.daysBetween(new LocalDate(gift.getCreated()), new LocalDate());
+            if (giftDays.getDays() < giftAge) {
+                gift.setStatus(GiftStatus.NEW);
+            }
         }
     }
 }

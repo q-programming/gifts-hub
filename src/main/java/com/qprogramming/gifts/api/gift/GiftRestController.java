@@ -5,6 +5,7 @@ import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.gift.Gift;
 import com.qprogramming.gifts.gift.GiftForm;
 import com.qprogramming.gifts.gift.GiftService;
+import com.qprogramming.gifts.gift.GiftStatus;
 import com.qprogramming.gifts.gift.category.Category;
 import com.qprogramming.gifts.gift.category.CategoryRepository;
 import com.qprogramming.gifts.messages.MessagesService;
@@ -103,6 +104,35 @@ public class GiftRestController {
                 .ok().message(msgSrv.getMessage("gift.unclaim.success", new Object[]{gift.getName()}, "", Utils.getCurrentLocale()))
                 .build(), HttpStatus.OK);
     }
+
+    @RequestMapping("/complete")
+    public ResponseEntity completeGift(@RequestParam(value = "gift") String id) {
+        Gift gift = giftService.findById(Long.valueOf(id));
+        if (!Objects.equals(gift.getUserId(), Utils.getCurrentAccount().getId())) {
+            return ResponseEntity.badRequest().body(msgSrv.getMessage("gift.complete.error"));
+        }
+        gift.setStatus(GiftStatus.REALISED);
+        giftService.update(gift);
+        //TODO add complete event newsleter
+        return new ResponseEntity<>(new ResultData.ResultBuilder()
+                .ok().message(msgSrv.getMessage("gift.complete.success", new Object[]{gift.getName()}, "", Utils.getCurrentLocale()))
+                .build(), HttpStatus.OK);
+    }
+
+    @RequestMapping("/undo-complete")
+    public ResponseEntity undoCompleteGift(@RequestParam(value = "gift") String id) {
+        Gift gift = giftService.findById(Long.valueOf(id));
+        if (!Objects.equals(gift.getUserId(), Utils.getCurrentAccount().getId())) {
+            return ResponseEntity.badRequest().body(msgSrv.getMessage("gift.complete.error"));
+        }
+        gift.setStatus(null);
+        giftService.update(gift);
+        //TODO add complete event newsleter
+        return new ResponseEntity<>(new ResultData.ResultBuilder()
+                .ok().message(msgSrv.getMessage("gift.complete.undo.success"))
+                .build(), HttpStatus.OK);
+    }
+
 
     /**
      * Update gift with data from {@link GiftForm}

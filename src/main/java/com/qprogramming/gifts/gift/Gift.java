@@ -45,6 +45,7 @@ public class Gift {
     @Column
     private Date created;
 
+    @Column
     private GiftStatus status;
 
     public Gift() {
