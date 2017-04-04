@@ -156,10 +156,10 @@ public class Account implements Serializable, UserDetails {
     public void setType(AccountType type) {
         this.type = type;
     }
+
     public String getFullname() {
         return getName() + " " + getSurname();
     }
-
 
     @Override
     @JsonIgnore

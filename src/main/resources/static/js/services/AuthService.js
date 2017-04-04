@@ -8,7 +8,7 @@ AuthService.factory('AuthService', function ($http, $log, avatarCache, $rootScop
             + btoa(credentials.username + ":" + credentials.password)
         } : {};
 
-        $http.get('api/user/', {headers: headers}, {timeout: 5000}).then(
+        $http.get('api/user', {headers: headers}, {timeout: 5000}).then(
             function (response) {
                 var data = response.data;
                 if (data.id) {

@@ -77,8 +77,7 @@
         </div>
         <div ng-repeat="(key, value) in giftsList">
             <h4><strong translate="{{key}}">{{key}}</strong></h4>
-            <div ng-class-odd="'row gift-row row-color'"
-                 ng-class-even="'row gift-row'" ng-repeat="gift in value">
+            <div class="row gift-row" ng-class-odd="'row gift-row row-color'" ng-repeat="gift in value">
                 <div class="col-xs-12 col-sm-3">
                     <gift-status gift="gift"></gift-status>
                     <!--<span ng-bind-html="getGiftStatus(gift)"></span>-->

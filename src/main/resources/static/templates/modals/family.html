@@ -1,0 +1,76 @@
+<div class="modal-header">
+    <h3 class="modal-title" id="modal-title"><i class="fa fa-users" aria-hidden="true"></i>&nbsp;{{modalTitle}}</h3>
+</div>
+<div class="modal-body" id="modal-body">
+    <h4>{{'user.family.members' | translate}}</h4>
+    <span class="help-block">{{modalHelp}}</span>
+    <ui-select ng-model="family.members" id="members" multiple on-remove="removeUserFromAdmin($item)">
+        <ui-select-match placeholder="{{'user.family.select'|translate}}" allow-clear="true">
+            {{$item.fullname}} ({{$item.username}})
+        </ui-select-match>
+        <ui-select-choices
+                repeat="user in (familyUsers | propsFilter: {fullname: $select.search, username: $select.search}) track by user.id">
+            <div class="row">
+                <div class="col-xs-1">
+                    <img ng-if="user.avatar" ng-src="{{user.avatar}}" class="avatar small"/>
+                    <img ng-if="!user.avatar" src='images/avatar-placeholder.png' class="avatar small"/>
+                </div>
+                <div class="col-xs-10">
+                    <span ng-bind-html="user.fullname | highlight: $select.search"></span>&nbsp;
+                    (<span ng-bind-html="''+user.username | highlight: $select.search"></span>)
+                </div>
+            </div>
+        </ui-select-choices>
+    </ui-select>
+    <div class="row margin-top10" ng-class-even="'row-color'" ng-repeat="user in family.members">
+        <div class="col-xs-1">
+            <img ng-if="user.avatar" ng-src="{{user.avatar}}" class="avatar small"/>
+            <img ng-if="!user.avatar" src='images/avatar-placeholder.png' class="avatar small"/>
+        </div>
+        <div class="col-xs-11">
+            {{user.fullname}}&nbsp;({{user.username}})
+            <button type="button" class="close theme-close" ng-click="removeUserFromFamily(family.members,$index)">
+                &times;
+            </button>
+        </div>
+    </div>
+    <div ng-if="familyAdmin">
+        <h4>{{'user.family.admins' | translate}}</h4>
+        <span class="help-block">{{'user.family.create.admin.help'|translate}}</span>
+        <ui-select ng-model="family.admins" id="admins" multiple>
+            <ui-select-match placeholder="{{'user.family.select'|translate}}" allow-clear="false">
+                {{$item.fullname}} ({{$item.username}})
+            </ui-select-match>
+            <ui-select-choices
+                    repeat="user in (family.members | propsFilter: {fullname: $select.search, username: $select.search}) track by user.id">
+                <div class="row">
+                    <div class="col-xs-1">
+                        <img ng-if="user.avatar" ng-src="{{user.avatar}}" class="avatar small"/>
+                        <img ng-if="!user.avatar" src='images/avatar-placeholder.png' class="avatar small"/>
+                    </div>
+                    <div class="col-xs-10">
+                        <span ng-bind-html="user.fullname | highlight: $select.search"></span>&nbsp;
+                        (<span ng-bind-html="''+user.username | highlight: $select.search"></span>)
+                    </div>
+                </div>
+            </ui-select-choices>
+        </ui-select>
+        <div class="row margin-top10" ng-class-odd="'row-color'"
+             ng-repeat="user in family.admins">
+            <div class="col-xs-1">
+                <img ng-if="user.avatar" ng-src="{{user.avatar}}" class="avatar small"/>
+                <img ng-if="!user.avatar" src='images/avatar-placeholder.png' class="avatar small"/>
+            </div>
+            <div class="col-xs-11">
+                {{user.fullname}}&nbsp;({{user.username}})
+                <button type="button" class="close theme-close" ng-click="removeUserFromFamily(family.admins,$index)">
+                    &times;
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-default" type="button" ng-click="cancel()">Cancel</button>
+    <button class="btn btn-primary" type="button" ng-click="action()">OK</button>
+</div>

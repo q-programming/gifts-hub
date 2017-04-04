@@ -67,7 +67,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                             , "/user/login.html"
                             , "/"
                             , "/user/register.html"
-                            , "/api/user/"
+                            , "/api/user"
                             , "/api/user/register"
                             , "/api/messages"
                             , "/api/user/validate-email"

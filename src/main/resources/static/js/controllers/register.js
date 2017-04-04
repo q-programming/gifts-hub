@@ -1,41 +1,3 @@
-app.controller('navigation', function ($scope, $rootScope, $http, $location, $route, $log, AvatarService, AuthService, AlertService) {
-    $scope.tab = function (route) {
-        return $route.current && route === $route.current.controller;
-    };
-
-    AuthService.authenticate();
-    $scope.credentials = {};
-    //LOGIN
-    $scope.login = function () {
-        AuthService.authenticate($scope.credentials, function () {
-            if ($rootScope.authenticated) {
-                $location.path("/");
-                AlertService.clearAlerts();
-            } else {
-                $location.path("/login");
-                AlertService.addError('user.login.failed');
-            }
-        });
-    };
-
-    //LOGOUT
-    $scope.logout = function () {
-        $http.post('/logout', {}).then(
-            function successCallback() {
-                AvatarService.clearCache();
-                $rootScope.authenticated = false;
-                $location.path("/");
-            },
-            function errorCallback() {
-                $rootScope.authenticated = false;
-            });
-    };
-
-    $scope.dismissAlert = function (index) {
-        AlertService.dismissAlert(index)
-    }
-});
-
 app.controller('register', function ($scope, $rootScope, $http, $log, AlertService) {
     $scope.formData = {};
     $scope.success = false;
@@ -127,23 +89,3 @@ app.controller('register', function ($scope, $rootScope, $http, $log, AlertServi
         }
     }
 });
-
-app.controller('userlist', function ($scope, $rootScope, $http, $log, AlertService, AvatarService) {
-    $scope.users = [];
-    if ($rootScope.authenticated) {
-        $http.get('api/user/users').then(
-            function (response) {
-                $scope.users = [];
-                $log.debug("[DEBUG] Loaded users");
-                angular.forEach(response.data, function (value) {
-                    var user = value;
-                    AvatarService.getUserAvatar(user);
-                    $scope.users.push(user);
-                });
-            }).catch(function (response) {
-            AlertService.addError("error.general", response);
-            $log.debug(response);
-        });
-    }
-});
-

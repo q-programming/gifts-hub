@@ -5,6 +5,7 @@ import com.qprogramming.gifts.TestUtil;
 import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.account.RegisterForm;
+import com.qprogramming.gifts.account.family.FamilyService;
 import com.qprogramming.gifts.messages.MessagesService;
 import com.qprogramming.gifts.support.ResultData;
 import org.apache.commons.codec.binary.Base64;
@@ -45,13 +46,15 @@ public class UserRestControllerTest {
     private Authentication authMock;
     @Mock
     private MessagesService msgSrvMock;
+    @Mock
+    private FamilyService familyServiceMock;
 
     private Account testAccount;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        UserRestController userCtrl = new UserRestController(accSrvMock, msgSrvMock);
+        UserRestController userCtrl = new UserRestController(accSrvMock, msgSrvMock, familyServiceMock);
         testAccount = TestUtil.createAccount();
         when(securityMock.getAuthentication()).thenReturn(authMock);
         when(authMock.getPrincipal()).thenReturn(testAccount);

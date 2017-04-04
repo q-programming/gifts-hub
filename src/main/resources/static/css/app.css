@@ -55,6 +55,11 @@ img.avatar {
     width: 45px;
 }
 
+img.avatar.small {
+    height: 30px;
+    width: 30px;
+}
+
 .nav > li {
     min-height: 50px !important;
 }
@@ -291,7 +296,8 @@ img.center {
 .margin-bottom20 {
     margin-bottom: 20px;
 }
-.row.gift-row{
+
+.row.gift-row {
     padding: 10px;
 }
 

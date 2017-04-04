@@ -2,9 +2,12 @@ package com.qprogramming.gifts.account;
 
 import com.qprogramming.gifts.account.avatar.Avatar;
 import com.qprogramming.gifts.account.avatar.AvatarRepository;
+import com.qprogramming.gifts.account.family.Family;
+import com.qprogramming.gifts.account.family.FamilyService;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.http.MediaType;
@@ -28,9 +31,11 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Created by Khobar on 05.03.2017.
@@ -44,11 +49,14 @@ public class AccountService implements UserDetailsService {
     private AccountRepository accountRepository;
     private PasswordEncoder passwordEncoder;
     private AvatarRepository avatarRepository;
+    private FamilyService familyService;
 
-    public AccountService(AccountRepository accountRepository, PasswordEncoder passwordEncoder, AvatarRepository avatarRepository) {
+    @Autowired
+    public AccountService(AccountRepository accountRepository, PasswordEncoder passwordEncoder, AvatarRepository avatarRepository, FamilyService familyService) {
         this.accountRepository = accountRepository;
         this.passwordEncoder = passwordEncoder;
         this.avatarRepository = avatarRepository;
+        this.familyService = familyService;
     }
 
     @PostConstruct
@@ -147,6 +155,14 @@ public class AccountService implements UserDetailsService {
         }
     }
 
+    /**
+     * Creates new avatar from given URL
+     *
+     * @param account account for which avatar is created
+     * @param url     url from which avatar image will be fetched
+     * @return new {@link Avatar}
+     * @throws MalformedURLException
+     */
     public Avatar createAvatar(Account account, String url) throws MalformedURLException {
         byte[] bytes = downloadFromUrl(new URL(url));
         return createAvatar(account, bytes);
@@ -156,9 +172,9 @@ public class AccountService implements UserDetailsService {
     /**
      * Creates avatar from bytes
      *
-     * @param account
-     * @param bytes
-     * @return
+     * @param account Account for which avatar is created
+     * @param bytes   bytes containing avatar
+     * @return new {@link Avatar}
      * @throws IOException
      */
     public Avatar createAvatar(Account account, byte[] bytes) {
@@ -215,5 +231,21 @@ public class AccountService implements UserDetailsService {
 
     public List<Account> findAll() {
         return accountRepository.findAll();
+    }
+
+    /**
+     * Return all accounts without family
+     *
+     * @return
+     */
+    public List<Account> findWithoutFamily() {
+        List<Account> all = findAll();
+        List<Account> accountsWithFamily = familyService.findAll().stream().map(Family::getMembers).flatMap(Collection::stream).distinct().collect(Collectors.toList());
+        all.removeAll(accountsWithFamily);
+        return all;
+    }
+
+    public List<Account> findByIds(List<String> members) {
+        return accountRepository.findByIdIn(members);
     }
 }

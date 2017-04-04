@@ -32,7 +32,11 @@ AlertService.factory('AlertService', function ($http, $log, $rootScope, $timeout
     };
     AlertService.addError = function (code, response) {
         $translate(code).then(function (translation) {
-            AlertService.addAlert(MESSAGES.ERROR, translation + "</br>" + response.message);
+            var msg = translation;
+            if (response) {
+                msg += "</br>" + response.message;
+            }
+            AlertService.addAlert(MESSAGES.ERROR, msg);
         });
     };
 

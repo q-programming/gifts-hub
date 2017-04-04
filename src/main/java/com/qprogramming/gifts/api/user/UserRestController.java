@@ -3,6 +3,9 @@ package com.qprogramming.gifts.api.user;
 import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.account.RegisterForm;
+import com.qprogramming.gifts.account.family.Family;
+import com.qprogramming.gifts.account.family.FamilyForm;
+import com.qprogramming.gifts.account.family.FamilyService;
 import com.qprogramming.gifts.messages.MessagesService;
 import com.qprogramming.gifts.support.ResultData;
 import com.qprogramming.gifts.support.Utils;
@@ -18,6 +21,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.security.Principal;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,11 +35,13 @@ public class UserRestController {
     private static final Logger LOG = LoggerFactory.getLogger(UserRestController.class);
     private AccountService accountService;
     private MessagesService msgSrv;
+    private FamilyService familyService;
 
     @Autowired
-    public UserRestController(AccountService accountService, MessagesService msgSrv) {
+    public UserRestController(AccountService accountService, MessagesService msgSrv, FamilyService familyService) {
         this.accountService = accountService;
         this.msgSrv = msgSrv;
+        this.familyService = familyService;
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
@@ -82,9 +89,54 @@ public class UserRestController {
     }
 
     @RequestMapping("/users")
-    public ResponseEntity<?> userList() {
+    public ResponseEntity<?> userList(@RequestParam(required = false) boolean family) {
+        if (family) {
+            return ResponseEntity.ok(accountService.findWithoutFamily());
+        }
         return ResponseEntity.ok(accountService.findAll());
     }
+
+    /**
+     * Returns currently logged in user family ( or null if not found )
+     *
+     * @return {@link com.qprogramming.gifts.account.family.Family}
+     */
+    @RequestMapping("/family")
+    public ResponseEntity<?> getUserFamily() {
+        return ResponseEntity.ok(familyService.getFamily(Utils.getCurrentAccount()));
+    }
+
+    @RequestMapping("/family-create")
+    public ResponseEntity<?> createFamily(@RequestBody FamilyForm form) {
+        Family family = familyService.getFamily(Utils.getCurrentAccount());
+        if (family != null) {
+            return new ResultData.ResultBuilder().error().message(msgSrv.getMessage("user.family.exists.error")).build();
+        }
+        family = familyService.createFamily();
+        family.getMembers().addAll(accountService.findByIds(form.getMembers()));
+        family.getAdmins().addAll(accountService.findByIds(form.getAdmins()));
+        return ResponseEntity.ok(familyService.update(family));
+    }
+
+    @RequestMapping("/family-update")
+    public ResponseEntity<?> updateFamily(@RequestBody FamilyForm form) {
+        Account currentAccount = Utils.getCurrentAccount();
+        Family family = familyService.getFamily(currentAccount);
+        if (family == null) {
+            return ResponseEntity.notFound().build();
+        }
+        if (family.getAdmins().contains(currentAccount)) {
+            Set<Account> members = new HashSet<>(accountService.findByIds(form.getMembers()));
+            members.add(currentAccount);
+            Set<Account> admins = new HashSet<>(accountService.findByIds(form.getAdmins()));
+            admins.add(currentAccount);
+            family.setMembers(members);
+            family.setAdmins(admins);
+            return ResponseEntity.ok(familyService.update(family));
+        }
+        return new ResultData.ResultBuilder().badReqest().message(msgSrv.getMessage("user.family.admin.error")).build();
+    }
+
 
     @RequestMapping(value = "/validate-email", method = RequestMethod.POST)
     public ResponseEntity validateEmail(@RequestBody String email) {
@@ -119,7 +171,7 @@ public class UserRestController {
     }
 
 
-    @RequestMapping("/")
+    @RequestMapping
     public Account user(Principal user) {
         if (user != null && user instanceof UsernamePasswordAuthenticationToken) {
             return (Account) ((UsernamePasswordAuthenticationToken) user).getPrincipal();
