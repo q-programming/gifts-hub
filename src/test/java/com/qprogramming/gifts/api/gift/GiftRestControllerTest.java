@@ -28,9 +28,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
@@ -121,6 +119,7 @@ public class GiftRestControllerTest {
         when(searchEngineServiceMock.getSearchEngines(form.getSearchEngines()))
                 .thenReturn(engines);
         when(categoryRepositoryMock.save(any(Category.class))).then(returnsFirstArg());
+        when(accSrvMock.findById(testAccount.getId())).thenReturn(testAccount);
         MvcResult mvcResult = giftsRestCtrl.perform(post(API_GIFT_EDIT).contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(form)))
                 .andExpect(status().isOk()).andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
@@ -255,6 +254,7 @@ public class GiftRestControllerTest {
         gift.setUserId(testAccount.getId());
         when(giftServiceMock.findById(gift.getId())).thenReturn(gift);
         when(giftServiceMock.update(any(Gift.class))).then(returnsFirstArg());
+        when(accSrvMock.findById(testAccount.getId())).thenReturn(testAccount);
         giftsRestCtrl.perform(
                 get(API_GIFT_COMPLETE + "?gift=" + gift.getId()))
                 .andExpect(status().isOk());
@@ -283,6 +283,7 @@ public class GiftRestControllerTest {
         gift.setStatus(GiftStatus.REALISED);
         when(giftServiceMock.findById(gift.getId())).thenReturn(gift);
         when(giftServiceMock.update(any(Gift.class))).then(returnsFirstArg());
+        when(accSrvMock.findById(testAccount.getId())).thenReturn(testAccount);
         giftsRestCtrl.perform(
                 get(API_GIFT_UNDO_COMPLETE + "?gift=" + gift.getId()))
                 .andExpect(status().isOk());

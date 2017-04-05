@@ -156,7 +156,7 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
         $http.get(url).then(
             function (response) {
                 $log.debug("[DEBUG] Gift claimed");
-                AlertService.addSuccessMessage(response.data.body.message);
+                AlertService.addSuccessMessage(response.data.message);
                 getGiftList($routeParams.username);
             }).catch(function (response) {
             AlertService.addError("error.general", response);
@@ -168,7 +168,7 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
         $http.get(url).then(
             function (response) {
                 $log.debug("[DEBUG] Gift unclaimed");
-                AlertService.addSuccessMessage(response.data.body.message);
+                AlertService.addSuccessMessage(response.data.message);
                 getGiftList($routeParams.username);
             }).catch(function (response) {
             AlertService.addError("error.general", response);
@@ -181,7 +181,7 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
         $http.get(url).then(
             function (response) {
                 $log.debug("[DEBUG] Gift realised");
-                AlertService.addSuccessMessage(response.data.body.message);
+                AlertService.addSuccessMessage(response.data.message);
                 getGiftList($routeParams.username);
             }).catch(function (response) {
             AlertService.addError("error.general", response);
@@ -193,7 +193,7 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
         $http.get(url).then(
             function (response) {
                 $log.debug("[DEBUG] Gift undo realised");
-                AlertService.addSuccessMessage(response.data.body.message);
+                AlertService.addSuccessMessage(response.data.message);
                 getGiftList($routeParams.username);
             }).catch(function (response) {
             AlertService.addError("error.general", response);

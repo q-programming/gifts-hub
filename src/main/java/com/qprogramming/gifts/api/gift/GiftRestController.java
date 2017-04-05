@@ -56,7 +56,7 @@ public class GiftRestController {
         if (StringUtils.isEmpty(giftForm.getName())) {
             return new ResponseEntity<>("Name field is required", HttpStatus.BAD_REQUEST);
         }
-        if (canOperateOnUsernameGifts(giftForm) || StringUtils.isBlank(giftForm.getUsername())) {
+        if (canOperateOnUsernameGifts(giftForm.getUsername()) || StringUtils.isBlank(giftForm.getUsername())) {
             Gift gift = updateGiftFromForm(giftForm, newGift);
             return new ResponseEntity<>(gift, HttpStatus.CREATED);
         }
@@ -69,7 +69,7 @@ public class GiftRestController {
         if (gift == null) {
             return ResponseEntity.notFound().build();
         }
-        if (canOperateOnUsernameGifts(giftForm) || gift.getUserId().equals(Utils.getCurrentAccount().getId())) {
+        if (canOperateOnGift(gift)) {
             //TODO add edition to newsletter
             gift = updateGiftFromForm(giftForm, gift);
             return new ResponseEntity<>(gift, HttpStatus.OK);
@@ -77,9 +77,9 @@ public class GiftRestController {
         return new ResultData.ResultBuilder().badReqest().error().message(msgSrv.getMessage("user.family.admin.error")).build();
     }
 
-    private boolean canOperateOnUsernameGifts(GiftForm giftForm) {
-        if (StringUtils.isNotBlank(giftForm.getUsername())) {
-            Account giftOwner = accountService.findByUsername(giftForm.getUsername());
+    private boolean canOperateOnUsernameGifts(String username) {
+        if (StringUtils.isNotBlank(username)) {
+            Account giftOwner = accountService.findByUsername(username);
             if (giftOwner == null) {
                 return false;
             }
@@ -88,6 +88,17 @@ public class GiftRestController {
                     || (family.getAdmins().contains(Utils.getCurrentAccount()));
         }
         return false;
+    }
+
+    private boolean canOperateOnGift(Gift gift) {
+        Account giftOwner = accountService.findById(gift.getUserId());
+        if (giftOwner == null) {
+            return false;
+        }
+        Family family = familyService.getFamily(giftOwner);
+        return family == null
+                || (family.getAdmins().contains(Utils.getCurrentAccount()))
+                || giftOwner.equals(Utils.getCurrentAccount());
     }
 
 
@@ -103,9 +114,7 @@ public class GiftRestController {
         }
         gift.setClaimed(account);
         giftService.update(gift);
-        return new ResponseEntity<>(new ResultData.ResultBuilder()
-                .ok().message(msgSrv.getMessage("gift.claim.success", new Object[]{gift.getName()}, "", Utils.getCurrentLocale()))
-                .build(), HttpStatus.OK);
+        return new ResultData.ResultBuilder().ok().message(msgSrv.getMessage("gift.claim.success", new Object[]{gift.getName()}, "", Utils.getCurrentLocale())).build();
     }
 
     @RequestMapping("/unclaim")
@@ -116,41 +125,37 @@ public class GiftRestController {
         }
         Gift gift = giftService.findById(Long.valueOf(id));
         if (!Objects.equals(gift.getClaimed(), account)) {
-            return ResponseEntity.badRequest().body(msgSrv.getMessage("gift.unclaim.error"));
+            return new ResultData.ResultBuilder().badReqest().error().message(msgSrv.getMessage("gift.unclaim.error")).build();
         }
         gift.setClaimed(null);
         giftService.update(gift);
-        return new ResponseEntity<>(new ResultData.ResultBuilder()
-                .ok().message(msgSrv.getMessage("gift.unclaim.success", new Object[]{gift.getName()}, "", Utils.getCurrentLocale()))
-                .build(), HttpStatus.OK);
+        return new ResultData.ResultBuilder().ok().message(msgSrv.getMessage("gift.unclaim.success", new Object[]{gift.getName()}, "", Utils.getCurrentLocale()))
+                .build();
     }
 
     @RequestMapping("/complete")
     public ResponseEntity completeGift(@RequestParam(value = "gift") String id) {
         Gift gift = giftService.findById(Long.valueOf(id));
-        if (!Objects.equals(gift.getUserId(), Utils.getCurrentAccount().getId())) {
-            return ResponseEntity.badRequest().body(msgSrv.getMessage("gift.complete.error"));
+        if (!canOperateOnGift(gift)) {
+            return new ResultData.ResultBuilder().badReqest().error().message(msgSrv.getMessage("gift.complete.error")).build();
         }
         gift.setStatus(GiftStatus.REALISED);
         giftService.update(gift);
         //TODO add complete event newsleter
-        return new ResponseEntity<>(new ResultData.ResultBuilder()
-                .ok().message(msgSrv.getMessage("gift.complete.success", new Object[]{gift.getName()}, "", Utils.getCurrentLocale()))
-                .build(), HttpStatus.OK);
+        return new ResultData.ResultBuilder().ok().message(msgSrv.getMessage("gift.complete.success", new Object[]{gift.getName()}, "", Utils.getCurrentLocale()))
+                .build();
     }
 
     @RequestMapping("/undo-complete")
     public ResponseEntity undoCompleteGift(@RequestParam(value = "gift") String id) {
         Gift gift = giftService.findById(Long.valueOf(id));
-        if (!Objects.equals(gift.getUserId(), Utils.getCurrentAccount().getId())) {
-            return ResponseEntity.badRequest().body(msgSrv.getMessage("gift.complete.error"));
+        if (!canOperateOnGift(gift)) {
+            return new ResultData.ResultBuilder().badReqest().error().message(msgSrv.getMessage("gift.complete.error")).build();
         }
         gift.setStatus(null);
         giftService.update(gift);
         //TODO add complete event newsleter
-        return new ResponseEntity<>(new ResultData.ResultBuilder()
-                .ok().message(msgSrv.getMessage("gift.complete.undo.success"))
-                .build(), HttpStatus.OK);
+        return new ResultData.ResultBuilder().ok().message(msgSrv.getMessage("gift.complete.undo.success")).build();
     }
 
 
