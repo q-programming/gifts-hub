@@ -1,17 +1,25 @@
 <div ng-if="authenticated">
     <h1 translate="user.list"></h1>
-    <span class="btn btn-success pull-right margin5 " ng-if="!hasFamily" ng-click="createFamily()">
-        <i class="fa fa-plus"></i>&nbsp;
-        <span translate="user.family.create"></span>
-    </span>
-    <span class="btn btn-success pull-right margin5 " ng-if="hasFamily && familyAdmin" ng-click="addKid()">
-        <i class="fa fa-plus"></i><i class="fa fa-child" aria-hidden="true"></i>&nbsp;
-        <span translate="user.family.add.kid"></span>
-    </span>
-    <span class="btn btn-success pull-right margin5 " ng-if="hasFamily" ng-click="editFamily()">
-        <i class="fa fa-pencil"></i>&nbsp;
-        <span translate="user.family.edit"></span>
-    </span>
+    <div>
+        <span class="btn btn-default btn-sm" uib-tooltip="{{'user.sort.family'|translate}}">
+            <i class="fa fa-sort-alpha-asc" aria-hidden="true"></i>
+        </span>
+        <span class="btn btn-default btn-sm" uib-tooltip="{{'user.sort.name'|translate}}">
+            <i class="fa fa-users" aria-hidden="true"></i>
+        </span>
+        <span class="btn btn-success btn-sm pull-right margin5 " ng-if="!hasFamily" ng-click="createFamily()">
+            <i class="fa fa-plus"></i>&nbsp;
+            <span translate="user.family.create"></span>
+        </span>
+        <span class="btn btn-success btn-sm pull-right margin5 " ng-if="hasFamily && familyAdmin" ng-click="addKid()">
+            <i class="fa fa-plus"></i><i class="fa fa-child" aria-hidden="true"></i>&nbsp;
+            <span translate="user.family.add.kid"></span>
+        </span>
+        <span class="btn btn-success btn-sm pull-right margin5 " ng-if="hasFamily" ng-click="editFamily()">
+            <i class="fa fa-pencil"></i>&nbsp;
+            <span translate="user.family.edit"></span>
+        </span>
+    </div>
     <table class="table animate">
         <tr ng-repeat="user in users">
             <td><img ng-if="user.avatar && user.avatar !=='NaN'" ng-src="{{user.avatar}}" class="avatar"/>

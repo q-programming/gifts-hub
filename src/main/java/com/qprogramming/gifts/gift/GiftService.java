@@ -1,6 +1,5 @@
 package com.qprogramming.gifts.gift;
 
-import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.config.property.PropertyService;
 import com.qprogramming.gifts.gift.category.Category;
 import com.qprogramming.gifts.support.Utils;
@@ -26,8 +25,6 @@ public class GiftService {
     }
 
     public Gift create(Gift gift) {
-        Account currentAccount = Utils.getCurrentAccount();
-        gift.setUserId(currentAccount.getId());
         gift.setCreated(new Date());
         return giftRepository.save(gift);
     }

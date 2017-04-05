@@ -6,7 +6,7 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
     $scope.showGiftForm = false;
     $scope.editInProgress = false;
     $scope.userList = false;
-    $scope.usernameGifts ="";
+    $scope.usernameGifts = "";
     $scope.listTitle = "";
     $scope.categoryOther = "";
 
@@ -37,7 +37,7 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
         angular.forEach($scope.searchEngines, function (engine) {
             $scope.giftForm.searchEngines[engine.id] = true;
         });
-        $scope.giftForm.username = $scope.usernameGifts;
+        $scope.giftForm.username = $routeParams.username;
     };
     /**
      * Show gift form, pre-filled with search engines selected
@@ -50,7 +50,7 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
         angular.forEach(gift.engines, function (engine) {
             $scope.giftForm.searchEngines[engine.id] = true;
         });
-        $scope.giftForm.username = $scope.usernameGifts;
+        $scope.giftForm.username = $routeParams.username;
     };
 
     /**
@@ -93,7 +93,7 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
         }
         $http.post(url, angular.toJson($scope.apiSendGift)).then(
             function () {
-                getGiftList();
+                getGiftList($routeParams.username);
                 getCategories();
                 if ($scope.editInProgress) {
                     AlertService.addSuccess("gift.edit.success");
@@ -108,11 +108,11 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
     };
 
     $scope.canBeEdited = function (gift) {
-        return gift.status !== GIFT_STATUS.REALISED && gift.userId === $rootScope.principal.id
+        return gift.status !== GIFT_STATUS.REALISED && (gift.userId === $rootScope.principal.id || $scope.familyAdmin );
     };
 
     $scope.canBeUndoRealised = function (gift) {
-        return gift.status === GIFT_STATUS.REALISED && gift.userId === $rootScope.principal.id
+        return gift.status === GIFT_STATUS.REALISED && (gift.userId === $rootScope.principal.id || $scope.familyAdmin );
     };
 
     /**
@@ -273,7 +273,14 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
     }
 
     function getFamily() {
-        $http.get('api/user/family?username=' + $routeParams.username).then(
+        var url;
+        if ($routeParams.username) {
+            url = 'api/user/family?username=' + $routeParams.username;
+        }
+        else {
+            url = 'api/user/family';
+        }
+        $http.get(url).then(
             function (response) {
                 if (response.data) {
                     $scope.family = response.data;

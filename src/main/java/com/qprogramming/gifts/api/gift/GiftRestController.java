@@ -56,10 +56,11 @@ public class GiftRestController {
         if (StringUtils.isEmpty(giftForm.getName())) {
             return new ResponseEntity<>("Name field is required", HttpStatus.BAD_REQUEST);
         }
-        if (!canOperateOnUsernameGifts(giftForm))
-            return new ResultData.ResultBuilder().error().message(msgSrv.getMessage("user.family.admin.error")).build();
-        Gift gift = updateGiftFromForm(giftForm, newGift);
-        return new ResponseEntity<>(gift, HttpStatus.CREATED);
+        if (canOperateOnUsernameGifts(giftForm) || StringUtils.isBlank(giftForm.getUsername())) {
+            Gift gift = updateGiftFromForm(giftForm, newGift);
+            return new ResponseEntity<>(gift, HttpStatus.CREATED);
+        }
+        return new ResultData.ResultBuilder().badReqest().error().message(msgSrv.getMessage("user.family.admin.error")).build();
     }
 
     @RequestMapping("/edit")
@@ -68,12 +69,12 @@ public class GiftRestController {
         if (gift == null) {
             return ResponseEntity.notFound().build();
         }
-        if (!gift.getUserId().equals(Utils.getCurrentAccount().getId()) || !canOperateOnUsernameGifts(giftForm)) {
-            return new ResultData.ResultBuilder().badReqest().error().message(msgSrv.getMessage("user.family.admin.error")).build();
+        if (canOperateOnUsernameGifts(giftForm) || gift.getUserId().equals(Utils.getCurrentAccount().getId())) {
+            //TODO add edition to newsletter
+            gift = updateGiftFromForm(giftForm, gift);
+            return new ResponseEntity<>(gift, HttpStatus.OK);
         }
-        gift = updateGiftFromForm(giftForm, gift);
-        //TODO add edition to newsletter
-        return new ResponseEntity<>(gift, HttpStatus.OK);
+        return new ResultData.ResultBuilder().badReqest().error().message(msgSrv.getMessage("user.family.admin.error")).build();
     }
 
     private boolean canOperateOnUsernameGifts(GiftForm giftForm) {
@@ -86,7 +87,7 @@ public class GiftRestController {
             return family == null
                     || (family.getAdmins().contains(Utils.getCurrentAccount()));
         }
-        return true;
+        return false;
     }
 
 
@@ -175,6 +176,13 @@ public class GiftRestController {
         gift.setEngines(searchEngineService.getSearchEngines(giftForm.getSearchEngines()));
         //update or create
         if (gift.getId() == null) {
+            if (StringUtils.isNotBlank(giftForm.getUsername())) {
+                Account account = accountService.findByUsername(giftForm.getUsername());
+                gift.setUserId(account.getId());
+            } else {
+                Account currentAccount = Utils.getCurrentAccount();
+                gift.setUserId(currentAccount.getId());
+            }
             return giftService.create(gift);
         } else {
             return giftService.update(gift);

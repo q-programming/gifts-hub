@@ -81,11 +81,10 @@
             <div class="row gift-row" ng-class-odd="'row gift-row row-color'" ng-repeat="gift in value">
                 <div class="col-xs-12 col-sm-3">
                     <gift-status gift="gift"></gift-status>
-                    <!--<span ng-bind-html="getGiftStatus(gift)"></span>-->
                     <strong>{{gift.name}}</strong>
                 </div>
                 <div class="col-xs-12 col-sm-3">{{gift.description}}</div>
-                <div class="col-xs-6 col-sm-3">
+                <div class="col-xs-12 col-sm-3">
                     <a ng-if="gift.link" ng-href="{{gift.link}}">{{ gift.name }}</a>
                     <span ng-repeat="engine in gift.engines">
                 <a class="pull-right" ng-href="{{engine.searchString + gift.name}}" target="_blank">
@@ -95,17 +94,17 @@
                 </a>
             </span>
                 </div>
-                <div class="col-xs-5 col-md-2" format-date date="gift.created"></div>
-                <div class="col-xs-1 col-md-1">
+                <div class="col-xs-6 col-sm-2" format-date date="gift.created"></div>
+                <div class="col-xs-6 col-sm-1">
                     <!--CLAIM-->
-                    <span class="fa-stack clickable pull-right" ng-if="canBeClaimed(gift)"
+                    <span class="fa-stack clickable pull-right margin-top5" ng-if="canBeClaimed(gift)"
                           uib-tooltip="{{'gift.claim' | translate}}" ng-click="claimGift(gift)">
-                        <i class="fa fa-fw fa-lg fa-hand-paper-o" aria-hidden="true"></i>
+                        <i class="fa fa-fw fa-lg fa-hand-paper-o" aria-hidden="true" style="margin-left: 1px;"></i>
                     </span>
-                    <span class="fa-stack fa-lg clickable pull-right" ng-if="canBeUnClaimed(gift)"
+                    <span class="fa-stack clickable pull-right margin-top5" ng-if="canBeUnClaimed(gift)"
                           uib-tooltip="{{'gift.unclaim' | translate}}" ng-click="unClaimGift(gift)">
                         <i class="fa fa-times fa-stack-1x"></i>
-                        <i class="fa fa-hand-paper-o fa-stack-1x"></i>
+                        <i class="fa fa-lg fa-hand-paper-o fa-stack-1x"></i>
                     </span>
                     <!--COMPLETE-->
                     <span class="clickable pull-right" ng-if="canBeEdited(gift)"
