@@ -43,6 +43,8 @@ public class Account implements Serializable, UserDetails {
     @Enumerated(EnumType.STRING)
     private AccountType type;
 
+    private String fullname;
+
     public Account() {
         this.created = new Date();
     }

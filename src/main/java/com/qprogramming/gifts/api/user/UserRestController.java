@@ -110,7 +110,7 @@ public class UserRestController {
     public ResponseEntity<?> createFamily(@RequestBody FamilyForm form) {
         Family family = familyService.getFamily(Utils.getCurrentAccount());
         if (family != null) {
-            return new ResultData.ResultBuilder().error().message(msgSrv.getMessage("user.family.exists.error")).build();
+            return new ResultData.ResultBuilder().badReqest().message(msgSrv.getMessage("user.family.exists.error")).build();
         }
         family = familyService.createFamily();
         family.getMembers().addAll(accountService.findByIds(form.getMembers()));

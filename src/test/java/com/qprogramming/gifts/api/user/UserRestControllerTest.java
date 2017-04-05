@@ -5,6 +5,8 @@ import com.qprogramming.gifts.TestUtil;
 import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.account.RegisterForm;
+import com.qprogramming.gifts.account.family.Family;
+import com.qprogramming.gifts.account.family.FamilyForm;
 import com.qprogramming.gifts.account.family.FamilyService;
 import com.qprogramming.gifts.messages.MessagesService;
 import com.qprogramming.gifts.support.ResultData;
@@ -23,8 +25,11 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 
+import static com.qprogramming.gifts.TestUtil.USER_RANDOM_ID;
 import static org.junit.Assert.*;
+import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -35,7 +40,10 @@ public class UserRestControllerTest {
     public static final String API_USER_LANGUAGE = "/api/user/language";
     public static final String API_USER_VALIDATE_EMAIL = "/api/user/validate-email";
     public static final String API_USER_VALIDATE_USERNAME = "/api/user/validate-username";
-    public static final String API_USER_UPDATE_AVATAR = "/api/user//avatar-upload";
+    public static final String API_USER_UPDATE_AVATAR = "/api/user/avatar-upload";
+    public static final String API_USER_FAMILY_CREATE = "/api/user/family-create";
+    public static final String API_USER_FAMILY_UPDATE = "/api/user/family-update";
+
 
     private MockMvc userRestCtrl;
     @Mock
@@ -135,9 +143,9 @@ public class UserRestControllerTest {
 
     @Test
     public void languageChangedForUser() throws Exception {
-        when(accSrvMock.findById(TestUtil.USER_RANDOM_ID)).thenReturn(testAccount);
+        when(accSrvMock.findById(USER_RANDOM_ID)).thenReturn(testAccount);
         JSONObject object = new JSONObject();
-        object.put("id", TestUtil.USER_RANDOM_ID);
+        object.put("id", USER_RANDOM_ID);
         object.put("language", "pl");
         userRestCtrl.perform(post(API_USER_LANGUAGE)
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
@@ -148,7 +156,7 @@ public class UserRestControllerTest {
     @Test
     public void languageChangedButNoUserFound() throws Exception {
         JSONObject object = new JSONObject();
-        object.put("id", TestUtil.USER_RANDOM_ID);
+        object.put("id", USER_RANDOM_ID);
         object.put("language", "pl");
         userRestCtrl.perform(post(API_USER_LANGUAGE)
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
@@ -208,5 +216,105 @@ public class UserRestControllerTest {
         } catch (IOException e) {
             fail("IOEXception thrown " + e);
         }
+    }
+
+    @Test
+    public void createFamilyNoMembers() throws Exception {
+        FamilyForm form = new FamilyForm();
+        Family family = new Family();
+        family.setId(1L);
+        family.getMembers().add(testAccount);
+        family.getAdmins().add(testAccount);
+        when(familyServiceMock.createFamily()).thenReturn(family);
+        when(familyServiceMock.update(family)).then(returnsFirstArg());
+        userRestCtrl.perform(post(API_USER_FAMILY_CREATE)
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(form))).andExpect(status().isOk());
+        verify(familyServiceMock, times(1)).update(any(Family.class));
+    }
+
+    @Test
+    public void createFamilyMembersAndAdmins() throws Exception {
+        FamilyForm form = new FamilyForm();
+        form.setAdmins(Collections.singletonList(USER_RANDOM_ID + "1"));
+        form.setMembers(Collections.singletonList(USER_RANDOM_ID + "1"));
+        Family family = new Family();
+        family.setId(1L);
+        family.getMembers().add(testAccount);
+        family.getAdmins().add(testAccount);
+        Account memberAndAdmin = TestUtil.createAccount("John", "Doe");
+        memberAndAdmin.setId(USER_RANDOM_ID + "1");
+        when(accSrvMock.findByIds(Collections.singletonList(USER_RANDOM_ID + "1"))).thenReturn(Collections.singletonList(memberAndAdmin));
+        when(familyServiceMock.createFamily()).thenReturn(family);
+        when(familyServiceMock.update(family)).then(returnsFirstArg());
+        MvcResult mvcResult = userRestCtrl.perform(post(API_USER_FAMILY_CREATE)
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(form))).andExpect(status().isOk()).andReturn();
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        Family result = TestUtil.convertJsonToObject(contentAsString, Family.class);
+        verify(familyServiceMock, times(1)).update(any(Family.class));
+        assertTrue(result.getMembers().size() == 2);
+        assertTrue(result.getAdmins().contains(memberAndAdmin));
+    }
+
+
+    @Test
+    public void createFamilyAlreadyExists() throws Exception {
+        FamilyForm form = new FamilyForm();
+        Family family = new Family();
+        family.setId(1L);
+        when(familyServiceMock.getFamily(testAccount)).thenReturn(family);
+        userRestCtrl.perform(post(API_USER_FAMILY_CREATE)
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(form))).andExpect(status().isBadRequest());
+    }
+
+
+    @Test
+    public void updateFamilyNotFound() throws Exception {
+        FamilyForm form = new FamilyForm();
+        Family family = new Family();
+        family.setId(1L);
+        userRestCtrl.perform(post(API_USER_FAMILY_UPDATE)
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(form))).andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void updateFamilyAddMemberAndAdmin() throws Exception {
+        FamilyForm form = new FamilyForm();
+        form.setAdmins(Collections.singletonList(USER_RANDOM_ID + "1"));
+        form.setMembers(Collections.singletonList(USER_RANDOM_ID + "1"));
+        Family family = new Family();
+        family.setId(1L);
+        family.getMembers().add(testAccount);
+        family.getAdmins().add(testAccount);
+        Account memberAndAdmin = TestUtil.createAccount("John", "Doe");
+        memberAndAdmin.setId(USER_RANDOM_ID + "1");
+        when(accSrvMock.findByIds(Collections.singletonList(USER_RANDOM_ID + "1"))).thenReturn(Collections.singletonList(memberAndAdmin));
+        when(familyServiceMock.getFamily(testAccount)).thenReturn(family);
+        when(familyServiceMock.update(family)).then(returnsFirstArg());
+        MvcResult mvcResult = userRestCtrl.perform(post(API_USER_FAMILY_UPDATE)
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(form))).andExpect(status().isOk()).andReturn();
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        Family result = TestUtil.convertJsonToObject(contentAsString, Family.class);
+        verify(familyServiceMock, times(1)).update(any(Family.class));
+        assertTrue(result.getMembers().size() == 2);
+        assertTrue(result.getAdmins().contains(memberAndAdmin));
+    }
+
+    @Test
+    public void updateFamilyNotAdmin() throws Exception {
+        FamilyForm form = new FamilyForm();
+        form.setAdmins(Collections.singletonList(USER_RANDOM_ID + "1"));
+        form.setMembers(Collections.singletonList(USER_RANDOM_ID + "1"));
+        Family family = new Family();
+        family.setId(1L);
+        family.getMembers().add(testAccount);
+        when(familyServiceMock.getFamily(testAccount)).thenReturn(family);
+        userRestCtrl.perform(post(API_USER_FAMILY_UPDATE)
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(form))).andExpect(status().isBadRequest());
     }
 }

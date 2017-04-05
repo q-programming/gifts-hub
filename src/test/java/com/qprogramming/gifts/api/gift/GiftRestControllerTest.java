@@ -37,9 +37,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/**
- * Created by Khobar on 10.03.2017.
- */
 public class GiftRestControllerTest {
     public static final String API_GIFT_CREATE = "/api/gift/create";
     public static final String API_GIFT_EDIT = "/api/gift/edit";
