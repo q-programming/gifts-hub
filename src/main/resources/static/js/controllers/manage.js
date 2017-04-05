@@ -59,7 +59,9 @@ app.controller('manage', function ($rootScope, $scope, $http, $log, AlertService
             $scope.editSearch = true;
         }
     }
-    //TODO move to service and eliminate duplication
+    /**
+     * Get all available languages for application
+     */
     function getLanguages() {
         var url = 'api/app/languages';
         $http.get(url).then(

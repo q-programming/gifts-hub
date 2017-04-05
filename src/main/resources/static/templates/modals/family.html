@@ -12,8 +12,9 @@
                 repeat="user in (familyUsers | propsFilter: {fullname: $select.search, username: $select.search}) track by user.id">
             <div class="row">
                 <div class="col-xs-1">
-                    <img ng-if="user.avatar" ng-src="{{user.avatar}}" class="avatar small"/>
-                    <img ng-if="!user.avatar" src='images/avatar-placeholder.png' class="avatar small"/>
+                    <img ng-if="user.avatar && user.avatar !=='NaN'" ng-src="{{user.avatar}}" class="avatar small"/>
+                    <img ng-if="!user.avatar || user.avatar ==='NaN'" src='images/avatar-placeholder.png'
+                         class="avatar small"/>
                 </div>
                 <div class="col-xs-10">
                     <span ng-bind-html="user.fullname | highlight: $select.search"></span>&nbsp;
@@ -24,8 +25,8 @@
     </ui-select>
     <div class="row margin-top10" ng-class-even="'row-color'" ng-repeat="user in family.members">
         <div class="col-xs-1">
-            <img ng-if="user.avatar" ng-src="{{user.avatar}}" class="avatar small"/>
-            <img ng-if="!user.avatar" src='images/avatar-placeholder.png' class="avatar small"/>
+            <img ng-if="user.avatar && user.avatar !=='NaN'" ng-src="{{user.avatar}}" class="avatar small"/>
+            <img ng-if="!user.avatar || user.avatar ==='NaN'" src='images/avatar-placeholder.png' class="avatar small"/>
         </div>
         <div class="col-xs-11">
             {{user.fullname}}&nbsp;({{user.username}})
@@ -45,8 +46,9 @@
                     repeat="user in (family.members | propsFilter: {fullname: $select.search, username: $select.search}) track by user.id">
                 <div class="row">
                     <div class="col-xs-1">
-                        <img ng-if="user.avatar" ng-src="{{user.avatar}}" class="avatar small"/>
-                        <img ng-if="!user.avatar" src='images/avatar-placeholder.png' class="avatar small"/>
+                        <img ng-if="user.avatar && user.avatar !=='NaN'" ng-src="{{user.avatar}}" class="avatar small"/>
+                        <img ng-if="!user.avatar || user.avatar ==='NaN'" src='images/avatar-placeholder.png'
+                             class="avatar small"/>
                     </div>
                     <div class="col-xs-10">
                         <span ng-bind-html="user.fullname | highlight: $select.search"></span>&nbsp;
@@ -58,8 +60,9 @@
         <div class="row margin-top10" ng-class-odd="'row-color'"
              ng-repeat="user in family.admins">
             <div class="col-xs-1">
-                <img ng-if="user.avatar" ng-src="{{user.avatar}}" class="avatar small"/>
-                <img ng-if="!user.avatar" src='images/avatar-placeholder.png' class="avatar small"/>
+                <img ng-if="user.avatar && user.avatar !=='NaN'" ng-src="{{user.avatar}}" class="avatar small"/>
+                <img ng-if="!user.avatar || user.avatar ==='NaN'" src='images/avatar-placeholder.png'
+                     class="avatar small"/>
             </div>
             <div class="col-xs-11">
                 {{user.fullname}}&nbsp;({{user.username}})

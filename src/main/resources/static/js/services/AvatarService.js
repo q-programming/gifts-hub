@@ -7,20 +7,23 @@ AvatarService.factory('AvatarService', function ($http, $log, $rootScope, localS
         if (localStorageService.isSupported) {
             image = localStorageService.get("avatar:" + user.id);
         }
-        // var image = avatarCache.get(user.id);
         if (!image) {
-            $log.debug("[DEBUG] Getting avatar from DB");
+            $log.debug("[DEBUG] Getting avatar from DB for user " + user.id);
             $http.get('api/user/' + user.id + '/avatar').then(function (result) {
-                var datatype = "data:" + result.data.type + ";base64,";
-                image = datatype + result.data.image;
-                localStorageService.set("avatar:" + user.id, image);
-                user.avatar = image;
+                if (result.data) {
+                    var datatype = "data:" + result.data.type + ";base64,";
+                    image = datatype + result.data.image;
+                    localStorageService.set("avatar:" + user.id, image);
+                    user.avatar = image;
+                }else{
+                    localStorageService.set("avatar:" + user.id, "NaN");
+                }
             }).catch(function (response) {
                 $log.error("Failed to get avatar");
                 $log.error(response);
             });
         } else {
-            $log.debug("[DEBUG] Fetching avatar from localStorage");
+            $log.debug("[DEBUG] Fetching avatar from localStorage for user " + user.id);
             user.avatar = image;
         }
     };

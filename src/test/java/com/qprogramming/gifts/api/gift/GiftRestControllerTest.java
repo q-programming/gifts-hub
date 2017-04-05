@@ -4,6 +4,7 @@ import com.qprogramming.gifts.MockSecurityContext;
 import com.qprogramming.gifts.TestUtil;
 import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.AccountService;
+import com.qprogramming.gifts.account.family.FamilyService;
 import com.qprogramming.gifts.gift.Gift;
 import com.qprogramming.gifts.gift.GiftForm;
 import com.qprogramming.gifts.gift.GiftService;
@@ -60,13 +61,15 @@ public class GiftRestControllerTest {
     private CategoryRepository categoryRepositoryMock;
     @Mock
     private MessagesService messagesServiceMock;
+    @Mock
+    private FamilyService familyServiceMock;
 
     private Account testAccount;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        GiftRestController giftsCtrl = new GiftRestController(accSrvMock, giftServiceMock, searchEngineServiceMock, categoryRepositoryMock, messagesServiceMock);
+        GiftRestController giftsCtrl = new GiftRestController(accSrvMock, giftServiceMock, searchEngineServiceMock, categoryRepositoryMock, messagesServiceMock, familyServiceMock);
         testAccount = TestUtil.createAccount();
         when(securityMock.getAuthentication()).thenReturn(authMock);
         when(authMock.getPrincipal()).thenReturn(testAccount);

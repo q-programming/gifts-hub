@@ -221,18 +221,20 @@ public class Account implements Serializable, UserDetails {
         Account account = (Account) o;
 
         if (!id.equals(account.id)) return false;
-        if (!email.equals(account.email)) return false;
-        if (name != null ? !name.equals(account.name) : account.name != null) return false;
-        if (surname != null ? !surname.equals(account.surname) : account.surname != null) return false;
+        if (email != null ? !email.equals(account.email) : account.email != null) return false;
+        if (!name.equals(account.name)) return false;
+        if (!surname.equals(account.surname)) return false;
+        if (!username.equals(account.username)) return false;
         return created != null ? created.equals(account.created) : account.created == null;
     }
 
     @Override
     public int hashCode() {
         int result = id.hashCode();
-        result = 31 * result + email.hashCode();
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (surname != null ? surname.hashCode() : 0);
+        result = 31 * result + (email != null ? email.hashCode() : 0);
+        result = 31 * result + name.hashCode();
+        result = 31 * result + surname.hashCode();
+        result = 31 * result + username.hashCode();
         result = 31 * result + (created != null ? created.hashCode() : 0);
         return result;
     }

@@ -273,28 +273,61 @@ img.center {
 }
 
 /*MARGINS*/
+.margin5 {
+    margin: 5px!important;
+}
+
+.margin10 {
+    margin: 10px!important;
+}
+
+.margin15 {
+    margin: 15px!important;
+}
+
+.margin20 {
+    margin: 20px!important;
+}
+
 .margin-top5 {
-    margin-top: 5px;
+    margin-top: 5px!important;
 }
 
 .margin-top10 {
-    margin-top: 10px;
+    margin-top: 10px!important;
 }
 
 .margin-top20 {
-    margin-top: 20px;
+    margin-top: 20px!important;
 }
 
 .margin-bottom5 {
-    margin-bottom: 5px;
+    margin-bottom: 5px!important;
 }
 
 .margin-bottom10 {
-    margin-bottom: 10px;
+    margin-bottom: 10px!important;
 }
 
 .margin-bottom20 {
-    margin-bottom: 20px;
+    margin-bottom: 20px!important;
+}
+
+/*PADDINGS*/
+.padding5 {
+    padding: 5px;
+}
+
+.padding10 {
+    padding: 5px;
+}
+
+.padding15 {
+    padding: 5px;
+}
+
+.padding20 {
+    padding: 5px;
 }
 
 .row.gift-row {

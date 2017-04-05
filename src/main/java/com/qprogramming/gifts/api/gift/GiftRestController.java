@@ -2,6 +2,8 @@ package com.qprogramming.gifts.api.gift;
 
 import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.AccountService;
+import com.qprogramming.gifts.account.family.Family;
+import com.qprogramming.gifts.account.family.FamilyService;
 import com.qprogramming.gifts.gift.Gift;
 import com.qprogramming.gifts.gift.GiftForm;
 import com.qprogramming.gifts.gift.GiftService;
@@ -36,14 +38,16 @@ public class GiftRestController {
     private SearchEngineService searchEngineService;
     private CategoryRepository categoryRepository;
     private MessagesService msgSrv;
+    private FamilyService familyService;
 
     @Autowired
-    public GiftRestController(AccountService accountService, GiftService giftService, SearchEngineService searchEngineService, CategoryRepository categoryRepository, MessagesService msgSrv) {
+    public GiftRestController(AccountService accountService, GiftService giftService, SearchEngineService searchEngineService, CategoryRepository categoryRepository, MessagesService msgSrv, FamilyService familyService) {
         this.accountService = accountService;
         this.giftService = giftService;
         this.searchEngineService = searchEngineService;
         this.categoryRepository = categoryRepository;
         this.msgSrv = msgSrv;
+        this.familyService = familyService;
     }
 
     @RequestMapping("/create")
@@ -52,6 +56,8 @@ public class GiftRestController {
         if (StringUtils.isEmpty(giftForm.getName())) {
             return new ResponseEntity<>("Name field is required", HttpStatus.BAD_REQUEST);
         }
+        if (!canOperateOnUsernameGifts(giftForm))
+            return new ResultData.ResultBuilder().error().message(msgSrv.getMessage("user.family.admin.error")).build();
         Gift gift = updateGiftFromForm(giftForm, newGift);
         return new ResponseEntity<>(gift, HttpStatus.CREATED);
     }
@@ -62,12 +68,25 @@ public class GiftRestController {
         if (gift == null) {
             return ResponseEntity.notFound().build();
         }
-        if (!gift.getUserId().equals(Utils.getCurrentAccount().getId())) {
-            return ResponseEntity.badRequest().body(msgSrv.getMessage("error.edit.gift"));
+        if (!gift.getUserId().equals(Utils.getCurrentAccount().getId()) || !canOperateOnUsernameGifts(giftForm)) {
+            return new ResultData.ResultBuilder().badReqest().error().message(msgSrv.getMessage("user.family.admin.error")).build();
         }
         gift = updateGiftFromForm(giftForm, gift);
         //TODO add edition to newsletter
         return new ResponseEntity<>(gift, HttpStatus.OK);
+    }
+
+    private boolean canOperateOnUsernameGifts(GiftForm giftForm) {
+        if (StringUtils.isNotBlank(giftForm.getUsername())) {
+            Account giftOwner = accountService.findByUsername(giftForm.getUsername());
+            if (giftOwner == null) {
+                return false;
+            }
+            Family family = familyService.getFamily(giftOwner);
+            return family == null
+                    || (family.getAdmins().contains(Utils.getCurrentAccount()));
+        }
+        return true;
     }
 
 

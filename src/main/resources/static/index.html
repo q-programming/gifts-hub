@@ -74,8 +74,9 @@
                 <li ng-if="authenticated" uib-dropdown="" is-open="status.isopen" class="clickable">
                     <a class="white nav-username" uib-dropdown-toggle="">
                         {{principal.fullname}}<span class="caret"></span>
-                        <img ng-if="principal.avatar" ng-src="{{principal.avatar}}" class="avatar nav-avatar"/>
-                        <img ng-if="!principal.avatar" src='images/avatar-placeholder.png'
+                        <img ng-if="principal.avatar && principal.avatar !== 'NaN'" ng-src="{{principal.avatar}}"
+                             class="avatar nav-avatar"/>
+                        <img ng-if="!principal.avatar || principal.avatar ==='NaN'" src='images/avatar-placeholder.png'
                              class="avatar nav-avatar"/>
                     </a>
                     <ul class="dropdown-menu" uib-dropdown-menu="" role="menu" aria-labelledby="single-button">
@@ -115,7 +116,7 @@
             </div>
         </div>
     </div>
-    <div class="row">
+    <div class="row" id="main-ccontent">
         <div class="col-sm-10 col-md-10 col-md-offset-1 col-sm-offset-1 main">
             <div ng-view="" class="container main-container">
             </div>
@@ -138,6 +139,7 @@
 
 
 <!--APP JS-->
+<script src="js/utils/utils.js"></script>
 <script src="js/app.js"></script>
 <script src="js/services/AvatarService.js"></script>
 <script src="js/services/AuthService.js"></script>

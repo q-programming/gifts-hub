@@ -29,28 +29,6 @@ app.controller('settings', function ($rootScope, $scope, $http, $location, $tran
             AlertService.addSuccess('user.settings.avatar.success');
         }
     };
-    //TODO move to service
-    function getLanguages() {
-        var url = 'api/app/languages';
-        $http.get(url).then(
-            function (response) {
-                $log.debug("[DEBUG] Languages loaded");
-                $scope.languages = response.data;
-            }).catch(function (response) {
-            AlertService.addError("error.general");
-            $log.debug(response);
-        });
-    }
-
-    function getBase64Image(imgElem) {
-        var canvas = document.createElement("canvas");
-        canvas.width = imgElem.clientWidth;
-        canvas.height = imgElem.clientHeight;
-        var ctx = canvas.getContext("2d");
-        ctx.drawImage(imgElem, 0, 0);
-        var dataURL = canvas.toDataURL("image/png");
-        return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
-    }
 
     $scope.update = function () {
         $http.post('api/user/language', angular.toJson({
@@ -64,6 +42,20 @@ app.controller('settings', function ($rootScope, $scope, $http, $location, $tran
                 $scope.lang_success = true;
             }).catch(function (response) {
             AlertService.addError('user.settings.language.error')
+        });
+    }
+    /**
+     * Get all available languages for application
+     */
+    function getLanguages() {
+        var url = 'api/app/languages';
+        $http.get(url).then(
+            function (response) {
+                $log.debug("[DEBUG] Languages loaded");
+                $scope.languages = response.data;
+            }).catch(function (response) {
+            AlertService.addError("error.general");
+            $log.debug(response);
         });
     }
 

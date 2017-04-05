@@ -67,7 +67,7 @@ public class AccountService implements UserDetailsService {
 
     @Transactional
     public Account create(Account account) {
-        generateID(account);
+        account.setId(generateID());
         account.setPassword(passwordEncoder.encode(account.getPassword()));
         if (accountRepository.findAll().size() == 0) {
             account.setRole(Roles.ROLE_ADMIN);
@@ -75,16 +75,21 @@ public class AccountService implements UserDetailsService {
             account.setRole(Roles.ROLE_USER);
         }
         account.setType(AccountType.LOCAL);
-        accountRepository.save(account);
-        return account;
+        return accountRepository.save(account);
     }
 
-    private void generateID(Account account) {
+    public Account createKidAccount(Account account) {
+        account.setId(generateID());
+        account.setType(AccountType.KID);
+        return accountRepository.save(account);
+    }
+
+    public String generateID() {
         String uuid = UUID.randomUUID().toString();
         while (accountRepository.findOneById(uuid) != null) {
             uuid = UUID.randomUUID().toString();
         }
-        account.setId(uuid);
+        return uuid;
     }
 
     @Override
@@ -129,7 +134,7 @@ public class AccountService implements UserDetailsService {
     public Avatar createAvatar(Account account) {
         ClassLoader loader = this.getClass().getClassLoader();
         byte[] imgBytes;
-        try (InputStream avatarFile = loader.getResourceAsStream("static/images/logo-white.png")) {
+        try (InputStream avatarFile = loader.getResourceAsStream("static/images/avatar-placeholder.png")) {
             imgBytes = IOUtils.toByteArray(avatarFile);
             return createAvatar(account, imgBytes);
         } catch (IOException e) {

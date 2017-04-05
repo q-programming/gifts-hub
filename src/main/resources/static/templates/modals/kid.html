@@ -1,0 +1,67 @@
+<div class="modal-header">
+    <h3 class="modal-title" id="modal-title">
+        <i class="fa fa-plus"></i><i class="fa fa-child" aria-hidden="true"></i>&nbsp;
+        {{modalTitle}}
+    </h3>
+</div>
+<div class="modal-body" id="modal-body">
+    <span class="help-block">{{modalHelp}}</span>
+    <div class="row">
+        <div class="col-md-offset-4 col-md-4 text-center">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="cropAvatar-area">
+                        <div class="cropArea">
+                            <img ng-if="formData.avatar" class="img-responsive" ng-src="{{formData.avatar}}"
+                                 ng-hide="avatarUploadInProgress" style="margin: 0 auto;"/>
+                            <img ng-if="!formData.avatar" src='images/avatar-placeholder.png' class="img-responsive"
+                                 ng-hide="avatarUploadInProgress"/>
+                            <img-crop image="avatarImage" result-image="croppedAvatar"></img-crop>
+                        </div>
+                        <div class="cropAvatar">
+                            <img id="croppedAvatar" ng-src="{{croppedAvatar}}"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <label for="avatarFileInput" class="btn btn-default clickable">
+                    <i class="fa fa-upload"></i>&nbsp;<span translate="user.settings.avatar.upload"></span>
+                </label>
+                <input type="file" id="avatarFileInput"
+                       onchange="angular.element(this).scope().handleFileSelect(this)"/>
+                <button class="btn btn-success" ng-show="avatarUploadInProgress" ng-click="saveAvatarFile()">
+                    <i class="fa fa-floppy-o" aria-hidden="true"></i>&nbsp;
+                    <span translate="main.confirm"></span>
+                </button>
+            </div>
+            <hr/>
+        </div>
+    </div>
+    <form ng-show="!success" role="form" name="kidForm">
+        <div class="form-group" show-errors="">
+            <label for="name" translate="user.firstname"></label>
+            <input type="text" class="form-control" id="name" name="name" ng-model="formData.name"
+                   required="required"/>
+        </div>
+        <div class="form-group" show-errors="">
+            <label for="surname" translate="user.surname"></label>
+            <input type="text" class="form-control" id="surname" name="surname" ng-model="formData.surname"
+                   required="required"/>
+        </div>
+        <div class="form-group" show-errors="">
+            <label for="username" translate="user.username"></label>
+            <input type="text" class="form-control" id="username" name="username" ng-model="formData.username"
+                   ng-change="checkUsername()" required="required" ng-model-options="{ debounce: 1000 }"/>
+            <span class="validation-error" ng-show="usernameExists">
+                <span translate="user.register.username.exists"></span>&nbsp;<strong>{{formData.username}}</strong>&nbsp;<span
+                    translate="user.register.alreadyexists"></span>
+            </span>
+        </div>
+    </form>
+
+</div>
+<div class="modal-footer">
+    <button class="btn btn-default" type="button" ng-click="cancel()">Cancel</button>
+    <button class="btn btn-primary" type="button" ng-click="action()">OK</button>
+</div>

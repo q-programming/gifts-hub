@@ -9,7 +9,7 @@ import org.hibernate.validator.constraints.NotBlank;
 public class RegisterForm {
 
 
-    private static final String NOT_BLANK_MESSAGE = "Cannot be blank";
+    public static final String NOT_BLANK_MESSAGE = "Cannot be blank";
 
     @NotBlank
     @Email(message = "Not email")

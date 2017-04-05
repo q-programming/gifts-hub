@@ -3,6 +3,7 @@
     <div class="animate row" ng-show="showGiftForm">
         <div class="col-md-offset-2 col-md-6">
             <form role="form" name="mainGiftForm" ng-submit="sendGiftData()">
+                <input type="hidden" ng-model="giftForm.username">
                 <input type="hidden" ng-model="giftForm.id">
                 <div class="form-group" show-errors="">
                     <label for="name" translate="gift.name"></label>
@@ -56,7 +57,7 @@
     <div class="animate" ng-show="!showGiftForm">
         <div class="row">
             <button type="button" class="btn btn-success pull-right" ng-click="showCreate()"
-                    ng-show="!showGiftForm &amp;&amp; userList">
+                    ng-show="!showGiftForm && (userList || familyAdmin)">
                 <i class="fa fa-plus" aria-hidden="true"></i>
                 <span translate="gift.new.add"></span>
             </button>

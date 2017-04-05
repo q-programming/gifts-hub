@@ -6,10 +6,12 @@ import com.qprogramming.gifts.account.RegisterForm;
 import com.qprogramming.gifts.account.family.Family;
 import com.qprogramming.gifts.account.family.FamilyForm;
 import com.qprogramming.gifts.account.family.FamilyService;
+import com.qprogramming.gifts.account.family.KidForm;
 import com.qprogramming.gifts.messages.MessagesService;
 import com.qprogramming.gifts.support.ResultData;
 import com.qprogramming.gifts.support.Utils;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,7 +66,7 @@ public class UserRestController {
         }
         Account newAccount = userform.createAccount();
         newAccount = accountService.create(newAccount);
-        accountService.createAvatar(newAccount);
+//        accountService.createAvatar(newAccount);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
@@ -102,7 +104,14 @@ public class UserRestController {
      * @return {@link com.qprogramming.gifts.account.family.Family}
      */
     @RequestMapping("/family")
-    public ResponseEntity<?> getUserFamily() {
+    public ResponseEntity<?> getUserFamily(@RequestParam(required = false) String username) {
+        if (StringUtils.isNotBlank(username)) {
+            Account account = accountService.findByUsername(username);
+            if (account == null) {
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.ok(familyService.getFamily(account));
+        }
         return ResponseEntity.ok(familyService.getFamily(Utils.getCurrentAccount()));
     }
 
@@ -135,6 +144,31 @@ public class UserRestController {
             return ResponseEntity.ok(familyService.update(family));
         }
         return new ResultData.ResultBuilder().badReqest().message(msgSrv.getMessage("user.family.admin.error")).build();
+    }
+
+    @RequestMapping("/kid-add")
+    public ResponseEntity<?> addKid(@RequestBody @Valid KidForm form) {
+        if (accountService.findByUsername(form.getUsername()) != null) {
+            String message = msgSrv.getMessage("user.register.username.exists") + " " + msgSrv.getMessage("user.register.alreadyexists");
+            return new ResultData.ResultBuilder().badReqest().error().message(msgSrv.getMessage(message)).build();
+        }
+        Account currentAccount = Utils.getCurrentAccount();
+        Family family = familyService.getFamily(currentAccount);
+        if (family == null) {
+            return new ResultData.ResultBuilder().badReqest().message(msgSrv.getMessage("user.family.add.kid.error")).build();
+        }
+        if (!family.getAdmins().contains(currentAccount)) {
+            return new ResultData.ResultBuilder().badReqest().message(msgSrv.getMessage("user.family.admin.error")).build();
+        }
+        Account kidAccount = form.createAccount();
+        kidAccount = accountService.createKidAccount(kidAccount);
+        family.getMembers().add(kidAccount);
+        familyService.update(family);
+        if (StringUtils.isNotBlank(form.getAvatar())) {
+            byte[] data = Base64.decodeBase64(form.getAvatar());
+            accountService.updateAvatar(kidAccount, data);
+        }
+        return ResponseEntity.ok(kidAccount);
     }
 
 

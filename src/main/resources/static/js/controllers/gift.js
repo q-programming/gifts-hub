@@ -6,6 +6,7 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
     $scope.showGiftForm = false;
     $scope.editInProgress = false;
     $scope.userList = false;
+    $scope.usernameGifts ="";
     $scope.listTitle = "";
     $scope.categoryOther = "";
 
@@ -16,13 +17,14 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
     });
     //INIT
     if ($rootScope.authenticated) {
-        $scope.userList = !$routeParams.username || $routeParams.username === $rootScope.principal.username;
         $translate("gift.search").then(function (translation) {
             $scope.searchWith = translation;
         });
         getGiftList($routeParams.username);
         getSearchEngines();
         getCategories();
+        getFamily();
+        $scope.userList = !$routeParams.username || $routeParams.username === $rootScope.principal.username;
     }
 
     /**
@@ -35,6 +37,7 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
         angular.forEach($scope.searchEngines, function (engine) {
             $scope.giftForm.searchEngines[engine.id] = true;
         });
+        $scope.giftForm.username = $scope.usernameGifts;
     };
     /**
      * Show gift form, pre-filled with search engines selected
@@ -47,6 +50,7 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
         angular.forEach(gift.engines, function (engine) {
             $scope.giftForm.searchEngines[engine.id] = true;
         });
+        $scope.giftForm.username = $scope.usernameGifts;
     };
 
     /**
@@ -112,7 +116,7 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
     };
 
     /**
-     * Refresh autofill result of category searc
+     * Refresh autofill result of category search
      * @param $select
      */
     $scope.refreshResults = function ($select) {
@@ -203,6 +207,7 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
     function getGiftList(username) {
         var url;
         if (username) {
+            $scope.usernameGifts = username;
             $translate("gift.list").then(function (translation) {
                 $scope.listTitle = translation + " " + username;
 
@@ -256,5 +261,25 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
             AlertService.addError("error.general");
             $log.debug(response);
         });
+    }
+
+    //TODO move to family service?
+    function isFamilyAdmin() {
+        angular.forEach($scope.family.admins, function (user) {
+            if (user.id === $rootScope.principal.id) {
+                $scope.familyAdmin = true;
+            }
+        });
+    }
+
+    function getFamily() {
+        $http.get('api/user/family?username=' + $routeParams.username).then(
+            function (response) {
+                if (response.data) {
+                    $scope.family = response.data;
+                    isFamilyAdmin();
+                }
+            }
+        );
     }
 });

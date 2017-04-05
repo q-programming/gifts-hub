@@ -64,16 +64,18 @@ app.controller('register', function ($scope, $rootScope, $http, $log, AlertServi
         });
     };
     $scope.checkUsername = function () {
-        $http.post('api/user/validate-username', $scope.formData.username).then(
-            function (response) {
-                if (response.data.body.code === 'ERROR') {
-                    $scope.userForm.username.$setValidity("exists", false);
-                } else {
-                    $scope.userForm.username.$setValidity("exists", true);
-                }
-            }).catch(function (response) {
-            AlertService.addError("error.general", response);
-        });
+        if ($scope.formData.username) {
+            $http.post('api/user/validate-username', $scope.formData.username).then(
+                function (response) {
+                    if (response.data.body.code === 'ERROR') {
+                        $scope.userForm.username.$setValidity("exists", false);
+                    } else {
+                        $scope.userForm.username.$setValidity("exists", true);
+                    }
+                }).catch(function (response) {
+                AlertService.addError("error.general", response);
+            });
+        }
     };
     $scope.checkPasswords = function () {
         if ($scope.formData.password !== $scope.formData.confirmpassword) {

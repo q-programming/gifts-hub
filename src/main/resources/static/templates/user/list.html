@@ -1,17 +1,25 @@
 <div ng-if="authenticated">
     <h1 translate="user.list"></h1>
-    <span class="btn btn-success pull-right" ng-if="!hasFamily" ng-click="createFamily()">
+    <span class="btn btn-success pull-right margin5 " ng-if="!hasFamily" ng-click="createFamily()">
         <i class="fa fa-plus"></i>&nbsp;
         <span translate="user.family.create"></span>
     </span>
-    <span class="btn btn-success pull-right" ng-if="hasFamily" ng-click="editFamily()">
+    <span class="btn btn-success pull-right margin5 " ng-if="hasFamily && familyAdmin" ng-click="addKid()">
+        <i class="fa fa-plus"></i><i class="fa fa-child" aria-hidden="true"></i>&nbsp;
+        <span translate="user.family.add.kid"></span>
+    </span>
+    <span class="btn btn-success pull-right margin5 " ng-if="hasFamily" ng-click="editFamily()">
         <i class="fa fa-pencil"></i>&nbsp;
         <span translate="user.family.edit"></span>
     </span>
     <table class="table animate">
         <tr ng-repeat="user in users">
-            <td><img ng-if="user.avatar" ng-src="{{user.avatar}}" class="avatar"/>
-                <img ng-if="!user.avatar" src='images/avatar-placeholder.png' class="avatar"/></td>
+            <td><img ng-if="user.avatar && user.avatar !=='NaN'" ng-src="{{user.avatar}}" class="avatar"/>
+                <img ng-if="!user.avatar || user.avatar ==='NaN'" src='images/avatar-placeholder.png' class="avatar"/>
+                <i class="fa fa-child" aria-hidden="true" ng-if="user.type ==='KID'"
+                   uib-tooltip="{{'user.family.kid'|translate}}">
+                </i>
+            </td>
             <td><a ng-href="#/list/{{user.username}}">{{user.username}}</a></td>
             <td>{{user.name}}</td>
             <td>{{user.surname}}</td>

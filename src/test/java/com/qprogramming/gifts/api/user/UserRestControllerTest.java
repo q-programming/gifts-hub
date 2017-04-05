@@ -4,10 +4,12 @@ import com.qprogramming.gifts.MockSecurityContext;
 import com.qprogramming.gifts.TestUtil;
 import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.AccountService;
+import com.qprogramming.gifts.account.AccountType;
 import com.qprogramming.gifts.account.RegisterForm;
 import com.qprogramming.gifts.account.family.Family;
 import com.qprogramming.gifts.account.family.FamilyForm;
 import com.qprogramming.gifts.account.family.FamilyService;
+import com.qprogramming.gifts.account.family.KidForm;
 import com.qprogramming.gifts.messages.MessagesService;
 import com.qprogramming.gifts.support.ResultData;
 import org.apache.commons.codec.binary.Base64;
@@ -35,7 +37,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class UserRestControllerTest {
-
     public static final String API_USER_REGISTER = "/api/user/register";
     public static final String API_USER_LANGUAGE = "/api/user/language";
     public static final String API_USER_VALIDATE_EMAIL = "/api/user/validate-email";
@@ -43,6 +44,8 @@ public class UserRestControllerTest {
     public static final String API_USER_UPDATE_AVATAR = "/api/user/avatar-upload";
     public static final String API_USER_FAMILY_CREATE = "/api/user/family-create";
     public static final String API_USER_FAMILY_UPDATE = "/api/user/family-update";
+    public static final String API_USER_KID_ADD = "/api/user/kid-add";
+    public static final String API_USER_KID_UPDATE = "/api/user/kid-update";
 
 
     private MockMvc userRestCtrl;
@@ -317,4 +320,77 @@ public class UserRestControllerTest {
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(form))).andExpect(status().isBadRequest());
     }
+
+    @Test
+    public void addKidNoFamily() throws Exception {
+        KidForm form = new KidForm();
+        form.setName("John");
+        form.setSurname("Doe");
+        form.setUsername("john");
+        userRestCtrl.perform(post(API_USER_KID_ADD)
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(form))).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void addKidNotFamilyAdmin() throws Exception {
+        Family family = new Family();
+        family.setId(1L);
+        family.getMembers().add(testAccount);
+        when(familyServiceMock.getFamily(testAccount)).thenReturn(family);
+        KidForm form = new KidForm();
+        form.setName("John");
+        form.setSurname("Doe");
+        form.setUsername("john");
+        userRestCtrl.perform(post(API_USER_KID_ADD)
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(form))).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void addKidUsernameExists() throws Exception {
+        when(accSrvMock.findByUsername(testAccount.getUsername())).thenReturn(testAccount);
+        KidForm form = new KidForm();
+        form.setName("John");
+        form.setSurname("Doe");
+        form.setUsername(testAccount.getUsername());
+        userRestCtrl.perform(post(API_USER_KID_ADD)
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(form))).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void addKidSuccess() throws Exception {
+        byte[] imgBytes;
+        ClassLoader loader = this.getClass().getClassLoader();
+        try (InputStream avatarFile = loader.getResourceAsStream("static/images/logo-white.png")) {
+            imgBytes = IOUtils.toByteArray(avatarFile);
+            String imgStream = Base64.encodeBase64String(imgBytes);
+            KidForm form = new KidForm();
+            form.setName("John");
+            form.setSurname("Doe");
+            form.setUsername("john");
+            form.setAvatar(imgStream);
+            Family family = new Family();
+            family.setId(1L);
+            family.getMembers().add(testAccount);
+            family.getAdmins().add(testAccount);
+            when(familyServiceMock.getFamily(testAccount)).thenReturn(family);
+            Account kid = form.createAccount();
+            kid.setId(TestUtil.USER_RANDOM_ID + (Math.random() * 100));
+            kid.setType(AccountType.KID);
+            when(accSrvMock.createKidAccount(any(Account.class))).thenReturn(kid);
+            userRestCtrl.perform(post(API_USER_KID_ADD)
+                    .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                    .content(TestUtil.convertObjectToJsonBytes(form))).andExpect(status().isOk());
+            family.getMembers().add(kid);
+            verify(accSrvMock, times(1)).createKidAccount(any(Account.class));
+            verify(accSrvMock, times(1)).updateAvatar(kid, imgBytes);
+            verify(familyServiceMock, times(1)).update(family);
+        } catch (IOException e) {
+            fail(e.getMessage());
+        }
+    }
+
+
 }
