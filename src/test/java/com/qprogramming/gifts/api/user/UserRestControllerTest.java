@@ -14,11 +14,13 @@ import com.qprogramming.gifts.messages.MessagesService;
 import com.qprogramming.gifts.support.ResultData;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
@@ -33,12 +35,13 @@ import static com.qprogramming.gifts.TestUtil.USER_RANDOM_ID;
 import static org.junit.Assert.*;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class UserRestControllerTest {
     public static final String API_USER_REGISTER = "/api/user/register";
-    public static final String API_USER_LANGUAGE = "/api/user/language";
+    public static final String API_USER_SETTINGS = "/api/user/settings";
     public static final String API_USER_VALIDATE_EMAIL = "/api/user/validate-email";
     public static final String API_USER_VALIDATE_USERNAME = "/api/user/validate-username";
     public static final String API_USER_UPDATE_AVATAR = "/api/user/avatar-upload";
@@ -46,6 +49,7 @@ public class UserRestControllerTest {
     public static final String API_USER_FAMILY_UPDATE = "/api/user/family-update";
     public static final String API_USER_KID_ADD = "/api/user/kid-add";
     public static final String API_USER_KID_UPDATE = "/api/user/kid-update";
+    private static final String API_USER = "/api/user";
 
 
     private MockMvc userRestCtrl;
@@ -59,6 +63,8 @@ public class UserRestControllerTest {
     private MessagesService msgSrvMock;
     @Mock
     private FamilyService familyServiceMock;
+    @Mock
+    private AnonymousAuthenticationToken annonymousTokenMock;
 
     private Account testAccount;
 
@@ -150,7 +156,7 @@ public class UserRestControllerTest {
         JSONObject object = new JSONObject();
         object.put("id", USER_RANDOM_ID);
         object.put("language", "pl");
-        userRestCtrl.perform(post(API_USER_LANGUAGE)
+        userRestCtrl.perform(post(API_USER_SETTINGS)
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(object.toString())).andExpect(status().isOk());
         verify(accSrvMock, times(1)).update(testAccount);
@@ -161,7 +167,7 @@ public class UserRestControllerTest {
         JSONObject object = new JSONObject();
         object.put("id", USER_RANDOM_ID);
         object.put("language", "pl");
-        userRestCtrl.perform(post(API_USER_LANGUAGE)
+        userRestCtrl.perform(post(API_USER_SETTINGS)
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(object.toString())).andExpect(status().isNotFound());
     }
@@ -390,6 +396,37 @@ public class UserRestControllerTest {
         } catch (IOException e) {
             fail(e.getMessage());
         }
+    }
+
+    @Test
+    public void getUserById() throws Exception {
+        when(accSrvMock.findById(testAccount.getId())).thenReturn(testAccount);
+        MvcResult mvcResult = userRestCtrl.perform(get(API_USER + "?identification=" + testAccount.getId())).andExpect(status().isOk()).andReturn();
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        Account result = TestUtil.convertJsonToObject(contentAsString, Account.class);
+        assertEquals(testAccount, result);
+
+    }
+
+    @Test
+    public void getUserByIdAnnonymousNotPublic() throws Exception {
+        when(accSrvMock.findById(testAccount.getId())).thenReturn(testAccount);
+        when(securityMock.getAuthentication()).thenReturn(annonymousTokenMock);
+        MvcResult mvcResult = userRestCtrl.perform(get(API_USER + "?identification=" + testAccount.getId())).andExpect(status().isOk()).andReturn();
+        assertTrue(StringUtils.isEmpty(mvcResult.getResponse().getContentAsString()));
+
+    }
+
+    @Test
+    public void getUserByIdAnnonymousPublic() throws Exception {
+        testAccount.setPublicList(true);
+        when(accSrvMock.findById(testAccount.getId())).thenReturn(testAccount);
+        when(securityMock.getAuthentication()).thenReturn(annonymousTokenMock);
+        MvcResult mvcResult = userRestCtrl.perform(get(API_USER + "?identification=" + testAccount.getId())).andExpect(status().isOk()).andReturn();
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        Account result = TestUtil.convertJsonToObject(contentAsString, Account.class);
+        assertEquals(testAccount, result);
+
     }
 
 

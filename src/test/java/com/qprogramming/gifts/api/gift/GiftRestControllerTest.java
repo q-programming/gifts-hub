@@ -20,6 +20,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
@@ -61,6 +62,8 @@ public class GiftRestControllerTest {
     private MessagesService messagesServiceMock;
     @Mock
     private FamilyService familyServiceMock;
+    @Mock
+    private AnonymousAuthenticationToken annonymousTokenMock;
 
     private Account testAccount;
 
@@ -170,12 +173,44 @@ public class GiftRestControllerTest {
         gift.setUserId(testAccount.getId());
         List<Gift> giftList = Collections.singletonList(gift);
         Map<Category, List<Gift>> expected = Utils.toGiftTreeMap(giftList);
-        when(accSrvMock.findByUsername(testAccount.getUsername())).thenReturn(testAccount);
+        when(accSrvMock.findByUsername(testAccount.getId())).thenReturn(testAccount);
         when(giftServiceMock.findAllByUser(testAccount.getId())).thenReturn(expected);
-        MvcResult mvcResult = giftsRestCtrl.perform(get(API_GIFT_LIST + "/" + testAccount.getUsername())).andExpect(status().isOk()).andReturn();
+        MvcResult mvcResult = giftsRestCtrl.perform(get(API_GIFT_LIST + "/" + testAccount.getId())).andExpect(status().isOk()).andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
         assertTrue(contentAsString.contains(testAccount.getId()));
         assertTrue(contentAsString.contains("name"));
+    }
+
+    @Test
+    public void getGiftsAccountPublic() throws Exception {
+        testAccount.setPublicList(true);
+        Gift gift = new Gift();
+        gift.setId(1L);
+        gift.setName("name");
+        gift.setUserId(testAccount.getId());
+        List<Gift> giftList = Collections.singletonList(gift);
+        Map<Category, List<Gift>> expected = Utils.toGiftTreeMap(giftList);
+        when(accSrvMock.findByUsername(testAccount.getId())).thenReturn(testAccount);
+        when(giftServiceMock.findAllByUser(testAccount.getId())).thenReturn(expected);
+        when(securityMock.getAuthentication()).thenReturn(annonymousTokenMock);
+        MvcResult mvcResult = giftsRestCtrl.perform(get(API_GIFT_LIST + "/" + testAccount.getId())).andExpect(status().isOk()).andReturn();
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        assertTrue(contentAsString.contains(testAccount.getId()));
+        assertTrue(contentAsString.contains("name"));
+    }
+
+    @Test
+    public void getGiftsAccountNotPublic() throws Exception {
+        Gift gift = new Gift();
+        gift.setId(1L);
+        gift.setName("name");
+        gift.setUserId(testAccount.getId());
+        List<Gift> giftList = Collections.singletonList(gift);
+        Map<Category, List<Gift>> expected = Utils.toGiftTreeMap(giftList);
+        when(accSrvMock.findByUsername(testAccount.getId())).thenReturn(testAccount);
+        when(giftServiceMock.findAllByUser(testAccount.getId())).thenReturn(expected);
+        when(securityMock.getAuthentication()).thenReturn(annonymousTokenMock);
+        giftsRestCtrl.perform(get(API_GIFT_LIST + "/" + testAccount.getId())).andExpect(status().isBadRequest());
     }
 
     @Test

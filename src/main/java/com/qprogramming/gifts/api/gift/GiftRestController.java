@@ -18,6 +18,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -199,11 +202,21 @@ public class GiftRestController {
         return new ResponseEntity<>(giftService.findAllByCurrentUser(), HttpStatus.OK);
     }
 
-    @RequestMapping("/user/{username}")
-    public ResponseEntity getUserGifts(@PathVariable String username) {
-        Account account = accountService.findByUsername(username);
+    @RequestMapping("/user/{usernameOrId}")
+    public ResponseEntity getUserGifts(@PathVariable String usernameOrId) {
+        Account account = accountService.findByUsername(usernameOrId);
         if (account == null) {
-            return new ResponseEntity<>("Account not found", HttpStatus.NOT_FOUND);
+            account = accountService.findById(usernameOrId);
+            if (account == null) {
+                return ResponseEntity.notFound().build();
+            }
+        }
+        //check if anonymous user can view user gifts
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if ((authentication instanceof AnonymousAuthenticationToken)) {
+            if (!account.getPublicList()) {
+                return new ResultData.ResultBuilder().badReqest().error().message(msgSrv.getMessage("gift.list.public.error")).build();
+            }
         }
         return new ResponseEntity<>(giftService.findAllByUser(account.getId()), HttpStatus.OK);
     }

@@ -1,5 +1,12 @@
 <div ng-if="authenticated">
-    <h1>{{listTitle}}</h1>
+    <!--<h1>{{listTitle}}</h1>-->
+    <img ng-if="userGiftList.avatar && userGiftList.avatar !=='NaN'" ng-src="{{userGiftList.avatar}}" class="avatar"/>
+    <img ng-if="!userGiftList.avatar || userGiftList.avatar ==='NaN'" src='images/avatar-placeholder.png'
+         class="avatar"/>
+    <i class="fa fa-child" aria-hidden="true" ng-if="userGiftList.type ==='KID'"
+       uib-tooltip="{{'user.family.kid'|translate}}">
+    </i>
+    {{userGiftList.fullname}} ({{userGiftList.username}})
     <div class="animate row" ng-show="showGiftForm">
         <div class="col-md-offset-2 col-md-6">
             <form role="form" name="mainGiftForm" ng-submit="sendGiftData()">
@@ -54,6 +61,9 @@
             </form>
         </div>
     </div>
+
+
+    <!--LIST-->
     <div class="animate" ng-show="!showGiftForm">
         <div class="row">
             <button type="button" class="btn btn-success pull-right" ng-click="showCreate()"
@@ -78,7 +88,10 @@
         </div>
         <div ng-repeat="(key, value) in giftsList">
             <h4><strong translate="{{key}}">{{key}}</strong></h4>
-            <div class="row gift-row" ng-class-odd="'row gift-row row-color'" ng-repeat="gift in value">
+            <div class="row gift-row"
+                 ng-class-odd="'row gift-row row-color'"
+                 ng-class="gift.status ==='REALISED' ? 'gift-realised':''"
+                 ng-repeat="gift in value">
                 <div class="col-xs-12 col-sm-3">
                     <gift-status gift="gift"></gift-status>
                     <strong>{{gift.name}}</strong>

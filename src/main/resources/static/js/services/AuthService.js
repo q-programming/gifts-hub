@@ -1,5 +1,5 @@
 var AuthService = angular.module('AuthService', []);
-AuthService.factory('AuthService', function ($http, $log, avatarCache, $rootScope,$translate,$location, AvatarService) {
+AuthService.factory('AuthService', function ($http, $log, avatarCache, $rootScope, $translate, $location, AvatarService) {
     var AuthService = {};
 
     AuthService.authenticate = function (credentials, callback) {
@@ -28,7 +28,6 @@ AuthService.factory('AuthService', function ($http, $log, avatarCache, $rootScop
                 callback && callback();
             });
     };
-
     return AuthService;
 });
 

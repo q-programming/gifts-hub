@@ -18,7 +18,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -191,26 +194,45 @@ public class UserRestController {
     }
 
 
-    @RequestMapping(value = "/language", method = RequestMethod.POST)
-    public ResponseEntity changeLanguage(@RequestBody String jsonObj) {
+    @RequestMapping(value = "/settings", method = RequestMethod.POST)
+    public ResponseEntity changeSettings(@RequestBody String jsonObj) {
         JSONObject object = new JSONObject(jsonObj);
         Account currentAccount = Utils.getCurrentAccount();
         Account account = accountService.findById(object.getString("id"));
         if (account == null || !account.equals(currentAccount)) {
             return ResponseEntity.notFound().build();
         }
-        account.setLanguage(object.getString("language"));
+        if (object.has("language")) {
+            account.setLanguage(object.getString("language"));
+        }
+        if (object.has("publicList")) {
+            account.setPublicList(object.getBoolean("publicList"));
+        }
         accountService.update(account);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-
     @RequestMapping
-    public Account user(Principal user) {
+    public Account user(@RequestParam(required = false) String identification, Principal user) {
+        if (StringUtils.isNotBlank(identification)) {
+            return getAccountByUsernameOrId(identification);
+        }
         if (user != null && user instanceof UsernamePasswordAuthenticationToken) {
             return (Account) ((UsernamePasswordAuthenticationToken) user).getPrincipal();
         }
         return null;
+    }
+
+    private Account getAccountByUsernameOrId(@RequestParam(required = false) String identification) {
+        Account account = accountService.findByUsername(identification);
+        if (account == null) {
+            account = accountService.findById(identification);
+        }
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if ((authentication instanceof AnonymousAuthenticationToken)) {
+            return account != null && account.getPublicList() ? account : null;
+        }
+        return account;
     }
 
 }

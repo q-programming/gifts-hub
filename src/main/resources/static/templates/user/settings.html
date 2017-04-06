@@ -1,7 +1,11 @@
 <div ng-if="authenticated">
     <div class="row">
-        <div class="col-md-offset-4 col-md-4 text-center">
-            <div class="row">
+        <div class="col-md-offset-4 col-md-4">
+            <h4>
+                <i class="fa fa-user-circle-o" aria-hidden="true"></i>
+                &nbsp;<span translate="user.settings.avatar"></span>
+            </h4>
+            <div class="row text-center">
                 <div class="col-md-offset-3 col-md-6">
                     <div class="cropAvatar-area">
                         <div class="cropArea">
@@ -15,7 +19,7 @@
                     </div>
                 </div>
             </div>
-            <div>
+            <div class="text-center">
                 <label for="avatarFileInput" class="btn btn-default clickable">
                     <i class="fa fa-upload"></i>&nbsp;<span translate="user.settings.avatar.upload"></span>
                 </label>
@@ -29,11 +33,40 @@
             <hr/>
         </div>
     </div>
-    <div ng-if="authenticated" class="row">
+    <div class="row">
         <div class="form-group col-md-offset-4 col-md-4">
+            <h4>
+                <i class="fa fa-globe" aria-hidden="true"></i>
+                &nbsp;<span translate="user.settings.language"></span>
+            </h4>
             <select class="form-control input-sm" name="language" ng-model="principal.language" ng-change="update()">
                 <option ng-repeat="(lang, languageString) in languages" ng-value="lang">{{languageString}}</option>
             </select>
+            <hr/>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group col-md-offset-4 col-md-4">
+            <h4>
+                <i class="fa fa-unlock-alt" aria-hidden="true"></i>
+                &nbsp;<span translate="user.settings.public"></span>
+            </h4>
+            <label>
+                <input type="checkbox" ng-model="principal.publicList" name="publicList" ng-click="update()"/>
+                <span translate="user.settings.public"></span>
+            </label>
+            <span class="help-block" translate="user.settings.public.help"></span>
+            <div class="row" ng-if="principal.publicList">
+                <div class="col-xs-11">
+                    <input id="public-link" class="form-control" ng-value="getPublicUrl()" readonly/>
+                </div>
+                <div class="col-xs-1">
+                    <span class="btn btn-default" uib-tooltip="{{'user.settings.public.copy'|translate}}"
+                          tooltip-placement="left" ng-click="copyLink()">
+                        <i class="fa fa-link" aria-hidden="true"></i>
+                    </span>
+                </div>
+            </div>
         </div>
     </div>
 </div>

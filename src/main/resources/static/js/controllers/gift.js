@@ -1,4 +1,4 @@
-app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, $route, $translate, AlertService, GIFT_STATUS) {
+app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, $route, $location, $translate, AlertService, AvatarService, GIFT_STATUS) {
     $scope.giftForm = {};
     $scope.giftsList = [];
     $scope.searchEngines = [];
@@ -7,6 +7,7 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
     $scope.editInProgress = false;
     $scope.userList = false;
     $scope.usernameGifts = "";
+    $scope.userGiftList = {};
     $scope.listTitle = "";
     $scope.categoryOther = "";
 
@@ -16,11 +17,11 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
         $scope.categoryOther = translation;
     });
     //INIT
+    getGiftList();
     if ($rootScope.authenticated) {
         $translate("gift.search").then(function (translation) {
             $scope.searchWith = translation;
         });
-        getGiftList($routeParams.username);
         getSearchEngines();
         getCategories();
         getFamily();
@@ -93,7 +94,7 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
         }
         $http.post(url, angular.toJson($scope.apiSendGift)).then(
             function () {
-                getGiftList($routeParams.username);
+                getGiftList();
                 getCategories();
                 if ($scope.editInProgress) {
                     AlertService.addSuccess("gift.edit.success");
@@ -157,7 +158,7 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
             function (response) {
                 $log.debug("[DEBUG] Gift claimed");
                 AlertService.addSuccessMessage(response.data.message);
-                getGiftList($routeParams.username);
+                getGiftList();
             }).catch(function (response) {
             AlertService.addError("error.general", response);
             $log.debug(response);
@@ -169,7 +170,7 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
             function (response) {
                 $log.debug("[DEBUG] Gift unclaimed");
                 AlertService.addSuccessMessage(response.data.message);
-                getGiftList($routeParams.username);
+                getGiftList();
             }).catch(function (response) {
             AlertService.addError("error.general", response);
             $log.debug(response);
@@ -182,7 +183,7 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
             function (response) {
                 $log.debug("[DEBUG] Gift realised");
                 AlertService.addSuccessMessage(response.data.message);
-                getGiftList($routeParams.username);
+                getGiftList();
             }).catch(function (response) {
             AlertService.addError("error.general", response);
             $log.debug(response);
@@ -194,7 +195,7 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
             function (response) {
                 $log.debug("[DEBUG] Gift undo realised");
                 AlertService.addSuccessMessage(response.data.message);
-                getGiftList($routeParams.username);
+                getGiftList();
             }).catch(function (response) {
             AlertService.addError("error.general", response);
             $log.debug(response);
@@ -204,24 +205,33 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
 
     // HELPER FUNCTIONS
 
-    function getGiftList(username) {
+    function getGiftList() {
+        var username;
         var url;
-        if (username) {
-            $scope.usernameGifts = username;
+        if ($routeParams.username || $routeParams.userid) {
+            if ($routeParams.username) {
+                username = $routeParams.username
+                getUsernDataByUsernameOrId(username);
+                url = 'api/gift/user/' + username;
+            } else if ($routeParams.userid) {
+                username = $routeParams.userid
+                getUsernDataByUsernameOrId(username);
+                url = 'api/gift/user/' + $routeParams.userid;
+            }
             $translate("gift.list").then(function (translation) {
                 $scope.listTitle = translation + " " + username;
-
             });
-            url = 'api/gift/user/' + username;
         } else {
             $translate("gift.list.mine").then(function (translation) {
                 $scope.listTitle = translation;
 
             });
             url = 'api/gift/mine';
+            $scope.userGiftList = $rootScope.principal;
         }
         $http.get(url).then(
             function (response) {
+                $scope.isPublicList = true;
                 $scope.giftsList = {};
                 $log.debug("[DEBUG] User gifts loaded");
                 angular.forEach(response.data, function (value, key) {
@@ -231,7 +241,12 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
                     $scope.giftsList[key] = value;
                 });
             }).catch(function (response) {
-            AlertService.addError("error.general");
+            if (response.status === 404) {
+                // AlertService.addError('error.page.notfound');
+                $location.url('/404');
+            } else if (response.status === 400) {
+                $scope.isPublicList = false;
+            }
             $log.debug(response);
         });
     }
@@ -242,6 +257,19 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
             function (response) {
                 $log.debug("[DEBUG] Search engines loaded");
                 $scope.searchEngines = response.data;
+            }).catch(function (response) {
+            AlertService.addError("error.general");
+            $log.debug(response);
+        });
+    }
+
+    function getUsernDataByUsernameOrId(usernameOrId) {
+        var url = 'api/user?identification=' + usernameOrId;
+        $http.get(url).then(
+            function (response) {
+                $log.debug("[DEBUG] User data loaded");
+                $scope.userGiftList = response.data;
+                AvatarService.getUserAvatar($scope.userGiftList);
             }).catch(function (response) {
             AlertService.addError("error.general");
             $log.debug(response);

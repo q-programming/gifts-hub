@@ -1,4 +1,4 @@
-app.controller('settings', function ($rootScope, $scope, $http, $location, $translate, $log, AlertService, AvatarService,AppService) {
+app.controller('settings', function ($rootScope, $scope, $http, $location, $translate, $log, $window, AlertService, AvatarService, AppService) {
     $scope.avatarUploadInProgress = false;
     $scope.avatarImage = '';
     $scope.croppedAvatar = '';
@@ -31,19 +31,36 @@ app.controller('settings', function ($rootScope, $scope, $http, $location, $tran
     };
 
     $scope.update = function () {
-        $http.post('api/user/language', angular.toJson({
+        $http.post('api/user/settings', angular.toJson({
             id: $rootScope.principal.id,
-            language: $rootScope.principal.language
+            language: $rootScope.principal.language,
+            publicList: $rootScope.principal.publicList
         })).then(
             function () {
                 $translate.use($rootScope.principal.language);
                 $location.search('lang', $rootScope.principal.language);
-                AlertService.addSuccess('user.settings.language.set');
+                AlertService.addSuccess('user.settings.updated');
                 $scope.lang_success = true;
             }).catch(function (response) {
-            AlertService.addError('user.settings.language.error')
+            AlertService.addError('user.settings.updated.error')
         });
-    }
+    };
+
+    $scope.getPublicUrl = function () {
+        var url = $location.absUrl().split("#")[0];
+        return url + "#/public/" + $rootScope.principal.id
+    };
+
+    $scope.copyLink = function () {
+        var el = document.getElementById('public-link');
+        var range = document.createRange();
+        range.selectNode(el);
+        window.getSelection().removeAllRanges();
+        window.getSelection().addRange(range);
+        document.execCommand('copy');
+        window.getSelection().removeAllRanges();
+        AlertService.addSuccess("user.settings.public.copy.success");
+    };
     /**
      * Get all available languages for application
      */

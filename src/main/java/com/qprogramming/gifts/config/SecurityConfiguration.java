@@ -65,13 +65,18 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .antMatchers("/index.html"
                             , "/home.html"
                             , "/user/login.html"
+                            , "/gifts/publicList.html"
                             , "/"
                             , "/user/register.html"
                             , "/api/user"
                             , "/api/user/register"
                             , "/api/messages"
                             , "/api/user/validate-email"
-                            , "/api/user/validate-username").permitAll()
+                            , "/api/user/validate-username"
+                            , "/api/gift/user/*"
+                            , "/api/user/*/avatar"
+
+                    ).permitAll()
                     .antMatchers("/api/manage/settings").hasAuthority(Roles.ROLE_ADMIN.toString())
                     .anyRequest().authenticated()
                 .and().formLogin()

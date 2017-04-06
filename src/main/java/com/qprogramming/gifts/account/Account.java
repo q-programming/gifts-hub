@@ -43,6 +43,9 @@ public class Account implements Serializable, UserDetails {
     @Enumerated(EnumType.STRING)
     private AccountType type;
 
+    @Column
+    private Boolean publicList = false;
+
     private String fullname;
 
     public Account() {
@@ -161,6 +164,14 @@ public class Account implements Serializable, UserDetails {
 
     public String getFullname() {
         return getName() + " " + getSurname();
+    }
+
+    public Boolean getPublicList() {
+        return publicList;
+    }
+
+    public void setPublicList(Boolean publicList) {
+        this.publicList = publicList;
     }
 
     @Override
