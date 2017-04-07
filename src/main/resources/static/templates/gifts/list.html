@@ -67,7 +67,7 @@
     <div class="animate" ng-show="!showGiftForm">
         <div class="row">
             <button type="button" class="btn btn-success pull-right" ng-click="showCreate()"
-                    ng-show="!showGiftForm && (userList || familyAdmin)">
+                    ng-show="!showGiftForm && (userList || family.familyAdmin)">
                 <i class="fa fa-plus" aria-hidden="true"></i>
                 <span translate="gift.new.add"></span>
             </button>
@@ -102,8 +102,7 @@
                     <span ng-repeat="engine in gift.engines">
                 <a class="pull-right" ng-href="{{engine.searchString + gift.name}}" target="_blank">
                 <i ng-class="'fa fa-fw '+ engine.icon"
-                   aria-hidden="true"
-                   title="{{searchWith + engine.name}}"></i>
+                   aria-hidden="true" uib-tooltip="{{searchWith + engine.name}}"></i>
                 </a>
             </span>
                 </div>

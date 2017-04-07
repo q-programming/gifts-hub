@@ -1,4 +1,4 @@
-app.controller('manage', function ($rootScope, $scope, $http, $log, AlertService) {
+app.controller('manage', function ($rootScope, $scope, $http, $log, AlertService, AppService) {
     $scope.settings = {};
     $scope.searchEngine = {};
     $scope.searchEngineList = [];
@@ -6,7 +6,13 @@ app.controller('manage', function ($rootScope, $scope, $http, $log, AlertService
     $scope.editSearch = false;
     $scope.languages = {};
     if ($rootScope.authenticated && $rootScope.principal.role === 'ROLE_ADMIN') {
-        getLanguages();
+        AppService.getLanguageList().then(function (response) {
+            $scope.languages = response.data;
+
+        }).catch(function (response) {
+            AlertService.addError("error.general");
+            $log.debug(response);
+        });
         getAppSettings();
         $scope.update = function () {
             $scope.showSearchForm = false;
@@ -59,21 +65,6 @@ app.controller('manage', function ($rootScope, $scope, $http, $log, AlertService
             $scope.editSearch = true;
         }
     }
-    /**
-     * Get all available languages for application
-     */
-    function getLanguages() {
-        var url = 'api/app/languages';
-        $http.get(url).then(
-            function (response) {
-                $log.debug("[DEBUG] Languages loaded");
-                $scope.languages = response.data;
-            }).catch(function (response) {
-            AlertService.addError("error.general");
-            $log.debug(response);
-        });
-    }
-
     function getAppSettings() {
         $http.get('api/app/settings').then(
             function (result) {

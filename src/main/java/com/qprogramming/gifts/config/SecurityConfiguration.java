@@ -13,14 +13,10 @@ import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.authentication.configurers.GlobalAuthenticationConfigurerAdapter;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.OAuth2ClientContext;
@@ -29,18 +25,14 @@ import org.springframework.security.oauth2.client.filter.OAuth2ClientAuthenticat
 import org.springframework.security.oauth2.client.filter.OAuth2ClientContextFilter;
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
-import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfFilter;
-import org.springframework.security.web.csrf.CsrfTokenRepository;
-import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.web.filter.CompositeFilter;
 
 import javax.servlet.Filter;
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.qprogramming.gifts.filters.CsrfHeaderFilter.XSRF_TOKEN;
 
 @Configuration
 @EnableOAuth2Client
@@ -49,12 +41,15 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private OAuth2ClientContext oauth2ClientContext;
-
     @Autowired
     private AccountService accountService;
-
     @Autowired
     private OAuthLoginSuccessHandler oAuthLoginSuccessHandler;
+
+    @Autowired
+    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(accountService).passwordEncoder(passwordEncoder());
+    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -74,16 +69,16 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                             , "/api/user/validate-email"
                             , "/api/user/validate-username"
                             , "/api/gift/user/*"
-                            , "/api/user/*/avatar"
-
-                    ).permitAll()
+                            , "/api/user/*/avatar").permitAll()
                     .antMatchers("/api/manage/settings").hasAuthority(Roles.ROLE_ADMIN.toString())
                     .anyRequest().authenticated()
                 .and().formLogin()
                     .loginPage("/#/login")
-                    .and().rememberMe()
-                    .rememberMeServices(rememberMeServices())
-                    .key("remember-me-key")
+//                .and().rememberMe()
+//                    .rememberMeServices(rememberMeServices())
+//                    .key("remember-me-key")
+                .and().addFilterBefore(ssoFilter(), BasicAuthenticationFilter.class)
+                    .authorizeRequests().anyRequest().authenticated()
                 .and().addFilterBefore(new CsrfHeaderFilter(), CsrfFilter.class)
                     .csrf()
                     .ignoringAntMatchers(
@@ -93,17 +88,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                             , "/api/gift/*"
                             , "/api/app/*"
                             , "/api/messages")
-                    .csrfTokenRepository(csrfTokenRepository())
+                    .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                 .and().logout()
-                    .logoutSuccessUrl("/").permitAll()
-                .and().addFilterBefore(ssoFilter(), BasicAuthenticationFilter.class);
+                    .logoutSuccessUrl("/").permitAll();
         //@formatter:on
-    }
-
-    private CsrfTokenRepository csrfTokenRepository() {
-        HttpSessionCsrfTokenRepository repository = new HttpSessionCsrfTokenRepository();
-        repository.setHeaderName(XSRF_TOKEN);
-        return repository;
     }
 
     @Bean
@@ -131,10 +119,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return new ClientResources();
     }
 
-    @Bean
-    public TokenBasedRememberMeServices rememberMeServices() {
-        return new TokenBasedRememberMeServices("remember-me-key", accountService);
-    }
+//    @Bean
+//    public TokenBasedRememberMeServices rememberMeServices() {
+//        return new TokenBasedRememberMeServices("remember-me-key", accountService);
+//    }
 
     private Filter ssoFilter() {
         CompositeFilter filter = new CompositeFilter();
@@ -154,22 +142,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 client.getResource().getUserInfoUri(), client.getClient().getClientId()));
         filter.setAuthenticationSuccessHandler(oAuthLoginSuccessHandler);
         return filter;
-    }
-
-    @Order(Ordered.HIGHEST_PRECEDENCE)
-    @Configuration
-    @EnableGlobalMethodSecurity(prePostEnabled = true)
-    protected class AuthenticationSecurity extends GlobalAuthenticationConfigurerAdapter {
-
-        @Override
-        public void init(AuthenticationManagerBuilder auth) throws Exception {
-            auth.userDetailsService(userDetailsService()).passwordEncoder(passwordEncoder());
-        }
-
-        @Bean
-        public UserDetailsService userDetailsService() {
-            return accountService;
-        }
     }
 
     class ClientResources {

@@ -295,7 +295,7 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
     function isFamilyAdmin() {
         angular.forEach($scope.family.admins, function (user) {
             if (user.id === $rootScope.principal.id) {
-                $scope.familyAdmin = true;
+                $scope.family.familyAdmin = true;
             }
         });
     }

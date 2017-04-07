@@ -4,7 +4,12 @@ app.controller('settings', function ($rootScope, $scope, $http, $location, $tran
     $scope.croppedAvatar = '';
     $scope.languages = {};
     if ($rootScope.authenticated) {
-        getLanguages()
+        AppService.getLanguageList().then(function (response) {
+            $scope.languages = response.data
+        }).catch(function (response) {
+            AlertService.addError("error.general");
+            $log.debug(response);
+        });
     }
 
     $scope.handleFileSelect = function (evt) {
@@ -61,19 +66,4 @@ app.controller('settings', function ($rootScope, $scope, $http, $location, $tran
         window.getSelection().removeAllRanges();
         AlertService.addSuccess("user.settings.public.copy.success");
     };
-    /**
-     * Get all available languages for application
-     */
-    function getLanguages() {
-        var url = 'api/app/languages';
-        $http.get(url).then(
-            function (response) {
-                $log.debug("[DEBUG] Languages loaded");
-                $scope.languages = response.data;
-            }).catch(function (response) {
-            AlertService.addError("error.general");
-            $log.debug(response);
-        });
-    }
-
 });

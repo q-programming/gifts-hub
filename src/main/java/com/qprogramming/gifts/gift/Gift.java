@@ -119,7 +119,7 @@ public class Gift {
     public Category getCategory() {
         if (category == null) {
             Category category = new Category(StringUtils.EMPTY);
-            category.setPriority(Integer.MIN_VALUE);
+            category.setPriority(Integer.MIN_VALUE + 1);
             return category;
         }
         return category;
