@@ -1,10 +1,11 @@
 package com.qprogramming.gifts.config;
 
 import com.qprogramming.gifts.account.AccountService;
-import com.qprogramming.gifts.account.Roles;
-import com.qprogramming.gifts.filters.CsrfHeaderFilter;
+import com.qprogramming.gifts.filters.TokenAuthenticationFilter;
+import com.qprogramming.gifts.login.AuthenticationSuccessHandler;
 import com.qprogramming.gifts.login.OAuthLoginSuccessHandler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoTokenServices;
@@ -15,8 +16,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.OAuth2ClientContext;
@@ -27,7 +30,6 @@ import org.springframework.security.oauth2.client.token.grant.code.Authorization
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.web.filter.CompositeFilter;
 
 import javax.servlet.Filter;
@@ -36,8 +38,15 @@ import java.util.List;
 
 @Configuration
 @EnableOAuth2Client
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 @Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+
+    @Value("${jwt.cookie}")
+    private String TOKEN_COOKIE;
+    @Value("${jwt.user_cookie}")
+    private String USER_COOKIE;
+
 
     @Autowired
     private OAuth2ClientContext oauth2ClientContext;
@@ -45,6 +54,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private AccountService accountService;
     @Autowired
     private OAuthLoginSuccessHandler oAuthLoginSuccessHandler;
+    @Autowired
+    private AuthenticationSuccessHandler authenticationSuccessHandler;
+
+
+    @Bean
+    public TokenAuthenticationFilter jwtAuthenticationTokenFilter() throws Exception {
+        return new TokenAuthenticationFilter();
+    }
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
@@ -55,43 +72,21 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         //@formatter:off
         http
-                .httpBasic()
-                .and().authorizeRequests()
-                    .antMatchers("/index.html"
-                            , "/home.html"
-                            , "/user/login.html"
-                            , "/gifts/publicList.html"
-                            , "/"
-                            , "/user/register.html"
-                            , "/api/user"
-                            , "/api/user/register"
-                            , "/api/messages"
-                            , "/api/user/validate-email"
-                            , "/api/user/validate-username"
-                            , "/api/gift/user/*"
-                            , "/api/user/*/avatar").permitAll()
-                    .antMatchers("/api/manage/settings").hasAuthority(Roles.ROLE_ADMIN.toString())
+                .csrf()
+                    .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).and()
+                    .sessionManagement().sessionCreationPolicy( SessionCreationPolicy.STATELESS )
+                .and().addFilterBefore(jwtAuthenticationTokenFilter(), BasicAuthenticationFilter.class)
+                    .authorizeRequests()
                     .anyRequest().authenticated()
-                .and().formLogin()
-                    .loginPage("/#/login")
-//                .and().rememberMe()
-//                    .rememberMeServices(rememberMeServices())
-//                    .key("remember-me-key")
                 .and().addFilterBefore(ssoFilter(), BasicAuthenticationFilter.class)
                     .authorizeRequests().anyRequest().authenticated()
-                .and().addFilterBefore(new CsrfHeaderFilter(), CsrfFilter.class)
-                    .csrf()
-                    .ignoringAntMatchers(
-                              "/login"
-                            , "/logout"
-                            , "/api/user/*"
-                            , "/api/gift/*"
-                            , "/api/app/*"
-                            , "/api/messages")
-                    .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                .and()
+                    .formLogin()
+                    .successHandler(authenticationSuccessHandler)
                 .and().logout()
-                    .logoutSuccessUrl("/").permitAll();
-        //@formatter:on
+                    .deleteCookies(TOKEN_COOKIE, USER_COOKIE)
+                    .logoutSuccessUrl("/#/login");
+         //@formatter:on
     }
 
     @Bean
@@ -118,11 +113,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     public ClientResources googleResource() {
         return new ClientResources();
     }
-
-//    @Bean
-//    public TokenBasedRememberMeServices rememberMeServices() {
-//        return new TokenBasedRememberMeServices("remember-me-key", accountService);
-//    }
 
     private Filter ssoFilter() {
         CompositeFilter filter = new CompositeFilter();

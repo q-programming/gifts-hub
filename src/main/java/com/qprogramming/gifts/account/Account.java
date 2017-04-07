@@ -48,6 +48,9 @@ public class Account implements Serializable, UserDetails {
 
     private String fullname;
 
+    @Transient
+    private String tokenValue;
+
     public Account() {
         this.created = new Date();
     }
@@ -172,6 +175,16 @@ public class Account implements Serializable, UserDetails {
 
     public void setPublicList(Boolean publicList) {
         this.publicList = publicList;
+    }
+
+    @JsonIgnore
+    public String getTokenValue() {
+        return tokenValue;
+    }
+
+    @JsonIgnore
+    public void setTokenValue(String tokenValue) {
+        this.tokenValue = tokenValue;
     }
 
     @Override

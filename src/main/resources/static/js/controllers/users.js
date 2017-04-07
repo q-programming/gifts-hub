@@ -1,4 +1,4 @@
-app.controller('userlist', function ($scope, $rootScope, $http, $log, $uibModal, $filter, $translate, AlertService, AvatarService) {
+app.controller('userlist', function ($scope, $rootScope, $http, $log, $uibModal, $filter, $translate, $location, AlertService, AvatarService) {
     $scope.users = [];
     $scope.familyUsers = [];
     $scope.family = {};
@@ -7,6 +7,8 @@ app.controller('userlist', function ($scope, $rootScope, $http, $log, $uibModal,
     if ($rootScope.authenticated) {
         getUsers();
         getFamily();
+    }else{
+        $location.path("/login");
     }
 
     $scope.createFamily = function () {

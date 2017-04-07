@@ -4,6 +4,7 @@ import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.account.AccountType;
 import com.qprogramming.gifts.account.Roles;
+import com.qprogramming.gifts.login.token.TokenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,15 +33,14 @@ public class OAuthLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
 
     public static final String EMAIL = "email";
     public static final String LOCALE = "locale";
-
-
-
     private final Logger LOG = LoggerFactory.getLogger(this.getClass());
     private AccountService accountService;
+    private TokenService tokenService;
 
     @Autowired
-    public OAuthLoginSuccessHandler(AccountService accountService) {
+    public OAuthLoginSuccessHandler(AccountService accountService, TokenService tokenService) {
         this.accountService = accountService;
+        this.tokenService = tokenService;
     }
 
     @Override
@@ -62,9 +62,12 @@ public class OAuthLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
             }
         }
         accountService.signin(account);
+        //token cookie creation
+        tokenService.createTokenCookies(response, account);
         LOG.info("Login success for user: " + account.getId());
         super.onAuthenticationSuccess(request, response, authentication);
     }
+
 
     private Account createFacebookAccount(Authentication authentication, String userId) {
         Account account;
@@ -129,14 +132,15 @@ public class OAuthLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
         }
     }
 
-    class FB{
+    class FB {
         public static final String ID = "id";
         public static final String FIRST_NAME = "first_name";
         public static final String LAST_NAME = "last_name";
         public static final String ME = "me";
 
     }
-    class G{
+
+    class G {
         public static final String SUB = "sub";
         public static final String GIVEN_NAME = "given_name";
         public static final String FAMILY_NAME = "family_name";

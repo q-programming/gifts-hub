@@ -1,29 +1,29 @@
 <link rel="stylesheet" href="css/vendor/bootstrap-social.css"/>
 <div class="row">
     <div class="col-sm-offset-4 col-sm-4 light-frame">
-        <form role="form" ng-submit="login()">
-            <div class="form-group">
-                <label for="username" translate="user.username"></label>
-                <input type="text" class="form-control" id="username" name="username" ng-model="credentials.username"/>
+        <div class="row">
+            <div class="col-xs-12">
+                <form role="form" ng-submit="login()">
+                    <div class="form-group">
+                        <label for="username" translate="user.username"></label>
+                        <input type="text" class="form-control" id="username" name="username"
+                               ng-model="credentials.username"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="password" translate="user.password"></label>
+                        <input type="password" class="form-control" id="password" name="password"
+                               ng-model="credentials.password"/>
+                    </div>
+                    <button type="submit" class="btn btn-primary margin-bottom20 pull-right" ng-click="login()"
+                            translate="menu.login"></button>
+                </form>
             </div>
-            <div class="form-group">
-                <label for="password" translate="user.password"></label>
-                <input type="password" class="form-control" id="password" name="password"
-                       ng-model="credentials.password"/>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <span translate="user.login.newhere"></span>
+                <a href="#/register" translate="main.here"></a>
             </div>
-            <div class="form-group">
-                <div class="checkbox">
-                    <label>
-                        <input type="checkbox" name="remmeberme" ng-model="credentials.remmeberme"/>
-                        <span translate="user.login.remember"></span>
-                    </label>
-                </div>
-            </div>
-            <button type="submit" class="btn btn-primary" ng-click="login()" translate="menu.login"></button>
-        </form>
-        <div>
-            <span translate="user.login.newhere"></span>
-            <a href="#/register" translate="main.here"></a>
         </div>
     </div>
 </div>

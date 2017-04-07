@@ -2,6 +2,7 @@ server:
   port: 8080
 #  context-path: /gifts
 app:
+  name: Gifts hub
   gift:
     age: 30
 security:
@@ -59,3 +60,9 @@ google:
   resource:
     userInfoUri: https://www.googleapis.com/oauth2/v3/userinfo
     preferTokenInfo: true
+jwt:
+  header: Authorization
+  expires_in: 604800 # week
+  secret: f4CKnPY3bt87c68mQFFAZWSGfW8ZUuf7YWqcYqX5t9EedppMEU
+  cookie: AUTH-TOKEN
+  user_cookie: c_user

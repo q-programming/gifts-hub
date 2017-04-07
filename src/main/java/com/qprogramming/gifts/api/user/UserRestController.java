@@ -7,6 +7,7 @@ import com.qprogramming.gifts.account.family.Family;
 import com.qprogramming.gifts.account.family.FamilyForm;
 import com.qprogramming.gifts.account.family.FamilyService;
 import com.qprogramming.gifts.account.family.KidForm;
+import com.qprogramming.gifts.login.token.TokenBasedAuthentication;
 import com.qprogramming.gifts.messages.MessagesService;
 import com.qprogramming.gifts.support.ResultData;
 import com.qprogramming.gifts.support.Utils;
@@ -219,6 +220,8 @@ public class UserRestController {
         }
         if (user != null && user instanceof UsernamePasswordAuthenticationToken) {
             return (Account) ((UsernamePasswordAuthenticationToken) user).getPrincipal();
+        } else if (user != null && user instanceof TokenBasedAuthentication) {
+            return (Account) ((TokenBasedAuthentication) user).getPrincipal();
         }
         return null;
     }

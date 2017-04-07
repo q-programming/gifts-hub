@@ -1,9 +1,11 @@
 package com.qprogramming.gifts.login;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.qprogramming.gifts.TestUtil;
 import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.account.AccountType;
+import com.qprogramming.gifts.login.token.TokenService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -46,6 +48,11 @@ public class OAuthLoginSuccessHandlerTest {
     private HttpServletResponse responseMock;
     @Mock
     private HttpServletRequest requestMock;
+    @Mock
+    private TokenService tokenServiceMock;
+    @Mock
+    private ObjectMapper objectMapperMock;
+
     private OAuthLoginSuccessHandler handler;
 
     @Before
@@ -55,7 +62,7 @@ public class OAuthLoginSuccessHandlerTest {
         when(authMock.getUserAuthentication()).thenReturn(authenticationMock);
         when((OAuth2AuthenticationDetails) authMock.getDetails()).thenReturn(oauthDetailsMock);
         when(authenticationMock.getDetails()).thenReturn(details);
-        handler = spy(new OAuthLoginSuccessHandler(accSrvMock));
+        handler = spy(new OAuthLoginSuccessHandler(accSrvMock, tokenServiceMock));
     }
 
     @Test
@@ -101,7 +108,7 @@ public class OAuthLoginSuccessHandlerTest {
         doReturn(facebookTemplateMock).when(handler).getFacebookTemplate(anyString());
         String[] fields = {OAuthLoginSuccessHandler.FB.ID, OAuthLoginSuccessHandler.EMAIL
                 , OAuthLoginSuccessHandler.FB.FIRST_NAME, OAuthLoginSuccessHandler.FB.LAST_NAME
-                ,  OAuthLoginSuccessHandler.LOCALE};
+                , OAuthLoginSuccessHandler.LOCALE};
         User fbUser = spy(new User(testAccount.getId(), testAccount.getFullname()
                 , testAccount.getName(), testAccount.getSurname()
                 , "Male", new Locale(testAccount.getLanguage())));

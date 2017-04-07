@@ -1,6 +1,36 @@
 var AuthService = angular.module('AuthService', []);
-AuthService.factory('AuthService', function ($http, $log, avatarCache, $rootScope, $translate, $location, AvatarService) {
+AuthService.factory('AuthService', function ($http, $log, avatarCache, $rootScope, $translate, $cookies, $location, AvatarService) {
     var AuthService = {};
+
+    AuthService.isAuthenticated = function () {
+        if(!!$cookies.get('c_user')){
+            AuthService.getUser();
+            return true;
+        }
+    };
+
+    AuthService.getUser = function (callback) {
+        $http.get('api/user').then(
+            function (response) {
+                var data = response.data;
+                if (data.id) {
+                    // $rootScope.authenticated = true;
+                    $rootScope.principal = data;
+                    $translate.use($rootScope.principal.language);
+                    $location.search('lang', $rootScope.principal.language);
+                    AvatarService.getUserAvatar($rootScope.principal);
+                } else {
+                    $rootScope.authenticated = false;
+                }
+                // callback && callback();
+            }
+            // ,
+            // function () {
+            //     $rootScope.authenticated = false;
+            //     callback && callback();
+            // }
+            );
+    };
 
     AuthService.authenticate = function (credentials, callback) {
         var headers = credentials ? {

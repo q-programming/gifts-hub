@@ -1,22 +1,8 @@
-app.controller('navigation', function ($scope, $rootScope, $http, $location, $route, $log, AvatarService, AuthService, AlertService) {
+app.controller('navigation', function ($scope, $rootScope, $http, $location, $route, $log, AvatarService, AuthService) {
     $scope.tab = function (route) {
         return $route.current && route === $route.current.controller;
     };
-
-    AuthService.authenticate();
-    $scope.credentials = {};
-    //LOGIN
-    $scope.login = function () {
-        AuthService.authenticate($scope.credentials, function () {
-            if ($rootScope.authenticated) {
-                $location.path("/");
-                AlertService.clearAlerts();
-            } else {
-                $location.path("/login");
-                AlertService.addError('user.login.failed');
-            }
-        });
-    };
+    $rootScope.authenticated = AuthService.isAuthenticated();
 
     //LOGOUT
     $scope.logout = function () {
@@ -24,14 +10,10 @@ app.controller('navigation', function ($scope, $rootScope, $http, $location, $ro
             function successCallback() {
                 AvatarService.clearCache();
                 $rootScope.authenticated = false;
-                $location.path("/");
+                $location.path("/login");
             },
             function errorCallback() {
                 $rootScope.authenticated = false;
             });
     };
-
-    $scope.dismissAlert = function (index) {
-        AlertService.dismissAlert(index)
-    }
 });

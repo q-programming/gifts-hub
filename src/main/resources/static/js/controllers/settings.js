@@ -10,6 +10,8 @@ app.controller('settings', function ($rootScope, $scope, $http, $location, $tran
             AlertService.addError("error.general");
             $log.debug(response);
         });
+    }else{
+        $location.path("/login");
     }
 
     $scope.handleFileSelect = function (evt) {

@@ -7,6 +7,7 @@ var app = angular.module('app', [
     , 'ngImgCrop'
     , 'ui.bootstrap'
     , 'ui.select'
+    , 'ngCookies'
     , 'AvatarService'
     , 'AuthService'
     , 'AlertService'
@@ -29,7 +30,7 @@ app.config(function ($routeProvider, $httpProvider, $locationProvider, $logProvi
         })
         .when('/login', {
             templateUrl: 'user/login.html',
-            controller: 'navigation'
+            controller: 'login'
         })
         .when('/register', {
             templateUrl: 'user/register.html',

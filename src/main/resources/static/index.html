@@ -18,11 +18,11 @@
 <link href="https://fonts.googleapis.com/css?family=Pacifico" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
 <!--BODY-->
-<body ng-app="app" ng-cloak="" class="ng-cloak" ng-controller="navigation">
+<body ng-app="app" ng-cloak="" class="ng-cloak">
 
 
 <!--NAVBAR-->
-<nav class="navbar theme navbar-fixed-top hidden-print">
+<nav class="navbar theme navbar-fixed-top hidden-print" ng-controller="navigation">
     <div class="container-fluid">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed"
@@ -107,11 +107,10 @@
 </nav>
 <div class="container-fluid">
     <!--ALERTS-->
-    <div class="row alert-row">
+    <div class="row alert-row" ng-controller="alert">
         <div class="col-sm-10 col-md-11 col-md-offset-1 col-sm-offset-2">
             <div ng-repeat="alert in alerts" ng-class="'alert alert-' + (alert.type || 'warning')">
                 <button type="button" class="close theme-close" ng-click="dismissAlert($index)">&times;</button>
-                <!-showCreateshow="message_success"-->
                 <span ng-bind-html="alert.msg"></span>
             </div>
         </div>
@@ -146,6 +145,7 @@
 <script src="js/services/AlertService.js"></script>
 <script src="js/services/AppService.js"></script>
 <script src="js/services/UrlLanguageStorage.js"></script>
+<script src="js/controllers/login.js"></script>
 <script src="js/controllers/navigation.js"></script>
 <script src="js/controllers/home.js"></script>
 <script src="js/controllers/register.js"></script>
@@ -155,6 +155,7 @@
 <script src="js/controllers/settings.js"></script>
 <script src="js/controllers/manage.js"></script>
 <script src="js/controllers/error.js"></script>
+<script src="js/controllers/alerts.js"></script>
 <script src="js/directives/progressbar.js"></script>
 <script src="js/directives/giftstatus.js"></script>
 <script src="js/directives/helpers.js"></script>

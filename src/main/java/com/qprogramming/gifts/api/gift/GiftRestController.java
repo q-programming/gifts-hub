@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.Collections;
 import java.util.Objects;
 
 /**
@@ -199,7 +200,10 @@ public class GiftRestController {
 
     @RequestMapping("/mine")
     public ResponseEntity getUserGifts() {
-        return new ResponseEntity<>(giftService.findAllByCurrentUser(), HttpStatus.OK);
+        if (Utils.getCurrentAccount() != null) {
+            return new ResponseEntity<>(giftService.findAllByCurrentUser(), HttpStatus.OK);
+        } else
+            return ResponseEntity.ok(Collections.EMPTY_LIST);
     }
 
     @RequestMapping("/user/{usernameOrId}")
