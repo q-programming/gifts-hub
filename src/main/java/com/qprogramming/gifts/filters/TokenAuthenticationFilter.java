@@ -5,7 +5,6 @@ import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.login.AnonAuthentication;
 import com.qprogramming.gifts.login.token.TokenBasedAuthentication;
 import com.qprogramming.gifts.login.token.TokenService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -21,10 +20,13 @@ import java.io.IOException;
  */
 public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
-    @Autowired
     private AccountService accountService;
-    @Autowired
     private TokenService tokenService;
+
+    public TokenAuthenticationFilter(AccountService accountService, TokenService tokenService) {
+        this.accountService = accountService;
+        this.tokenService = tokenService;
+    }
 
     @Override
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -35,13 +37,16 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
                 String username = tokenService.getUsernameFromToken(authToken);
                 if (username != null) {
                     Account account = accountService.findByUsername(username);
-                    TokenBasedAuthentication authentication = new TokenBasedAuthentication(account);
-                    authentication.setToken(authToken);
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                    if (account != null) {
+                        TokenBasedAuthentication authentication = new TokenBasedAuthentication(account);
+                        authentication.setToken(authToken);
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
+                        chain.doFilter(request, response);
+                        return;
+                    }
                 }
-            } else {
-                SecurityContextHolder.getContext().setAuthentication(new AnonAuthentication());
             }
+            SecurityContextHolder.getContext().setAuthentication(new AnonAuthentication());
         }
         chain.doFilter(request, response);
     }

@@ -78,7 +78,7 @@ public class TokenService {
         response.getWriter().write(jwtResponse);
     }
 
-    private String generateToken(String username) {
+    String generateToken(String username) {
         return Jwts.builder()
                 .setIssuer(APP_NAME)
                 .setSubject(username)

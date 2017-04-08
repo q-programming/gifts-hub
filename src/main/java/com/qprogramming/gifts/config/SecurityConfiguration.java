@@ -6,6 +6,7 @@ import com.qprogramming.gifts.login.AuthenticationFailureHandler;
 import com.qprogramming.gifts.login.AuthenticationSuccessHandler;
 import com.qprogramming.gifts.login.OAuthLoginSuccessHandler;
 import com.qprogramming.gifts.login.RestAuthenticationEntryPoint;
+import com.qprogramming.gifts.login.token.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
@@ -43,16 +44,20 @@ import java.util.List;
 @Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    RestAuthenticationEntryPoint restAuthenticationEntryPoint;
     @Value("${jwt.cookie}")
     private String TOKEN_COOKIE;
     @Value("${jwt.user_cookie}")
     private String USER_COOKIE;
     @Autowired
+    private RestAuthenticationEntryPoint restAuthenticationEntryPoint;
+    @Autowired
     private OAuth2ClientContext oauth2ClientContext;
     @Autowired
     private AccountService accountService;
+    @Autowired
+    private TokenService tokenService;
+
+    //Handlers
     @Autowired
     private OAuthLoginSuccessHandler oAuthLoginSuccessHandler;
     @Autowired
@@ -63,8 +68,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Bean
     public TokenAuthenticationFilter jwtAuthenticationTokenFilter() throws Exception {
-        return new TokenAuthenticationFilter();
+        return new TokenAuthenticationFilter(accountService, tokenService);
     }
+
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {

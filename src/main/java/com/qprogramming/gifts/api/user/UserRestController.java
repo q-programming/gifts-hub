@@ -68,7 +68,7 @@ public class UserRestController {
             return new ResultData.ResultBuilder().error().message(msgSrv.getMessage("user.register.password.tooweak")).build();
         }
         Account newAccount = userform.createAccount();
-        newAccount = accountService.create(newAccount);
+        newAccount = accountService.createLocalAccount(newAccount);
 //        accountService.createAvatar(newAccount);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }

@@ -3,7 +3,6 @@ package com.qprogramming.gifts.login;
 import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.account.AccountType;
-import com.qprogramming.gifts.account.Roles;
 import com.qprogramming.gifts.login.token.TokenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,10 +83,9 @@ public class OAuthLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
         setUsername(account);
         String locale = facebookUser.getLocale().getLanguage();
         setLocale(account, locale);
+        account = accountService.createOAuthAcount(account);
         byte[] userProfileImage = facebook.userOperations().getUserProfileImage();
         accountService.createAvatar(account, userProfileImage);
-        account.setRole(Roles.ROLE_USER);
-        account = accountService.update(account);
         LOG.debug("Facebook account has been created with id:{} and username{}", account.getId(), account.getUsername());
         return account;
     }
@@ -108,20 +106,19 @@ public class OAuthLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
         setUsername(account);
         String locale = details.get(LOCALE);
         setLocale(account, locale);
+        account = accountService.createOAuthAcount(account);
         accountService.createAvatar(account, details.get(G.PICTURE));
-        account.setRole(Roles.ROLE_USER);
-        account = accountService.update(account);
         LOG.debug("Google+ account has been created with id:{} and username{}", account.getId(), account.getUsername());
         return account;
     }
 
     private void setUsername(Account account) {
-        String username = account.getEmail().split("@")[0];
-        Account exists = accountService.findByUsername(username);
-        if (exists != null) {
-            username += "_" + account.getType().getCode();
+        StringBuilder username = new StringBuilder(account.getEmail().split("@")[0]);
+        Account exists = accountService.findByUsername(username.toString());
+        while (exists != null) {
+            username.append("_").append(account.getType().getCode());
         }
-        account.setUsername(username);
+        account.setUsername(username.toString());
     }
 
     private void setLocale(Account account, String locale) {

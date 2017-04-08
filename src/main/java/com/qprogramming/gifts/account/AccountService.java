@@ -61,12 +61,12 @@ public class AccountService implements UserDetailsService {
 
     @PostConstruct
     protected void initialize() {
-//        create(new Account("user", "demo", "ROLE_USER"));
-//        create(new Account("admin", "admin", "ROLE_ADMIN"));
+//        createLocalAccount(new Account("user", "demo", "ROLE_USER"));
+//        createLocalAccount(new Account("admin", "admin", "ROLE_ADMIN"));
     }
 
     @Transactional
-    public Account create(Account account) {
+    public Account createLocalAccount(Account account) {
         account.setId(generateID());
         account.setPassword(passwordEncoder.encode(account.getPassword()));
         if (accountRepository.findAll().size() == 0) {
@@ -75,6 +75,15 @@ public class AccountService implements UserDetailsService {
             account.setRole(Roles.ROLE_USER);
         }
         account.setType(AccountType.LOCAL);
+        return accountRepository.save(account);
+    }
+
+    public Account createOAuthAcount(Account account) {
+        if (accountRepository.findAll().size() == 0) {
+            account.setRole(Roles.ROLE_ADMIN);
+        } else {
+            account.setRole(Roles.ROLE_USER);
+        }
         return accountRepository.save(account);
     }
 

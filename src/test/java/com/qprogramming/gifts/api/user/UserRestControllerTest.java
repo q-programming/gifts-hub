@@ -82,7 +82,7 @@ public class UserRestControllerTest {
 
     @Test
     public void registerSuccess() throws Exception {
-        when(accSrvMock.create(any(Account.class))).thenReturn(testAccount);
+        when(accSrvMock.createLocalAccount(any(Account.class))).thenReturn(testAccount);
         RegisterForm form = new RegisterForm();
         form.setName(testAccount.getName());
         form.setSurname(testAccount.getSurname());
@@ -92,7 +92,7 @@ public class UserRestControllerTest {
         form.setConfirmpassword("PasswordPassword!23");
         userRestCtrl.perform(post(API_USER_REGISTER).contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(form)))
                 .andExpect(status().isCreated());
-        verify(accSrvMock, times(1)).create(any(Account.class));
+        verify(accSrvMock, times(1)).createLocalAccount(any(Account.class));
 
     }
 
