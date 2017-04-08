@@ -8,6 +8,7 @@ var app = angular.module('app', [
     , 'ui.bootstrap'
     , 'ui.select'
     , 'ngCookies'
+    , 'ng.httpLoader'
     , 'AvatarService'
     , 'AuthService'
     , 'AlertService'
@@ -22,59 +23,67 @@ app.constant("GIFT_STATUS", {
     REALISED: "REALISED",
     CLAIMED: "CLAIMED"
 });
-app.config(function ($routeProvider, $httpProvider, $locationProvider, $logProvider, localStorageServiceProvider, $translateProvider) {
-    $routeProvider
-        .when('/', {
-            templateUrl: 'home.html',
-            controller: 'home'
-        })
-        .when('/login', {
-            templateUrl: 'user/login.html',
-            controller: 'login'
-        })
-        .when('/register', {
-            templateUrl: 'user/register.html',
-            controller: 'register'
-        })
-        .when('/list/:username?', {
-            templateUrl: 'gifts/list.html',
-            controller: 'gift'
-        })
-        .when('/public/:userid?', {
-            templateUrl: 'gifts/publicList.html',
-            controller: 'gift'
-        })
-        .when('/users', {
-            templateUrl: 'user/list.html',
-            controller: 'userlist'
-        })
-        .when('/settings', {
-            templateUrl: 'user/settings.html',
-            controller: 'settings'
-        })
-        .when('/manage', {
-            templateUrl: 'app/manage.html',
-            controller: 'manage'
-        })
-        .when('/404', {
-            templateUrl: 'error/404.html',
-            controller: 'error'
-        })
-        .otherwise('/');
-    $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-    $locationProvider.hashPrefix('');
-    $logProvider.debugEnabled(true);
-    localStorageServiceProvider
-        .setStorageType('sessionStorage')
-        .setPrefix('gifts-hub');
-    $translateProvider.useUrlLoader('api/messages');
-    $translateProvider.useStorage('UrlLanguageStorage');
-    $translateProvider.preferredLanguage('pl');
-    $translateProvider.fallbackLanguage('pl');
-});
-app.factory('avatarCache', function ($cacheFactory) {
-    return $cacheFactory('avatarCache');
-});
+app.config(['$routeProvider', '$httpProvider', '$locationProvider', '$logProvider', 'localStorageServiceProvider', '$translateProvider', 'httpMethodInterceptorProvider',
+    function ($routeProvider, $httpProvider, $locationProvider, $logProvider, localStorageServiceProvider, $translateProvider, httpMethodInterceptorProvider) {
+        $routeProvider
+            .when('/', {
+                templateUrl: 'home.html',
+                controller: 'home'
+            })
+            .when('/login', {
+                templateUrl: 'user/login.html',
+                controller: 'login'
+            })
+            .when('/register', {
+                templateUrl: 'user/register.html',
+                controller: 'register'
+            })
+            .when('/list/:username?', {
+                templateUrl: 'gifts/list.html',
+                controller: 'gift'
+            })
+            .when('/public/:userid?', {
+                templateUrl: 'gifts/publicList.html',
+                controller: 'gift'
+            })
+            .when('/users', {
+                templateUrl: 'user/list.html',
+                controller: 'userlist'
+            })
+            .when('/settings', {
+                templateUrl: 'user/settings.html',
+                controller: 'settings'
+            })
+            .when('/manage', {
+                templateUrl: 'app/manage.html',
+                controller: 'manage'
+            })
+            .when('/404', {
+                templateUrl: 'error/404.html',
+                controller: 'error'
+            })
+            .otherwise('/');
+        //add correct headers
+        $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+        //location
+        $locationProvider.hashPrefix('');
+        //logs
+        $logProvider.debugEnabled(true);
+        //locale
+        localStorageServiceProvider
+            .setStorageType('sessionStorage')
+            .setPrefix('gifts-hub');
+        $translateProvider.useUrlLoader('api/messages');
+        $translateProvider.useStorage('UrlLanguageStorage');
+        $translateProvider.preferredLanguage('pl');
+        $translateProvider.fallbackLanguage('pl');
+        //http loader
+        httpMethodInterceptorProvider.whitelistLocalRequests();
+    }]);
+app.factory('avatarCache', ['$cacheFactory',
+    function ($cacheFactory) {
+        return $cacheFactory('avatarCache');
+    }]);
 app.directive('showErrors', function () {
     return {
         restrict: 'A',
