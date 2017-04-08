@@ -2,8 +2,10 @@ package com.qprogramming.gifts.config;
 
 import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.filters.TokenAuthenticationFilter;
+import com.qprogramming.gifts.login.AuthenticationFailureHandler;
 import com.qprogramming.gifts.login.AuthenticationSuccessHandler;
 import com.qprogramming.gifts.login.OAuthLoginSuccessHandler;
+import com.qprogramming.gifts.login.RestAuthenticationEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
@@ -41,12 +43,12 @@ import java.util.List;
 @Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
+    @Autowired
+    RestAuthenticationEntryPoint restAuthenticationEntryPoint;
     @Value("${jwt.cookie}")
     private String TOKEN_COOKIE;
     @Value("${jwt.user_cookie}")
     private String USER_COOKIE;
-
-
     @Autowired
     private OAuth2ClientContext oauth2ClientContext;
     @Autowired
@@ -55,6 +57,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private OAuthLoginSuccessHandler oAuthLoginSuccessHandler;
     @Autowired
     private AuthenticationSuccessHandler authenticationSuccessHandler;
+    @Autowired
+    private AuthenticationFailureHandler authenticationFailureHandler;
 
 
     @Bean
@@ -73,6 +77,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http
                 .csrf()
                     .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                .and().exceptionHandling()
+                    .authenticationEntryPoint( restAuthenticationEntryPoint )
                 .and().addFilterBefore(jwtAuthenticationTokenFilter(), BasicAuthenticationFilter.class)
                     .authorizeRequests()
                     .anyRequest().authenticated()
@@ -81,6 +87,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and()
                     .formLogin()
                     .successHandler(authenticationSuccessHandler)
+                    .failureHandler(authenticationFailureHandler)
                 .and().logout()
                     .deleteCookies(TOKEN_COOKIE, USER_COOKIE)
                     .logoutSuccessUrl("/#/login");

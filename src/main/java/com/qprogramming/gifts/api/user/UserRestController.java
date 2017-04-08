@@ -36,7 +36,6 @@ import java.util.regex.Pattern;
 @RequestMapping("/api/user")
 public class UserRestController {
 
-    public static final String EXISTS = "exists";
     public static final String PASSWORD_REGEXP = "^^(?=.*[A-Z])(?=.*[0-9])(?=.*[a-z].*[a-z].*[a-z]).{8,}$";
     private static final Logger LOG = LoggerFactory.getLogger(UserRestController.class);
     private AccountService accountService;

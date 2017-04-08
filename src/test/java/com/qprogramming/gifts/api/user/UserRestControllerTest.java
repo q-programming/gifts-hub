@@ -96,13 +96,13 @@ public class UserRestControllerTest {
 
     }
 
-    @Test
-    public void registerFormNotComplete() throws Exception {
-        RegisterForm form = new RegisterForm();
-        form.setEmail("notvalid");
-        userRestCtrl.perform(post(API_USER_REGISTER).contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(form)))
-                .andExpect(status().isBadRequest());
-    }
+//    @Test
+//    public void registerFormNotComplete() throws Exception {
+//        RegisterForm form = new RegisterForm();
+//        form.setEmail("notvalid");
+//        userRestCtrl.perform(post(API_USER_REGISTER).contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(form)))
+//                .andExpect(status().isBadRequest());
+//    }
 
     @Test
     public void registerEmailUsed() throws Exception {
