@@ -1,5 +1,5 @@
 var AvatarService = angular.module('AvatarService', []);
-AvatarService.factory('AvatarService', function ($http, $log, $rootScope, localStorageService) {
+AvatarService.factory('AvatarService', ['$http', '$log', '$rootScope', 'localStorageService', function ($http, $log, $rootScope, localStorageService) {
     var AvatarService = {};
 
     AvatarService.getUserAvatar = function (user) {
@@ -15,7 +15,7 @@ AvatarService.factory('AvatarService', function ($http, $log, $rootScope, localS
                     image = datatype + result.data.image;
                     localStorageService.set("avatar:" + user.id, image);
                     user.avatar = image;
-                }else{
+                } else {
                     localStorageService.set("avatar:" + user.id, "NaN");
                 }
             }).catch(function (response) {
@@ -42,5 +42,5 @@ AvatarService.factory('AvatarService', function ($http, $log, $rootScope, localS
         localStorageService.clearAll("avatar:");
     };
     return AvatarService;
-});
+}]);
 

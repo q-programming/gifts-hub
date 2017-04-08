@@ -1,4 +1,4 @@
-app.directive("formatDate", function ($rootScope, $translate, $sce, GIFT_STATUS) {
+app.directive("formatDate", function () {
     return {
         restrict: "A",
         scope: {

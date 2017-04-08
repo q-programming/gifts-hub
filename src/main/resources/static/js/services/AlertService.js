@@ -1,5 +1,5 @@
 var AlertService = angular.module('AlertService', []);
-AlertService.factory('AlertService', function ($http, $log, $rootScope, $timeout, $translate, MESSAGES) {
+AlertService.factory('AlertService', ['$http', '$log', '$rootScope', '$timeout', '$translate', 'MESSAGES', function ($http, $log, $rootScope, $timeout, $translate, MESSAGES) {
     var AlertService = {};
     $rootScope.alerts = [];
     /**
@@ -71,4 +71,4 @@ AlertService.factory('AlertService', function ($http, $log, $rootScope, $timeout
     };
 
     return AlertService;
-});
+}]);

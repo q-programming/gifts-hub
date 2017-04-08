@@ -180,6 +180,57 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+            <!--<plugin>-->
+            <!--<groupId>net.alchim31.maven</groupId>-->
+            <!--<artifactId>yuicompressor-maven-plugin</artifactId>-->
+            <!--<version>1.5.1</version>-->
+            <!--<executions>-->
+            <!--<execution>-->
+            <!--<goals>-->
+            <!--<goal>compress</goal>-->
+            <!--</goals>-->
+            <!--<phase>process-resources</phase>-->
+            <!--</execution>-->
+            <!--</executions>-->
+            <!--<configuration>-->
+            <!--<sourceDirectory>resources</sourceDirectory>-->
+            <!--<nosuffix>true</nosuffix>-->
+            <!--<jswarn>false</jswarn>-->
+            <!--<force>true</force>-->
+            <!--</configuration>-->
+            <!--</plugin>-->
+            <plugin>
+                <groupId>com.samaxes.maven</groupId>
+                <artifactId>minify-maven-plugin</artifactId>
+                <version>1.7.6</version>
+                <executions>
+                    <execution>
+                        <id>default-minify</id>
+                        <goals>
+                            <goal>minify</goal>
+                        </goals>
+                        <!-- To be able to use it in mvn tomcat:run, will run after sass
+                          compile -->
+                        <phase>compile</phase>
+                        <!-- <phase>package</phase> -->
+                        <configuration>
+                            <charset>UTF-8</charset>
+                            <cssSourceDir>../resources/static/css</cssSourceDir>
+                            <cssFinalFile>style.css</cssFinalFile>
+                            <jsSourceDir>../resources/static/js</jsSourceDir>
+                            <jsFinalFile>app.js</jsFinalFile>
+                            <jsEngine>CLOSURE</jsEngine>
+                            <closureAngularPass>true</closureAngularPass>
+                            <cssSourceIncludes>
+                                <cssSourceInclude>**/*.css</cssSourceInclude>
+                            </cssSourceIncludes>
+                            <jsSourceIncludes>
+                                <jsSourceInclude>**/*.js</jsSourceInclude>
+                            </jsSourceIncludes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 

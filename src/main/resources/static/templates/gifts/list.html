@@ -1,12 +1,51 @@
 <div ng-if="authenticated">
     <!--<h1>{{listTitle}}</h1>-->
-    <img ng-if="userGiftList.avatar && userGiftList.avatar !=='NaN'" ng-src="{{userGiftList.avatar}}" class="avatar"/>
-    <img ng-if="!userGiftList.avatar || userGiftList.avatar ==='NaN'" src='images/avatar-placeholder.png'
-         class="avatar"/>
-    <i class="fa fa-child" aria-hidden="true" ng-if="userGiftList.type ==='KID'"
-       uib-tooltip="{{'user.family.kid'|translate}}">
-    </i>
-    {{userGiftList.fullname}} ({{userGiftList.username}})
+    <div class="row margin-bottom5" ng-cloak>
+        <div class="col-xs-2 col-sm-2 col-md-1">
+            <img ng-if="userGiftList.avatar && userGiftList.avatar !=='NaN'" ng-src="{{userGiftList.avatar}}"
+                 class="avatar"/>
+            <img ng-if="userGiftList.avatar ==='NaN'" src='images/avatar-placeholder.png'
+                 class="avatar"/>
+
+            <i class="fa fa-child hidden-xs" aria-hidden="true" ng-if="userGiftList.type ==='KID'"
+               uib-tooltip="{{'user.family.kid'|translate}}">
+            </i>
+        </div>
+        <div class="col-xs-10 col-sm-6 col-md-4" ng-if="family.members">
+            <ui-select id="members" ng-model="userGiftList" on-select="goToMemberList($item)">
+                <ui-select-match placeholder="{{'user.family.select.other'|translate}}" allow-clear="false" ng-cloak>
+                    <span ng-show="userGiftList.fullname">{{userGiftList.fullname}} ({{userGiftList.username}})</span>
+                </ui-select-match>
+                <ui-select-choices
+                        repeat="user in (family.members | propsFilter: {fullname: $select.search, username: $select.search}) track by user.id">
+                    <div class="row">
+                        <div class="col-xs-1">
+                            <img ng-if="user.avatar && user.avatar !=='NaN'" ng-src="{{user.avatar}}"
+                                 class="avatar small"/>
+                            <img ng-if="!user.avatar || user.avatar ==='NaN'" src='images/avatar-placeholder.png'
+                                 class="avatar small"/>
+                        </div>
+                        <div class="col-xs-10">
+                            <span class="margin-left10" ng-bind-html="user.fullname | highlight: $select.search"></span>&nbsp;
+                            (<span ng-bind-html="''+user.username | highlight: $select.search"></span>)
+                        </div>
+                    </div>
+                </ui-select-choices>
+            </ui-select>
+        </div>
+        <div class="col-xs-10 col-sm-6 col-md-4" ng-if="!family.members" ng-show="userGiftList.fullname">
+            <span style="display: block; width: 100%; height: 34px; padding: 6px 12px; font-size: 14px;line-height: 1.42857143;color: #555;">
+                {{userGiftList.fullname}} ({{userGiftList.username}})
+            </span>
+        </div>
+        <div class="col-xs-12 col-sm-offset-1 col-sm-2 col-md-offset-5 col-md-2">
+            <button type="button" class="btn btn-success pull-right" ng-click="showCreate()"
+                    ng-show="!showGiftForm && (userList || family.familyAdmin)">
+                <i class="fa fa-plus" aria-hidden="true"></i>
+                <span translate="gift.new.add"></span>
+            </button>
+        </div>
+    </div>
     <div class="animate row" ng-show="showGiftForm">
         <div class="col-md-offset-2 col-md-6">
             <form role="form" name="mainGiftForm" ng-submit="sendGiftData()">
@@ -65,13 +104,13 @@
 
     <!--LIST-->
     <div class="animate" ng-show="!showGiftForm">
-        <div class="row">
-            <button type="button" class="btn btn-success pull-right" ng-click="showCreate()"
-                    ng-show="!showGiftForm && (userList || family.familyAdmin)">
-                <i class="fa fa-plus" aria-hidden="true"></i>
-                <span translate="gift.new.add"></span>
-            </button>
-        </div>
+        <!--<div class="row">-->
+        <!--<button type="button" class="btn btn-success pull-right" ng-click="showCreate()"-->
+        <!--ng-show="!showGiftForm && (userList || family.familyAdmin)">-->
+        <!--<i class="fa fa-plus" aria-hidden="true"></i>-->
+        <!--<span translate="gift.new.add"></span>-->
+        <!--</button>-->
+        <!--</div>-->
         <div class="row header hidden-xs">
             <div class="col-sm-3">
                 <strong translate="gift.name"></strong>

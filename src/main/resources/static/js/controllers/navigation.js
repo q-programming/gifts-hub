@@ -1,4 +1,4 @@
-app.controller('navigation', function ($scope, $rootScope, $http, $location, $route, $log, AvatarService, AuthService) {
+app.controller('navigation', ['$scope', '$rootScope', '$http', '$location', '$route', 'AvatarService', 'AuthService', function ($scope, $rootScope, $http, $location, $route, AvatarService, AuthService) {
     $scope.tab = function (route) {
         return $route.current && route === $route.current.controller;
     };
@@ -16,4 +16,4 @@ app.controller('navigation', function ($scope, $rootScope, $http, $location, $ro
                 $rootScope.authenticated = false;
             });
     };
-});
+}]);

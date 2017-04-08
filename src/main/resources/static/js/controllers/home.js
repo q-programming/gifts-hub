@@ -1,12 +1,6 @@
-app.controller('home', function ($rootScope, $scope, $http, $location) {
+app.controller('home', ['$rootScope', '$scope', '$http', '$location', function ($rootScope, $scope, $http, $location) {
     if ($rootScope.authenticated) {
-        $http.get('api/resource').then(
-            function successCallback(response) {
-                $scope.greeting = response.data;
-            },
-            function errorCallback(response) {
-                console.log("Error while fetching resource: " + response);
-            });
+        $location.path("/list");
     } else {
         $location.path("/login");
     }
@@ -24,4 +18,4 @@ app.controller('home', function ($rootScope, $scope, $http, $location) {
                 console.log("error")
             });
     }
-});
+}]);

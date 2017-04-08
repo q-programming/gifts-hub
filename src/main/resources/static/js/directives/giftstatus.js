@@ -1,4 +1,4 @@
-app.directive("giftStatus", function ($rootScope, $translate, $sce, GIFT_STATUS) {
+app.directive("giftStatus", ['$rootScope', '$translate', '$sce', 'GIFT_STATUS', function ($rootScope, $translate, $sce, GIFT_STATUS) {
     return {
         restrict: "E",
         scope: {
@@ -39,4 +39,4 @@ app.directive("giftStatus", function ($rootScope, $translate, $sce, GIFT_STATUS)
             }
         }
     }
-});
+}]);

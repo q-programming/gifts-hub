@@ -1,4 +1,4 @@
-app.controller('manage', function ($rootScope, $scope, $http, $log, AlertService, AppService) {
+app.controller('manage', ['$rootScope', '$scope', '$http', '$log', 'AlertService', 'AppService', function ($rootScope, $scope, $http, $log, AlertService, AppService) {
     $scope.settings = {};
     $scope.searchEngine = {};
     $scope.searchEngineList = [];
@@ -79,4 +79,4 @@ app.controller('manage', function ($rootScope, $scope, $http, $log, AlertService
         });
     }
 
-});
+}]);

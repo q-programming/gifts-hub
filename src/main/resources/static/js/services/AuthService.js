@@ -1,9 +1,9 @@
 var AuthService = angular.module('AuthService', []);
-AuthService.factory('AuthService', function ($http, $log, avatarCache, $rootScope, $translate, $cookies, $location, AvatarService) {
+AuthService.factory('AuthService', ['$http', '$log', 'avatarCache', '$rootScope', '$translate', '$cookies', '$location', 'AvatarService', function ($http, $log, avatarCache, $rootScope, $translate, $cookies, $location, AvatarService) {
     var AuthService = {};
 
     AuthService.isAuthenticated = function () {
-        if(!!$cookies.get('c_user')){
+        if (!!$cookies.get('c_user')) {
             AuthService.getUser();
             return true;
         }
@@ -14,7 +14,6 @@ AuthService.factory('AuthService', function ($http, $log, avatarCache, $rootScop
             function (response) {
                 var data = response.data;
                 if (data.id) {
-                    // $rootScope.authenticated = true;
                     $rootScope.principal = data;
                     $translate.use($rootScope.principal.language);
                     $location.search('lang', $rootScope.principal.language);
@@ -22,16 +21,15 @@ AuthService.factory('AuthService', function ($http, $log, avatarCache, $rootScop
                 } else {
                     $rootScope.authenticated = false;
                 }
-                // callback && callback();
             }
-            // ,
-            // function () {
-            //     $rootScope.authenticated = false;
-            //     callback && callback();
-            // }
-            );
+        );
     };
-
+    /**
+     * @Depreciated
+     *
+     * @param credentials
+     * @param callback
+     */
     AuthService.authenticate = function (credentials, callback) {
         var headers = credentials ? {
             authorization: "Basic "
@@ -59,5 +57,5 @@ AuthService.factory('AuthService', function ($http, $log, avatarCache, $rootScop
             });
     };
     return AuthService;
-});
+}]);
 

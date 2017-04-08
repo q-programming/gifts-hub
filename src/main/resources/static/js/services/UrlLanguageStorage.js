@@ -5,13 +5,5 @@ app.factory('UrlLanguageStorage', ['$location', function ($location) {
     };
     UrlLanguageStorage.put = function (name, value) {
     };
-
     return UrlLanguageStorage;
-    // return {
-    //     set: function (name, value) {
-    //     },
-    //     get: function (name) {
-    //         return $location.search()['lang']
-    //     }
-    // };
 }]);

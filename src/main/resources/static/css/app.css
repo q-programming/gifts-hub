@@ -320,6 +320,24 @@ img.center {
 .margin-bottom20 {
     margin-bottom: 20px !important;
 }
+.margin-left5 {
+    margin-left: 5px;
+}
+.margin-left10 {
+    margin-left: 10px;
+}
+.margin-left20 {
+    margin-left: 20px;
+}
+.margin-right5 {
+    margin-right: 5px;
+}
+.margin-right10 {
+    margin-right: 10px;
+}
+.margin-right20 {
+    margin-right: 20px;
+}
 
 /*PADDINGS*/
 .padding5 {
@@ -345,3 +363,4 @@ img.center {
 .row.row-color {
     background-color: #f3f3f3
 }
+

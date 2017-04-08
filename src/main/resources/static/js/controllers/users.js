@@ -1,4 +1,4 @@
-app.controller('userlist', function ($scope, $rootScope, $http, $log, $uibModal, $filter, $translate, $location, AlertService, AvatarService) {
+app.controller('userlist',['$scope', '$rootScope', '$http', '$log', '$uibModal', '$filter', '$translate', '$location', 'AlertService', 'AvatarService', function ($scope, $rootScope, $http, $log, $uibModal, $filter, $translate, $location, AlertService, AvatarService) {
     $scope.users = [];
     $scope.familyUsers = [];
     $scope.family = {};
@@ -271,5 +271,5 @@ app.controller('userlist', function ($scope, $rootScope, $http, $log, $uibModal,
             $log.debug(response);
         });
     }
-});
+}]);
 

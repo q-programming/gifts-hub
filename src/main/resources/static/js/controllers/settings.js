@@ -1,4 +1,4 @@
-app.controller('settings', function ($rootScope, $scope, $http, $location, $translate, $log, $window, AlertService, AvatarService, AppService) {
+app.controller('settings', ['$rootScope', '$scope', '$http', '$location', '$translate', '$log', '$window', 'AlertService', 'AvatarService', 'AppService', function ($rootScope, $scope, $http, $location, $translate, $log, $window, AlertService, AvatarService, AppService) {
     $scope.avatarUploadInProgress = false;
     $scope.avatarImage = '';
     $scope.croppedAvatar = '';
@@ -10,7 +10,7 @@ app.controller('settings', function ($rootScope, $scope, $http, $location, $tran
             AlertService.addError("error.general");
             $log.debug(response);
         });
-    }else{
+    } else {
         $location.path("/login");
     }
 
@@ -68,4 +68,4 @@ app.controller('settings', function ($rootScope, $scope, $http, $location, $tran
         window.getSelection().removeAllRanges();
         AlertService.addSuccess("user.settings.public.copy.success");
     };
-});
+}]);

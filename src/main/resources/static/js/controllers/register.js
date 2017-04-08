@@ -1,4 +1,4 @@
-app.controller('register', function ($scope, $rootScope, $http, $log, AlertService) {
+app.controller('register', ['$scope', '$rootScope', '$http', '$log', 'AlertService', function ($scope, $rootScope, $http, $log, AlertService) {
     $scope.formData = {};
     $scope.success = false;
 
@@ -90,4 +90,4 @@ app.controller('register', function ($scope, $rootScope, $http, $log, AlertServi
             $scope.formData.username = $scope.formData.email.split("@")[0];
         }
     }
-});
+}]);

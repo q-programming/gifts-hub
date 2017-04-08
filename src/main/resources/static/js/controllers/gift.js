@@ -1,4 +1,4 @@
-app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, $route, $location, $translate, AlertService, AvatarService, GIFT_STATUS) {
+app.controller('gift', ['$rootScope', '$scope', '$http', '$log', '$routeParams', '$route', '$location', '$window', '$translate', 'AlertService', 'AvatarService', 'GIFT_STATUS', function ($rootScope, $scope, $http, $log, $routeParams, $route, $location, $window, $translate, AlertService, AvatarService, GIFT_STATUS) {
     $scope.giftForm = {};
     $scope.giftsList = [];
     $scope.searchEngines = [];
@@ -6,7 +6,6 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
     $scope.showGiftForm = false;
     $scope.editInProgress = false;
     $scope.userList = false;
-    $scope.usernameGifts = "";
     $scope.userGiftList = {};
     $scope.listTitle = "";
     $scope.categoryOther = "";
@@ -25,8 +24,16 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
         getSearchEngines();
         getCategories();
         getFamily();
+        if (!$rootScope.principal) {
+            $window.location.reload();//in case of loosing session, principal fetch is delayed. Reload location to prevent errors
+        }
         $scope.userList = !$routeParams.username || $routeParams.username === $rootScope.principal.username;
     }
+    $scope.goToMemberList = function (user) {
+        $location.path('/list/' + user.username);
+
+    };
+
 
     /**
      * Show gift form, pre-filled with search engines selected
@@ -107,13 +114,14 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
             $log.debug(response);
         });
     };
-
+    /**
+     * Check if gift can be edited by currently logged in user.
+     * In order to be able to edit he user to be either owner or be family admin
+     * @param gift gift to be checked
+     * @returns {boolean|*|null}
+     */
     $scope.canBeEdited = function (gift) {
-        return gift.status !== GIFT_STATUS.REALISED && (gift.userId === $rootScope.principal.id || $scope.familyAdmin );
-    };
-
-    $scope.canBeUndoRealised = function (gift) {
-        return gift.status === GIFT_STATUS.REALISED && (gift.userId === $rootScope.principal.id || $scope.familyAdmin );
+        return gift.status !== GIFT_STATUS.REALISED && (gift.userId === $rootScope.principal.id || ($scope.family && $scope.family.familyAdmin ));
     };
 
     /**
@@ -145,7 +153,6 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
     };
 
     // CLAIM
-
     $scope.canBeClaimed = function (gift) {
         return (gift.status !== GIFT_STATUS.REALISED && !gift.claimed && gift.userId !== $rootScope.principal.id)
     };
@@ -176,7 +183,20 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
             $log.debug(response);
         });
     };
+
     //Realised
+
+    /**
+     * Check if gift can be marked as not realised by currently logged in user.
+     * In order to be able to do so ,user has to be either owner or be family admin
+     * @param gift gift to be checked
+     * @returns {boolean|*|null}
+     */
+
+    $scope.canBeUndoRealised = function (gift) {
+        return gift.status === GIFT_STATUS.REALISED && (gift.userId === $rootScope.principal.id || ($scope.family && $scope.family.familyAdmin));
+    };
+
     $scope.realiseGift = function (gift) {
         var url = 'api/gift/complete?gift=' + gift.id;
         $http.get(url).then(
@@ -204,17 +224,16 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
 
 
     // HELPER FUNCTIONS
-
     function getGiftList() {
         var username;
         var url;
         if ($routeParams.username || $routeParams.userid) {
             if ($routeParams.username) {
-                username = $routeParams.username
+                username = $routeParams.username;
                 getUsernDataByUsernameOrId(username);
                 url = 'api/gift/user/' + username;
             } else if ($routeParams.userid) {
-                username = $routeParams.userid
+                username = $routeParams.userid;
                 getUsernDataByUsernameOrId(username);
                 url = 'api/gift/user/' + $routeParams.userid;
             }
@@ -294,11 +313,19 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
     //TODO move to family service?
     function isFamilyAdmin() {
         angular.forEach($scope.family.admins, function (user) {
+            AvatarService.getUserAvatar(user);
             if (user.id === $rootScope.principal.id) {
                 $scope.family.familyAdmin = true;
             }
         });
     }
+
+    function getFamilyAvatars() {
+        angular.forEach($scope.family.members, function (user) {
+            AvatarService.getUserAvatar(user);
+        });
+    }
+
 
     function getFamily() {
         var url;
@@ -313,8 +340,9 @@ app.controller('gift', function ($rootScope, $scope, $http, $log, $routeParams, 
                 if (response.data) {
                     $scope.family = response.data;
                     isFamilyAdmin();
+                    getFamilyAvatars();
                 }
             }
         );
     }
-});
+}]);

@@ -1,6 +1,6 @@
 var AppService = angular.module('AppService', []);
 
-AppService.factory('AppService', function ($http) {
+AppService.factory('AppService', ['$http', function ($http) {
     var AppService = {};
 
     AppService.getLanguageList = function () {
@@ -8,4 +8,4 @@ AppService.factory('AppService', function ($http) {
         return $http.get(url);
     };
     return AppService;
-});
+}]);
