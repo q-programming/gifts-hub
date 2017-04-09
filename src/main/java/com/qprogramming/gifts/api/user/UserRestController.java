@@ -101,6 +101,11 @@ public class UserRestController {
         return ResponseEntity.ok(accountService.findAll());
     }
 
+    @RequestMapping("/families")
+    public ResponseEntity<?> familyList() {
+        return ResponseEntity.ok(familyService.findAll());
+    }
+
     /**
      * Returns currently logged in user family ( or null if not found )
      *
@@ -127,6 +132,10 @@ public class UserRestController {
         family = familyService.createFamily();
         family.getMembers().addAll(accountService.findByIds(form.getMembers()));
         family.getAdmins().addAll(accountService.findByIds(form.getAdmins()));
+        if (StringUtils.isBlank(form.getName())) {
+            form.setName(Utils.getCurrentAccount().getSurname());
+        }
+        family.setName(form.getName());
         return ResponseEntity.ok(familyService.update(family));
     }
 
@@ -144,6 +153,10 @@ public class UserRestController {
             admins.add(currentAccount);
             family.setMembers(members);
             family.setAdmins(admins);
+            if (StringUtils.isBlank(form.getName())) {
+                form.setName(Utils.getCurrentAccount().getSurname());
+            }
+            family.setName(form.getName());
             return ResponseEntity.ok(familyService.update(family));
         }
         return new ResultData.ResultBuilder().badReqest().message(msgSrv.getMessage("user.family.admin.error")).build();

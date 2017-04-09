@@ -19,8 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.security.RolesAllowed;
 
-import static com.qprogramming.gifts.settings.Settings.APP_DEFAULT_LANG;
-import static com.qprogramming.gifts.settings.Settings.APP_GIFT_AGE;
+import static com.qprogramming.gifts.settings.Settings.*;
 
 @RestController
 @RequestMapping("/api/app")
@@ -51,8 +50,8 @@ public class AppRestController {
         }
         if (!CollectionUtils.isEmpty(settings.getSearchEngines())) {
             searchEngineService.updateSearchEngines(settings.getSearchEngines());
-
         }
+        propertyService.update(APP_DEFAULT_SORT, String.valueOf(settings.getSort()));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -67,6 +66,7 @@ public class AppRestController {
         settings.setLanguage(propertyService.getProperty(APP_DEFAULT_LANG));
         settings.setSearchEngines(searchEngineService.getAllSearchEngines());
         settings.setGiftAge(propertyService.getProperty(APP_GIFT_AGE));
+        settings.setSort(Settings.SortBy.fromString(propertyService.getProperty(APP_DEFAULT_SORT)));
         return ResponseEntity.ok(settings);
     }
 
@@ -78,6 +78,11 @@ public class AppRestController {
     @RequestMapping(value = "/languages", method = RequestMethod.GET)
     public ResponseEntity getAllLanguages() {
         return ResponseEntity.ok(propertyService.getLanguages());
+    }
+
+    @RequestMapping(value = "/sort", method = RequestMethod.GET)
+    public ResponseEntity getSortBy() {
+        return ResponseEntity.ok(Settings.SortBy.fromString(propertyService.getProperty(APP_DEFAULT_SORT)));
     }
 
 }

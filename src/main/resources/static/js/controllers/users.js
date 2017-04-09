@@ -1,17 +1,62 @@
-app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal', '$filter', '$translate', '$location', 'AlertService', 'AvatarService',
-    function ($scope, $rootScope, $http, $log, $uibModal, $filter, $translate, $location, AlertService, AvatarService) {
+app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal', '$filter', '$translate', '$location', 'AlertService', 'AvatarService', 'AppService',
+    function ($scope, $rootScope, $http, $log, $uibModal, $filter, $translate, $location, AlertService, AvatarService, AppService) {
+        //lists
         $scope.users = [];
-        $scope.familyUsers = [];
+        $scope.families = [];
+        $scope.usersWithoutFamily = [];
+
+        //current user props.
         $scope.family = {};
         $scope.hasFamily = null;
         $scope.familyAdmin = null;
+
+        //triggers
+        $scope.sortByName = null;
+        $scope.sortByFamily = null;
         if ($rootScope.authenticated) {
-            getUsers();
-            getFamily();
+            showUsersWithDefaultSorting();
         } else {
             $location.path("/login");
         }
 
+        //************************SORT BY********************************
+        function showUsersWithDefaultSorting() {
+            AppService.getDefaultSort().then(function (response) {
+                switch (response.data) {
+                    case 'FAMILY':
+                        $scope.sortByFamilies();
+                        break;
+                    default://default is sort by name
+                        $scope.sortByNames();
+                }
+                // $scope.languages = response.data;
+            }).catch(function (response) {
+                AlertService.addError("error.general", response);
+                $log.debug(response);
+            });
+        }
+
+        $scope.sortByNames = function () {
+            $scope.families.length = 0;
+            getUsers();
+            getFamily();
+            $scope.sortByName = true;
+            $scope.sortByFamily = false;
+        };
+
+        $scope.sortByFamilies = function () {
+            $scope.users.length = 0;
+            getAllFamilies();
+            getUsersWithoutFamily();
+            getFamily();
+            $scope.sortByName = false;
+            $scope.sortByFamily = true;
+        };
+
+        // ***********************FAMILIES********************************
+        /**
+         * Creates new family
+         */
         $scope.createFamily = function () {
             $scope.family = {};
             $scope.family.members = [];
@@ -22,12 +67,11 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
             $translate("user.family.create.help").then(function (translation) {
                 $scope.modalHelp = translation;
             });
-            $scope.familyAdmin = true;
             var modalInstance = $uibModal.open({
                 templateUrl: 'modals/family.html',
                 scope: $scope,
                 controller: function ($uibModalInstance, $scope) {
-                    getFamilyAvailableUsers();
+                    getUsersWithoutFamily();
                     $scope.cancel = function () {
                         $uibModalInstance.dismiss('cancel');
                     };
@@ -54,7 +98,7 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
                 templateUrl: 'modals/family.html',
                 scope: $scope,
                 controller: function ($uibModalInstance, $scope) {
-                    getFamilyAvailableUsers();
+                    getUsersWithoutFamily();
                     $scope.cancel = function () {
                         $uibModalInstance.dismiss('cancel');
                     };
@@ -82,7 +126,10 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
             $scope.removeUserFromAdmin(user);
         };
 
-
+        /**
+         * Add avatars to all users and remove currently logged in user from array in the process
+         * @param userArray
+         */
         function filterAndAddAvatar(userArray) {
             var i = userArray.length;
             while (i--) {
@@ -95,6 +142,11 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
             }
         }
 
+        /**
+         * Send family data for creation or edition
+         * @param familyForm
+         * @param create
+         */
         function sendFamilyData(familyForm, create) {
             var url;
             if (create) {
@@ -111,6 +163,11 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
             angular.forEach(familyForm.admins, function (member) {
                 dataToSend.admins.push(member.id);
             });
+            if (!familyForm.name) {
+                familyForm.name = $rootScope.principal.surname;
+            }
+            dataToSend.name = familyForm.name;
+            $scope.family = {};
             $http.post(url, dataToSend).then(
                 function (response) {
                     if (create) {
@@ -118,23 +175,26 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
                     } else {
                         AlertService.addSuccess("user.family.edit.success");
                     }
-                    getUsers();
-                    getFamily();
+                    showUsersWithDefaultSorting()
                 }).catch(function (response) {
+                showUsersWithDefaultSorting()
                 AlertService.addError("error.general", response);
                 $log.debug(response);
             });
         }
 
-        function getFamilyAvailableUsers() {
+        /**
+         * Get all users that currently are not part of any family
+         */
+        function getUsersWithoutFamily() {
             $http.get('api/user/users?family=true').then(
                 function (response) {
-                    $scope.familyUsers = [];
+                    $scope.usersWithoutFamily.length = 0;
                     $log.debug("[DEBUG] Loaded family users");
                     angular.forEach(response.data, function (user) {
                         if (user.id !== $rootScope.principal.id) {
                             AvatarService.getUserAvatar(user);
-                            $scope.familyUsers.push(user);
+                            $scope.usersWithoutFamily.push(user);
                         }
                     });
                 }).catch(function (response) {
@@ -143,6 +203,9 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
             });
         }
 
+        /**
+         * Check if currently logged in user is admin of his family
+         */
         function isFamilyAdmin() {
             angular.forEach($scope.family.admins, function (user) {
                 if (user.id === $rootScope.principal.id) {
@@ -151,10 +214,14 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
             });
         }
 
+        /**
+         * Get currently logged in user family
+         */
         function getFamily() {
             $http.get('api/user/family').then(
                 function (response) {
                     if (response.data) {
+                        $scope.family.length = 0;
                         $scope.family = response.data;
                         $scope.hasFamily = true;
                         isFamilyAdmin();
@@ -163,7 +230,32 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
             );
         }
 
-        // KID
+        /**
+         * Get currently logged in user family
+         */
+        function getAllFamilies() {
+            $http.get('api/user/families').then(
+                function (response) {
+                    if (response.data) {
+                        $scope.families.length = 0;
+                        $scope.families = response.data;
+                        if ($scope.families) {
+                            angular.forEach($scope.families, function (family) {
+                                angular.forEach(family.members, function (user) {
+                                    AvatarService.getUserAvatar(user);
+                                });
+                            });
+                        }
+                    }
+                }
+            );
+        }
+
+
+        // *******************************KID***************************
+        /**
+         * Call modal for creation of kid for family
+         */
         $scope.addKid = function () {
             $scope.avatarUploadInProgress = false;
             $scope.avatarImage = '';
@@ -213,23 +305,40 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
                 }
             });
         };
+        /**
+         * Check if username is free
+         */
         $scope.checkUsername = function () {
             $scope.usernameExists = false;
             if ($scope.formData.username) {
                 $http.post('api/user/validate-username', $scope.formData.username).then(
                     function (response) {
-                        if (response.data.body.code === 'ERROR') {
-                            $scope.usernameExists = true;
-                        } else {
-                            $scope.usernameExists = false;
-                        }
+                        $scope.usernameExists = response.data.body.code === 'ERROR';
                     }).catch(function (response) {
                     AlertService.addError("error.general", response);
                 });
             }
         };
 
+        /**
+         * Check if kid belongs to currently logged in user family
+         * @param kid
+         * @returns {boolean}
+         */
+        $scope.isUsersFamilyKid = function (kid) {
+            if ($scope.family && $scope.family.members) {
+                return $scope.family.members.map(function (e) {
+                        return e.id;
+                    }).indexOf(kid.id) > -1
+            }
+            return false;
+        };
 
+        /**
+         * Send child data for creation/update
+         * @param formData
+         * @param create
+         */
         function sendChildData(formData, create) {
             var url;
             if (create) {
@@ -249,19 +358,24 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
                     } else {
                         AlertService.addSuccess("user.family.edit.kid.success");
                     }
-                    getUsers();
-                    getFamily();
+                    showUsersWithDefaultSorting();
                 }).catch(function (response) {
+                showUsersWithDefaultSorting();
                 AlertService.addError("error.general", response);
                 $log.debug(response);
             });
         }
 
+        // ***********************USERS********************************
 
+        /**
+         * Get all users , sorted by names
+         * Read theirs avatar in the process
+         */
         function getUsers() {
             $http.get('api/user/users').then(
                 function (response) {
-                    $scope.users = [];
+                    $scope.users.length = 0;
                     $log.debug("[DEBUG] Loaded users");
                     angular.forEach(response.data, function (user) {
                         AvatarService.getUserAvatar(user);

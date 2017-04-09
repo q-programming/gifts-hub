@@ -40,14 +40,14 @@
             <ul class="nav navbar-nav navbar-right hidden-xs">
                 <li ng-if="!authenticated" ng-class="{active:tab('navigation')}">
                     <a href="#/login">
-                        <i class="fa fa-sign-in margin-top10" aria-hidden="true"></i>
+                        <i class="fa fa-sign-in margin-top10" aria-hidden="true"></i><br/>
                         <span translate="menu.login"></span>
                     </a></li>
                 <li ng-if="authenticated" ng-class="{active:tab('userlist')}" class="text-center side-menu">
                     <a href="#/users">
                         <span>
                             <i class="fa fa-gift" aria-hidden="true"></i>
-                            <i class="fa fa-2x fa-user" aria-hidden="true"></i>
+                            <i class="fa fa-2x fa-user" aria-hidden="true"></i><br/>
                             <span translate="menu.users"></span>
                         </span>
                     </a>
@@ -56,7 +56,7 @@
                     <a href="#/list">
                         <span>
                             <i class="fa fa-list" aria-hidden="true"></i>&nbsp;
-                            <i class="fa fa-2x fa-gift" aria-hidden="true"></i>
+                            <i class="fa fa-2x fa-gift" aria-hidden="true"></i><br/>
                             <span translate="menu.wishlist"></span>
                         </span>
                     </a>
@@ -66,7 +66,7 @@
                     <a href="#/manage">
                         <span>
                             <i class="fa fa-columns" aria-hidden="true"></i>&nbsp;
-                            <i class="fa fa-2x fa-wrench" aria-hidden="true"></i>
+                            <i class="fa fa-2x fa-wrench" aria-hidden="true"></i><br/>
                             <span translate="menu.manage"></span>
                         </span>
                     </a>
@@ -93,11 +93,6 @@
                             </a>
                         </li>
                     </ul>
-                    <!--<a href="" class="white nav-username">-->
-                    <!--{{principal.fullname}}<span class="caret"></span>-->
-                    <!--<img ng-if="principal.avatar" ng-src="{{principal.avatar}}" class="avatar nav-avatar"/>-->
-                    <!--<img ng-if="!principal.avatar" src='images/avatar-placeholder.png' class="avatar nav-avatar"/>-->
-                    <!--</a>-->
                 </li>
                 <li class="nav-avatar" ng-if="authenticated">
                 </li>

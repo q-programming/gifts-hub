@@ -3,6 +3,7 @@ package com.qprogramming.gifts.account.family;
 import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.support.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -100,7 +101,7 @@ public class FamilyService {
 
 
     public List<Family> findAll() {
-        return familyRepository.findAll();
+        return familyRepository.findAll(new Sort("name"));
     }
 
     public Family update(Family family) {

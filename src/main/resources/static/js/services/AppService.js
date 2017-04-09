@@ -8,5 +8,9 @@ AppService.factory('AppService', ['$http',
             var url = 'api/app/languages';
             return $http.get(url);
         };
+        AppService.getDefaultSort = function () {
+            var url = 'api/app/sort';
+            return $http.get(url);
+        };
         return AppService;
     }]);

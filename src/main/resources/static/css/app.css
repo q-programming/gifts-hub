@@ -17,10 +17,6 @@ body {
 }
 
 /*NAVBAR*/
-.sidebar {
-    display: none;
-    padding: 0 !important;
-}
 
 .navbar.theme {
     background: rgba(44, 90, 160, 0.8) !important;
@@ -62,6 +58,7 @@ img.avatar.small {
 
 .nav > li {
     min-height: 50px !important;
+    font-size: smaller;
 }
 
 .nav > li > a {
@@ -99,7 +96,8 @@ img.avatar.small {
 
 .navbar-nav > li > a {
     padding-top: 15px !important;
-    padding-bottom: 10px !important;
+    padding-bottom: 5px !important;
+    line-height: 15px !important;
 }
 
 .dropdown-menu > li > a {
@@ -204,6 +202,7 @@ img.avatar.small {
 .validation-error {
     color: darkred;
 }
+
 /*END GIFTS*/
 
 /*UPLOAD*/
@@ -344,7 +343,7 @@ img-crop canvas {
     padding: 5px;
 }
 
-.row.gift-row {
+.row.padded-row {
     padding: 10px;
 }
 
@@ -404,6 +403,10 @@ a.black {
     color: #000;
 }
 
+a.black :hover {
+    color: #000;
+}
+
 img.center {
     display: block;
     margin: 0 auto;
@@ -419,4 +422,8 @@ img.center {
     margin-bottom: 20px;
     padding: 20px;
     border: 1px solid lightgray;
+}
+
+.no-bold {
+    font-weight: normal;
 }

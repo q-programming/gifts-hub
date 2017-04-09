@@ -1,28 +1,32 @@
 <div ng-if="authenticated">
     <!--DEFAULT LANGUAGE-->
     <div class="row">
-        <div class="form-group col-md-offset-2 col-md-4">
+        <div class="form-group col-md-offset-2 col-md-6">
             <h1 translate="app.manage"></h1>
             <h4 for="app-lang">
                 <i class="fa fa-globe" aria-hidden="true"></i>
                 &nbsp;<span translate="app.manage.language"></span>
             </h4>
-            <select id="app-lang" class="form-control input-sm" name="language" ng-model="settings.language"
-                    ng-change="update()">
-                <option ng-repeat="(lang, languageString) in languages" ng-value="lang">{{languageString}}</option>
-                </option>
-            </select>
+            <div class="row">
+                <div class="col-sm-6">
+                    <select id="app-lang" class="form-control input-sm" name="language"
+                            ng-model="settings.language" ng-change="update()">
+                        <option ng-repeat="(lang, languageString) in languages" ng-value="lang">{{languageString}}
+                        </option>
+                    </select>
+                </div>
+            </div>
         </div>
     </div>
     <div class="row">
-        <div class="col-md-offset-2 col-md-4">
+        <div class="col-md-offset-2 col-md-6">
             <h4>
                 <i class="fa fa-calendar-plus-o" aria-hidden="true"></i>
                 &nbsp;<span translate="app.manage.gift.age"></span>
             </h4>
             <div class="row">
                 <form class="form-inline">
-                    <div class="form-group col-xs-6">
+                    <div class="form-group col-xs-12">
                         <div class="input-group">
                             <input type="text" class="form-control" id="gift_age"
                                    placeholder="{{'app.manage.gift.age.days' | translate}}"
@@ -30,17 +34,47 @@
                             <div class="input-group-addon" translate="app.manage.gift.age.days"></div>
                         </div>
                     </div>
-                    <div class="form-group col-xs-6">
-                        <span class="btn btn-success" ng-click="update()">
-                            <i class="fa fa-floppy-o" aria-hidden="true"></i>&nbsp;
-                            <span translate="main.save"></span>
-                        </span>
-                    </div>
+                    <!--<div class="form-group col-xs-6">-->
+                    <!--<span class="btn btn-success" ng-click="update()">-->
+                    <!--<i class="fa fa-floppy-o" aria-hidden="true"></i>&nbsp;-->
+                    <!--<span translate="main.save"></span>-->
+                    <!--</span>-->
+                    <!--</div>-->
                 </form>
             </div>
             <span class="help-block" translate="app.manage.gift.age.help "></span>
         </div>
-
+    </div>
+    <div class="row">
+        <div class="col-md-offset-2 col-md-6">
+            <h4>
+                <i class="fa fa-sort" aria-hidden="true"></i>
+                &nbsp;<span translate="user.sort.default"></span>
+            </h4>
+            <div class="row">
+                <div class="col-xs-12">
+                    <form>
+                        <label class="no-bold">
+                            <input type="radio" ng-model="settings.sort"
+                                   value="FAMILY">
+                            {{'user.sort.family'|translate}}
+                        </label>
+                        <br/>
+                        <label class="no-bold">
+                            <input type="radio" ng-model="settings.sort"
+                                   value="NAME">
+                            {{'user.sort.name'|translate}}
+                        </label>
+                    </form>
+                </div>
+                <div class="form-group col-xs-12">
+                        <span class="btn btn-success pull-right" ng-click="update()">
+                            <i class="fa fa-floppy-o" aria-hidden="true"></i>&nbsp;
+                            <span translate="main.save"></span>
+                        </span>
+                </div>
+            </div>
+        </div>
     </div>
     <!--SEARCH ENGINES-->
     <hr/>

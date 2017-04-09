@@ -7,6 +7,7 @@ import java.util.List;
  */
 public class FamilyForm {
     private Long id;
+    private String name;
     private List<String> members;
     private List<String> admins;
 
@@ -16,6 +17,14 @@ public class FamilyForm {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public List<String> getMembers() {

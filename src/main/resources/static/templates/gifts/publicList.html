@@ -27,7 +27,7 @@
     </div>
     <div ng-repeat="(key, value) in giftsList">
         <h4><strong translate="{{key}}">{{key}}</strong></h4>
-        <div class="row gift-row"
+        <div class="row padded-row"
              ng-class-odd="'row gift-row row-color'"
              ng-class="gift.status ==='REALISED' ? 'gift-realised':''"
              ng-repeat="gift in value">

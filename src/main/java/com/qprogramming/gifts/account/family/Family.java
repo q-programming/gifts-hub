@@ -15,6 +15,9 @@ public class Family {
     @SequenceGenerator(name = "family_seq_gen", sequenceName = "family_id_seq", allocationSize = 1)
     private Long id;
 
+    @Column
+    private String name;
+
     @OneToMany
     @JoinTable(name = "family_members")
     private Set<Account> members;
@@ -52,6 +55,14 @@ public class Family {
 
     public void setAdmins(Set<Account> admins) {
         this.admins = admins;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override
