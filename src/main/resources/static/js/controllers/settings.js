@@ -1,5 +1,5 @@
-app.controller('settings', ['$rootScope', '$scope', '$http', '$location', '$translate', '$log', '$window', 'AlertService', 'AvatarService', 'AppService',
-    function ($rootScope, $scope, $http, $location, $translate, $log, $window, AlertService, AvatarService, AppService) {
+app.controller('settings', ['$rootScope', '$scope', '$http', '$location', '$translate', '$log', '$window', 'AlertService', 'AvatarService', 'AppService', 'UtilsService',
+    function ($rootScope, $scope, $http, $location, $translate, $log, $window, AlertService, AvatarService, AppService, UtilsService) {
         $scope.avatarUploadInProgress = false;
         $scope.avatarImage = '';
         $scope.croppedAvatar = '';
@@ -29,7 +29,7 @@ app.controller('settings', ['$rootScope', '$scope', '$http', '$location', '$tran
 
         $scope.uploadAvatarFile = function () {
             var el = document.getElementById("croppedAvatar");
-            var source = getBase64Image(el);
+            var source = UtilsService.getBase64Image(el);
             if (source) {
                 AvatarService.uploadAvatar(JSON.stringify(source));
                 $scope.avatarUploadInProgress = false;
@@ -54,19 +54,21 @@ app.controller('settings', ['$rootScope', '$scope', '$http', '$location', '$tran
             });
         };
 
-        $scope.getPublicUrl = function () {
-            var url = $location.absUrl().split("#")[0];
-            return url + "#/public/" + $rootScope.principal.id
+        $scope.getPublicUrl = function (user) {
+            return UtilsService.getPublicUrl($rootScope.principal);
+            // var url = $location.absUrl().split("#")[0];
+            // return url + "#/public/" + $rootScope.principal.id
         };
 
         $scope.copyLink = function () {
-            var el = document.getElementById('public-link');
-            var range = document.createRange();
-            range.selectNode(el);
-            window.getSelection().removeAllRanges();
-            window.getSelection().addRange(range);
-            document.execCommand('copy');
-            window.getSelection().removeAllRanges();
-            AlertService.addSuccess("user.settings.public.copy.success");
+            UtilsService.copyLink();
+            // var el = document.getElementById('public-link');
+            // var range = document.createRange();
+            // range.selectNode(el);
+            // window.getSelection().removeAllRanges();
+            // window.getSelection().addRange(range);
+            // document.execCommand('copy');
+            // window.getSelection().removeAllRanges();
+            // AlertService.addSuccess("user.settings.public.copy.success");
         };
     }]);

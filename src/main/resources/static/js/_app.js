@@ -12,7 +12,8 @@ var app = angular.module('app', [
     , 'AvatarService'
     , 'AuthService'
     , 'AlertService'
-    , 'AppService']);
+    , 'AppService'
+    ,'UtilsService']);
 app.constant("MESSAGES", {
     SUCCESS: "success",
     ERROR: "danger",

@@ -49,9 +49,8 @@ public class UserRestControllerTest {
     public static final String API_USER_FAMILY_UPDATE = "/api/user/family-update";
     public static final String API_USER_KID_ADD = "/api/user/kid-add";
     public static final String API_USER_KID_UPDATE = "/api/user/kid-update";
+    public static final String KID_ID = "KID-ID";
     private static final String API_USER = "/api/user";
-
-
     private MockMvc userRestCtrl;
     @Mock
     private AccountService accSrvMock;
@@ -393,6 +392,83 @@ public class UserRestControllerTest {
             verify(accSrvMock, times(1)).createKidAccount(any(Account.class));
             verify(accSrvMock, times(1)).updateAvatar(kid, imgBytes);
             verify(familyServiceMock, times(1)).update(family);
+        } catch (IOException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void updateKidNotFound() throws Exception {
+        KidForm form = new KidForm();
+        form.setName("name");
+        form.setSurname("surname");
+        form.setUsername("username");
+        form.setId(KID_ID);
+        Family family = new Family();
+        family.setId(1L);
+        family.getMembers().add(testAccount);
+        family.getAdmins().add(testAccount);
+        when(familyServiceMock.getFamily(testAccount)).thenReturn(family);
+        userRestCtrl.perform(post(API_USER_KID_UPDATE)
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(form))).andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void updateKidFamilyNotFount() throws Exception {
+        KidForm form = new KidForm();
+        form.setName("name");
+        form.setSurname("surname");
+        form.setUsername("username");
+        form.setId(KID_ID);
+        userRestCtrl.perform(post(API_USER_KID_UPDATE)
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(form))).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void updateKidFamilyNotAdmin() throws Exception {
+        KidForm form = new KidForm();
+        form.setName("name");
+        form.setSurname("surname");
+        form.setUsername("username");
+        form.setId(KID_ID);
+        Family family = new Family();
+        family.setId(1L);
+        family.getMembers().add(testAccount);
+        when(familyServiceMock.getFamily(testAccount)).thenReturn(family);
+        userRestCtrl.perform(post(API_USER_KID_UPDATE)
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(form))).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void updateKidFamily() throws Exception {
+        Account kidAccount = TestUtil.createAccount("name", "surname");
+        kidAccount.setId(KID_ID);
+        ClassLoader loader = this.getClass().getClassLoader();
+        try (InputStream avatarFile = loader.getResourceAsStream("static/images/logo-white.png")) {
+            String imgStream = Base64.encodeBase64String(IOUtils.toByteArray(avatarFile));
+            KidForm form = new KidForm();
+            form.setName("new-name");
+            form.setSurname("new-surname");
+            form.setUsername("username");
+            form.setId(KID_ID);
+            form.setAvatar(imgStream);
+            Family family = new Family();
+            family.setId(1L);
+            family.getMembers().add(testAccount);
+            family.getAdmins().add(testAccount);
+            when(familyServiceMock.getFamily(testAccount)).thenReturn(family);
+            when(accSrvMock.findById(KID_ID)).thenReturn(kidAccount);
+            MvcResult mvcResult = userRestCtrl.perform(post(API_USER_KID_UPDATE)
+                    .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                    .content(TestUtil.convertObjectToJsonBytes(form))).andExpect(status().isOk()).andReturn();
+            String contentAsString = mvcResult.getResponse().getContentAsString();
+            Account result = TestUtil.convertJsonToObject(contentAsString, Account.class);
+            verify(accSrvMock, times(1)).updateAvatar(any(Account.class), any(byte[].class));
+            verify(accSrvMock, times(1)).update(any(Account.class));
+            assertEquals(result.getName(), form.getName());
         } catch (IOException e) {
             fail(e.getMessage());
         }

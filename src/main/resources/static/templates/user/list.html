@@ -76,8 +76,11 @@
     </div>
     <div class="col-xs-6 col-sm-3">
             <span class="pull-right">
+                <a ng-if="user.publicList" class="black" ng-href="{{getPublicUrl(user)}}"
+                   uib-tooltip="{{'user.settings.public'|translate}}">
+                    <i class="fa fa-link"></i></a>
                 <span ng-if="user.type == 'KID' && isUsersFamilyKid(user) && familyAdmin"
-                      class="btn btn-sm btn-default">
+                      class="btn btn-sm btn-default" ng-click="editKid(user)">
                     <i class="fa fa-pencil"></i>
                 </span>
                 <a class="btn btn-sm btn-default" ng-href="#/list/{{user.username}}"><i class="fa fa-fw fa-gift"></i>Gift

@@ -1,5 +1,5 @@
-app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal', '$filter', '$translate', '$location', 'AlertService', 'AvatarService', 'AppService',
-    function ($scope, $rootScope, $http, $log, $uibModal, $filter, $translate, $location, AlertService, AvatarService, AppService) {
+app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal', '$filter', '$translate', '$location', 'AlertService', 'AvatarService', 'AppService', 'UtilsService',
+    function ($scope, $rootScope, $http, $log, $uibModal, $filter, $translate, $location, AlertService, AvatarService, AppService, UtilsService) {
         //lists
         $scope.users = [];
         $scope.families = [];
@@ -13,6 +13,7 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
         //triggers
         $scope.sortByName = null;
         $scope.sortByFamily = null;
+
         if ($rootScope.authenticated) {
             showUsersWithDefaultSorting();
         } else {
@@ -275,36 +276,66 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
                     $scope.cancel = function () {
                         $uibModalInstance.dismiss('cancel');
                     };
-                    $scope.handleFileSelect = function (evt) {
-                        $scope.avatarUploadInProgress = true;
-                        var file = evt.files[0];
-                        var reader = new FileReader();
-                        reader.onload = function (evt) {
-                            $scope.$apply(function ($scope) {
-                                $scope.avatarImage = evt.target.result;
-                            });
-                        };
-                        reader.readAsDataURL(file);
-                    };
-                    $scope.saveAvatarFile = function () {
-                        var el = document.getElementById("croppedAvatar");
-                        var source = getBase64Image(el);
-                        if (source) {
-                            $scope.formData.avatar = el.currentSrc;
-                            $scope.formData.avatarSource = JSON.stringify(source);
-                            $scope.avatarUploadInProgress = false;
-                            document.getElementById("avatarFileInput").value = "";
-                        }
-                    };
+
 
                     $scope.action = function () {
-                        $log.debug("[DEBUG] Creating family");
+                        $log.debug("[DEBUG] Creating kid");
                         sendChildData($scope.formData, true);
                         $uibModalInstance.close()
                     };
                 }
             });
         };
+
+        $scope.editKid = function (kid) {
+            $scope.avatarUploadInProgress = false;
+            $scope.avatarImage = kid.avatar;
+            $scope.croppedAvatar = '';
+            $scope.editKidInProgress = true;
+            $scope.formData = $.extend({}, kid);
+            $translate("user.family.edit.kid").then(function (translation) {
+                $scope.modalTitle = translation;
+            });
+            $scope.modalHelp = '';
+            var modalInstance = $uibModal.open({
+                templateUrl: 'modals/kid.html',
+                scope: $scope,
+                controller: function ($uibModalInstance, $scope) {
+                    $scope.cancel = function () {
+                        $uibModalInstance.dismiss('cancel');
+                    };
+                    $scope.action = function () {
+                        $log.debug("[DEBUG] edit family");
+                        sendChildData($scope.formData, false);
+                        $scope.editKidInProgress = false;
+                        $uibModalInstance.close()
+                    };
+                }
+            });
+        };
+
+        $scope.handleFileSelect = function (evt) {
+            $scope.avatarUploadInProgress = true;
+            var file = evt.files[0];
+            var reader = new FileReader();
+            reader.onload = function (evt) {
+                $scope.$apply(function ($scope) {
+                    $scope.avatarImage = evt.target.result;
+                });
+            };
+            reader.readAsDataURL(file);
+        };
+        $scope.saveAvatarFile = function () {
+            var el = document.getElementById("croppedAvatar");
+            var source = UtilsService.getBase64Image(el);
+            if (source) {
+                $scope.formData.avatar = el.currentSrc;
+                $scope.formData.avatarSource = JSON.stringify(source);
+                $scope.avatarUploadInProgress = false;
+                document.getElementById("avatarFileInput").value = "";
+            }
+        };
+
         /**
          * Check if username is free
          */
@@ -347,10 +378,12 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
                 url = 'api/user/kid-update';
             }
             var dataToSend = {};
+            dataToSend.id = formData.id;
             dataToSend.name = formData.name;
             dataToSend.surname = formData.surname;
             dataToSend.username = formData.username;
             dataToSend.avatar = formData.avatarSource;
+            dataToSend.publicList = formData.publicList;
             $http.post(url, dataToSend).then(
                 function (response) {
                     if (create) {
@@ -365,6 +398,13 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
                 $log.debug(response);
             });
         }
+
+        $scope.getPublicUrl = function (user) {
+            return UtilsService.getPublicUrl(user);
+        };
+        $scope.copyLink = function () {
+            UtilsService.copyLink();
+        };
 
         // ***********************USERS********************************
 

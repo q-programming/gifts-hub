@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,6 +21,7 @@ import java.util.List;
 import static com.qprogramming.gifts.TestUtil.USER_RANDOM_ID;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
 /**
@@ -104,7 +106,7 @@ public class AccountServiceTest {
         all.add(account5);
         all.add(account6);
         when(familyServiceMock.findAll()).thenReturn(Arrays.asList(family1, family2));
-        when(accountRepositoryMock.findAll()).thenReturn(all);
+        when(accountRepositoryMock.findAll(any(Sort.class))).thenReturn(all);
         List<Account> withoutFamily = accountService.findWithoutFamily();
         assertTrue(withoutFamily.contains(account5));
         assertTrue(withoutFamily.contains(account6));

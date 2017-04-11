@@ -187,6 +187,35 @@ public class UserRestController {
         return ResponseEntity.ok(kidAccount);
     }
 
+    @RequestMapping("/kid-update")
+    public ResponseEntity<?> updateKid(@RequestBody @Valid KidForm form) {
+        Account currentAccount = Utils.getCurrentAccount();
+        Family family = familyService.getFamily(currentAccount);
+        if (family == null) {
+            return new ResultData.ResultBuilder().badReqest().message(msgSrv.getMessage("user.family.add.kid.error")).build();
+        }
+        if (!family.getAdmins().contains(currentAccount)) {
+            return new ResultData.ResultBuilder().badReqest().message(msgSrv.getMessage("user.family.admin.error")).build();
+        }
+        Account kidAccount = accountService.findById(form.getId());
+        if (kidAccount == null) {
+            return ResponseEntity.notFound().build();
+        }
+        if (StringUtils.isNotBlank(form.getName())) {
+            kidAccount.setName(form.getName());
+        }
+        if (StringUtils.isNotBlank(form.getSurname())) {
+            kidAccount.setSurname(form.getSurname());
+        }
+        kidAccount.setPublicList(form.getPublicList());
+        accountService.update(kidAccount);
+        if (StringUtils.isNotBlank(form.getAvatar())) {
+            byte[] data = Base64.decodeBase64(form.getAvatar());
+            accountService.updateAvatar(kidAccount, data);
+        }
+        return ResponseEntity.ok(kidAccount);
+    }
+
 
     @RequestMapping(value = "/validate-email", method = RequestMethod.POST)
     public ResponseEntity validateEmail(@RequestBody String email) {
