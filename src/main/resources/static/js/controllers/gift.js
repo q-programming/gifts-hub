@@ -1,10 +1,9 @@
-app.controller('gift', ['$rootScope', '$scope', '$http', '$log', '$routeParams', '$route', '$location', '$window', '$translate', 'AlertService', 'AvatarService', 'GIFT_STATUS',
-    function ($rootScope, $scope, $http, $log, $routeParams, $route, $location, $window, $translate, AlertService, AvatarService, GIFT_STATUS) {
+app.controller('gift', [
+    '$rootScope', '$scope', '$http', '$log', '$routeParams', '$route', '$location', '$window', '$translate', '$uibModal', 'AlertService', 'AvatarService', 'GIFT_STATUS',
+    function ($rootScope, $scope, $http, $log, $routeParams, $route, $location, $window, $translate, $uibModal, AlertService, AvatarService, GIFT_STATUS) {
         $scope.giftForm = {};
         $scope.giftsList = [];
         $scope.searchEngines = [];
-
-        $scope.showGiftForm = false;
         $scope.editInProgress = false;
         $scope.userList = false;
         $scope.userGiftList = {};
@@ -40,19 +39,18 @@ app.controller('gift', ['$rootScope', '$scope', '$http', '$log', '$routeParams',
          * Show gift form, pre-filled with search engines selected
          */
         $scope.showCreate = function () {
-            $scope.showGiftForm = true;
             $scope.editInProgress = false;
             $scope.giftForm.searchEngines = {};
             angular.forEach($scope.searchEngines, function (engine) {
                 $scope.giftForm.searchEngines[engine.id] = true;
             });
             $scope.giftForm.username = $routeParams.username;
+            $scope.openModalForm();
         };
         /**
          * Show gift form, pre-filled with search engines selected
          */
         $scope.showEdit = function (gift) {
-            $scope.showGiftForm = true;
             $scope.editInProgress = true;
             $scope.giftForm = $.extend({}, gift);
             $scope.giftForm.searchEngines = {};
@@ -60,6 +58,26 @@ app.controller('gift', ['$rootScope', '$scope', '$http', '$log', '$routeParams',
                 $scope.giftForm.searchEngines[engine.id] = true;
             });
             $scope.giftForm.username = $routeParams.username;
+            $scope.openModalForm();
+        };
+
+        $scope.openModalForm = function () {
+            $uibModal.open({
+                templateUrl: 'modals/gift.html',
+                scope: $scope,
+                controller: function ($uibModalInstance, $scope) {
+                    $scope.cancel = function () {
+                        $uibModalInstance.dismiss('cancel');
+                    };
+                    $scope.action = function () {
+                        if ($scope.mainGiftForm.$valid) {
+                            $log.debug("[DEBUG] sending gift data");
+                            $scope.sendGiftData();
+                            $uibModalInstance.close()
+                        }
+                    };
+                }
+            });
         };
 
         /**
@@ -67,7 +85,6 @@ app.controller('gift', ['$rootScope', '$scope', '$http', '$log', '$routeParams',
          */
         $scope.reset = function () {
             $scope.giftForm = {};
-            $scope.showGiftForm = false;
             $scope.editInProgress = false;
         };
 
@@ -75,7 +92,6 @@ app.controller('gift', ['$rootScope', '$scope', '$http', '$log', '$routeParams',
          * Send gift data from form. It can be either new or update of existing
          */
         $scope.sendGiftData = function () {
-            $scope.showGiftForm = true;
             //clone original data that will be sent
             $scope.apiSendGift = $.extend({}, $scope.giftForm);
             $scope.apiSendGift.searchEngines = [];

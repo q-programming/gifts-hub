@@ -1,5 +1,5 @@
-app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal', '$filter', '$translate', '$location', 'AlertService', 'AvatarService', 'AppService', 'UtilsService',
-    function ($scope, $rootScope, $http, $log, $uibModal, $filter, $translate, $location, AlertService, AvatarService, AppService, UtilsService) {
+app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal', '$filter', '$translate', '$location','$timeout', 'AlertService', 'AvatarService', 'AppService', 'UtilsService',
+    function ($scope, $rootScope, $http, $log, $uibModal, $filter, $translate, $location,$timeout, AlertService, AvatarService, AppService, UtilsService) {
         //lists
         $scope.users = [];
         $scope.families = [];
@@ -403,7 +403,12 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
             return UtilsService.getPublicUrl(user);
         };
         $scope.copyLink = function () {
-            UtilsService.copyLink();
+            $scope.showCopiedMsg = true;
+            $timeout(function () {
+                $scope.showCopiedMsg = false;
+            }, 5000);
+            UtilsService.copyLink(true);
+
         };
 
         // ***********************USERS********************************

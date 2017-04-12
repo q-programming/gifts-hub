@@ -67,6 +67,11 @@
             </label>
             <span class="help-block" translate="user.settings.public.help"></span>
         </div>
+        <div class="row animate padded-row" ng-if="showCopiedMsg">
+            <div class="col-xs-12 alert-success">
+                {{'user.settings.public.copy.success'|translate}}
+            </div>
+        </div>
         <div class="row" ng-if="formData.publicList && editKidInProgress">
             <div class="col-xs-10">
                 <input id="public-link" class="form-control" ng-value="getPublicUrl(formData)" readonly/>
@@ -78,7 +83,6 @@
                     </span>
             </div>
         </div>
-
     </form>
 
 </div>

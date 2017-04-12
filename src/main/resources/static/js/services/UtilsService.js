@@ -4,7 +4,7 @@ UtilsService.factory('UtilsService', ['$http', '$location', 'AlertService',
     function ($http, $location, AlertService) {
         var UtilsService = {};
 
-        UtilsService.copyLink = function () {
+        UtilsService.copyLink = function (noConfirm) {
             var el = document.getElementById('public-link');
             var range = document.createRange();
             range.selectNode(el);
@@ -12,7 +12,9 @@ UtilsService.factory('UtilsService', ['$http', '$location', 'AlertService',
             window.getSelection().addRange(range);
             document.execCommand('copy');
             window.getSelection().removeAllRanges();
-            AlertService.addSuccess("user.settings.public.copy.success");
+            if (!noConfirm) {
+                AlertService.addSuccess("user.settings.public.copy.success");
+            }
         };
         /**
          * Convert image element into base64 image
