@@ -1,0 +1,171 @@
+<!doctype html>
+<html>
+<head>
+    <title>Gifts hub</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <style type="text/css">
+        [ng\:cloak], [ng-cloak], .ng-cloak {
+            display: none !important;
+        }
+    </style>
+</head>
+<!--CSS-->
+<link rel="icon" type="image/png" href="images/favicon.ico"/>
+<link rel="stylesheet" href="css/app.css"/>
+<link rel="stylesheet" href="webjars/bootstrap/3.3.7-1/css/bootstrap.css"/>
+<link rel="stylesheet" href="webjars/font-awesome/4.7.0/css/font-awesome.min.css"/>
+<link rel="stylesheet" href="webjars/angular-ui-select/0.19.6/select.min.css"/>
+<link href="https://fonts.googleapis.com/css?family=Pacifico" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+<!--BODY-->
+<body ng-app="app" ng-cloak="" class="ng-cloak">
+
+
+<!--NAVBAR-->
+<nav class="navbar theme navbar-fixed-top hidden-print" ng-controller="navigation">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed"
+                    data-toggle="collapse" data-target="#navbar" aria-expanded="false"
+                    aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span> <span
+                    class="icon-bar"></span>
+                <span class="icon-bar"></span> <span
+                    class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#/"><img src="images/logo-white.png" width="40px" height="40px"/></a>
+            <span class="stylish brand pull-left" style="font-size: xx-large">Gifts hub</span>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right hidden-xs">
+                <li ng-if="!authenticated" ng-class="{active:tab('navigation')}">
+                    <a href="#/login">
+                        <i class="fa fa-sign-in margin-top10" aria-hidden="true"></i><br/>
+                        <span translate="menu.login"></span>
+                    </a></li>
+                <li ng-if="authenticated" ng-class="{active:tab('userlist')}" class="text-center side-menu">
+                    <a href="#/users">
+                        <span>
+                            <i class="fa fa-gift" aria-hidden="true"></i>
+                            <i class="fa fa-2x fa-user" aria-hidden="true"></i><br/>
+                            <span translate="menu.users"></span>
+                        </span>
+                    </a>
+                </li>
+                <li ng-if="authenticated" ng-class="{active:tab('gift')}" class="text-center">
+                    <a href="#/list">
+                        <span>
+                            <i class="fa fa-list" aria-hidden="true"></i>&nbsp;
+                            <i class="fa fa-2x fa-gift" aria-hidden="true"></i><br/>
+                            <span translate="menu.wishlist"></span>
+                        </span>
+                    </a>
+                </li>
+                <li ng-if="authenticated &amp;&amp; principal.role === 'ROLE_ADMIN'" ng-class="{active:tab('manage')}"
+                    class="text-center">
+                    <a href="#/manage">
+                        <span>
+                            <i class="fa fa-columns" aria-hidden="true"></i>&nbsp;
+                            <i class="fa fa-2x fa-wrench" aria-hidden="true"></i><br/>
+                            <span translate="menu.manage"></span>
+                        </span>
+                    </a>
+                </li>
+                <li ng-if="authenticated" uib-dropdown="" is-open="status.isopen" class="clickable">
+                    <a class="white nav-username" uib-dropdown-toggle="">
+                        {{principal.fullname}}<span class="caret"></span>
+                        <img ng-if="principal.avatar && principal.avatar !== 'NaN'" ng-src="{{principal.avatar}}"
+                             class="avatar nav-avatar"/>
+                        <img ng-if="!principal.avatar || principal.avatar ==='NaN'" src='images/avatar-placeholder.png'
+                             class="avatar nav-avatar"/>
+                    </a>
+                    <ul class="dropdown-menu" uib-dropdown-menu="" role="menu" aria-labelledby="single-button">
+                        <li ng-if="authenticated" ng-class="{active:tab('settings')}">
+                            <a href="#/settings">
+                                <i class="fa fa-cog" aria-hidden="true"></i>&nbsp;<span
+                                    translate="menu.settings"></span>
+                            </a>
+                        </li>
+                        <li ng-if="authenticated">
+                            <a href="" ng-click="logout()">
+                                <i class="fa fa-power-off" aria-hidden="true"></i>&nbsp;<span
+                                    translate="menu.logout"></span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-avatar" ng-if="authenticated">
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="container-fluid">
+    <!--ALERTS-->
+    <div class="row alert-row" ng-controller="alert">
+        <div class="col-sm-10 col-md-11 col-md-offset-1 col-sm-offset-2">
+            <div ng-repeat="alert in alerts" ng-class="'alert alert-' + (alert.type || 'warning')">
+                <button type="button" class="close theme-close" ng-click="dismissAlert($index)">&times;</button>
+                <span ng-bind-html="alert.msg"></span>
+            </div>
+        </div>
+    </div>
+    <div class="row" id="main-ccontent">
+        <div class="col-sm-10 col-md-10 col-md-offset-1 col-sm-offset-1 main">
+            <div ng-view="" class="container main-container">
+            </div>
+        </div>
+    </div>
+    <div ng-http-loader ttl="0.4" template="loader.tpl.html"></div>
+</div>
+<script type="text/ng-template" id="loader.tpl.html">
+    <div class="loader-backdrop animate">
+        <div class="loader-mid">
+            <div class="loader-div">
+                <div class="loader"></div>
+            </div>
+        </div>
+    </div>
+</script>
+<script src="webjars/jquery/1.11.1/jquery.min.js"></script>
+<script src="webjars/angularjs/1.6.1/angular.min.js"></script>
+<script src="webjars/angularjs/1.6.1/angular-animate.min.js"></script>
+<script src="webjars/angularjs/1.6.1/angular-cookies.min.js"></script>
+<script src="webjars/angularjs/1.6.1/angular-route.min.js"></script>
+<script src="webjars/angularjs/1.6.1/angular-resource.min.js"></script>
+<script src="webjars/angularjs/1.6.1/angular-sanitize.min.js"></script>
+<script src="webjars/angular-local-storage/0.5.2/dist/angular-local-storage.min.js"></script>
+<script src="webjars/angular-translate/2.13.1/angular-translate.min.js"></script>
+<script src="webjars/angular-translate-loader-url/2.13.1/angular-translate-loader-url.min.js"></script>
+<script src="webjars/github-com-alexk111-ngImgCrop/0.3.2/minified/ng-img-crop.js"></script>
+<script src="webjars/angular-ui-bootstrap/2.2.0/ui-bootstrap-tpls.min.js"></script>
+<script src="webjars/angular-ui-select/0.19.6/select.min.js"></script>
+
+
+<!--APP JS-->
+<script src="js/utils/utils.js"></script>
+<script src="js/_app.js"></script>
+<script src="js/services/AvatarService.js"></script>
+<script src="js/services/AuthService.js"></script>
+<script src="js/services/AlertService.js"></script>
+<script src="js/services/AppService.js"></script>
+<script src="js/services/UtilsService.js"></script>
+<script src="js/services/UrlLanguageStorage.js"></script>
+<script src="js/controllers/login.js"></script>
+<script src="js/controllers/navigation.js"></script>
+<script src="js/controllers/home.js"></script>
+<script src="js/controllers/register.js"></script>
+<script src="js/controllers/users.js"></script>
+<script src="js/controllers/gift.js"></script>
+<script src="js/controllers/settings.js"></script>
+<script src="js/controllers/manage.js"></script>
+<script src="js/controllers/error.js"></script>
+<script src="js/controllers/alerts.js"></script>
+<script src="js/directives/progressbar.js"></script>
+<script src="js/directives/giftstatus.js"></script>
+<script src="js/directives/helpers.js"></script>
+<script src="js/filters/ng-select-filters.js"></script>
+<!--VENDORS-->
+<script src="js/vendor/angular-http-loader.min.js"></script>
+</body>
+</html>

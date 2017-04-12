@@ -1,0 +1,43 @@
+<link rel="stylesheet" href="css/vendor/bootstrap-social.css"/>
+<div class="row">
+    <div class="col-sm-offset-4 col-sm-4 light-frame">
+        <div class="row">
+            <div class="col-xs-12">
+                <form role="form" ng-submit="login()">
+                    <div class="form-group">
+                        <label for="username" translate="user.username"></label>
+                        <input type="text" class="form-control" id="username" name="username"
+                               ng-model="credentials.username"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="password" translate="user.password"></label>
+                        <input type="password" class="form-control" id="password" name="password"
+                               ng-model="credentials.password"/>
+                    </div>
+                    <button type="submit" class="btn btn-primary margin-bottom20 pull-right" ng-click="login()"
+                            translate="menu.login"></button>
+                </form>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <span translate="user.login.newhere"></span>
+                <a href="#/register" translate="main.here"></a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-offset-4 col-sm-4 light-frame">
+        <div>
+            <a href="login/facebook" class="btn btn-block btn-social btn-facebook">
+                <span class="fa fa-facebook"></span>
+                <span translate="user.login.facebook"></span>
+            </a>
+            <a href="login/google" class="btn btn-block btn-social btn-google">
+                <span class="fa fa-google"></span>
+                <span translate="user.login.google"></span>
+            </a>
+        </div>
+    </div>
+</div>

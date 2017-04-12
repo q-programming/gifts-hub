@@ -1,0 +1,159 @@
+<div ng-if="authenticated">
+    <!--DEFAULT LANGUAGE-->
+    <div class="row">
+        <div class="form-group col-md-offset-2 col-md-6">
+            <h1 translate="app.manage"></h1>
+            <h4 for="app-lang">
+                <i class="fa fa-globe" aria-hidden="true"></i>
+                &nbsp;<span translate="app.manage.language"></span>
+            </h4>
+            <div class="row">
+                <div class="col-sm-6">
+                    <select id="app-lang" class="form-control input-sm" name="language"
+                            ng-model="settings.language" ng-change="update()">
+                        <option ng-repeat="(lang, languageString) in languages" ng-value="lang">{{languageString}}
+                        </option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-offset-2 col-md-6">
+            <h4>
+                <i class="fa fa-calendar-plus-o" aria-hidden="true"></i>
+                &nbsp;<span translate="app.manage.gift.age"></span>
+            </h4>
+            <div class="row">
+                <form class="form-inline">
+                    <div class="form-group col-xs-12">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="gift_age"
+                                   placeholder="{{'app.manage.gift.age.days' | translate}}"
+                                   ng-model="settings.giftAge" required>
+                            <div class="input-group-addon" translate="app.manage.gift.age.days"></div>
+                        </div>
+                    </div>
+                    <!--<div class="form-group col-xs-6">-->
+                    <!--<span class="btn btn-success" ng-click="update()">-->
+                    <!--<i class="fa fa-floppy-o" aria-hidden="true"></i>&nbsp;-->
+                    <!--<span translate="main.save"></span>-->
+                    <!--</span>-->
+                    <!--</div>-->
+                </form>
+            </div>
+            <span class="help-block" translate="app.manage.gift.age.help "></span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-offset-2 col-md-6">
+            <h4>
+                <i class="fa fa-sort" aria-hidden="true"></i>
+                &nbsp;<span translate="user.sort.default"></span>
+            </h4>
+            <div class="row">
+                <div class="col-xs-12">
+                    <form>
+                        <label class="no-bold">
+                            <input type="radio" ng-model="settings.sort"
+                                   value="FAMILY">
+                            {{'user.sort.family'|translate}}
+                        </label>
+                        <br/>
+                        <label class="no-bold">
+                            <input type="radio" ng-model="settings.sort"
+                                   value="NAME">
+                            {{'user.sort.name'|translate}}
+                        </label>
+                    </form>
+                </div>
+                <div class="form-group col-xs-12">
+                        <span class="btn btn-success pull-right" ng-click="update()">
+                            <i class="fa fa-floppy-o" aria-hidden="true"></i>&nbsp;
+                            <span translate="main.save"></span>
+                        </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--SEARCH ENGINES-->
+    <hr/>
+    <div class="row">
+        <div class="form-group col-md-offset-2 col-md-8">
+            <h4>
+                <i class="fa fa-search" aria-hidden="true"></i>
+                &nbsp;<span translate="app.manage.search.engine"></span>
+            </h4>
+            <div class="row">
+                <button class="btn btn-success pull-right" ng-click="show()" ng-show="!showSearchForm">
+                    <i class="fa fa-plus" aria-hidden="true"></i>
+                    <span translate="gift.new.add"></span>
+                </button>
+            </div>
+            <div class="animate row margin-bottom20" ng-show="showSearchForm">
+                <div class="col-sm-offset-2 col-sm-6">
+                    <form role="form" name="newSearchForm" ng-submit="updateSearchEngine()">
+                        <input type="hidden" id="id" name="id" ng-model="searchEngine.id"/>
+                        <div class="form-group" show-errors="">
+                            <label for="name" translate="app.manage.search.name"></label>
+                            <input type="text" class="form-control" id="name" name="name" required="required"
+                                   ng-model="searchEngine.name"/>
+                        </div>
+                        <div class="form-group" show-errors="">
+                            <label for="searchString" translate="app.manage.search.link"></label>
+                            <input type="url" class="form-control" id="searchString" name="searchString"
+                                   ng-model="searchEngine.searchString"/>
+                            <span class="validation-error" ng-show="newSearchForm.link.$error.url"
+                                  translate="gift.link.error">
+                        </span>
+                        </div>
+                        <div class="form-group">
+                            <label for="icon" translate="app.manage.search.icon"></label>
+                            <input type="text" class="form-control" id="icon" name="icon" ng-model="searchEngine.icon"/>
+                            <span class="help-block" translate="app.manage.search.icon.help"></span>
+                        </div>
+                        <div class="pull-right">
+                            <a href="" class="btn btn-default" ng-click="reset()" translate="main.cancel"></a>
+                            <button type="submit" class="btn btn-primary" translate="main.create"
+                                    ng-show="!editSearch"></button>
+                            <button type="submit" class="btn btn-primary" translate="main.edit"
+                                    ng-show="editSearch"></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div>
+                <div class="row header">
+                    <div class="col-md-3">
+                        <strong translate="app.manage.search.name"></strong>
+                    </div>
+                    <div class="col-md-6">
+                        <strong translate="app.manage.search.link"></strong>
+                    </div>
+                    <div class="col-md-2 text-center">
+                        <strong translate="app.manage.search.icon"></strong>
+                    </div>
+                </div>
+                <div class="row" ng-repeat="engine in settings.searchEngines">
+                    <div class="col-md-3">
+                        <strong>{{engine.name}}</strong>
+                    </div>
+                    <div class="col-md-6">
+                        {{engine.searchString}}
+                    </div>
+                    <div class="col-md-2 text-center">
+                        <span ng-class="'fa '+ engine.icon"></span>
+                    </div>
+                    <div class="col-md-1 text-center">
+                        <span class="clickable" ng-click="deleteSearchEngine(engine)">
+                            <i class="fa fa-trash" aria-hidden="true"></i>
+                        </span>
+                        <span class="clickable" ng-click="editSearchEngine(engine)">
+                            <i class="fa fa-pencil" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

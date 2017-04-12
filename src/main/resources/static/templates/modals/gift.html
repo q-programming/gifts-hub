@@ -1,0 +1,62 @@
+<div class="modal-header">
+    <h3 class="modal-title" id="modal-title">
+        <i class="fa fa-gift" aria-hidden="true"></i>&nbsp;
+        {{editInProgress? 'gift.edit':'gift.create' | translate}}
+    </h3>
+</div>
+<form role="form" name="mainGiftForm" ng-submit="sendGiftData()">
+    <div class="modal-body" id="modal-body">
+        <div class="row">
+            <div class="col-md-offset-1 col-md-10">
+                <input type="hidden" ng-model="giftForm.username">
+                <input type="hidden" ng-model="giftForm.id">
+                <div class="form-group" show-errors="">
+                    <label for="name" translate="gift.name"></label>
+                    <input type="text" class="form-control" id="name" name="name" ng-model="giftForm.name"
+                           required="required"/>
+                </div>
+                <div class="form-group" show-errors="">
+                    <label for="description" translate="gift.description"></label>
+                    <textarea class="form-control" id="description" name="description" ng-model="giftForm.description">
+                </textarea>
+                </div>
+                <div class="form-group" show-errors="">
+                    <label for="link" translate="gift.link"></label>
+                    <input type="url" class="form-control" id="link" name="link" ng-model="giftForm.link"/>
+                    <span class="validation-error" ng-show="mainGiftForm.link.$error.url" translate="gift.link.error">
+                </span>
+                </div>
+                <div class="form-group">
+                    <label for="category" translate="gift.category"></label>
+                    <ui-select ng-model="giftForm.category" id="category">
+                        <ui-select-match placeholder="Select category or add new one...">
+                            <span ng-bind="$select.selected.name"></span>
+                        </ui-select-match>
+                        <ui-select-choices
+                                repeat="category in (categories | filter: $select.search) track by category.id"
+                                refresh="refreshResults($select)" refresh-delay="0">
+                            <span ng-bind="category.name"></span>
+                        </ui-select-choices>
+                    </ui-select>
+                </div>
+                <label translate="app.manage.search.engine"></label>
+                <div class="form-group">
+                <span ng-repeat="engine in searchEngines">
+                    <label>
+                        <input type="checkbox" ng-model="giftForm.searchEngines[engine.id]" name="searchEngines"
+                               id="{{engine.id}}"/>
+                        <i ng-class="'fa fa-fw '+ engine.icon"></i>{{engine.name}}
+                    </label><br/>
+                </span>
+                    <span class="help-block" translate="gift.search.help"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <a href="" class="btn btn-default" ng-click="cancel()" translate="main.cancel"></a>
+        <button class="btn btn-primary" type="button" ng-click="action()">
+            {{editInProgress? 'main.edit':'main.create' | translate}}
+        </button>
+    </div>
+</form>
