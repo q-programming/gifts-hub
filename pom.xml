@@ -5,10 +5,10 @@
 
     <groupId>com.qprogramming</groupId>
     <artifactId>gifts</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.3.0</version>
     <packaging>war</packaging>
     <name>gifts</name>
-    <description>Demo project for Spring Boot</description>
+    <description>Gifts Hub to share your wish lists with other members</description>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
