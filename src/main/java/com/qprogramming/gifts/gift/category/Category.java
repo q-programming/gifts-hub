@@ -6,6 +6,9 @@ import javax.persistence.*;
 
 @Entity
 public class Category implements Comparable<Category> {
+
+    public static final String REALISED = "REALISED";
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "cat_seq_gen")
     @SequenceGenerator(name = "cat_seq_gen", sequenceName = "cat_id_seq", allocationSize = 1)

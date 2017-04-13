@@ -8,13 +8,19 @@ app.controller('gift', [
         $scope.userList = false;
         $scope.userGiftList = {};
         $scope.listTitle = "";
+
         $scope.categoryOther = "";
+        $scope.categoryRealised = "";
 
         $scope.searchWith = '';
 
         $translate("gift.category.other").then(function (translation) {
             $scope.categoryOther = translation;
         });
+        $translate("gift.category.realised").then(function (translation) {
+            $scope.categoryRealised = translation;
+        });
+
         //INIT
         getGiftList();
         if ($rootScope.authenticated) {
@@ -273,12 +279,13 @@ app.controller('gift', [
                     angular.forEach(response.data, function (value, key) {
                         if (key === '') {
                             key = $scope.categoryOther;
+                        } else if (key === 'REALISED') {
+                            key = $scope.categoryRealised;
                         }
                         $scope.giftsList[key] = value;
                     });
                 }).catch(function (response) {
                 if (response.status === 404) {
-                    // AlertService.addError('error.page.notfound');
                     $location.url('/404');
                 } else if (response.status === 400) {
                     $scope.isPublicList = false;

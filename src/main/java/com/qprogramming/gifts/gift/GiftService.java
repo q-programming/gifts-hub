@@ -29,6 +29,11 @@ public class GiftService {
         return giftRepository.save(gift);
     }
 
+    /**
+     * Returns a tree map of Category,GiftList for currently logged in user
+     *
+     * @return Map&lt;Category,List&lt;Gift&gt;&gt;
+     */
     public Map<Category, List<Gift>> findAllByCurrentUser() {
         int giftAge = Integer.valueOf(propertyService.getProperty(APP_GIFT_AGE));
         List<Gift> giftList = giftRepository.findByUserIdOrderByCreatedDesc(Utils.getCurrentAccount().getId());
@@ -39,6 +44,12 @@ public class GiftService {
         return Utils.toGiftTreeMap(giftList);
     }
 
+    /**
+     * Returns a tree map of Category,GiftList for user
+     *
+     * @param id id of user for which gift tree map will be returned
+     * @return Map&lt;Category,List&lt;Gift&gt;&gt;
+     */
     public Map<Category, List<Gift>> findAllByUser(String id) {
         int giftAge = Integer.valueOf(propertyService.getProperty(APP_GIFT_AGE));
         List<Gift> giftList = giftRepository.findByUserIdOrderByCreatedDesc(id);
@@ -54,13 +65,24 @@ public class GiftService {
         return giftRepository.save(gift);
     }
 
+
+    /**
+     * Set gift status and potentially add it to realised category
+     *
+     * @param gift    gift which status will be checked
+     * @param giftAge how long gift is considered new ( set via application management )
+     */
     private void setGiftStatus(Gift gift, int giftAge) {
-        //TODO set realised
         if (!GiftStatus.REALISED.equals(gift.getStatus())) {
             Days giftDays = Days.daysBetween(new LocalDate(gift.getCreated()), new LocalDate());
             if (giftDays.getDays() < giftAge) {
                 gift.setStatus(GiftStatus.NEW);
             }
+        } else if (GiftStatus.REALISED.equals(gift.getStatus())) {
+            Category category = new Category(Category.REALISED);
+            category.setPriority(Integer.MIN_VALUE);
+            gift.setCategory(category);
         }
+
     }
 }
