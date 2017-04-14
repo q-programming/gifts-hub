@@ -7,9 +7,7 @@ import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.qprogramming.gifts.settings.Settings.APP_GIFT_AGE;
 
@@ -24,6 +22,25 @@ public class GiftService {
         this.propertyService = propertyService;
     }
 
+    /**
+     * Converts gifts list to TreeMap based on their's category
+     * After map was build each list is sorted
+     *
+     * @param gifts list of gifts to put into TreeMap
+     * @return TreeMap with gifts sorted by categories ( based on priorities)
+     */
+    public Map<Category, List<Gift>> toGiftTreeMap(List<Gift> gifts, boolean sort) {
+        Map<Category, List<Gift>> result = new TreeMap<>();
+        gifts.forEach(gift -> {
+            result.computeIfAbsent(gift.getCategory(), k -> new ArrayList<>());
+            result.get(gift.getCategory()).add(gift);
+        });
+        if (sort) {
+            result.values().forEach(GiftComparator::sortGiftList);
+        }
+        return result;
+    }
+
     public Gift create(Gift gift) {
         gift.setCreated(new Date());
         return giftRepository.save(gift);
@@ -36,12 +53,12 @@ public class GiftService {
      */
     public Map<Category, List<Gift>> findAllByCurrentUser() {
         int giftAge = Integer.valueOf(propertyService.getProperty(APP_GIFT_AGE));
-        List<Gift> giftList = giftRepository.findByUserIdOrderByCreatedDesc(Utils.getCurrentAccount().getId());
+        List<Gift> giftList = giftRepository.findByUserIdOrderByCreatedDesc(Utils.getCurrentAccountId());
         giftList.forEach(gift -> {
             setGiftStatus(gift, giftAge);
             gift.setClaimed(null);//remove claimed as current user shouldn't see it
         });
-        return Utils.toGiftTreeMap(giftList);
+        return toGiftTreeMap(giftList, false);
     }
 
     /**
@@ -54,7 +71,8 @@ public class GiftService {
         int giftAge = Integer.valueOf(propertyService.getProperty(APP_GIFT_AGE));
         List<Gift> giftList = giftRepository.findByUserIdOrderByCreatedDesc(id);
         giftList.forEach(gift -> setGiftStatus(gift, giftAge));
-        return Utils.toGiftTreeMap(giftList);
+        boolean sort = !id.equals(Utils.getCurrentAccountId());
+        return toGiftTreeMap(giftList, sort);
     }
 
     public Gift findById(Long id) {
@@ -64,7 +82,6 @@ public class GiftService {
     public Gift update(Gift gift) {
         return giftRepository.save(gift);
     }
-
 
     /**
      * Set gift status and potentially add it to realised category
@@ -85,4 +102,5 @@ public class GiftService {
         }
 
     }
+
 }

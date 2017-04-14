@@ -76,7 +76,7 @@
         <h4><strong translate="{{key}}">{{key}}</strong></h4>
         <div class="row padded-row"
              ng-class-odd="'row-color'"
-             ng-class="gift.status ==='REALISED' ? 'gift-realised':''"
+             ng-class="getGiftClass(gift)"
              ng-repeat="gift in value">
             <div class="col-xs-12 col-sm-3">
                 <gift-status gift="gift"></gift-status>

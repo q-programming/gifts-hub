@@ -247,6 +247,16 @@ app.controller('gift', [
 
 
         // HELPER FUNCTIONS
+
+        $scope.getGiftClass = function (gift) {
+            if (gift.status === GIFT_STATUS.REALISED) {
+                return 'gift-realised';
+            } else if (gift.claimed && gift.userId !== $rootScope.principal.id) {
+                return 'gift-claimed';
+            }
+            return '';
+        };
+
         function getGiftList() {
             var username;
             var url;

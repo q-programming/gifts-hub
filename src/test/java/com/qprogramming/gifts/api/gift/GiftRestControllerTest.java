@@ -175,6 +175,7 @@ public class GiftRestControllerTest {
         Map<Category, List<Gift>> expected = Utils.toGiftTreeMap(giftList);
         when(accSrvMock.findByUsername(testAccount.getId())).thenReturn(testAccount);
         when(giftServiceMock.findAllByUser(testAccount.getId())).thenReturn(expected);
+        when(giftServiceMock.toGiftTreeMap(anyListOf(Gift.class), anyBoolean())).thenCallRealMethod();
         MvcResult mvcResult = giftsRestCtrl.perform(get(API_GIFT_LIST + "/" + testAccount.getId())).andExpect(status().isOk()).andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
         assertTrue(contentAsString.contains(testAccount.getId()));

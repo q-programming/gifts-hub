@@ -11,9 +11,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 
-/**
- * Created by Khobar on 28.02.2017.
- */
 @Entity
 public class Account implements Serializable, UserDetails {
 

@@ -239,11 +239,21 @@ img.avatar.small {
 }
 
 .gift-realised {
+    color: gray;
     text-decoration: line-through;
 }
 
 .gift-realised > div {
+    color: gray;
     text-decoration: line-through;
+}
+
+.gift-claimed {
+    color: rgba(142, 92, 0, 0.8);
+}
+
+.gift-claimed > div {
+    color: rgba(142, 92, 0, 0.8);
 }
 
 .fa-spacer {

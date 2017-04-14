@@ -23,7 +23,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class Utils {
     private static final String DATE_FORMAT = "dd-MM-yyyy";
@@ -43,6 +42,14 @@ public class Utils {
             return (Account) authentication.getPrincipal();
         }
         return null;
+    }
+
+    public static String getCurrentAccountId() {
+        Account currentAccount = getCurrentAccount();
+        if (currentAccount != null) {
+            return currentAccount.getId();
+        }
+        return StringUtils.EMPTY;
     }
 
     /**
