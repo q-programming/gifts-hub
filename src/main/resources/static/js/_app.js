@@ -13,7 +13,7 @@ var app = angular.module('app', [
     , 'AuthService'
     , 'AlertService'
     , 'AppService'
-    ,'UtilsService']);
+    , 'UtilsService']);
 app.constant("MESSAGES", {
     SUCCESS: "success",
     ERROR: "danger",
@@ -34,6 +34,10 @@ app.config(['$routeProvider', '$httpProvider', '$locationProvider', '$logProvide
             .when('/login', {
                 templateUrl: 'user/login.html',
                 controller: 'login'
+            })
+            .when('/logout', {
+                templateUrl: 'user/login.html',
+                controller: 'logout'
             })
             .when('/register', {
                 templateUrl: 'user/register.html',

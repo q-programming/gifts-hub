@@ -25,16 +25,47 @@
 <nav class="navbar theme navbar-fixed-top hidden-print" ng-controller="navigation">
     <div class="container-fluid">
         <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed"
-                    data-toggle="collapse" data-target="#navbar" aria-expanded="false"
-                    aria-controls="navbar">
-                <span class="sr-only">Toggle navigation</span> <span
-                    class="icon-bar"></span>
-                <span class="icon-bar"></span> <span
-                    class="icon-bar"></span>
-            </button>
             <a class="navbar-brand" href="#/"><img src="images/logo-white.png" width="40px" height="40px"/></a>
             <span class="stylish brand pull-left" style="font-size: xx-large">Gifts hub</span>
+            <div id="navbar-mobile" class="visible-xs">
+                <ul class="nav navbar-nav navbar-right nav-stacked">
+                    <li ng-if="!authenticated" ng-class="{active:tab('navigation')}" class="white">
+                        <a href="#/login">
+                            <i class="fa fa-2x fa-sign-in margin-top10" aria-hidden="true"></i><br/>
+                            <span translate="menu.login"></span>
+                        </a>
+                    </li>
+                    <li ng-if="authenticated" ng-class="{active:tab('userlist')}" class="white">
+                        <a href="#/users">
+                            <span>
+                                <i class="fa fa-2x fa-user" aria-hidden="true"></i><br/>
+                            </span>
+                        </a>
+                    </li>
+                    <li ng-if="authenticated" ng-class="{active:tab('gift')}" class="white">
+                        <a href="#/list">
+                            <span>
+                            <i class="fa fa-2x fa-gift" aria-hidden="true"></i><br/>
+                            </span>
+                        </a>
+                    </li>
+                    <li ng-if="authenticated &amp;&amp; principal.role === 'ROLE_ADMIN'"
+                        class="white" ng-class="{active:tab('manage')}">
+                        <a href="#/manage">
+                            <span>
+                                <i class="fa fa-2x fa-wrench" aria-hidden="true"></i><br/>
+                            </span>
+                        </a>
+                    </li>
+                    <li ng-if="authenticated" ng-class="{active:tab('settings')}" class="white">
+                        <a href="#/settings" >
+                            <span>
+                                <i class="fa fa-2x fa-bars" aria-hidden="true"></i><br/>
+                            </span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right hidden-xs">

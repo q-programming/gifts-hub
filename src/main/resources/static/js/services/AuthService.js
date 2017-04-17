@@ -25,6 +25,18 @@ AuthService.factory('AuthService', ['$http', '$log', 'avatarCache', '$rootScope'
                 }
             );
         };
+
+        AuthService.logout = function () {
+            $http.post('logout', {}).then(
+                function successCallback() {
+                    AvatarService.clearCache();
+                    $rootScope.authenticated = false;
+                    $location.path("/login");
+                },
+                function errorCallback() {
+                    $rootScope.authenticated = false;
+                });
+        };
         /**
          * @Depreciated
          *

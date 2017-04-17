@@ -25,3 +25,7 @@ app.controller('login', ['$rootScope', '$scope', '$http', '$log', '$location', '
                 });
         };
     }]);
+app.controller('logout', ['$scope', '$rootScope', 'AuthService',
+    function ($scope, $rootScope, AuthService) {
+        AuthService.logout();
+    }]);
