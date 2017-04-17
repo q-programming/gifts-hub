@@ -13,7 +13,7 @@ body {
 }
 
 .main-container {
-    margin-top: 15px;
+    /*margin-top: 15px;*/
 }
 
 /*NAVBAR*/
@@ -120,21 +120,21 @@ img.avatar.small {
     padding: 15px 0 0 0 !important;
 }
 
-.fix-to-top.top35 {
-    top: 35px;
+.fix-to-top > .container {
+    padding-left: 0;
+    padding-right: 0;
 }
 
 .row.header-fixed {
-    margin-left: -30px;
-    margin-right: -30px;
     background-color: white;
     padding-top: 5px;
+    left: 0 !important;
+    right: 0 !important;
 }
 
 @media (max-width: 767px) {
     .row.header-fixed {
         margin-left: 0;
-        margin-right: 0 !important;
         background-color: white;
         padding-top: 5px;
     }
@@ -143,9 +143,11 @@ img.avatar.small {
         width: 100%;
     }
 
-    .fix-to-top > .row.header-fixed {
-        padding-right: 30px;
+    .fix-to-top > .container {
+        padding-left: 30px;
+        padding-right: 15px;
     }
+
 }
 
 /*END NAVBAR*/

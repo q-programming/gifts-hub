@@ -10,10 +10,10 @@ app.directive('fixedTop', function ($window) {
             $win.on('scroll', function (e) {
                 if ($win.scrollTop() >= offsetTop) {
                     element.addClass(topClass);
-                    element.addClass(containerClass);
+                    element.children().first().addClass(containerClass);
                 } else {
                     element.removeClass(topClass);
-                    element.removeClass(containerClass);
+                    element.children().first().removeClass(containerClass);
                 }
             });
         }
