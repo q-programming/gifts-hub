@@ -4,7 +4,7 @@ import com.qprogramming.gifts.account.avatar.Avatar;
 import com.qprogramming.gifts.account.avatar.AvatarRepository;
 import com.qprogramming.gifts.account.family.Family;
 import com.qprogramming.gifts.account.family.FamilyService;
-import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,10 +37,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-/**
- * Created by Khobar on 05.03.2017.
- */
 
 @Service
 @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -141,18 +137,6 @@ public class AccountService implements UserDetailsService {
         return avatarRepository.findOneById(account.getId());
     }
 
-    public Avatar createAvatar(Account account) {
-        ClassLoader loader = this.getClass().getClassLoader();
-        byte[] imgBytes;
-        try (InputStream avatarFile = loader.getResourceAsStream("static/images/avatar-placeholder.png")) {
-            imgBytes = IOUtils.toByteArray(avatarFile);
-            return createAvatar(account, imgBytes);
-        } catch (IOException e) {
-            LOG.error("Failed to get avatar from resources");
-        }
-        return null;
-    }
-
     /**
      * Update user avatar with passed bytes.
      * In case of avatar was not there, it will be created out of passed bytes
@@ -201,11 +185,13 @@ public class AccountService implements UserDetailsService {
 
     private void setAvatarTypeAndBytes(byte[] bytes, Avatar avatar) {
         avatar.setImage(bytes);
-        String type;
+        String type = "";
         try {
             type = URLConnection.guessContentTypeFromStream(new ByteArrayInputStream(bytes));
         } catch (IOException e) {
             LOG.error("Failed to determine type from bytes, presuming jpg");
+        }
+        if (StringUtils.isEmpty(type)) {
             type = MediaType.IMAGE_JPEG_VALUE;
         }
         avatar.setType(type);
@@ -245,7 +231,7 @@ public class AccountService implements UserDetailsService {
     }
 
     public List<Account> findAll() {
-        return accountRepository.findAll(new Sort("surname", "name","username"));
+        return accountRepository.findAll(new Sort("surname", "name", "username"));
     }
 
     /**
