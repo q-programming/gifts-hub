@@ -9,6 +9,7 @@ var app = angular.module('app', [
     , 'ui.select'
     , 'ngCookies'
     , 'ng.httpLoader'
+    , 'angular-confirm'
     , 'AvatarService'
     , 'AuthService'
     , 'AlertService'
@@ -89,6 +90,8 @@ app.factory('avatarCache', ['$cacheFactory',
     function ($cacheFactory) {
         return $cacheFactory('avatarCache');
     }]);
+
+//TODO move to directive js
 app.directive('showErrors', function () {
     return {
         restrict: 'A',
@@ -111,7 +114,18 @@ app.directive('showErrors', function () {
         }
     }
 });
-app.run(function ($rootScope) {
+app.run(['$rootScope', '$confirmModalDefaults', '$translate', function ($rootScope, $confirmModalDefaults, $translate) {
     $rootScope.alerts = [];
-});
+    //confirm
+    $translate("main.confirm.yes").then(function (translation) {
+        $confirmModalDefaults.defaultLabels.ok = translation;
+    });
+    $translate("main.confirm.no").then(function (translation) {
+        $confirmModalDefaults.defaultLabels.cancel = translation;
+    });
+    $translate("main.confirm").then(function (translation) {
+        $confirmModalDefaults.defaultLabels.title = translation;
+    });
+
+}]);
 

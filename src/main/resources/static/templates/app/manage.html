@@ -34,12 +34,6 @@
                             <div class="input-group-addon" translate="app.manage.gift.age.days"></div>
                         </div>
                     </div>
-                    <!--<div class="form-group col-xs-6">-->
-                    <!--<span class="btn btn-success" ng-click="update()">-->
-                    <!--<i class="fa fa-floppy-o" aria-hidden="true"></i>&nbsp;-->
-                    <!--<span translate="main.save"></span>-->
-                    <!--</span>-->
-                    <!--</div>-->
                 </form>
             </div>
             <span class="help-block" translate="app.manage.gift.age.help "></span>
@@ -145,11 +139,15 @@
                         <span ng-class="'fa '+ engine.icon"></span>
                     </div>
                     <div class="col-md-1 text-center">
-                        <span class="clickable" ng-click="deleteSearchEngine(engine)">
-                            <i class="fa fa-trash" aria-hidden="true"></i>
+                        <span class="clickable" ng-click="deleteSearchEngine(engine)"
+                              confirm="{{'main.delete.confirm' | translate}}"
+                              confirm-title="{{'main.confirm.sure' | translate}}"
+                              confirm-icon="fa-trash"
+                              confirm-ok="{{'main.delete'| translate}}">
+                            <i class="fa fa-trash" aria-hidden="true" uib-tooltip="{{'main.delete' | translate}}"></i>
                         </span>
                         <span class="clickable" ng-click="editSearchEngine(engine)">
-                            <i class="fa fa-pencil" aria-hidden="true"></i>
+                            <i class="fa fa-pencil" aria-hidden="true" uib-tooltip="{{'main.edit'| translate}}"></i>
                         </span>
                     </div>
                 </div>

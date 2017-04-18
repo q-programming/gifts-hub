@@ -99,6 +99,7 @@ img.avatar.small {
     padding-bottom: 5px !important;
     line-height: 15px !important;
 }
+
 .nav-stacked > li {
     padding-top: 7px;
 }
@@ -138,6 +139,9 @@ img.avatar.small {
     background: rgba(255, 255, 255, 0.46)
 }
 
+/*END DROPDOWN*/
+
+/*FIXED TO TOP*/
 .fix-to-top {
     position: fixed;
     top: 50px;
@@ -176,7 +180,28 @@ img.avatar.small {
 
 }
 
+/*END FIXED TO TOP*/
 /*END NAVBAR*/
+
+/*MODALS AND FLAT BUTTONS*/
+.modal-content {
+    border-radius: 0 !important;
+}
+
+.modal-header.theme {
+    background: #3b62ae;
+    color: white;
+}
+
+.modal-footer.theme {
+    border-top: none !important;
+}
+
+.btn {
+    border-radius: 0 !important;
+}
+
+/*END MODALS AND FLAT BUTTONS*/
 
 /*ANIMATION*/
 .animate {
@@ -515,3 +540,4 @@ img.center {
 .no-bold {
     font-weight: normal;
 }
+
