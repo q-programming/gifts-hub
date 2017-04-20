@@ -183,8 +183,8 @@ app.controller('gift', [
             return (gift.status !== GIFT_STATUS.REALISED && (gift.claimed && gift.claimed.id === $rootScope.principal.id))
         };
         $scope.claimGift = function (gift) {
-            var url = 'api/gift/claim?gift=' + gift.id;
-            $http.get(url).then(
+            var url = 'api/gift/claim/' + gift.id;
+            $http.put(url).then(
                 function (response) {
                     $log.debug("[DEBUG] Gift claimed");
                     AlertService.addSuccessMessage(response.data.message);
@@ -195,8 +195,8 @@ app.controller('gift', [
             });
         };
         $scope.unClaimGift = function (gift) {
-            var url = 'api/gift/unclaim?gift=' + gift.id;
-            $http.get(url).then(
+            var url = 'api/gift/unclaim/' + gift.id;
+            $http.put(url).then(
                 function (response) {
                     $log.debug("[DEBUG] Gift unclaimed");
                     AlertService.addSuccessMessage(response.data.message);
@@ -221,8 +221,8 @@ app.controller('gift', [
         };
 
         $scope.realiseGift = function (gift) {
-            var url = 'api/gift/complete?gift=' + gift.id;
-            $http.get(url).then(
+            var url = 'api/gift/complete/' + gift.id;
+            $http.put(url).then(
                 function (response) {
                     $log.debug("[DEBUG] Gift realised");
                     AlertService.addSuccessMessage(response.data.message);
@@ -233,10 +233,24 @@ app.controller('gift', [
             });
         };
         $scope.undoRealiseGift = function (gift) {
-            var url = 'api/gift/undo-complete?gift=' + gift.id;
-            $http.get(url).then(
+            var url = 'api/gift/undo-complete/' + gift.id;
+            $http.put(url).then(
                 function (response) {
                     $log.debug("[DEBUG] Gift undo realised");
+                    AlertService.addSuccessMessage(response.data.message);
+                    getGiftList();
+                }).catch(function (response) {
+                AlertService.addError("error.general", response);
+                $log.debug(response);
+            });
+        };
+
+        // Delete
+        $scope.deleteGift = function (gift) {
+            var url = 'api/gift/delete/' + gift.id;
+            $http.delete(url).then(
+                function (response) {
+                    $log.debug("[DEBUG] Gift deleted");
                     AlertService.addSuccessMessage(response.data.message);
                     getGiftList();
                 }).catch(function (response) {

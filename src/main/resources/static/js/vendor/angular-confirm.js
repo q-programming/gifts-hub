@@ -31,7 +31,7 @@
         }])
         .value('$confirmModalDefaults', {
             template: '<div class="modal-header theme"><h4 class="modal-title"><i ng-if="data.icon" class="{{data.icon}}"></i>&nbsp;{{data.title}}</h4></div>' +
-            '<div class="modal-body">{{data.text}}</div>' +
+            '<div class="modal-body text-center">{{data.text}}</div>' +
             '<div class="modal-footer theme">' +
             '<button class="btn btn-default" ng-click="cancel()">{{data.cancel}}</button>' +
             '<button class="btn btn-primary" ng-click="ok()">{{data.ok}}</button>' +

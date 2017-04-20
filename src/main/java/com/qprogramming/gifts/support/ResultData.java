@@ -49,6 +49,12 @@ public class ResultData {
             return this;
         }
 
+        public ResultBuilder notFound() {
+            this.status = HttpStatus.NOT_FOUND;
+            return this;
+        }
+
+
         public ResultBuilder status(HttpStatus status) {
             this.status = status;
             return this;

@@ -22,10 +22,7 @@ import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.Objects;
@@ -106,8 +103,8 @@ public class GiftRestController {
     }
 
 
-    @RequestMapping("/claim")
-    public ResponseEntity clameGift(@RequestParam(value = "gift") String id) {
+    @RequestMapping(value = "/claim/{giftID}", method = RequestMethod.PUT)
+    public ResponseEntity clameGift(@PathVariable(value = "giftID") String id) {
         Account account = accountService.findByUsername(Utils.getCurrentAccount().getUsername());
         if (account == null) {
             return ResponseEntity.notFound().build();
@@ -121,8 +118,8 @@ public class GiftRestController {
         return new ResultData.ResultBuilder().ok().message(msgSrv.getMessage("gift.claim.success", new Object[]{gift.getName()}, "", Utils.getCurrentLocale())).build();
     }
 
-    @RequestMapping("/unclaim")
-    public ResponseEntity unClameGift(@RequestParam(value = "gift") String id) {
+    @RequestMapping(value = "/unclaim/{giftID}", method = RequestMethod.PUT)
+    public ResponseEntity unClameGift(@PathVariable(value = "giftID") String id) {
         Account account = accountService.findByUsername(Utils.getCurrentAccount().getUsername());
         if (account == null) {
             return ResponseEntity.notFound().build();
@@ -137,8 +134,8 @@ public class GiftRestController {
                 .build();
     }
 
-    @RequestMapping("/complete")
-    public ResponseEntity completeGift(@RequestParam(value = "gift") String id) {
+    @RequestMapping(value = "/complete/{giftID}", method = RequestMethod.PUT)
+    public ResponseEntity completeGift(@PathVariable(value = "giftID") String id) {
         Gift gift = giftService.findById(Long.valueOf(id));
         if (!canOperateOnGift(gift)) {
             return new ResultData.ResultBuilder().badReqest().error().message(msgSrv.getMessage("gift.complete.error")).build();
@@ -150,8 +147,8 @@ public class GiftRestController {
                 .build();
     }
 
-    @RequestMapping("/undo-complete")
-    public ResponseEntity undoCompleteGift(@RequestParam(value = "gift") String id) {
+    @RequestMapping(value = "/undo-complete/{giftID}", method = RequestMethod.PUT)
+    public ResponseEntity undoCompleteGift(@PathVariable(value = "giftID") String id) {
         Gift gift = giftService.findById(Long.valueOf(id));
         if (!canOperateOnGift(gift)) {
             return new ResultData.ResultBuilder().badReqest().error().message(msgSrv.getMessage("gift.complete.error")).build();
@@ -160,6 +157,20 @@ public class GiftRestController {
         giftService.update(gift);
         //TODO add complete event newsleter
         return new ResultData.ResultBuilder().ok().message(msgSrv.getMessage("gift.complete.undo.success")).build();
+    }
+
+    @RequestMapping(value = "/delete/{giftID}", method = RequestMethod.DELETE)
+    public ResponseEntity deleteGift(@PathVariable(value = "giftID") String id) {
+        Gift gift = giftService.findById(Long.valueOf(id));
+        if (gift == null) {
+            return new ResultData.ResultBuilder().notFound().build();
+        }
+        if (!canOperateOnGift(gift)) {
+            return new ResultData.ResultBuilder().badReqest().error().message(msgSrv.getMessage("gift.delete.error")).build();
+        }
+        giftService.delete(gift);
+        //TODO add complete event newsleter
+        return new ResultData.ResultBuilder().ok().message(msgSrv.getMessage("gift.delete.success", new Object[]{gift.getName()}, "", Utils.getCurrentLocale())).build();
     }
 
 

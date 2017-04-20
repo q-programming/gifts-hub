@@ -103,4 +103,7 @@ public class GiftService {
 
     }
 
+    public void delete(Gift gift) {
+        giftRepository.delete(gift);
+    }
 }
