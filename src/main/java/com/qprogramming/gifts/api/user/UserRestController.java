@@ -2,11 +2,13 @@ package com.qprogramming.gifts.api.user;
 
 import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.AccountService;
+import com.qprogramming.gifts.account.AccountType;
 import com.qprogramming.gifts.account.RegisterForm;
 import com.qprogramming.gifts.account.family.Family;
 import com.qprogramming.gifts.account.family.FamilyForm;
 import com.qprogramming.gifts.account.family.FamilyService;
 import com.qprogramming.gifts.account.family.KidForm;
+import com.qprogramming.gifts.gift.GiftService;
 import com.qprogramming.gifts.login.token.TokenBasedAuthentication;
 import com.qprogramming.gifts.messages.MessagesService;
 import com.qprogramming.gifts.support.ResultData;
@@ -41,12 +43,14 @@ public class UserRestController {
     private AccountService accountService;
     private MessagesService msgSrv;
     private FamilyService familyService;
+    private GiftService giftService;
 
     @Autowired
-    public UserRestController(AccountService accountService, MessagesService msgSrv, FamilyService familyService) {
+    public UserRestController(AccountService accountService, MessagesService msgSrv, FamilyService familyService, GiftService giftService) {
         this.accountService = accountService;
         this.msgSrv = msgSrv;
         this.familyService = familyService;
+        this.giftService = giftService;
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
@@ -57,7 +61,7 @@ public class UserRestController {
         }
         if (accountService.findByUsername(userform.getUsername()) != null) {
             String message = msgSrv.getMessage("user.register.username.exists") + " " + msgSrv.getMessage("user.register.alreadyexists");
-            return new ResultData.ResultBuilder().error().message(msgSrv.getMessage(message)).build();
+            return new ResultData.ResultBuilder().error().message(message).build();
         }
         if (!userform.getPassword().equals(userform.getConfirmpassword())) {
             return new ResultData.ResultBuilder().error().message(msgSrv.getMessage("user.register.password.nomatch")).build();
@@ -253,6 +257,33 @@ public class UserRestController {
         accountService.update(account);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @RequestMapping(value = "/delete/{userID}", method = RequestMethod.DELETE)
+    public ResponseEntity deleteAccount(@PathVariable(value = "userID") String id) {
+        Account account = accountService.findById(id);
+        if (account == null) {
+            return new ResultData.ResultBuilder().notFound().build();
+        }
+        String message;
+        if (!account.equals(Utils.getCurrentAccount())) {
+            if (!account.getType().equals(AccountType.KID)) {
+                return new ResultData.ResultBuilder().badReqest().error().message(msgSrv.getMessage("user.delete.error")).build();
+            }
+            //if not deleting his account
+            Family family = familyService.getFamily(account);
+            if (family == null || !family.getAdmins().contains(Utils.getCurrentAccount())) {
+                return new ResultData.ResultBuilder().badReqest().error().message(msgSrv.getMessage("user.family.delete.error")).build();
+            }
+            message = msgSrv.getMessage("user.family.delete.kid.success");
+        } else {
+            message = msgSrv.getMessage("user.delete.success");
+        }
+        giftService.deleteUserGifts(account);
+        accountService.delete(account);
+        //TODO add complete event newsleter
+        return new ResultData.ResultBuilder().ok().message(message).build();
+    }
+
 
     @RequestMapping
     public Account user(@RequestParam(required = false) String identification, Principal user) {

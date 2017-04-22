@@ -4,6 +4,7 @@ import com.qprogramming.gifts.account.avatar.Avatar;
 import com.qprogramming.gifts.account.avatar.AvatarRepository;
 import com.qprogramming.gifts.account.family.Family;
 import com.qprogramming.gifts.account.family.FamilyService;
+import com.qprogramming.gifts.config.property.PropertyService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +39,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static com.qprogramming.gifts.settings.Settings.APP_DEFAULT_LANG;
+
 @Service
 @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class AccountService implements UserDetailsService {
@@ -47,13 +50,15 @@ public class AccountService implements UserDetailsService {
     private PasswordEncoder passwordEncoder;
     private AvatarRepository avatarRepository;
     private FamilyService familyService;
+    private PropertyService propertyService;
 
     @Autowired
-    public AccountService(AccountRepository accountRepository, PasswordEncoder passwordEncoder, AvatarRepository avatarRepository, FamilyService familyService) {
+    public AccountService(AccountRepository accountRepository, PasswordEncoder passwordEncoder, AvatarRepository avatarRepository, FamilyService familyService, PropertyService propertyService) {
         this.accountRepository = accountRepository;
         this.passwordEncoder = passwordEncoder;
         this.avatarRepository = avatarRepository;
         this.familyService = familyService;
+        this.propertyService = propertyService;
     }
 
     @PostConstruct
@@ -72,6 +77,9 @@ public class AccountService implements UserDetailsService {
             account.setRole(Roles.ROLE_USER);
         }
         account.setType(AccountType.LOCAL);
+        if (StringUtils.isEmpty(account.getLanguage())) {
+            setDefaultLocale(account);
+        }
         return accountRepository.save(account);
     }
 
@@ -81,6 +89,9 @@ public class AccountService implements UserDetailsService {
         } else {
             account.setRole(Roles.ROLE_USER);
         }
+        if (StringUtils.isEmpty(account.getLanguage())) {
+            setDefaultLocale(account);
+        }
         return accountRepository.save(account);
     }
 
@@ -88,6 +99,14 @@ public class AccountService implements UserDetailsService {
         account.setId(generateID());
         account.setType(AccountType.KID);
         return accountRepository.save(account);
+    }
+
+    private void setDefaultLocale(Account account) {
+        String defaultLanguage = propertyService.getProperty(APP_DEFAULT_LANG);
+        if (StringUtils.isEmpty(defaultLanguage)) {
+            defaultLanguage = "en";//failsafe in case of emergency
+        }
+        account.setLanguage(defaultLanguage);
     }
 
     public String generateID() {
@@ -103,7 +122,7 @@ public class AccountService implements UserDetailsService {
         Account account = accountRepository.findOneByEmail(username);
         if (account == null) {
             account = accountRepository.findOneByUsername(username);
-            if (account == null) {
+            if (account == null || AccountType.KID.equals(account.getType())) {
                 throw new UsernameNotFoundException("user not found");
             }
         }
@@ -248,5 +267,17 @@ public class AccountService implements UserDetailsService {
 
     public List<Account> findByIds(List<String> members) {
         return accountRepository.findByIdIn(members);
+    }
+
+    public void delete(Account account) {
+        Family family = familyService.getFamily(account);
+        if (family != null) {
+            familyService.removeFromFamily(account, family);
+        }
+        Avatar avatar = avatarRepository.findOneById(account.getId());
+        if (avatar != null) {
+            avatarRepository.delete(avatar);
+        }
+        accountRepository.delete(account);
     }
 }

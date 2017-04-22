@@ -193,6 +193,10 @@ img.avatar.small {
     color: white;
 }
 
+.modal-header.theme.danger {
+    background: darkred;
+}
+
 .modal-footer.theme {
     border-top: none !important;
 }

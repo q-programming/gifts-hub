@@ -1,4 +1,14 @@
 <div ng-if="authenticated">
+    <div class="row visible-xs">
+        <div class="form-group col-sm-offset-2  col-md-offset-4 col-md-6 text-center">
+            <hr/>
+            <a class="btn btn-default" href="#/logout">
+                <i class="fa fa-power-off" aria-hidden="true"></i>&nbsp;<span
+                    translate="menu.logout"></span>
+            </a>
+            <hr/>
+        </div>
+    </div>
     <div class="row">
         <div class="col-sm-offset-2 col-md-offset-4 col-md-6">
             <h4>
@@ -70,12 +80,20 @@
         </div>
     </div>
     <div class="row">
-        <div class="form-group col-sm-offset-2  col-md-offset-4 col-md-6 text-center">
+        <div class="form-group col-sm-offset-2  col-md-offset-4 col-md-6">
             <hr/>
-            <a class="btn btn-default" href="#/logout">
-                <i class="fa fa-power-off" aria-hidden="true"></i>&nbsp;<span
-                    translate="menu.logout"></span>
-            </a>
+            <span class="help-block">{{'user.delete.help'|translate}}</span>
+            <div class="text-center">
+                <span class="btn btn-danger" ng-click="deleteAccount()"
+                      confirm="{{'user.delete.confirm'|translate}}"
+                      confirm-title="{{'user.delete'|translate}} ?"
+                      confirm-icon="fa-trash"
+                      confirm-style="danger"
+                      confirm-ok="{{'user.delete'| translate}}">
+                    <i class="fa fa-trash" aria-hidden="true"></i>&nbsp;<span
+                        translate="user.delete"></span>
+                </span>
+            </div>
         </div>
     </div>
 </div>

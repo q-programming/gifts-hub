@@ -124,8 +124,6 @@ public class OAuthLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
     private void setLocale(Account account, String locale) {
         if (locale.equals("en") || locale.equals("pl")) {
             account.setLanguage(locale);
-        } else {
-            account.setLanguage("en");
         }
     }
 

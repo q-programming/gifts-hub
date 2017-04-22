@@ -1,5 +1,5 @@
-app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal', '$filter', '$translate', '$location','$timeout', 'AlertService', 'AvatarService', 'AppService', 'UtilsService',
-    function ($scope, $rootScope, $http, $log, $uibModal, $filter, $translate, $location,$timeout, AlertService, AvatarService, AppService, UtilsService) {
+app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal', '$filter', '$translate', '$location', '$timeout', 'AlertService', 'AvatarService', 'AppService', 'UtilsService',
+    function ($scope, $rootScope, $http, $log, $uibModal, $filter, $translate, $location, $timeout, AlertService, AvatarService, AppService, UtilsService) {
         //lists
         $scope.users = [];
         $scope.families = [];
@@ -100,8 +100,11 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
                 scope: $scope,
                 controller: function ($uibModalInstance, $scope) {
                     getUsersWithoutFamily();
-                    $scope.cancel = function () {
-                        $uibModalInstance.dismiss('cancel');
+                    $scope.cancel = function (dismissMessage) {
+                        if (angular.isUndefined(dismissMessage)) {
+                            dismissMessage = 'cancel';
+                        }
+                        $uibModalInstance.dismiss(dismissMessage);
                     };
                     $scope.action = function () {
                         $log.debug("[DEBUG] Creating family");
@@ -310,6 +313,11 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
                         $scope.editKidInProgress = false;
                         $uibModalInstance.close()
                     };
+                    $scope.deleteKid = function (kid) {
+                        deleteKidAccount(kid);
+                        $uibModalInstance.close()
+                    };
+
                 }
             });
         };
@@ -365,6 +373,7 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
             return false;
         };
 
+
         /**
          * Send child data for creation/update
          * @param formData
@@ -398,6 +407,21 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
                 $log.debug(response);
             });
         }
+
+        function deleteKidAccount(kid) {
+            var url = 'api/user/delete/' + kid.id;
+            $http.delete(url).then(
+                function (response) {
+                    $log.debug("[DEBUG] kid deleted");
+                    AlertService.addSuccessMessage(response.data.message);
+                    showUsersWithDefaultSorting();
+                }).catch(function (response) {
+                AlertService.addError("error.general", response);
+                $log.debug(response);
+                showUsersWithDefaultSorting();
+            });
+        }
+
 
         $scope.getPublicUrl = function (user) {
             return UtilsService.getPublicUrl(user);

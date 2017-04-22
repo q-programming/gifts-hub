@@ -6,6 +6,7 @@ import com.qprogramming.gifts.account.avatar.Avatar;
 import com.qprogramming.gifts.account.avatar.AvatarRepository;
 import com.qprogramming.gifts.account.family.Family;
 import com.qprogramming.gifts.account.family.FamilyService;
+import com.qprogramming.gifts.config.property.PropertyService;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,6 +33,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 public class AccountServiceTest {
+
     public static final String PASSWORD = "Password";
     public static final String STATIC_IMAGES_LOGO_WHITE_PNG = "static/images/logo-white.png";
     @Mock
@@ -46,6 +48,8 @@ public class AccountServiceTest {
     private PasswordEncoder passwordEncoderMock;
     @Mock
     private AvatarRepository avatarRepositoryMock;
+    @Mock
+    private PropertyService propertyServiceMock;
 
 
     private Account testAccount;
@@ -58,7 +62,7 @@ public class AccountServiceTest {
         when(securityMock.getAuthentication()).thenReturn(authMock);
         when(authMock.getPrincipal()).thenReturn(testAccount);
         SecurityContextHolder.setContext(securityMock);
-        accountService = new AccountService(accountRepositoryMock, passwordEncoderMock, avatarRepositoryMock, familyServiceMock);
+        accountService = new AccountService(accountRepositoryMock, passwordEncoderMock, avatarRepositoryMock, familyServiceMock, propertyServiceMock);
     }
 
 
@@ -92,6 +96,7 @@ public class AccountServiceTest {
     @Test
     public void createOAuthAdminAccount() throws Exception {
         Account account = TestUtil.createAccount();
+        account.setLanguage("");
         when(accountRepositoryMock.findAll()).thenReturn(Collections.emptyList());
         when(accountRepositoryMock.save(any(Account.class))).then(returnsFirstArg());
         Account result = accountService.createOAuthAcount(account);
@@ -232,5 +237,20 @@ public class AccountServiceTest {
         assertTrue(withoutFamily.contains(account6));
         assertFalse(withoutFamily.contains(account1));
     }
+
+    @Test
+    public void delete() throws Exception {
+        Family family = new Family();
+        family.getMembers().add(testAccount);
+        family.getAdmins().add(testAccount);
+        Avatar avatar = new Avatar();
+        when(familyServiceMock.getFamily(testAccount)).thenReturn(family);
+        when(avatarRepositoryMock.findOneById(testAccount.getId())).thenReturn(avatar);
+        accountService.delete(testAccount);
+        verify(avatarRepositoryMock, times(1)).delete(avatar);
+        verify(familyServiceMock, times(1)).removeFromFamily(testAccount, family);
+        verify(accountRepositoryMock, times(1)).delete(testAccount);
+    }
+
 
 }

@@ -1,5 +1,6 @@
 package com.qprogramming.gifts.gift;
 
+import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.config.property.PropertyService;
 import com.qprogramming.gifts.gift.category.Category;
 import com.qprogramming.gifts.support.Utils;
@@ -105,5 +106,10 @@ public class GiftService {
 
     public void delete(Gift gift) {
         giftRepository.delete(gift);
+    }
+
+    public void deleteUserGifts(Account account) {
+        List<Gift> userGifts = giftRepository.findByUserIdOrderByCreatedDesc(account.getId());
+        giftRepository.delete(userGifts);
     }
 }

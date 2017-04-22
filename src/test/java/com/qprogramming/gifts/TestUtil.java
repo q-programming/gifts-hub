@@ -75,12 +75,12 @@ public class TestUtil {
     }
 
 
-    public static Gift createGift(long id, Account testAccount) {
+    public static Gift createGift(long id, Account account) {
         Gift gift = new Gift();
         gift.setId(id);
         gift.setName("name");
         gift.setLink("http://google.ocm");
-        gift.setUserId(testAccount.getId());
+        gift.setUserId(account.getId());
         return gift;
     }
 

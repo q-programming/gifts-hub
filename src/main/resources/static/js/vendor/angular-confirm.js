@@ -30,11 +30,11 @@
             };
         }])
         .value('$confirmModalDefaults', {
-            template: '<div class="modal-header theme"><h4 class="modal-title"><i ng-if="data.icon" class="{{data.icon}}"></i>&nbsp;{{data.title}}</h4></div>' +
+            template: '<div class="modal-header theme {{data.style}}"><h4 class="modal-title"><i ng-if="data.icon" class="{{data.icon}}"></i>&nbsp;{{data.title}}</h4></div>' +
             '<div class="modal-body text-center">{{data.text}}</div>' +
             '<div class="modal-footer theme">' +
             '<button class="btn btn-default" ng-click="cancel()">{{data.cancel}}</button>' +
-            '<button class="btn btn-primary" ng-click="ok()">{{data.ok}}</button>' +
+            '<button class="btn btn-{{data.style}}" ng-click="ok()">{{data.ok}}</button>' +
             '</div>',
             controller: 'ConfirmModalController',
             defaultLabels: {
@@ -51,7 +51,7 @@
                 data = angular.extend({}, settings.defaultLabels, data || {});
                 if (data.templateName) {
                     var customTemplateDefinition = settings.additionalTemplates[data.templateName];
-                    if (customTemplateDefinition != undefined) {
+                    if (customTemplateDefinition !== undefined) {
                         settings.template = customTemplateDefinition.template;
                         settings.templateUrl = customTemplateDefinition.templateUrl;
                     }
@@ -83,7 +83,8 @@
                     confirmTitle: '@',
                     confirmOk: '@',
                     confirmCancel: '@',
-                    confirmIcon: '@'
+                    confirmIcon: '@',
+                    confirmStyle: '@'
                 },
                 link: function (scope, element, attrs) {
 
@@ -102,11 +103,8 @@
                     }
 
                     element.unbind("click").bind("click", function ($event) {
-
                         $event.preventDefault();
-
                         $timeout(function () {
-
                             if (angular.isUndefined(scope.confirmIf) || scope.confirmIf) {
                                 var data = {text: scope.confirm};
                                 if (scope.confirmTitle) {
@@ -123,6 +121,11 @@
                                 }
                                 if (scope.confirmIcon) {
                                     data.icon = "fa " + scope.confirmIcon;
+                                }
+                                if (scope.confirmStyle) {
+                                    data.style = scope.confirmStyle;
+                                } else {
+                                    data.style = "primary";
                                 }
                                 $confirm(data, scope.confirmSettings || {}).then(onSuccess);
                             } else {

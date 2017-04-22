@@ -21,7 +21,7 @@ public class Account implements Serializable, UserDetails {
     @JsonIgnore
     private String password;
     @Column
-    private String language = "en";
+    private String language;
     @Column
     private String name;
     @Column
