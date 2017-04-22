@@ -27,6 +27,18 @@ app.controller('manage', ['$rootScope', '$scope', '$http', '$log', 'AlertService
                         AlertService.addError('error.general', response)
                     });
                 };
+                $scope.updateEmail = function () {
+                    $http.post('api/app/settings/email', $scope.settings.email).then(
+                        function (response) {
+                            if (response.data.code === 'WARNING') {
+                                AlertService.addError('app.manage.email.error',response);
+                            } else {
+                                AlertService.addSuccess('app.manage.saved');
+                            }
+                        }).catch(function (response) {
+                        AlertService.addError('error.general', response)
+                    });
+                };
 
                 $scope.show = function () {
                     $scope.showSearchForm = true;

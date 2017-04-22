@@ -2,6 +2,7 @@ package com.qprogramming.gifts.config.property;
 
 import com.qprogramming.gifts.messages.MessagesService;
 import com.qprogramming.gifts.support.Utils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
@@ -9,6 +10,8 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 /**
  * Created by XE050991499 on 2017-03-20.
@@ -67,6 +70,10 @@ public class PropertyService {
      * @return String representation of parameter
      */
     public String getProperty(String key) {
-        return env.getProperty(key);
+        String property = env.getProperty(key);
+        if (StringUtils.isEmpty(property)) {
+            return EMPTY;
+        }
+        return property;
     }
 }
