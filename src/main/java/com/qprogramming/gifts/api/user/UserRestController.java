@@ -25,6 +25,7 @@ import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -258,6 +259,7 @@ public class UserRestController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @Transactional
     @RequestMapping(value = "/delete/{userID}", method = RequestMethod.DELETE)
     public ResponseEntity deleteAccount(@PathVariable(value = "userID") String id) {
         Account account = accountService.findById(id);
@@ -278,6 +280,7 @@ public class UserRestController {
         } else {
             message = msgSrv.getMessage("user.delete.success");
         }
+        giftService.deleteClaims(account);
         giftService.deleteUserGifts(account);
         accountService.delete(account);
         //TODO add complete event newsleter

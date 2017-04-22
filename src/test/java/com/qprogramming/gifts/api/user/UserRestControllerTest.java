@@ -557,9 +557,10 @@ public class UserRestControllerTest {
         when(accSrvMock.findById(kid.getId())).thenReturn(kid);
         when(familyServiceMock.getFamily(kid)).thenReturn(family);
         userRestCtrl.perform(delete(API_USER_USER_DELETE + kid.getId())).andExpect(status().isOk());
-        verify(giftServiceMock,times(1)).deleteUserGifts(kid);
+        verify(giftServiceMock, times(1)).deleteUserGifts(kid);
         verify(accSrvMock, times(1)).delete(kid);
     }
+
     @Test
     public void deleteAccount() throws Exception {
         Family family = new Family();
@@ -571,7 +572,8 @@ public class UserRestControllerTest {
         when(accSrvMock.findById(testAccount.getId())).thenReturn(testAccount);
         when(familyServiceMock.getFamily(testAccount)).thenReturn(family);
         userRestCtrl.perform(delete(API_USER_USER_DELETE + testAccount.getId())).andExpect(status().isOk());
-        verify(giftServiceMock,times(1)).deleteUserGifts(testAccount);
+        verify(giftServiceMock, times(1)).deleteUserGifts(testAccount);
+        verify(giftServiceMock, times(1)).deleteClaims(testAccount);
         verify(accSrvMock, times(1)).delete(testAccount);
     }
 

@@ -1,5 +1,6 @@
 package com.qprogramming.gifts.gift;
 
+import com.qprogramming.gifts.account.Account;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -7,5 +8,8 @@ import java.util.List;
 public interface GiftRepository extends JpaRepository<Gift, Long> {
 
     Gift findOne(Long aLong);
+
     List<Gift> findByUserIdOrderByCreatedDesc(String id);
+
+    List<Gift> findByClaimed(Account account);
 }

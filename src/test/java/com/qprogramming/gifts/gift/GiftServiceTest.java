@@ -15,21 +15,21 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import static com.qprogramming.gifts.TestUtil.createGift;
 import static com.qprogramming.gifts.settings.Settings.APP_GIFT_AGE;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.anyCollectionOf;
+import static org.mockito.Mockito.*;
 
 /**
  * Created by Khobar on 10.03.2017.
  */
 
 public class GiftServiceTest {
-
     @Mock
     private AccountService accSrvMock;
     @Mock
@@ -95,6 +95,19 @@ public class GiftServiceTest {
         assertTrue(result.get(gift1.getCategory())
                 .stream()
                 .filter(gift -> gift.getStatus() == GiftStatus.NEW).toArray().length == 1);
+    }
+
+    @Test
+    public void deleteClaims() throws Exception {
+        Account account = TestUtil.createAccount("John", "Doe");
+        account.setId("USER");
+        Gift gift1 = createGift(1L, account);
+        gift1.setClaimed(testAccount);
+        when(giftRepositoryMock.findByClaimed(testAccount)).thenReturn(Collections.singletonList(gift1));
+        giftService.deleteClaims(testAccount);
+        verify(giftRepositoryMock, times(1)).save(anyCollectionOf(Gift.class));
+        assertNull(gift1.getClaimed());
+
     }
 
 

@@ -112,4 +112,10 @@ public class GiftService {
         List<Gift> userGifts = giftRepository.findByUserIdOrderByCreatedDesc(account.getId());
         giftRepository.delete(userGifts);
     }
+
+    public void deleteClaims(Account account) {
+        List<Gift> claimedGifts = giftRepository.findByClaimed(account);
+        claimedGifts.forEach(gift -> gift.setClaimed(null));
+        giftRepository.save(claimedGifts);
+    }
 }
