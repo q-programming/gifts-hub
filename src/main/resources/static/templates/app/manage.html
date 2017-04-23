@@ -113,7 +113,8 @@
                     <label for="emailPass">
                         {{'app.manage.email.password' |translate}}
                     </label>:
-                    <input type="password" class="form-control" id="emailPass" name="emailPass" ng-model="settings.email.password">
+                    <input type="password" class="form-control" id="emailPass" name="emailPass"
+                           ng-model="settings.email.password">
                 </div>
             </div>
             <span class="help-block">
@@ -127,19 +128,6 @@
                     <input class="form-control" id="emailEncoding" name="emailEncoding"
                            ng-model="settings.email.encoding">
                 </div>
-            </div>
-            <div class="checkbox">
-                <label>
-                    <input type="checkbox" id="emailSmtpAuth" name="emailSmtpAuth" ng-model="settings.email.smtpauth">
-                    {{'app.manage.email.smtpauth' |translate}}
-                </label>
-            </div>
-            <div class="checkbox">
-                <label>
-                    <input type="checkbox" id="emailSmtpStarttls" name="emailSmtpStarttls"
-                           ng-model="settings.email.startttls">
-                    {{'app.manage.email.startttls' |translate}}
-                </label>
             </div>
             <div class="form-group col-xs-12">
                 <span class="btn btn-success pull-right" ng-click="updateEmail()">

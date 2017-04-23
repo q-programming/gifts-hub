@@ -10,13 +10,11 @@ public class Settings {
     public static final String APP_DEFAULT_SORT = "app.default.sort";
     public static final String APP_AVAILABLE_LANGS = "app.available.langs";
     public static final String APP_GIFT_AGE = "app.gift.age";
-    public static final String APP_EMAIL_HOST = "app.email.host";
-    public static final String APP_EMAIL_PORT = "app.email.post";
-    public static final String APP_EMAIL_USERNAME = "app.email.username";
-    public static final String APP_EMAIL_PASS = "app.email.pass";
-    public static final String APP_EMAIL_SMTP_AUTH = "app.email.smtp.auth";
-    public static final String APP_EMAIL_START_TTLS = "app.email.start.ttls";
-    public static final String APP_EMAIL_ENCODING = "app.email.encoding";
+    public static final String APP_EMAIL_HOST = "spring.mail.host";
+    public static final String APP_EMAIL_PORT = "spring.mail.port";
+    public static final String APP_EMAIL_USERNAME = "spring.mail.username";
+    public static final String APP_EMAIL_PASS = "spring.mail.password";
+    public static final String APP_EMAIL_ENCODING = "spring.mail.defaultEncoding";
 
 
     private String language;
@@ -94,8 +92,6 @@ public class Settings {
         private String username;
         private String password;
         private String encoding;
-        private boolean smtpauth;
-        private boolean startttls;
 
         public Email() {
         }
@@ -138,22 +134,6 @@ public class Settings {
 
         public void setEncoding(String encoding) {
             this.encoding = encoding;
-        }
-
-        public boolean isSmtpauth() {
-            return smtpauth;
-        }
-
-        public void setSmtpauth(boolean smtpauth) {
-            this.smtpauth = smtpauth;
-        }
-
-        public boolean isStartttls() {
-            return startttls;
-        }
-
-        public void setStartttls(boolean startttls) {
-            this.startttls = startttls;
         }
     }
 }

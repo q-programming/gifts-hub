@@ -56,15 +56,6 @@ public class AppRestController {
         if (!CollectionUtils.isEmpty(settings.getSearchEngines())) {
             searchEngineService.updateSearchEngines(settings.getSearchEngines());
         }
-        if (settings.getEmail() != null) {
-            propertyService.update(APP_EMAIL_HOST, settings.getEmail().getHost());
-            propertyService.update(APP_EMAIL_PORT, String.valueOf(settings.getEmail().getPort()));
-            propertyService.update(APP_EMAIL_USERNAME, settings.getEmail().getUsername());
-            propertyService.update(APP_EMAIL_PASS, settings.getEmail().getPassword());
-            propertyService.update(APP_EMAIL_ENCODING, settings.getEmail().getEncoding());
-            propertyService.update(APP_EMAIL_SMTP_AUTH, String.valueOf(settings.getEmail().isSmtpauth()));
-            propertyService.update(APP_EMAIL_START_TTLS, String.valueOf(settings.getEmail().isStartttls()));
-        }
         propertyService.update(APP_DEFAULT_SORT, String.valueOf(settings.getSort()));
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -77,7 +68,7 @@ public class AppRestController {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
         try {
-            mailService.testConnection(settings.getHost(), settings.getPort(), settings.getUsername(), settings.getPassword(), settings.isSmtpauth(), settings.isStartttls());
+            mailService.testConnection(settings.getHost(), settings.getPort(), settings.getUsername(), settings.getPassword());
         } catch (MessagingException e) {
             LOG.warn("Bad SMTP configuration: {}", e);
             return new ResultData.ResultBuilder().ok().warn().message(e.getMessage()).build();
@@ -87,8 +78,17 @@ public class AppRestController {
         propertyService.update(APP_EMAIL_USERNAME, settings.getUsername());
         propertyService.update(APP_EMAIL_PASS, settings.getPassword());
         propertyService.update(APP_EMAIL_ENCODING, settings.getEncoding());
-        propertyService.update(APP_EMAIL_SMTP_AUTH, String.valueOf(settings.isSmtpauth()));
-        propertyService.update(APP_EMAIL_START_TTLS, String.valueOf(settings.isStartttls()));
+        mailService.initMailSender();
+        //TODO remove sample
+//        Mail mail = new Mail();
+//        mail.setMailFrom("giftshub@q-programming.pl");
+//        mail.setMailTo("kubarom@gmail.com");
+//        mail.setMailSubject("Mail sending test");
+//        Map<String, Object> model = new HashMap<>();
+//        model.put("firstName", "John");
+//        model.put("lastName", "Doe");
+//        mail.setModel(model);
+//        mailService.sendEmail(mail);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -114,8 +114,6 @@ public class AppRestController {
         emailSettings.setUsername(propertyService.getProperty(APP_EMAIL_USERNAME));
         emailSettings.setPassword(propertyService.getProperty(APP_EMAIL_PASS));
         emailSettings.setEncoding(propertyService.getProperty(APP_EMAIL_ENCODING));
-        emailSettings.setSmtpauth(Boolean.parseBoolean(propertyService.getProperty(APP_EMAIL_SMTP_AUTH)));
-        emailSettings.setStartttls(Boolean.parseBoolean(propertyService.getProperty(APP_EMAIL_START_TTLS)));
         settings.setEmail(emailSettings);
         return ResponseEntity.ok(settings);
     }
