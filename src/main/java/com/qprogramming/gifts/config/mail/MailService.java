@@ -2,6 +2,10 @@ package com.qprogramming.gifts.config.mail;
 
 
 import com.qprogramming.gifts.config.property.PropertyService;
+import com.qprogramming.gifts.gift.Gift;
+import com.qprogramming.gifts.gift.category.Category;
+import com.qprogramming.gifts.messages.MessagesService;
+import com.qprogramming.gifts.support.Utils;
 import freemarker.template.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,8 +19,7 @@ import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 import static com.qprogramming.gifts.settings.Settings.*;
 
@@ -27,12 +30,14 @@ public class MailService {
     private PropertyService propertyService;
     private JavaMailSender mailSender;
     private Configuration freemarkerConfiguration;
+    private MessagesService msgSrv;
 
 
     @Autowired
-    public MailService(PropertyService propertyService, @Qualifier("freeMarkerConfiguration") Configuration freemarkerConfiguration) {
+    public MailService(PropertyService propertyService, @Qualifier("freeMarkerConfiguration") Configuration freemarkerConfiguration, MessagesService msgSrv) {
         this.propertyService = propertyService;
         this.freemarkerConfiguration = freemarkerConfiguration;
+        this.msgSrv = msgSrv;
         initMailSender();
     }
 
@@ -116,4 +121,24 @@ public class MailService {
         }
         return content.toString();
     }
+
+    public void shareGiftList(Map<Category, List<Gift>> gifts, List<Mail> emails) throws MessagingException {
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
+        for (Mail mail : emails) {
+            Locale locale = getMailLocale(mail);
+            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
+            mimeMessageHelper.setSubject(msgSrv.getMessage("gift.share.subject", new Object[]{Utils.getCurrentAccount().getFullname()}, "", locale));
+            mimeMessageHelper.setFrom(mail.getMailFrom());
+            mimeMessageHelper.setTo(mail.getMailTo());
+            mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/giftList.ftl"));
+            mimeMessageHelper.setText(mail.getMailContent(), true);
+            mailSender.send(mimeMessageHelper.getMimeMessage());
+        }
+    }
+
+    private Locale getMailLocale(Mail mail) {
+        return mail.getLocale() != null ? new Locale(mail.getLocale()) : new Locale(propertyService.getProperty(APP_DEFAULT_LANG));
+    }
+
+
 }

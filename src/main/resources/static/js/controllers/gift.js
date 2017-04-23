@@ -85,6 +85,21 @@ app.controller('gift', [
                 }
             });
         };
+        $scope.showShare = function () {
+            $uibModal.open({
+                templateUrl: 'modals/giftShare.html',
+                scope: $scope,
+                controller: function ($uibModalInstance, $scope) {
+                    $scope.cancel = function () {
+                        $uibModalInstance.dismiss('cancel');
+                    };
+                    $scope.action = function () {
+
+                    };
+                }
+            });
+        };
+
 
         /**
          * Reset gift form

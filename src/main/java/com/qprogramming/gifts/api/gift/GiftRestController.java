@@ -4,6 +4,8 @@ import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.account.family.Family;
 import com.qprogramming.gifts.account.family.FamilyService;
+import com.qprogramming.gifts.config.mail.Mail;
+import com.qprogramming.gifts.config.mail.MailService;
 import com.qprogramming.gifts.gift.Gift;
 import com.qprogramming.gifts.gift.GiftForm;
 import com.qprogramming.gifts.gift.GiftService;
@@ -15,6 +17,8 @@ import com.qprogramming.gifts.settings.SearchEngineService;
 import com.qprogramming.gifts.support.ResultData;
 import com.qprogramming.gifts.support.Utils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,8 +28,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
-import java.util.Objects;
+import javax.mail.MessagingException;
+import java.util.*;
 
 /**
  * Created by Khobar on 10.03.2017.
@@ -34,21 +38,24 @@ import java.util.Objects;
 @RequestMapping("/api/gift")
 public class GiftRestController {
 
+    private final Logger LOG = LoggerFactory.getLogger(this.getClass());
     private AccountService accountService;
     private GiftService giftService;
     private SearchEngineService searchEngineService;
     private CategoryRepository categoryRepository;
     private MessagesService msgSrv;
     private FamilyService familyService;
+    private MailService mailService;
 
     @Autowired
-    public GiftRestController(AccountService accountService, GiftService giftService, SearchEngineService searchEngineService, CategoryRepository categoryRepository, MessagesService msgSrv, FamilyService familyService) {
+    public GiftRestController(AccountService accountService, GiftService giftService, SearchEngineService searchEngineService, CategoryRepository categoryRepository, MessagesService msgSrv, FamilyService familyService, MailService mailService) {
         this.accountService = accountService;
         this.giftService = giftService;
         this.searchEngineService = searchEngineService;
         this.categoryRepository = categoryRepository;
         this.msgSrv = msgSrv;
         this.familyService = familyService;
+        this.mailService = mailService;
     }
 
     @RequestMapping("/create")
@@ -244,4 +251,31 @@ public class GiftRestController {
             return ResponseEntity.ok(categoryRepository.findByNameContainingIgnoreCase(term));
         }
     }
+
+    @RequestMapping(value = "/share", method = RequestMethod.POST)
+    public ResponseEntity shareGiftList(List<String> emails) {
+        Map<Category, List<Gift>> gifts = giftService.findAllByCurrentUser();
+        List<Mail> emailList = new ArrayList<>();
+        for (String email : emails) {
+            Mail mail = new Mail();
+            Account byEmail = accountService.findByEmail(email);
+            mail.setMailTo(email);
+            mail.setMailFrom(Utils.getCurrentAccount().getEmail());
+            if (byEmail != null) {
+                mail.setLocale(byEmail.getLanguage());
+                mail.addToModel("name", byEmail.getFullname());
+            }
+            mail.addToModel("owner", Utils.getCurrentAccount().getFullname());
+            mail.addToModel("gifts", gifts);
+            emailList.add(mail);
+        }
+        try {
+            mailService.shareGiftList(gifts, emailList);
+        } catch (MessagingException e) {
+            LOG.error("Error while sending emails {}", e);
+            return new ResultData.ResultBuilder().badReqest().error().message(e.getMessage()).build();
+        }
+        return ResponseEntity.ok().build();
+    }
+
 }

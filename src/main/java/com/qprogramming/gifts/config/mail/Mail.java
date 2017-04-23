@@ -1,8 +1,6 @@
 package com.qprogramming.gifts.config.mail;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Mail {
     private String mailFrom;
@@ -18,6 +16,8 @@ public class Mail {
     private String mailContent;
 
     private String contentType;
+
+    private String locale;
 
     private List<Object> attachments;
 
@@ -96,10 +96,25 @@ public class Mail {
     }
 
     public Map<String, Object> getModel() {
+        if (model == null) {
+            model = new HashMap<>();
+        }
         return model;
+    }
+
+    public void addToModel(String key, Object value) {
+        getModel().put(key, value);
     }
 
     public void setModel(Map<String, Object> model) {
         this.model = model;
+    }
+
+    public String getLocale() {
+        return locale;
+    }
+
+    public void setLocale(String locale) {
+        this.locale = locale;
     }
 }

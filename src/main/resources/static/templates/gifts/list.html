@@ -44,6 +44,11 @@
             </span>
                 </div>
                 <div class="col-xs-12 col-sm-offset-1 col-sm-2 col-md-offset-3 col-lg-offset-5 col-md-2">
+                    <button type="button" class="btn btn-success pull-right" ng-click="showShare()"
+                            ng-show="userList || family.familyAdmin">
+                        <i class="fa fa-envelope" aria-hidden="true"></i>
+                        <span translate="gift.share"></span>
+                    </button>
                     <button type="button" class="btn btn-success pull-right" ng-click="showCreate()"
                             ng-show="userList || family.familyAdmin">
                         <i class="fa fa-plus" aria-hidden="true"></i>
@@ -95,13 +100,15 @@
             <div class="col-xs-6 col-sm-2" format-date date="gift.created"></div>
             <div class="col-xs-6 col-sm-1 text-right">
                 <!--CLAIM-->
-                <span class="clickable" >
+                <span class="clickable">
                     <span class="fa-stack" ng-if="canBeClaimed(gift)"
-                           ng-click="claimGift(gift)" uib-tooltip="{{'gift.claim' | translate}}" tooltip-placement="left">
+                          ng-click="claimGift(gift)" uib-tooltip="{{'gift.claim' | translate}}"
+                          tooltip-placement="left">
                             <i class="fa fa-fw fa-lg fa-hand-paper-o" aria-hidden="true" style="margin-left: 1px;"></i>
                     </span>
                     <span class="fa-stack" ng-if="canBeUnClaimed(gift)"
-                          uib-tooltip="{{'gift.unclaim' | translate}}" tooltip-placement="left" ng-click="unClaimGift(gift)">
+                          uib-tooltip="{{'gift.unclaim' | translate}}" tooltip-placement="left"
+                          ng-click="unClaimGift(gift)">
                             <i class="fa fa-times fa-stack-1x"></i>
                             <i class="fa fa-lg fa-hand-paper-o fa-stack-1x"></i>
                     </span>
@@ -115,7 +122,7 @@
                 <span class="clickable" ng-if="canBeUndoRealised(gift)" ng-click="undoRealiseGift(gift)"
                       uib-tooltip="{{'gift.complete.undo' | translate}}" tooltip-placement="left">
                         <i class="fa fa-fw fa-lg fa-circle-o" aria-hidden="true"
-                           ></i>
+                        ></i>
                     </span>
                 <!--EDIT-->
                 <span class="clickable" ng-if="canBeEdited(gift)" ng-click="showEdit(gift)"
