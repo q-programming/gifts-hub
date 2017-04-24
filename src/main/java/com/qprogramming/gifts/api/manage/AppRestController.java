@@ -56,6 +56,9 @@ public class AppRestController {
         if (!CollectionUtils.isEmpty(settings.getSearchEngines())) {
             searchEngineService.updateSearchEngines(settings.getSearchEngines());
         }
+        if (StringUtils.isNotBlank(settings.getAppUrl())) {
+            propertyService.update(APP_URL, settings.getAppUrl());
+        }
         propertyService.update(APP_DEFAULT_SORT, String.valueOf(settings.getSort()));
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -115,6 +118,7 @@ public class AppRestController {
         emailSettings.setPassword(propertyService.getProperty(APP_EMAIL_PASS));
         emailSettings.setEncoding(propertyService.getProperty(APP_EMAIL_ENCODING));
         settings.setEmail(emailSettings);
+        settings.setAppUrl(propertyService.getProperty(APP_URL));
         return ResponseEntity.ok(settings);
     }
 

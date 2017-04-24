@@ -2,8 +2,6 @@ package com.qprogramming.gifts.config.mail;
 
 
 import com.qprogramming.gifts.config.property.PropertyService;
-import com.qprogramming.gifts.gift.Gift;
-import com.qprogramming.gifts.gift.category.Category;
 import com.qprogramming.gifts.messages.MessagesService;
 import com.qprogramming.gifts.support.Utils;
 import freemarker.template.Configuration;
@@ -19,7 +17,10 @@ import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import java.util.*;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Properties;
 
 import static com.qprogramming.gifts.settings.Settings.*;
 
@@ -122,14 +123,16 @@ public class MailService {
         return content.toString();
     }
 
-    public void shareGiftList(Map<Category, List<Gift>> gifts, List<Mail> emails) throws MessagingException {
+    public void shareGiftList(List<Mail> emails) throws MessagingException {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
+        String publicLink = propertyService.getProperty(APP_URL + "#/public/" + Utils.getCurrentAccountId());
         for (Mail mail : emails) {
             Locale locale = getMailLocale(mail);
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
             mimeMessageHelper.setSubject(msgSrv.getMessage("gift.share.subject", new Object[]{Utils.getCurrentAccount().getFullname()}, "", locale));
             mimeMessageHelper.setFrom(mail.getMailFrom());
             mimeMessageHelper.setTo(mail.getMailTo());
+            mail.addToModel("publicLink", publicLink);
             mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/giftList.ftl"));
             mimeMessageHelper.setText(mail.getMailContent(), true);
             mailSender.send(mimeMessageHelper.getMimeMessage());

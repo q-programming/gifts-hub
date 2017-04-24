@@ -66,14 +66,36 @@
                 <span translate="user.settings.public"></span>
             </label>
             <span class="help-block" translate="user.settings.public.help"></span>
-            <div class="row" ng-if="principal.publicList">
-                <div class="col-xs-10">
-                    <input id="public-link" class="form-control" ng-value="getPublicUrl()" readonly/>
-                </div>
-                <div class="col-xs-1">
+            <div ng-if="principal.publicList">
+                <div class="row">
+                    <div class="col-xs-9">
+                        <input id="public-link" class="form-control" ng-value="getPublicUrl()" readonly/>
+                    </div>
+                    <div class="col-xs-1">
                     <span class="btn btn-default" uib-tooltip="{{'user.settings.public.copy'|translate}}"
                           tooltip-placement="left" ng-click="copyLink()">
                         <i class="fa fa-link" aria-hidden="true"></i>
+                    </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row" ng-if="principal.publicList">
+        <div class="form-group col-sm-offset-2 col-md-offset-4 col-md-6">
+            <h4>
+                <i class="fa fa-envelope-o" aria-hidden="true"></i>
+                &nbsp;<span translate="gift.share"></span>
+            </h4>
+            <span>{{'gift.share.help'|translate}}</span>
+            <div class="row">
+                <div class="col-xs-9">
+                    <input class="form-control" rows="2" ng-model="shareEmails">
+                </div>
+                <div class="col-xs-2">
+                    <span class="btn btn-default" uib-tooltip="{{'gift.share'|translate}}"
+                          tooltip-placement="left" ng-click="shareListWithEmails()">
+                        <i class="fa fa-envelope" aria-hidden="true"></i>
                     </span>
                 </div>
             </div>

@@ -10,6 +10,7 @@ public class Settings {
     public static final String APP_DEFAULT_SORT = "app.default.sort";
     public static final String APP_AVAILABLE_LANGS = "app.available.langs";
     public static final String APP_GIFT_AGE = "app.gift.age";
+    public static final String APP_URL = "app.url";
     public static final String APP_EMAIL_HOST = "spring.mail.host";
     public static final String APP_EMAIL_PORT = "spring.mail.port";
     public static final String APP_EMAIL_USERNAME = "spring.mail.username";
@@ -22,6 +23,7 @@ public class Settings {
     private String giftAge;
     private SortBy sort;
     private Email email;
+    private String appUrl;
 
 
     public String getLanguage() {
@@ -72,6 +74,14 @@ public class Settings {
 
     public void setEmail(Email email) {
         this.email = email;
+    }
+
+    public String getAppUrl() {
+        return appUrl;
+    }
+
+    public void setAppUrl(String appUrl) {
+        this.appUrl = appUrl;
     }
 
     public enum SortBy {

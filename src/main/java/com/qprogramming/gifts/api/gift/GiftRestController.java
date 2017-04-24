@@ -45,17 +45,15 @@ public class GiftRestController {
     private CategoryRepository categoryRepository;
     private MessagesService msgSrv;
     private FamilyService familyService;
-    private MailService mailService;
 
     @Autowired
-    public GiftRestController(AccountService accountService, GiftService giftService, SearchEngineService searchEngineService, CategoryRepository categoryRepository, MessagesService msgSrv, FamilyService familyService, MailService mailService) {
+    public GiftRestController(AccountService accountService, GiftService giftService, SearchEngineService searchEngineService, CategoryRepository categoryRepository, MessagesService msgSrv, FamilyService familyService) {
         this.accountService = accountService;
         this.giftService = giftService;
         this.searchEngineService = searchEngineService;
         this.categoryRepository = categoryRepository;
         this.msgSrv = msgSrv;
         this.familyService = familyService;
-        this.mailService = mailService;
     }
 
     @RequestMapping("/create")
@@ -251,31 +249,4 @@ public class GiftRestController {
             return ResponseEntity.ok(categoryRepository.findByNameContainingIgnoreCase(term));
         }
     }
-
-    @RequestMapping(value = "/share", method = RequestMethod.POST)
-    public ResponseEntity shareGiftList(List<String> emails) {
-        Map<Category, List<Gift>> gifts = giftService.findAllByCurrentUser();
-        List<Mail> emailList = new ArrayList<>();
-        for (String email : emails) {
-            Mail mail = new Mail();
-            Account byEmail = accountService.findByEmail(email);
-            mail.setMailTo(email);
-            mail.setMailFrom(Utils.getCurrentAccount().getEmail());
-            if (byEmail != null) {
-                mail.setLocale(byEmail.getLanguage());
-                mail.addToModel("name", byEmail.getFullname());
-            }
-            mail.addToModel("owner", Utils.getCurrentAccount().getFullname());
-            mail.addToModel("gifts", gifts);
-            emailList.add(mail);
-        }
-        try {
-            mailService.shareGiftList(gifts, emailList);
-        } catch (MessagingException e) {
-            LOG.error("Error while sending emails {}", e);
-            return new ResultData.ResultBuilder().badReqest().error().message(e.getMessage()).build();
-        }
-        return ResponseEntity.ok().build();
-    }
-
 }

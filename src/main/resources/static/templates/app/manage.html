@@ -3,7 +3,7 @@
     <div class="row">
         <div class="form-group col-md-offset-2 col-md-6">
             <h1 translate="app.manage"></h1>
-            <h4 for="app-lang">
+            <h4>
                 <i class="fa fa-globe" aria-hidden="true"></i>
                 &nbsp;<span translate="app.manage.language"></span>
             </h4>
@@ -31,7 +31,7 @@
                         <div class="input-group">
                             <input type="text" class="form-control" id="gift_age"
                                    placeholder="{{'app.manage.gift.age.days' | translate}}"
-                                   ng-model="settings.giftAge" required>
+                                   ng-model="settings.giftAge" required style="width: 260px">
                             <div class="input-group-addon" translate="app.manage.gift.age.days"></div>
                         </div>
                     </div>
@@ -40,6 +40,28 @@
             <span class="help-block" translate="app.manage.gift.age.help "></span>
         </div>
     </div>
+    <!--APP URL-->
+    <div class="row">
+        <div class="form-group col-md-offset-2 col-md-6">
+            <h4>
+                <i class="fa fa-link" aria-hidden="true"></i>
+                &nbsp;<span translate="app.manage.url"></span>
+            </h4>
+            <div class="row">
+                <div class="form-group col-xs-12">
+                    <input class="form-control" id="applicationName" name="name" style="width: 260px;float:left"
+                           ng-model="settings.appUrl">
+                    <button class="btn btn-success" ng-click="saveAppUrl()">
+                        <i class="fa fa-arrow-down" aria-hidden="true"></i>
+                        <i class="fa fa-link"></i>
+                        &nbsp;{{'app.manage.url.get'|translate}}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     <!--SORTING-->
     <div class="row">
         <div class="col-md-offset-2 col-md-6">

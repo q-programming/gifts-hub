@@ -30,6 +30,7 @@ public class Utils {
     private static final Logger LOG = LoggerFactory.getLogger(Utils.class);
     private static final String HTML_TAG_PATTERN = "<(\\/)?([A-Za-z][A-Za-z0-9]*)\\b[^>]*>";
     private static final String ESTIMATES_PATTENR = "\\s?(\\d*d)?\\s?(\\d*h)?\\s?(\\d*m)?";
+    private static final Pattern VALID_EMAIL_ADDRESS_REGEX = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
     private static final long NUM_100NS_INTERVALS_SINCE_UUID_EPOCH = 0x01b21dd213814000L;
     private static String baseURL;
     private static HttpServletRequest request;
@@ -225,6 +226,17 @@ public class Utils {
             result.get(gift.getCategory()).add(gift);
         });
         return result;
+    }
+
+    /**
+     * Validate if passed emailStr is valid email address
+     *
+     * @param emailStr string to be evaluated
+     * @return true if address is valid
+     */
+    public static boolean validateEmail(String emailStr) {
+        Matcher matcher = VALID_EMAIL_ADDRESS_REGEX.matcher(emailStr);
+        return matcher.find();
     }
 
 }

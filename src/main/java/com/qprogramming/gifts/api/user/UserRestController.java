@@ -8,6 +8,8 @@ import com.qprogramming.gifts.account.family.Family;
 import com.qprogramming.gifts.account.family.FamilyForm;
 import com.qprogramming.gifts.account.family.FamilyService;
 import com.qprogramming.gifts.account.family.KidForm;
+import com.qprogramming.gifts.config.mail.Mail;
+import com.qprogramming.gifts.config.mail.MailService;
 import com.qprogramming.gifts.gift.GiftService;
 import com.qprogramming.gifts.login.token.TokenBasedAuthentication;
 import com.qprogramming.gifts.messages.MessagesService;
@@ -28,12 +30,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
 import javax.validation.Valid;
 import java.security.Principal;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/user")
@@ -45,13 +48,15 @@ public class UserRestController {
     private MessagesService msgSrv;
     private FamilyService familyService;
     private GiftService giftService;
+    private MailService mailService;
 
     @Autowired
-    public UserRestController(AccountService accountService, MessagesService msgSrv, FamilyService familyService, GiftService giftService) {
+    public UserRestController(AccountService accountService, MessagesService msgSrv, FamilyService familyService, GiftService giftService, MailService mailService) {
         this.accountService = accountService;
         this.msgSrv = msgSrv;
         this.familyService = familyService;
         this.giftService = giftService;
+        this.mailService = mailService;
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
@@ -312,5 +317,40 @@ public class UserRestController {
         }
         return account;
     }
+
+    /**
+     * Shares public link with email recipients. Passed emails should be ; delimited. Only valid emails will be used to send emails to
+     *
+     * @param emails ; delimited email address
+     * @return
+     */
+    @RequestMapping(value = "/share", method = RequestMethod.POST)
+    public ResponseEntity shareGiftList(@RequestBody String emails) {
+        if (!Utils.getCurrentAccount().getPublicList()) {
+            return new ResultData.ResultBuilder().badReqest().error().build();
+        }
+        List<Mail> mailList = new ArrayList<>();
+        List<String> emailLists = Arrays.stream(emails.split(";")).filter(Utils::validateEmail).collect(Collectors.toList());
+        for (String email : emailLists) {
+            Mail mail = new Mail();
+            Account byEmail = accountService.findByEmail(email);
+            mail.setMailTo(email);
+            mail.setMailFrom(Utils.getCurrentAccount().getEmail());
+            if (byEmail != null) {
+                mail.setLocale(byEmail.getLanguage());
+                mail.addToModel("name", byEmail.getFullname());
+            }
+            mail.addToModel("owner", Utils.getCurrentAccount().getFullname());
+            mailList.add(mail);
+        }
+        try {
+            mailService.shareGiftList(mailList);
+        } catch (MessagingException e) {
+            LOG.error("Error while sending emailLists {}", e);
+            return new ResultData.ResultBuilder().badReqest().error().message(e.getMessage()).build();
+        }
+        return ResponseEntity.ok().build();
+    }
+
 
 }

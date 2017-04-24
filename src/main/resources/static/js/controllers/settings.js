@@ -4,6 +4,7 @@ app.controller('settings', ['$rootScope', '$scope', '$http', '$location', '$tran
         $scope.avatarImage = '';
         $scope.croppedAvatar = '';
         $scope.languages = {};
+        $scope.shareEmails = '';
         if ($rootScope.authenticated) {
             AppService.getLanguageList().then(function (response) {
                 $scope.languages = response.data
@@ -60,6 +61,19 @@ app.controller('settings', ['$rootScope', '$scope', '$http', '$location', '$tran
 
         $scope.copyLink = function () {
             UtilsService.copyLink();
+        };
+
+        $scope.shareListWithEmails = function () {
+            var url = 'api/user/share/';
+            $http.post(url, $scope.shareEmails).then(
+                function (response) {
+                    $scope.shareEmails = '';
+                    $log.debug("[DEBUG] shared emails");
+                    //TODO show message
+                }).catch(function (response) {
+                AlertService.addError("error.general", response);
+                $log.debug(response);
+            });
         };
 
         $scope.deleteAccount = function () {
