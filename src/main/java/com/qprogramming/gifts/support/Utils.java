@@ -7,17 +7,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -28,14 +25,10 @@ public class Utils {
     private static final String DATE_FORMAT = "dd-MM-yyyy";
     private static final String DATE_FORMAT_TIME = "dd-MM-yyyy HH:mm";
     private static final Logger LOG = LoggerFactory.getLogger(Utils.class);
-    private static final String HTML_TAG_PATTERN = "<(\\/)?([A-Za-z][A-Za-z0-9]*)\\b[^>]*>";
-    private static final String ESTIMATES_PATTENR = "\\s?(\\d*d)?\\s?(\\d*h)?\\s?(\\d*m)?";
+    private static final Pattern VALID_HTML_TAG_REGEX = Pattern.compile("<(\\/)?([A-Za-z][A-Za-z0-9]*)\\b[^>]*>");
     private static final Pattern VALID_EMAIL_ADDRESS_REGEX = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
+    private static final Pattern VALID_LINK_REGEX = Pattern.compile("/^(https?:\\/\\/)?([\\da-z\\.-]+)\\.([a-z\\.]{2,6})([\\/\\w \\.-]*)*\\/?$/");
     private static final long NUM_100NS_INTERVALS_SINCE_UUID_EPOCH = 0x01b21dd213814000L;
-    private static String baseURL;
-    private static HttpServletRequest request;
-    @Value("${default.locale}")
-    private String defaultLang;
 
     public static Account getCurrentAccount() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -69,21 +62,19 @@ public class Utils {
      * @return
      */
     public static boolean containsHTMLTags(String contents) {
-        Pattern pattern = Pattern.compile(HTML_TAG_PATTERN);
-        Matcher matcher = pattern.matcher(contents);
+        Matcher matcher = VALID_HTML_TAG_REGEX.matcher(contents);
         return matcher.matches() || matcher.find();
     }
 
-    public static String getBaseURL() {
-        if (baseURL == null) {
-            int port = request.getServerPort();
-            if (port == 80) {
-                baseURL = String.format("%s://%s/tasq", request.getScheme(), request.getServerName());
-            } else {
-                baseURL = String.format("%s://%s:%d/tasq", request.getScheme(), request.getServerName(), port);
-            }
-        }
-        return baseURL;
+    /**
+     * Returns tru if passed link is a valid url
+     *
+     * @param link url string to be checked
+     * @return true if link is a valid url
+     */
+    public static boolean validUrlLink(String link) {
+        Matcher matcher = VALID_LINK_REGEX.matcher(link);
+        return matcher.matches() || matcher.find();
     }
 
     public static Locale getCurrentLocale() {
@@ -101,10 +92,6 @@ public class Utils {
      */
     public static Locale getDefaultLocale() {
         return LocaleContextHolder.getLocale();
-    }
-
-    public static boolean contains(Collection<?> coll, Object o) {
-        return coll.contains(o);
     }
 
     /**
@@ -171,30 +158,6 @@ public class Utils {
 
     public static String stripHtml(String string) {
         return Jsoup.parse(string).text();
-    }
-
-    /**
-     * Coppy file from source path to destination file Used mostly for getting
-     * files from resources etc. and coping to some destFile
-     *
-     * @param sc
-     * @param sourcePath
-     * @param destFile
-     */
-    public static void copyFile(ServletContext sc, String sourcePath, File destFile) {
-        try {
-            InputStream in = new FileInputStream(sc.getRealPath(sourcePath));
-            OutputStream out = new FileOutputStream(destFile);
-            byte[] buf = new byte[1024];
-            int len;
-            while ((len = in.read(buf)) > 0) {
-                out.write(buf, 0, len);
-            }
-            out.close();
-            in.close();
-        } catch (IOException e) {
-            LOG.error(e.getMessage());
-        }
     }
 
     /**

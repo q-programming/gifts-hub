@@ -6,7 +6,6 @@ import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.account.family.Family;
 import com.qprogramming.gifts.account.family.FamilyService;
-import com.qprogramming.gifts.config.mail.MailService;
 import com.qprogramming.gifts.gift.Gift;
 import com.qprogramming.gifts.gift.GiftForm;
 import com.qprogramming.gifts.gift.GiftService;
@@ -22,13 +21,18 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.net.URL;
 import java.util.*;
 
 import static org.junit.Assert.*;
@@ -39,18 +43,21 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class GiftRestControllerTest {
-    public static final String API_GIFT_CREATE = "/api/gift/create";
-    public static final String API_GIFT_EDIT = "/api/gift/edit";
-    public static final String API_GIFT_LIST = "/api/gift/user";
-    public static final String API_GIFT_CLAIM = "/api/gift/claim/";
-    public static final String API_GIFT_UNCLAIM = "/api/gift/unclaim/";
-    public static final String API_GIFT_COMPLETE = "/api/gift/complete/";
-    public static final String API_GIFT_UNDO_COMPLETE = "/api/gift/undo-complete/";
-    public static final String API_GIFT_DELETE = "/api/gift/delete/";
-    public static final String OTHER_USER = "OTHER_USER";
-    public static final String JOHN = "John";
-    public static final String DOE = "Doe";
-    public static final String NAME = "name";
+    private static final String API_GIFT_CREATE = "/api/gift/create";
+    private static final String API_GIFT_EDIT = "/api/gift/edit";
+    private static final String API_GIFT_LIST = "/api/gift/user";
+    private static final String API_GIFT_CLAIM = "/api/gift/claim/";
+    private static final String API_GIFT_UNCLAIM = "/api/gift/unclaim/";
+    private static final String API_GIFT_COMPLETE = "/api/gift/complete/";
+    private static final String API_GIFT_UNDO_COMPLETE = "/api/gift/undo-complete/";
+    private static final String API_GIFT_DELETE = "/api/gift/delete/";
+    private static final String API_GIFT_IMPORT = "/api/gift/import";
+    private static final String API_GIFT_TEMPLATE = "/api/gift/get-template";
+    private static final String OTHER_USER = "OTHER_USER";
+    private static final String JOHN = "John";
+    private static final String DOE = "Doe";
+    private static final String NAME = "name";
+    private static final String TEMPLATE_XLS = "template.xls";
     private MockMvc giftsRestCtrl;
     @Mock
     private AccountService accSrvMock;
@@ -71,7 +78,11 @@ public class GiftRestControllerTest {
     @Mock
     private AnonymousAuthenticationToken annonymousTokenMock;
     @Mock
-    private MailService mailServiceMock;
+    private HttpServletResponse responseMock;
+    @Mock
+    private ServletOutputStream outputStreamMock;
+    @Mock
+    private MockMultipartFile mockMultipartFile;
 
     private Account testAccount;
 
@@ -390,6 +401,34 @@ public class GiftRestControllerTest {
         when(familyServiceMock.getFamily(owner)).thenReturn(family);
         giftsRestCtrl.perform(delete(API_GIFT_DELETE + gift.getId())).andExpect(status().isOk());
         verify(giftServiceMock, times(1)).delete(gift);
+    }
+
+    @Test
+    public void importGifts() throws Exception {
+        Category category = new Category();
+        category.setName("category");
+        category.setId(1L);
+        when(categoryRepositoryMock.findByName("category")).thenReturn(category);
+        when(giftServiceMock.create(any(Gift.class))).then(returnsFirstArg());
+        URL fileURL = getClass().getResource("sampleImport.xls");
+        mockMultipartFile = new MockMultipartFile("file", fileURL.getFile(), "text/plain",
+                getClass().getResourceAsStream("sampleImport.xls"));
+        giftsRestCtrl.perform(MockMvcRequestBuilders.fileUpload(API_GIFT_IMPORT).file(mockMultipartFile)).andExpect(status().isOk());
+        verify(categoryRepositoryMock, times(2)).save(any(Category.class));
+        verify(giftServiceMock, times(4)).create(any(Gift.class));
+    }
+
+    @Test
+    public void getTemplateTest() throws Exception {
+        when(responseMock.getOutputStream()).thenReturn(outputStreamMock);
+
+        MvcResult mvcResult = giftsRestCtrl.perform(get(API_GIFT_TEMPLATE)).andExpect(status().isOk()).andReturn();
+        String contentType = mvcResult.getResponse().getContentType();
+        byte[] contentAsByteArray = mvcResult.getResponse().getContentAsByteArray();
+        String content = mvcResult.getResponse().getHeader("Content-Disposition");
+        assertEquals("application/vnd.ms-excel", contentType);
+        assertNotNull(content);
+        assertTrue(contentAsByteArray.length > 0);
     }
 
 

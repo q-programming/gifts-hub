@@ -44,10 +44,10 @@
             </span>
                 </div>
                 <div class="col-xs-12 col-sm-offset-1 col-sm-2 col-md-offset-3 col-lg-offset-5 col-md-2">
-                    <button type="button" class="btn btn-success pull-right" ng-click="showShare()"
+                    <button type="button" class="btn btn-success pull-right" ng-click="showImport()"
+                            uib-tooltip="{{'gift.import'| translate}}"
                             ng-show="userList || family.familyAdmin">
-                        <i class="fa fa-envelope" aria-hidden="true"></i>
-                        <span translate="gift.share"></span>
+                        <i class="fa fa-upload" aria-hidden="true"></i>
                     </button>
                     <button type="button" class="btn btn-success pull-right" ng-click="showCreate()"
                             ng-show="userList || family.familyAdmin">

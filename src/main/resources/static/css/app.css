@@ -544,4 +544,10 @@ img.center {
 .no-bold {
     font-weight: normal;
 }
+.bordered {
+    display: inline-block;
+    padding: 6px 12px;
+    text-align: center;
+    border: 1px solid lightgray;
+}
 

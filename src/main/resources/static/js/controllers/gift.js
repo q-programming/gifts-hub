@@ -9,6 +9,9 @@ app.controller('gift', [
         $scope.userGiftList = {};
         $scope.listTitle = "";
 
+        $scope.importedFile = null;
+
+
         $scope.categoryOther = "";
         $scope.categoryRealised = "";
 
@@ -85,16 +88,39 @@ app.controller('gift', [
                 }
             });
         };
-        $scope.showShare = function () {
+        $scope.showImport = function () {
             $uibModal.open({
-                templateUrl: 'modals/giftShare.html',
+                templateUrl: 'modals/giftImport.html',
                 scope: $scope,
                 controller: function ($uibModalInstance, $scope) {
+                    $scope.fileName = "";
+                    $scope.gotFile = null;
                     $scope.cancel = function () {
                         $uibModalInstance.dismiss('cancel');
                     };
                     $scope.action = function () {
-
+                        $log.debug($scope.importedFile);
+                        var fd = new FormData();
+                        fd.append("file", $scope.importedFile);
+                        var url = 'api/gift/import';
+                        $http.post(url, fd, {
+                            transformRequest: angular.identity,
+                            headers: {'Content-Type': undefined}
+                        }).then(function () {
+                            getGiftList();
+                            getCategories();
+                            AlertService.addSuccess("gift.new.added");
+                            $uibModalInstance.close();
+                        }).catch(function (response) {
+                            AlertService.addError("error.general", response);
+                            $log.debug(response);
+                        });
+                    };
+                    $scope.handleFileSelect = function (evt) {
+                        $scope.importedFile = evt.files[0];
+                        $scope.fileName = $scope.importedFile.name;
+                        $scope.gotFile = true;
+                        $scope.$apply();
                     };
                 }
             });
