@@ -4,7 +4,7 @@ app.controller('settings', ['$rootScope', '$scope', '$http', '$location', '$tran
         $scope.avatarImage = '';
         $scope.croppedAvatar = '';
         $scope.languages = {};
-        $scope.shareEmails = '';
+        $scope.useremails = '';
         if ($rootScope.authenticated) {
             AppService.getLanguageList().then(function (response) {
                 $scope.languages = response.data
@@ -63,13 +63,13 @@ app.controller('settings', ['$rootScope', '$scope', '$http', '$location', '$tran
             UtilsService.copyLink();
         };
 
-        $scope.shareListWithEmails = function () {
+        $scope.shareListWithEmails = function (useremails) {
             var url = 'api/user/share/';
-            $http.post(url, $scope.shareEmails).then(
+            $http.post(url, useremails).then(
                 function (response) {
-                    $scope.shareEmails = '';
+                    useremails = '';
                     $log.debug("[DEBUG] shared emails");
-                    //TODO show message
+                    AlertService.addSuccessMessage(response.data.message);
                 }).catch(function (response) {
                 AlertService.addError("error.general", response);
                 $log.debug(response);

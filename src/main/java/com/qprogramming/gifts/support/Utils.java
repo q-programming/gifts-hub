@@ -27,7 +27,7 @@ public class Utils {
     private static final Logger LOG = LoggerFactory.getLogger(Utils.class);
     private static final Pattern VALID_HTML_TAG_REGEX = Pattern.compile("<(\\/)?([A-Za-z][A-Za-z0-9]*)\\b[^>]*>");
     private static final Pattern VALID_EMAIL_ADDRESS_REGEX = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
-    private static final Pattern VALID_LINK_REGEX = Pattern.compile("/^(https?:\\/\\/)?([\\da-z\\.-]+)\\.([a-z\\.]{2,6})([\\/\\w \\.-]*)*\\/?$/");
+    private static final Pattern VALID_LINK_REGEX = Pattern.compile("(@)?(href=')?(HREF=')?(HREF=\")?(href=\")?(http://)?[a-zA-Z_0-9\\-]+(\\.\\w[a-zA-Z_0-9\\-]+)+(/[#&\\n\\-=?\\+\\%/\\.\\w]+)?");
     private static final long NUM_100NS_INTERVALS_SINCE_UUID_EPOCH = 0x01b21dd213814000L;
 
     public static Account getCurrentAccount() {

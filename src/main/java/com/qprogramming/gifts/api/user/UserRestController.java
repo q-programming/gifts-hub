@@ -349,8 +349,7 @@ public class UserRestController {
             LOG.error("Error while sending emailLists {}", e);
             return new ResultData.ResultBuilder().badReqest().error().message(e.getMessage()).build();
         }
-        return ResponseEntity.ok().build();
+        String message = msgSrv.getMessage("gift.share.success", new Object[]{StringUtils.join(emailLists, ", ")}, "", Utils.getCurrentLocale());
+        return new ResultData.ResultBuilder().ok().message(message).build();
     }
-
-
 }

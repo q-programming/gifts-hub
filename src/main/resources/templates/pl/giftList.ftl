@@ -2,22 +2,24 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Lista \u017cycze\u0144</title>
+    <title>Lista życzeń</title>
 </head>
 <body>
 <#if name??>
 <p>Witaj ${name}</p>
 </#if>
 <div>
-${owner} chcia\u0142 si\u0119 z Tob\u0105 podzieli\u0107 swoja list\u0105 \u017cycze\u0144 stworzon\u0105 w aplikacji gifts hub
+${owner} chcia&#322; si&#281; z Tob&#261; podzieli&#263; swoja list&#261; &#380;ycze&#324; stworzon&#261; w aplikacji
+    gifts hub
 </div>
-<p>Kliknij poni\u017cej aby j\u0105 obejrze\u0107</p>
+<p>Kliknij poni&#380;ej aby j&#261; obejrze&#263;</p>
 <p>
     <a href="${publicLink}">${publicLink}</a>
 </p>
 <div>
-    To jest automatyczna wiadomo\u015b\u0107 wys\u0142ana z <a href="${application!'#'}" target="_blank">${application!'#'}</a>.
-    Prosz\u0119 nie odpowiada\u0107
+    To jest automatyczna wiadomo&#347;&#263; wys&#322;ana z <a href="${application!'#'}"
+                                                               target="_blank">${application!'#'}</a>.
+    Prosz&#281; nie odpowiada&#263;
 </div>
 </body>
 </html>

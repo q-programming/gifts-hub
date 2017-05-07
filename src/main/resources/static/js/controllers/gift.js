@@ -1,6 +1,6 @@
 app.controller('gift', [
-    '$rootScope', '$scope', '$http', '$log', '$routeParams', '$route', '$location', '$window', '$translate', '$uibModal', 'AlertService', 'AvatarService', 'GIFT_STATUS',
-    function ($rootScope, $scope, $http, $log, $routeParams, $route, $location, $window, $translate, $uibModal, AlertService, AvatarService, GIFT_STATUS) {
+    '$rootScope', '$scope', '$http', '$log', '$routeParams', '$route', '$location', '$window', '$translate', '$uibModal', '$sce', 'AlertService', 'AvatarService', 'GIFT_STATUS',
+    function ($rootScope, $scope, $http, $log, $routeParams, $route, $location, $window, $translate, $uibModal, $sce, AlertService, AvatarService, GIFT_STATUS) {
         $scope.giftForm = {};
         $scope.giftsList = [];
         $scope.searchEngines = [];
@@ -95,8 +95,15 @@ app.controller('gift', [
                 controller: function ($uibModalInstance, $scope) {
                     $scope.fileName = "";
                     $scope.gotFile = null;
+                    $scope.logmessage = "";
+                    $scope.importFinished = null;
                     $scope.cancel = function () {
                         $uibModalInstance.dismiss('cancel');
+                    };
+                    $scope.close = function () {
+                        getGiftList();
+                        getCategories();
+                        $uibModalInstance.close();
                     };
                     $scope.action = function () {
                         $log.debug($scope.importedFile);
@@ -106,11 +113,9 @@ app.controller('gift', [
                         $http.post(url, fd, {
                             transformRequest: angular.identity,
                             headers: {'Content-Type': undefined}
-                        }).then(function () {
-                            getGiftList();
-                            getCategories();
-                            AlertService.addSuccess("gift.new.added");
-                            $uibModalInstance.close();
+                        }).then(function (response) {
+                            $scope.logmessage = $sce.trustAsHtml(response.data.message);
+                            $scope.importFinished = true
                         }).catch(function (response) {
                             AlertService.addError("error.general", response);
                             $log.debug(response);

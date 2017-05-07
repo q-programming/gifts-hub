@@ -9,6 +9,7 @@
             <hr/>
         </div>
     </div>
+    <!--AVATAR-->
     <div class="row">
         <div class="col-sm-offset-2 col-md-offset-4 col-md-6">
             <h4>
@@ -43,6 +44,7 @@
             <hr/>
         </div>
     </div>
+    <!--LANGUAGE-->
     <div class="row">
         <div class="form-group col-sm-offset-2 col-md-offset-4 col-md-6">
             <h4>
@@ -55,6 +57,7 @@
             <hr/>
         </div>
     </div>
+    <!--PUBLIC LINK-->
     <div class="row">
         <div class="form-group col-sm-offset-2 col-md-offset-4 col-md-6">
             <h4>
@@ -81,6 +84,7 @@
             </div>
         </div>
     </div>
+    <!--SHARE LIST-->
     <div class="row" ng-if="principal.publicList">
         <div class="form-group col-sm-offset-2 col-md-offset-4 col-md-6">
             <h4>
@@ -90,17 +94,18 @@
             <span>{{'gift.share.help'|translate}}</span>
             <div class="row">
                 <div class="col-xs-9">
-                    <input class="form-control" rows="2" ng-model="shareEmails">
+                    <input class="form-control" ng-model="useremails">
                 </div>
                 <div class="col-xs-2">
                     <span class="btn btn-default" uib-tooltip="{{'gift.share'|translate}}"
-                          tooltip-placement="left" ng-click="shareListWithEmails()">
+                          tooltip-placement="left" ng-click="shareListWithEmails(useremails)">
                         <i class="fa fa-envelope" aria-hidden="true"></i>
                     </span>
                 </div>
             </div>
         </div>
     </div>
+    <!--DELETE ACCOUNT-->
     <div class="row">
         <div class="form-group col-sm-offset-2  col-md-offset-4 col-md-6">
             <hr/>

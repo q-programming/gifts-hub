@@ -21,8 +21,10 @@ public class UtilsTest {
 
     @Test
     public void validUrlLink() throws Exception {
-        String link = "http://google.com/some/file.html";
-        assertFalse(Utils.validUrlLink(link));
+        String link = "https://google.com/some/file.html";
+        String link2 = "http://google.com";
+        assertTrue("Invalid link "+link,Utils.validUrlLink(link));
+        assertTrue("Invalid link "+link2, Utils.validUrlLink(link2));
     }
 
     @Test

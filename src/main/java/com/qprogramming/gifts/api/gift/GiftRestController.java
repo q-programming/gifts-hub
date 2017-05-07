@@ -27,6 +27,7 @@ import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -68,6 +69,7 @@ public class GiftRestController {
         this.familyService = familyService;
     }
 
+    @Transactional
     @RequestMapping("/create")
     public ResponseEntity createGift(@RequestBody GiftForm giftForm) {
         Gift newGift = new Gift();
@@ -81,6 +83,7 @@ public class GiftRestController {
         return new ResultData.ResultBuilder().badReqest().error().message(msgSrv.getMessage("user.family.admin.error")).build();
     }
 
+    @Transactional
     @RequestMapping("/edit")
     public ResponseEntity editGift(@RequestBody GiftForm giftForm) {
         Gift gift = giftService.findById(giftForm.getId());
@@ -262,11 +265,12 @@ public class GiftRestController {
         }
     }
 
+    @Transactional
     @RequestMapping(value = "/import", method = RequestMethod.POST)
     public ResponseEntity importGifts(@RequestParam(value = "file") MultipartFile importFile) {
+        StringBuilder logger = new StringBuilder();
         Workbook workbook;
         try (InputStream importFileInputStream = importFile.getInputStream()) {
-            StringBuilder logger = new StringBuilder();
             workbook = WorkbookFactory.create(importFileInputStream);
             Sheet sheet = workbook.getSheetAt(0);
             processImportSheet(sheet, logger);
@@ -277,7 +281,7 @@ public class GiftRestController {
             LOG.error("IOException: {}", e);
             return new ResultData.ResultBuilder().badReqest().error().message(msgSrv.getMessage("error.fileIO")).build();
         }
-        return new ResultData.ResultBuilder().ok().message("Got file").build();
+        return new ResultData.ResultBuilder().ok().message(logger.toString()).build();
     }
 
     @RequestMapping(value = "/get-template", method = RequestMethod.GET)
@@ -286,7 +290,7 @@ public class GiftRestController {
             Workbook workbook = new HSSFWorkbook();
             Sheet sheet = workbook.createSheet();
             Row row = sheet.createRow(0);
-            row.createCell(NAME_CELL).setCellValue(msgSrv.getMessage("gift.name"));
+            row.createCell(NAME_CELL).setCellValue(msgSrv.getMessage("gift.name") + " *");
             row.createCell(DESCRIPTION_CELL).setCellValue(msgSrv.getMessage("gift.description"));
             row.createCell(LINK_CELL).setCellValue(msgSrv.getMessage("gift.link"));
             row.createCell(CATEGORY_CELL).setCellValue(msgSrv.getMessage("gift.category"));
@@ -333,16 +337,16 @@ public class GiftRestController {
                         , new Object[]{rowNo, newGift.getName()}
                         , ""
                         , Utils.getCurrentLocale());
-                logger.append(BR);
                 logger.append(added);
+                logger.append(BR);
             } else {
 
                 String notEmpty = msgSrv.getMessage("gift.import.nameEmpty"
                         , new Object[]{rowNo, cellAddress}
                         , ""
                         , Utils.getCurrentLocale());
-                logger.append(BR);
                 logger.append(notEmpty);
+                logger.append(BR);
             }
             rowNo++;
         }
@@ -357,8 +361,8 @@ public class GiftRestController {
                     , new Object[]{rowNo, cellAddress}
                     , ""
                     , Utils.getCurrentLocale());
-            logger.append(BR);
             logger.append(wrongLink);
+            logger.append(BR);
         }
     }
 }

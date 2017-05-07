@@ -1,6 +1,7 @@
 package com.qprogramming.gifts.config.mail;
 
 
+import com.qprogramming.gifts.config.property.DataBasePropertySource;
 import com.qprogramming.gifts.config.property.PropertyService;
 import com.qprogramming.gifts.messages.MessagesService;
 import com.qprogramming.gifts.support.Utils;
@@ -32,13 +33,15 @@ public class MailService {
     private JavaMailSender mailSender;
     private Configuration freemarkerConfiguration;
     private MessagesService msgSrv;
+    private DataBasePropertySource dbSource;
 
 
     @Autowired
-    public MailService(PropertyService propertyService, @Qualifier("freeMarkerConfiguration") Configuration freemarkerConfiguration, MessagesService msgSrv) {
+    public MailService(PropertyService propertyService, @Qualifier("freeMarkerConfiguration") Configuration freemarkerConfiguration, MessagesService msgSrv, DataBasePropertySource dataBasePropertySource) {
         this.propertyService = propertyService;
         this.freemarkerConfiguration = freemarkerConfiguration;
         this.msgSrv = msgSrv;
+        this.dbSource = dataBasePropertySource;
         initMailSender();
     }
 
@@ -125,7 +128,8 @@ public class MailService {
 
     public void shareGiftList(List<Mail> emails) throws MessagingException {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
-        String publicLink = propertyService.getProperty(APP_URL + "#/public/" + Utils.getCurrentAccountId());
+        String application = propertyService.getProperty(APP_URL);
+        String publicLink = application + "#/public/" + Utils.getCurrentAccountId();
         for (Mail mail : emails) {
             Locale locale = getMailLocale(mail);
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
@@ -133,6 +137,7 @@ public class MailService {
             mimeMessageHelper.setFrom(mail.getMailFrom());
             mimeMessageHelper.setTo(mail.getMailTo());
             mail.addToModel("publicLink", publicLink);
+            mail.addToModel("application", application);
             mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/giftList.ftl"));
             mimeMessageHelper.setText(mail.getMailContent(), true);
             mailSender.send(mimeMessageHelper.getMimeMessage());
