@@ -97,6 +97,7 @@ app.controller('gift', [
                     $scope.gotFile = null;
                     $scope.logmessage = "";
                     $scope.importFinished = null;
+                    $scope.importInProgress = null;
                     $scope.cancel = function () {
                         $uibModalInstance.dismiss('cancel');
                     };
@@ -110,11 +111,13 @@ app.controller('gift', [
                         var fd = new FormData();
                         fd.append("file", $scope.importedFile);
                         var url = 'api/gift/import';
+                        $scope.importInProgress = true;
                         $http.post(url, fd, {
                             transformRequest: angular.identity,
                             headers: {'Content-Type': undefined}
                         }).then(function (response) {
                             $scope.logmessage = $sce.trustAsHtml(response.data.message);
+                            $scope.importInProgress = false;
                             $scope.importFinished = true
                         }).catch(function (response) {
                             AlertService.addError("error.general", response);
