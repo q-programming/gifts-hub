@@ -123,6 +123,7 @@ app.controller('gift', [
                             $scope.importInProgress = false;
                             $scope.importFinished = true
                         }).catch(function (response) {
+                            $uibModalInstance.close();
                             AlertService.addError("error.general", response);
                             $log.debug(response);
                         });

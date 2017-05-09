@@ -2,6 +2,9 @@ var AlertService = angular.module('AlertService', []);
 AlertService.factory('AlertService', ['$http', '$log', '$rootScope', '$timeout', '$translate', 'MESSAGES',
     function ($http, $log, $rootScope, $timeout, $translate, MESSAGES) {
         var AlertService = {};
+        var DEFAULT_TIMEOUT = 5000;
+        var ERROR_TIMEOUT = 10000;
+
         $rootScope.alerts = [];
         /**
          * Adds success message but with key instead of message. Translation srv. will be called for it
@@ -28,7 +31,7 @@ AlertService.factory('AlertService', ['$http', '$log', '$rootScope', '$timeout',
 
         AlertService.addError = function (code) {
             $translate(code).then(function (translation) {
-                AlertService.addAlert(MESSAGES.ERROR, translation);
+                AlertService.addAlert(MESSAGES.ERROR, translation, ERROR_TIMEOUT);
             });
         };
         AlertService.addError = function (code, response) {
@@ -41,13 +44,16 @@ AlertService.factory('AlertService', ['$http', '$log', '$rootScope', '$timeout',
                         msg += "</br>" + response.data.message;
                     }
                 }
-                AlertService.addAlert(MESSAGES.ERROR, msg);
+                AlertService.addAlert(MESSAGES.ERROR, msg, ERROR_TIMEOUT);
             });
         };
 
-        AlertService.addAlert = function (type, message) {
+        AlertService.addAlert = function (type, message, timeout) {
             var alert = {};
             var exists = false;
+            if (!timeout) {
+                timeout = DEFAULT_TIMEOUT;
+            }
             alert.type = type;
             alert.msg = message;
             angular.forEach($rootScope.alerts, function (value) {
@@ -60,7 +66,7 @@ AlertService.factory('AlertService', ['$http', '$log', '$rootScope', '$timeout',
                 var index = $rootScope.alerts.push(alert) - 1;
                 $timeout(function () {
                     AlertService.dismissAlert(index)
-                }, 5000);
+                }, timeout);
             }
         };
         AlertService.clearAlerts = function () {

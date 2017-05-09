@@ -105,8 +105,7 @@ public class GiftRestController {
                 return false;
             }
             Family family = familyService.getFamily(giftOwner);
-            return family == null
-                    || (family.getAdmins().contains(Utils.getCurrentAccount()));
+            return family != null && (family.getAdmins().contains(Utils.getCurrentAccount()));
         }
         return false;
     }

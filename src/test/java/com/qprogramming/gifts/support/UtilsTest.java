@@ -15,7 +15,7 @@ import static org.junit.Assert.assertTrue;
 public class UtilsTest {
     @Test
     public void invalidUrlLink() throws Exception {
-        String link = "http://google.com/some/file!.html";
+        String link = "http://googlecom/some/file!.html";
         assertFalse(Utils.validUrlLink(link));
     }
 
