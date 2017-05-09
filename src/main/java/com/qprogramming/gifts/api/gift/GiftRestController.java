@@ -267,13 +267,16 @@ public class GiftRestController {
 
     @Transactional
     @RequestMapping(value = "/import", method = RequestMethod.POST)
-    public ResponseEntity importGifts(@RequestParam(value = "file") MultipartFile importFile) {
+    public ResponseEntity importGifts(@RequestParam(value = "file") MultipartFile importFile, @RequestParam(value = "user", required = false) String username) {
+        if (StringUtils.isNotBlank(username) && !canOperateOnUsernameGifts(username)) {
+            return new ResultData.ResultBuilder().badReqest().error().message(msgSrv.getMessage("user.family.admin.error")).build();
+        }
         StringBuilder logger = new StringBuilder();
         Workbook workbook;
         try (InputStream importFileInputStream = importFile.getInputStream()) {
             workbook = WorkbookFactory.create(importFileInputStream);
             Sheet sheet = workbook.getSheetAt(0);
-            processImportSheet(sheet, logger);
+            processImportSheet(sheet, logger, username);
         } catch (InvalidFormatException | org.apache.poi.openxml4j.exceptions.InvalidFormatException e) {
             LOG.error("Failed to determine excel type");
             return new ResultData.ResultBuilder().badReqest().error().message(msgSrv.getMessage("gift.import.wrongType")).build();
@@ -305,7 +308,7 @@ public class GiftRestController {
         }
     }
 
-    private void processImportSheet(Sheet sheet, StringBuilder logger) {
+    private void processImportSheet(Sheet sheet, StringBuilder logger, String username) {
         int rowNo = 1;//start from row
         while (sheet.getRow(rowNo) != null) {
             Row row = sheet.getRow(rowNo);
@@ -318,6 +321,7 @@ public class GiftRestController {
             if (nameCell != null && nameCell.getCellTypeEnum() != CellType.BLANK) {
                 Gift newGift = new Gift();
                 GiftForm giftForm = new GiftForm();
+                giftForm.setUsername(username);
                 //NAME
                 giftForm.setName(nameCell.getStringCellValue());
                 //DESCRIPTION

@@ -419,9 +419,24 @@ public class GiftRestControllerTest {
     }
 
     @Test
+    public void importGiftsNotFamilyAdmin() throws Exception {
+        Account account = TestUtil.createAccount("John", "Doe");
+        Family family = new Family();
+        family.getMembers().add(account);
+        family.getAdmins().add(account);
+        when(giftServiceMock.create(any(Gift.class))).then(returnsFirstArg());
+        when(accSrvMock.findByUsername(account.getUsername())).thenReturn(account);
+        when(familyServiceMock.getFamily(account)).thenReturn(family);
+        URL fileURL = getClass().getResource("sampleImport.xls");
+        mockMultipartFile = new MockMultipartFile("file", fileURL.getFile(), "text/plain",
+                getClass().getResourceAsStream("sampleImport.xls"));
+        giftsRestCtrl.perform(MockMvcRequestBuilders.fileUpload(API_GIFT_IMPORT).file(mockMultipartFile).param("user", account.getUsername())).andExpect(status().isBadRequest());
+    }
+
+
+    @Test
     public void getTemplateTest() throws Exception {
         when(responseMock.getOutputStream()).thenReturn(outputStreamMock);
-
         MvcResult mvcResult = giftsRestCtrl.perform(get(API_GIFT_TEMPLATE)).andExpect(status().isOk()).andReturn();
         String contentType = mvcResult.getResponse().getContentType();
         byte[] contentAsByteArray = mvcResult.getResponse().getContentAsByteArray();

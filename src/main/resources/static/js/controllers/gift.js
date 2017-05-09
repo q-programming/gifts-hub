@@ -110,6 +110,9 @@ app.controller('gift', [
                         $log.debug($scope.importedFile);
                         var fd = new FormData();
                         fd.append("file", $scope.importedFile);
+                        if ($routeParams.username) {
+                            fd.append("user", $routeParams.username);
+                        }
                         var url = 'api/gift/import';
                         $scope.importInProgress = true;
                         $http.post(url, fd, {
