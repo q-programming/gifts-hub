@@ -27,6 +27,7 @@ app.constant("GIFT_STATUS", {
 });
 app.config(['$routeProvider', '$httpProvider', '$locationProvider', '$logProvider', 'localStorageServiceProvider', '$translateProvider', 'httpMethodInterceptorProvider',
     function ($routeProvider, $httpProvider, $locationProvider, $logProvider, localStorageServiceProvider, $translateProvider, httpMethodInterceptorProvider) {
+        const DEFAULT_LANGUAGE = 'pl';
         $routeProvider
             .when('/', {
                 templateUrl: 'home.html',
@@ -64,6 +65,16 @@ app.config(['$routeProvider', '$httpProvider', '$locationProvider', '$logProvide
                 templateUrl: 'app/manage.html',
                 controller: 'manage'
             })
+            .when('/help/:language?', {
+                templateUrl: function (params) {
+                    if (params.language) {
+                        return 'help/' + params.language + '.html'
+                    } else {
+                        return 'help/' + DEFAULT_LANGUAGE + '.html'
+                    }
+                },
+                controller: 'help'
+            })
             .when('/404', {
                 templateUrl: 'error/404.html',
                 controller: 'error'
@@ -81,8 +92,10 @@ app.config(['$routeProvider', '$httpProvider', '$locationProvider', '$logProvide
             .setPrefix('gifts-hub');
         $translateProvider.useUrlLoader('api/messages');
         $translateProvider.useStorage('UrlLanguageStorage');
-        $translateProvider.preferredLanguage('pl');
-        $translateProvider.fallbackLanguage('pl');
+
+
+        $translateProvider.preferredLanguage(DEFAULT_LANGUAGE);
+        $translateProvider.fallbackLanguage(DEFAULT_LANGUAGE);
         //http loader
         httpMethodInterceptorProvider.whitelistLocalRequests();
     }]);

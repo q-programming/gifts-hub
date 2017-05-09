@@ -24,6 +24,7 @@
 <!--NAVBAR-->
 <nav class="navbar theme navbar-fixed-top hidden-print" ng-controller="navigation">
     <div class="container-fluid">
+        <!--MOBILE MENU-->
         <div class="navbar-header">
             <a class="navbar-brand" href="#/"><img src="images/logo-white.png" width="40px" height="40px"/></a>
             <span class="stylish brand pull-left" style="font-size: xx-large">Gifts hub</span>
@@ -31,54 +32,49 @@
                 <ul class="nav navbar-nav navbar-right nav-stacked">
                     <li ng-if="!authenticated" ng-class="{active:tab('navigation')}" class="white">
                         <a href="#/login">
-                            <i class="fa fa-2x fa-sign-in margin-top10" aria-hidden="true"></i><br/>
+                            <i class="fa fa-2x fa-sign-in margin-top10"></i><br/>
                             <span translate="menu.login"></span>
                         </a>
                     </li>
                     <li ng-if="authenticated" ng-class="{active:tab('userlist')}" class="white">
                         <a href="#/users">
                             <span>
-                                <i class="fa fa-2x fa-user" aria-hidden="true"></i><br/>
+                                <i class="fa fa-2x fa-user"></i><br/>
                             </span>
                         </a>
                     </li>
                     <li ng-if="authenticated" ng-class="{active:tab('gift')}" class="white">
                         <a href="#/list">
                             <span>
-                            <i class="fa fa-2x fa-gift" aria-hidden="true"></i><br/>
+                            <i class="fa fa-2x fa-gift"></i><br/>
                             </span>
                         </a>
                     </li>
-                    <li ng-if="authenticated &amp;&amp; principal.role === 'ROLE_ADMIN'"
-                        class="white" ng-class="{active:tab('manage')}">
-                        <a href="#/manage">
+                    <li ng-if="authenticated" class="white" ng-class="{active:tab('help')}">
+                        <a ng-href="#/help/{{principal.language}}">
                             <span>
-                                <i class="fa fa-2x fa-wrench" aria-hidden="true"></i><br/>
+                                <i class="fa fa-2x fa-question-circle"></i><br/>
                             </span>
                         </a>
                     </li>
                     <li ng-if="authenticated" ng-class="{active:tab('settings')}" class="white">
                         <a href="#/settings">
                             <span>
-                                <i class="fa fa-2x fa-bars" aria-hidden="true"></i><br/>
+                                <i class="fa fa-2x fa-bars"></i><br/>
                             </span>
                         </a>
                     </li>
                 </ul>
             </div>
         </div>
+        <!--DESKTOP MENU-->
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right hidden-xs">
-                <li ng-if="!authenticated" ng-class="{active:tab('navigation')}">
-                    <a href="#/login">
-                        <i class="fa fa-sign-in margin-top10" aria-hidden="true"></i><br/>
-                        <span translate="menu.login"></span>
-                    </a></li>
                 <li ng-if="authenticated" ng-class="{active:tab('userlist')}" class="text-center side-menu">
                     <a href="#/users">
                         <span>
-                            <i class="fa fa-gift" aria-hidden="true"></i>
-                            <i class="fa fa-2x fa-user" aria-hidden="true"></i><br/>
+                            <i class="fa fa-gift"></i>
+                            <i class="fa fa-2x fa-user"></i><br/>
                             <span translate="menu.users"></span>
                         </span>
                     </a>
@@ -86,8 +82,8 @@
                 <li ng-if="authenticated" ng-class="{active:tab('gift')}" class="text-center">
                     <a href="#/list">
                         <span>
-                            <i class="fa fa-list" aria-hidden="true"></i>&nbsp;
-                            <i class="fa fa-2x fa-gift" aria-hidden="true"></i><br/>
+                            <i class="fa fa-list"></i>&nbsp;
+                            <i class="fa fa-2x fa-gift"></i><br/>
                             <span translate="menu.wishlist"></span>
                         </span>
                     </a>
@@ -96,9 +92,17 @@
                     class="text-center">
                     <a href="#/manage">
                         <span>
-                            <i class="fa fa-columns" aria-hidden="true"></i>&nbsp;
-                            <i class="fa fa-2x fa-wrench" aria-hidden="true"></i><br/>
+                            <i class="fa fa-columns"></i>&nbsp;
+                            <i class="fa fa-2x fa-wrench"></i><br/>
                             <span translate="menu.manage"></span>
+                        </span>
+                    </a>
+                </li>
+                <li ng-class="{active:tab('help')}" class="text-center">
+                    <a ng-href="#/help/{{principal.language}}">
+                        <span>
+                            <i class="fa fa-2x fa-question-circle"></i><br/>
+                            <span translate="menu.help"></span>
                         </span>
                     </a>
                 </li>
@@ -113,17 +117,23 @@
                     <ul class="dropdown-menu" uib-dropdown-menu="" role="menu" aria-labelledby="single-button">
                         <li ng-if="authenticated" ng-class="{active:tab('settings')}">
                             <a href="#/settings">
-                                <i class="fa fa-cog" aria-hidden="true"></i>&nbsp;<span
+                                <i class="fa fa-cog"></i>&nbsp;<span
                                     translate="menu.settings"></span>
                             </a>
                         </li>
                         <li ng-if="authenticated">
                             <a href="" ng-click="logout()">
-                                <i class="fa fa-power-off" aria-hidden="true"></i>&nbsp;<span
+                                <i class="fa fa-power-off"></i>&nbsp;<span
                                     translate="menu.logout"></span>
                             </a>
                         </li>
                     </ul>
+                </li>
+                <li ng-if="!authenticated" ng-class="{active:tab('navigation')}">
+                    <a href="#/login">
+                        <i class="fa fa-2x fa-sign-in"></i><br/>
+                        <span translate="menu.login"></span>
+                    </a>
                 </li>
                 <li class="nav-avatar" ng-if="authenticated">
                 </li>
@@ -136,7 +146,7 @@
     <div class="row alert-row" ng-controller="alert">
         <div class="col-sm-10 col-md-11 col-md-offset-1 col-sm-offset-2">
             <div ng-repeat="alert in alerts" ng-class="'alert alert-' + (alert.type || 'warning')">
-                <button type="button" class="close theme-close" ng-click="dismissAlert($index)">&times;</button>
+                <button class="close theme-close" ng-click="dismissAlert($index)">&times;</button>
                 <span ng-bind-html="alert.msg"></span>
             </div>
         </div>
@@ -192,6 +202,7 @@
 <script src="js/controllers/manage.js"></script>
 <script src="js/controllers/error.js"></script>
 <script src="js/controllers/alerts.js"></script>
+<script src="js/controllers/help.js"></script>
 <script src="js/directives/progressbar.js"></script>
 <script src="js/directives/giftstatus.js"></script>
 <script src="js/directives/helpers.js"></script>
