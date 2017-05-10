@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import static com.qprogramming.gifts.settings.Settings.APP_DEFAULT_LANG;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 /**
@@ -19,6 +20,7 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 @Service
 public class PropertyService {
     public static final String LANG_DEFAULT_MSG = "NOT FOUND";
+    public static final String DEFAULT_APP_LANGUAGE = "pl";
 
     private PropertyRepository propertyRepository;
     private MessagesService msgSrv;
@@ -61,6 +63,19 @@ public class PropertyService {
             languages.put(c, availableLocales.get(c).getDisplayLanguage(Utils.getCurrentLocale()));
         }
         return languages;
+    }
+
+    /**
+     * Get default application language set by admin in app management. In case of it's empty, DEFAULT_APP_LANGUAGE is returned
+     *
+     * @return default application language
+     */
+    public String getDefaultLang() {
+        String lang = getProperty(APP_DEFAULT_LANG);
+        if (StringUtils.isBlank(lang)) {
+            return DEFAULT_APP_LANGUAGE;
+        }
+        return lang;
     }
 
     /**

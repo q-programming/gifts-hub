@@ -103,7 +103,7 @@ public class AppRestController {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
         Settings settings = new Settings();
-        settings.setLanguage(propertyService.getProperty(APP_DEFAULT_LANG));
+        settings.setLanguage(propertyService.getDefaultLang());
         settings.setSearchEngines(searchEngineService.getAllSearchEngines());
         settings.setGiftAge(propertyService.getProperty(APP_GIFT_AGE));
         settings.setSort(Settings.SortBy.fromString(propertyService.getProperty(APP_DEFAULT_SORT)));
@@ -130,6 +130,11 @@ public class AppRestController {
     @RequestMapping(value = "/languages", method = RequestMethod.GET)
     public ResponseEntity getAllLanguages() {
         return ResponseEntity.ok(propertyService.getLanguages());
+    }
+
+    @RequestMapping(value = "/default-language", method = RequestMethod.GET)
+    public ResponseEntity getDefaultLanguage() {
+        return ResponseEntity.ok(propertyService.getDefaultLang());
     }
 
     @RequestMapping(value = "/sort", method = RequestMethod.GET)

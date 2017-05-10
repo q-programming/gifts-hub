@@ -549,18 +549,23 @@ img-crop canvas {
 }
 
 @-webkit-keyframes sk-stretchdelay {
-    0%, 40%, 100% { -webkit-transform: scaleY(0.4) }
-    20% { -webkit-transform: scaleY(1.0) }
+    0%, 40%, 100% {
+        -webkit-transform: scaleY(0.4)
+    }
+    20% {
+        -webkit-transform: scaleY(1.0)
+    }
 }
 
 @keyframes sk-stretchdelay {
     0%, 40%, 100% {
         transform: scaleY(0.4);
         -webkit-transform: scaleY(0.4);
-    }  20% {
-           transform: scaleY(1.0);
-           -webkit-transform: scaleY(1.0);
-       }
+    }
+    20% {
+        transform: scaleY(1.0);
+        -webkit-transform: scaleY(1.0);
+    }
 }
 
 /*END LOADER*/
@@ -597,9 +602,76 @@ img.center {
 .no-bold {
     font-weight: normal;
 }
+
 .bordered {
     display: inline-block;
     padding: 6px 12px;
     border: 1px solid lightgray;
 }
 
+/*TOUR*/
+
+.tour-tip {
+    background: #fff !important;
+    color: #000 !important;
+    border-radius: 0 !important;
+    box-shadow: 3px 3px 7px #575757;
+}
+
+.tour-tip p {
+    padding-right: 10px!important;
+    color: #000 !important;
+}
+
+.tour-tip .tour-arrow.t-top {
+    border-style: solid;
+    bottom: -27px;
+    border-color: #fff transparent transparent !important;
+    filter: drop-shadow(0 0 0px #575757);
+    -webkit-filter: drop-shadow(0 0 0px #575757);
+}
+
+.tour-tip .tour-arrow.t-bottom {
+    border-style: solid;
+    top: -28px;
+    border-color: transparent transparent #fff !important;
+    filter: drop-shadow(0 0 0px #575757);
+    -webkit-filter: drop-shadow(0 0 0px #575757);
+}
+
+.tour-tip .tour-arrow.t-right {
+    border-style: solid;
+    left: -27px;
+    top: 28px;
+    border-color: transparent #fff transparent transparent !important;
+    filter: drop-shadow(0 0 0px #575757);
+    -webkit-filter: drop-shadow(0 0 0px #575757);
+}
+
+.tour-tip .tour-arrow.t-left {
+    border-style: solid;
+    left: 100%;
+    top: 28px;
+    border-color: transparent transparent transparent #3b62ae !important;
+    filter: drop-shadow(0 0 0px #575757);
+    -webkit-filter: drop-shadow(0 0 0px #575757);
+}
+.tour-tip .tour-close {
+    position: absolute;
+    right: 12px;
+    top: 10px;
+    color: #c2c2c2 !important;
+    text-decoration: none;
+    font-size: 30px;
+    font-weight: 400;
+    line-height: 0.5 !important;
+    cursor: pointer;
+}
+
+.tour-tip .tour-close:hover,
+.tour-tip .tour-close:focus {
+    color: #848484 !important;
+}
+.tour-button-wrapper{
+    text-align: right;
+}

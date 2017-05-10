@@ -1,5 +1,4 @@
-app.controller('help', ['$rootScope', '$scope', 'AlertService',
-    function ($rootScope, $scope, AlertService) {
+app.controller('help', ['$rootScope', '$scope',
+    function ($rootScope, $scope) {
 
-        //TODO functions
     }]);

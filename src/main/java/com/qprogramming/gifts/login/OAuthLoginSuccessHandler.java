@@ -3,6 +3,7 @@ package com.qprogramming.gifts.login;
 import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.account.AccountType;
+import com.qprogramming.gifts.config.property.PropertyService;
 import com.qprogramming.gifts.login.token.TokenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,11 +36,13 @@ public class OAuthLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
     private final Logger LOG = LoggerFactory.getLogger(this.getClass());
     private AccountService accountService;
     private TokenService tokenService;
+    private PropertyService propertyService;
 
     @Autowired
-    public OAuthLoginSuccessHandler(AccountService accountService, TokenService tokenService) {
+    public OAuthLoginSuccessHandler(AccountService accountService, TokenService tokenService, PropertyService propertyService) {
         this.accountService = accountService;
         this.tokenService = tokenService;
+        this.propertyService = propertyService;
     }
 
     @Override
@@ -122,7 +125,7 @@ public class OAuthLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
     }
 
     private void setLocale(Account account, String locale) {
-        if (locale.equals("en") || locale.equals("pl")) {
+        if (propertyService.getLanguages().keySet().contains(locale)) {
             account.setLanguage(locale);
         }
     }

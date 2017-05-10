@@ -137,6 +137,11 @@
             <artifactId>angular-ui-select</artifactId>
             <version>0.19.6</version>
         </dependency>
+        <dependency>
+            <groupId>org.webjars.bower</groupId>
+            <artifactId>angular-tour</artifactId>
+            <version>0.2.5</version>
+        </dependency>
         <!--Commons-->
         <dependency>
             <groupId>joda-time</groupId>

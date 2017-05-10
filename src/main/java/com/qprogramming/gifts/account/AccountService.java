@@ -39,8 +39,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static com.qprogramming.gifts.settings.Settings.APP_DEFAULT_LANG;
-
 @Service
 @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class AccountService implements UserDetailsService {
@@ -102,10 +100,7 @@ public class AccountService implements UserDetailsService {
     }
 
     private void setDefaultLocale(Account account) {
-        String defaultLanguage = propertyService.getProperty(APP_DEFAULT_LANG);
-        if (StringUtils.isEmpty(defaultLanguage)) {
-            defaultLanguage = "en";//failsafe in case of emergency
-        }
+        String defaultLanguage = propertyService.getDefaultLang();
         account.setLanguage(defaultLanguage);
     }
 

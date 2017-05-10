@@ -10,6 +10,7 @@ var app = angular.module('app', [
     , 'ngCookies'
     , 'ng.httpLoader'
     , 'angular-confirm'
+    , 'angular-tour'
     , 'AvatarService'
     , 'AuthService'
     , 'AlertService'
@@ -127,7 +128,7 @@ app.directive('showErrors', function () {
         }
     }
 });
-app.run(['$rootScope', '$confirmModalDefaults', '$translate', function ($rootScope, $confirmModalDefaults, $translate) {
+app.run(['$rootScope', '$confirmModalDefaults', '$translate', '$http', function ($rootScope, $confirmModalDefaults, $translate, $http) {
     $rootScope.alerts = [];
     //confirm
     $translate("main.confirm.yes").then(function (translation) {
@@ -139,6 +140,5 @@ app.run(['$rootScope', '$confirmModalDefaults', '$translate', function ($rootSco
     $translate("main.confirm").then(function (translation) {
         $confirmModalDefaults.defaultLabels.title = translation;
     });
-
 }]);
 

@@ -15,6 +15,7 @@
 <link rel="stylesheet" href="webjars/bootstrap/3.3.7-1/css/bootstrap.css"/>
 <link rel="stylesheet" href="webjars/font-awesome/4.7.0/css/font-awesome.min.css"/>
 <link rel="stylesheet" href="webjars/angular-ui-select/0.19.6/select.min.css"/>
+<link rel="stylesheet" href="webjars/angular-tour/0.2.5/dist/angular-tour.css"/>
 <link href="https://fonts.googleapis.com/css?family=Pacifico" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
 <!--BODY-->
@@ -22,7 +23,7 @@
 
 
 <!--NAVBAR-->
-<nav class="navbar theme navbar-fixed-top hidden-print" ng-controller="navigation">
+<nav class="navbar theme navbar-fixed-top hidden-print" ng-controller="navigation" id="menu-nav">
     <div class="container-fluid">
         <!--MOBILE MENU-->
         <div class="navbar-header">
@@ -71,7 +72,7 @@
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right hidden-xs">
                 <li ng-if="authenticated" ng-class="{active:tab('userlist')}" class="text-center side-menu">
-                    <a href="#/users">
+                    <a href="#/users" id="menu-users" >
                         <span>
                             <i class="fa fa-gift"></i>
                             <i class="fa fa-2x fa-user"></i><br/>
@@ -80,7 +81,7 @@
                     </a>
                 </li>
                 <li ng-if="authenticated" ng-class="{active:tab('gift')}" class="text-center">
-                    <a href="#/list">
+                    <a href="#/list" id="menu-gifts">
                         <span>
                             <i class="fa fa-list"></i>&nbsp;
                             <i class="fa fa-2x fa-gift"></i><br/>
@@ -99,7 +100,7 @@
                     </a>
                 </li>
                 <li ng-class="{active:tab('help')}" class="text-center">
-                    <a ng-href="#/help/{{principal.language}}">
+                    <a ng-href="#/help/{{principal.language}}" id="menu-help">
                         <span>
                             <i class="fa fa-2x fa-question-circle"></i><br/>
                             <span translate="menu.help"></span>
@@ -159,6 +160,21 @@
     </div>
     <div ng-http-loader ttl="0.4" template="loader.tpl.html"></div>
 </div>
+<!--TODO Add tour based on principal  -->
+<tour ng-if="true" ng-controller="tour" ng-include="'tour/tourSteps.html'" step="currentStep" post-step="test()">
+</tour>
+<script id="tour/tour.tpl.html" type="text/ng-template">
+    <div class="tour-tip">
+        <span class="tour-arrow t-{{ ttPlacement }}" ng-hide="centered"></span>
+        <div class="tour-content-wrapper">
+            <p ng-bind-html="ttContent"></p>
+            <a ng-click="closeTour()" class="tour-close">&times;</a>
+            <div class="tour-button-wrapper">
+                <a ng-click="proceed()" ng-bind="ttNextLabel" class="btn btn-primary"></a>
+            </div>
+        </div>
+    </div>
+</script>
 <script type="text/ng-template" id="loader.tpl.html">
     <div class="loader-backdrop animate">
         <div class="loader-mid">
@@ -181,6 +197,7 @@
 <script src="webjars/github-com-alexk111-ngImgCrop/0.3.2/minified/ng-img-crop.js"></script>
 <script src="webjars/angular-ui-bootstrap/2.2.0/ui-bootstrap-tpls.min.js"></script>
 <script src="webjars/angular-ui-select/0.19.6/select.min.js"></script>
+<script src="webjars/angular-tour/0.2.5/dist/angular-tour-tpls.js"></script>
 
 
 <!--APP JS-->
@@ -203,6 +220,7 @@
 <script src="js/controllers/error.js"></script>
 <script src="js/controllers/alerts.js"></script>
 <script src="js/controllers/help.js"></script>
+<script src="js/controllers/tour.js"></script>
 <script src="js/directives/progressbar.js"></script>
 <script src="js/directives/giftstatus.js"></script>
 <script src="js/directives/helpers.js"></script>
