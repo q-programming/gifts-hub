@@ -1,5 +1,5 @@
-app.controller('tour', ['$rootScope', '$scope', '$location', '$http',
-    function ($rootScope, $scope, $location) {
+app.controller('tour', ['$rootScope', '$scope', '$location', '$log',
+    function ($rootScope, $scope, $location, $log, tourConfig) {
         if (true) {//TODO based on principal
             $scope.currentStep = 0;
         }
@@ -9,7 +9,10 @@ app.controller('tour', ['$rootScope', '$scope', '$location', '$http',
         $scope.goToPage = function (page) {
             $location.path(page);
         }
-        $scope.test = function () {
-            alert($scope.currentStep);
+        $scope.onShow = function () {
+            $log.debug("show");
+        }
+        $scope.onProceed = function () {
+            $log.debug("proceed");
         }
     }]);

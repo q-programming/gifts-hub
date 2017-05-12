@@ -146,7 +146,7 @@ img.avatar.small {
     position: fixed;
     top: 50px;
     background-color: white;
-    z-index: 1000;
+    z-index: 100;
     padding: 15px 0 0 0 !important;
 }
 
@@ -271,7 +271,7 @@ img.avatar.small {
 
 .alert-row {
     position: fixed;
-    z-index: 1005;
+    z-index: 105;
     width: 100%;
     top: 55px;
 }
@@ -616,10 +616,11 @@ img.center {
     color: #000 !important;
     border-radius: 0 !important;
     box-shadow: 3px 3px 7px #575757;
+    z-index: 1051 !important;
 }
 
 .tour-tip p {
-    padding-right: 10px!important;
+    padding-right: 10px !important;
     color: #000 !important;
 }
 
@@ -656,6 +657,7 @@ img.center {
     filter: drop-shadow(0 0 0px #575757);
     -webkit-filter: drop-shadow(0 0 0px #575757);
 }
+
 .tour-tip .tour-close {
     position: absolute;
     right: 12px;
@@ -672,6 +674,22 @@ img.center {
 .tour-tip .tour-close:focus {
     color: #848484 !important;
 }
-.tour-button-wrapper{
+
+.tour-button-wrapper {
     text-align: right;
+}
+
+.tour-backdrop {
+    z-index: 1031 !important;;
+}
+
+.tour-active-element {
+    position: absolute !important;
+    z-index: 1051 !important;
+}
+
+.toortip-centered {
+    position: absolute !important;
+    left: 50% !important;
+    top: 50% !important;
 }

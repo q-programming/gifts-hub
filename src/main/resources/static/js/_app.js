@@ -99,6 +99,7 @@ app.config(['$routeProvider', '$httpProvider', '$locationProvider', '$logProvide
         $translateProvider.fallbackLanguage(DEFAULT_LANGUAGE);
         //http loader
         httpMethodInterceptorProvider.whitelistLocalRequests();
+
     }]);
 app.factory('avatarCache', ['$cacheFactory',
     function ($cacheFactory) {
