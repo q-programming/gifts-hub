@@ -26,10 +26,10 @@
 <virtual-step tourtip="{{'tour.step.9'|translate}}" tourtip-element="#gifts-import"
               tourtip-placement="right" on-proceed="cancel()">
 </virtual-step>
-<virtual-step tourtip="{{'tour.step.10'|translate}}" tourtip-element=".family-members"
+<virtual-step tourtip="{{'tour.step.10'|translate}}" tourtip-element=".family-members"  tourtip-offset-vertical="-24" tourtip-offset-horizontal="-24"
               tourtip-placement="right" on-proceed="goToPage('/users')" use-source-scope="true">
 </virtual-step>
-<virtual-step tourtip="{{'tour.step.11'|translate}}" tourtip-element="#menu-users" tourtip-placement="bottom" tourtip-offset-vertical="-24" tourtip-offset-horizontal="-24">
+<virtual-step tourtip="{{'tour.step.11'|translate}}" tourtip-element="#menu-users" tourtip-placement="bottom">
 </virtual-step>
 <virtual-step tourtip="{{'tour.step.12'|translate}}" tourtip-element="#sortByFamilies" tourtip-placement="right" tourtip-offset-vertical="-24">
 </virtual-step>
@@ -37,13 +37,18 @@
               on-show="createFamily()" use-source-scope="false">
 </virtual-step>
 <virtual-step tourtip="{{'tour.step.14'|translate}}" tourtip-placement="centered" tourtip-element="#family-details"
-              on-proceed="cancel();addKid();">
+              on-proceed="cancel()">
 </virtual-step>
-<virtual-step tourtip="{{'tour.step.15'|translate}}" tourtip-placement="right" tourtip-element="#kid-details"
-              on-proceed="cancel();">
+<virtual-step tourtip="{{'tour.step.15'|translate}}" tourtip-element="#family-btns" tourtip-placement="right"
+              on-show="addKid()" use-source-scope="false">
 </virtual-step>
-<virtual-step tourtip="{{'tour.step.16'|translate}}" tourtip-placement="left" tourtip-element="#menu-avatar"
+<virtual-step tourtip="{{'tour.step.16'|translate}}" tourtip-placement="right" tourtip-element="#kid-details"
+              on-proceed="cancel()">
+</virtual-step>
+<virtual-step tourtip="{{'tour.step.17'|translate}}" tourtip-placement="bottom" tourtip-element="#menu-avatar"
               on-show="goToPage('/settings')" use-source-scope="true">
+</virtual-step>
+<virtual-step tourtip="{{'tour.step.18'|translate}}" tourtip-placement="bottom" tourtip-element="#menu-help">
 </virtual-step>
 
 
