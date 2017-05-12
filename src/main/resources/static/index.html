@@ -160,8 +160,8 @@
     </div>
     <div ng-http-loader ttl="0.4" template="loader.tpl.html"></div>
 </div>
-<!--TODO Add tour based on principal  -->
-<tour ng-if="true" ng-controller="tour" ng-include="'tour/tourSteps.html'" step="currentStep">
+<tour ng-if="principal && !principal.tourComplete" ng-controller="tour" ng-include="'tour/tourSteps.html'"
+      step="currentStep" nextLabel="{{'main.next'|translate}}">
 </tour>
 <script id="tour/tour.tpl.html" type="text/ng-template">
     <div class="tour-tip">

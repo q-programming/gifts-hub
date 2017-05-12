@@ -615,7 +615,7 @@ img.center {
     background: #fff !important;
     color: #000 !important;
     border-radius: 0 !important;
-    box-shadow: 3px 3px 7px #575757;
+    box-shadow: 3px 3px 7px #2D2D2D;
     z-index: 1051 !important;
 }
 
@@ -628,16 +628,16 @@ img.center {
     border-style: solid;
     bottom: -27px;
     border-color: #fff transparent transparent !important;
-    filter: drop-shadow(0 0 0px #575757);
-    -webkit-filter: drop-shadow(0 0 0px #575757);
+    filter: drop-shadow(0 0 0px #2D2D2D);
+    -webkit-filter: drop-shadow(0 0 0px #2D2D2D);
 }
 
 .tour-tip .tour-arrow.t-bottom {
     border-style: solid;
     top: -28px;
     border-color: transparent transparent #fff !important;
-    filter: drop-shadow(0 0 0px #575757);
-    -webkit-filter: drop-shadow(0 0 0px #575757);
+    filter: drop-shadow(0 0 0px #2D2D2D);
+    -webkit-filter: drop-shadow(0 0 0px #2D2D2D);
 }
 
 .tour-tip .tour-arrow.t-right {
@@ -645,17 +645,17 @@ img.center {
     left: -27px;
     top: 28px;
     border-color: transparent #fff transparent transparent !important;
-    filter: drop-shadow(0 0 0px #575757);
-    -webkit-filter: drop-shadow(0 0 0px #575757);
+    filter: drop-shadow(0 0 0px #2D2D2D);
+    -webkit-filter: drop-shadow(0 0 0px #2D2D2D);
 }
 
 .tour-tip .tour-arrow.t-left {
     border-style: solid;
     left: 100%;
     top: 28px;
-    border-color: transparent transparent transparent #3b62ae !important;
-    filter: drop-shadow(0 0 0px #575757);
-    -webkit-filter: drop-shadow(0 0 0px #575757);
+    border-color: transparent transparent transparent #fff !important;
+    filter: drop-shadow(0 0 0px #2d2d2d);
+    -webkit-filter: drop-shadow(0 0 0px #2D2D2D);
 }
 
 .tour-tip .tour-close {

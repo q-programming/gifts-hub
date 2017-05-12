@@ -245,6 +245,30 @@ public class UserRestController {
         return ResponseEntity.ok(new ResultData.ResultBuilder().error().message("User exists").build());
     }
 
+    @RequestMapping(value = "/tour-complete", method = RequestMethod.POST)
+    public ResponseEntity completeTour() {
+        Account account = accountService.findById(Utils.getCurrentAccountId());
+        if (account == null) {
+            return new ResultData.ResultBuilder().notFound().build();
+        }
+        Utils.getCurrentAccount().setTourComplete(true);
+        account.setTourComplete(true);
+        accountService.update(account);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/tour-reset", method = RequestMethod.POST)
+    public ResponseEntity resetTour() {
+        Account account = accountService.findById(Utils.getCurrentAccountId());
+        if (account == null) {
+            return new ResultData.ResultBuilder().notFound().build();
+        }
+        Utils.getCurrentAccount().setTourComplete(false);
+        account.setTourComplete(false);
+        accountService.update(account);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 
     @RequestMapping(value = "/settings", method = RequestMethod.POST)
     public ResponseEntity changeSettings(@RequestBody String jsonObj) {

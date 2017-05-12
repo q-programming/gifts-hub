@@ -103,6 +103,7 @@
                     }
                     var model = $parse(attrs.step);
                     var backDrop = false;
+                    tourConfig.nextLabel = attrs.nextlabel;
                     // Watch current step view model and update locally
                     scope.$watch(attrs.step, function (newVal) {
                         ctrl.currentStep = newVal;

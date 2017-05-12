@@ -43,6 +43,9 @@ public class Account implements Serializable, UserDetails {
     @Column
     private Boolean publicList = false;
 
+    @Column
+    private Boolean tourComplete = false;
+
     private String fullname;
 
     @Transient
@@ -123,6 +126,14 @@ public class Account implements Serializable, UserDetails {
 
     private GrantedAuthority createAuthority(Roles role) {
         return new SimpleGrantedAuthority(role.toString());
+    }
+
+    public Boolean getTourComplete() {
+        return tourComplete;
+    }
+
+    public void setTourComplete(Boolean tourComplete) {
+        this.tourComplete = tourComplete;
     }
 
     @Override
