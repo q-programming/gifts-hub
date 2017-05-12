@@ -107,7 +107,7 @@
                         </span>
                     </a>
                 </li>
-                <li ng-if="authenticated" uib-dropdown="" is-open="status.isopen" class="clickable">
+                <li ng-if="authenticated" uib-dropdown="" is-open="status.isopen" class="clickable" id="menu-avatar">
                     <a class="white nav-username" uib-dropdown-toggle="">
                         {{principal.fullname}}<span class="caret"></span>
                         <img ng-if="principal.avatar && principal.avatar !== 'NaN'" ng-src="{{principal.avatar}}"

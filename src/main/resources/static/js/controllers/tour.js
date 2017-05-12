@@ -1,7 +1,7 @@
 app.controller('tour', ['$rootScope', '$scope', '$location', '$log',
     function ($rootScope, $scope, $location, $log, tourConfig) {
         if (true) {//TODO based on principal
-            $scope.currentStep = 0;
+            $scope.currentStep = 10;
         }
         /**
          * @return {string}
