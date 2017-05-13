@@ -29,7 +29,7 @@
         <div class="navbar-header">
             <a class="navbar-brand" href="#/"><img src="images/logo-white.png" width="40px" height="40px"/></a>
             <span class="stylish brand pull-left" style="font-size: xx-large">Gifts hub</span>
-            <div id="navbar-mobile" class="visible-xs">
+            <div id="navbar-mobile" class="visible-xs" ng-if="isMobile()">
                 <ul class="nav navbar-nav navbar-right nav-stacked">
                     <li ng-if="!authenticated" ng-class="{active:tab('navigation')}" class="white">
                         <a href="#/login">
@@ -38,28 +38,28 @@
                         </a>
                     </li>
                     <li ng-if="authenticated" ng-class="{active:tab('userlist')}" class="white">
-                        <a href="#/users">
+                        <a href="#/users" id="menu-users-mobile">
                             <span>
                                 <i class="fa fa-2x fa-user"></i><br/>
                             </span>
                         </a>
                     </li>
                     <li ng-if="authenticated" ng-class="{active:tab('gift')}" class="white">
-                        <a href="#/list">
+                        <a href="#/list" id="menu-gifts-mobile">
                             <span>
                             <i class="fa fa-2x fa-gift"></i><br/>
                             </span>
                         </a>
                     </li>
                     <li ng-if="authenticated" class="white" ng-class="{active:tab('help')}">
-                        <a ng-href="#/help/{{principal.language}}">
+                        <a ng-href="#/help/{{principal.language}}" class="menu-help">
                             <span>
                                 <i class="fa fa-2x fa-question-circle"></i><br/>
                             </span>
                         </a>
                     </li>
                     <li ng-if="authenticated" ng-class="{active:tab('settings')}" class="white">
-                        <a href="#/settings">
+                        <a href="#/settings" id="menu-settings-mobile">
                             <span>
                                 <i class="fa fa-2x fa-bars"></i><br/>
                             </span>
@@ -70,7 +70,7 @@
         </div>
         <!--DESKTOP MENU-->
         <div id="navbar" class="navbar-collapse collapse">
-            <ul class="nav navbar-nav navbar-right hidden-xs">
+            <ul class="nav navbar-nav navbar-right hidden-xs" ng-if="!isMobile()">
                 <li ng-if="authenticated" ng-class="{active:tab('userlist')}" class="text-center side-menu">
                     <a href="#/users" id="menu-users">
                         <span>
@@ -107,7 +107,7 @@
                         </span>
                     </a>
                 </li>
-                <li ng-if="authenticated" uib-dropdown="" is-open="status.isopen" class="clickable" id="menu-avatar">
+                <li ng-if="authenticated" uib-dropdown="" is-open="status.isopen" class="clickable" id="menu-settings">
                     <a class="white nav-username" uib-dropdown-toggle="">
                         {{principal.fullname}}<span class="caret"></span>
                         <img ng-if="principal.avatar && principal.avatar !== 'NaN'" ng-src="{{principal.avatar}}"
@@ -197,8 +197,6 @@
 <script src="webjars/github-com-alexk111-ngImgCrop/0.3.2/minified/ng-img-crop.js"></script>
 <script src="webjars/angular-ui-bootstrap/2.2.0/ui-bootstrap-tpls.min.js"></script>
 <script src="webjars/angular-ui-select/0.19.6/select.min.js"></script>
-<!--<script src="webjars/angular-tour/0.2.5/dist/angular-tour-tpls.js"></script>-->
-
 
 <!--APP JS-->
 <script src="js/utils/utils.js"></script>

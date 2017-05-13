@@ -254,6 +254,7 @@ public class UserRestController {
         Utils.getCurrentAccount().setTourComplete(true);
         account.setTourComplete(true);
         accountService.update(account);
+        accountService.signin(account);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -266,6 +267,7 @@ public class UserRestController {
         Utils.getCurrentAccount().setTourComplete(false);
         account.setTourComplete(false);
         accountService.update(account);
+        accountService.signin(account);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -285,6 +287,7 @@ public class UserRestController {
             account.setPublicList(object.getBoolean("publicList"));
         }
         accountService.update(account);
+        accountService.signin(account);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

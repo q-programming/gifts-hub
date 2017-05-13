@@ -142,6 +142,11 @@
             <artifactId>angular-tour</artifactId>
             <version>0.2.5</version>
         </dependency>
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>matchmedia-ng</artifactId>
+            <version>1.0.5</version>
+        </dependency>
         <!--Commons-->
         <dependency>
             <groupId>joda-time</groupId>

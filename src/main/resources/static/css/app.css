@@ -615,7 +615,7 @@ img.center {
     background: #fff !important;
     color: #000 !important;
     border-radius: 0 !important;
-    box-shadow: 3px 3px 7px #2D2D2D;
+    box-shadow: 3px 3px 30px #000000;
     z-index: 1051 !important;
 }
 
@@ -628,16 +628,16 @@ img.center {
     border-style: solid;
     bottom: -27px;
     border-color: #fff transparent transparent !important;
-    filter: drop-shadow(0 0 0px #2D2D2D);
-    -webkit-filter: drop-shadow(0 0 0px #2D2D2D);
+    filter: drop-shadow(0 0 0px #000000);
+    -webkit-filter: drop-shadow(0 0 0px #000000);
 }
 
 .tour-tip .tour-arrow.t-bottom {
     border-style: solid;
     top: -28px;
     border-color: transparent transparent #fff !important;
-    filter: drop-shadow(0 0 0px #2D2D2D);
-    -webkit-filter: drop-shadow(0 0 0px #2D2D2D);
+    filter: drop-shadow(0 0 0px #000000);
+    -webkit-filter: drop-shadow(0 0 0px #000000);
 }
 
 .tour-tip .tour-arrow.t-right {
@@ -645,8 +645,8 @@ img.center {
     left: -27px;
     top: 28px;
     border-color: transparent #fff transparent transparent !important;
-    filter: drop-shadow(0 0 0px #2D2D2D);
-    -webkit-filter: drop-shadow(0 0 0px #2D2D2D);
+    filter: drop-shadow(0 0 0px #000000);
+    -webkit-filter: drop-shadow(0 0 0px #000000);
 }
 
 .tour-tip .tour-arrow.t-left {
@@ -654,8 +654,8 @@ img.center {
     left: 100%;
     top: 28px;
     border-color: transparent transparent transparent #fff !important;
-    filter: drop-shadow(0 0 0px #2d2d2d);
-    -webkit-filter: drop-shadow(0 0 0px #2D2D2D);
+    filter: drop-shadow(0 0 0px #000000);
+    -webkit-filter: drop-shadow(0 0 0px #000000);
 }
 
 .tour-tip .tour-close {
@@ -692,4 +692,12 @@ img.center {
     position: absolute !important;
     left: 40% !important;
     top: 50% !important;
+}
+
+@media (max-width: 767px) {
+    .toortip-centered {
+        position: absolute !important;
+        left: 0 !important;
+        top: 25% !important;
+    }
 }

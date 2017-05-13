@@ -153,6 +153,7 @@
         'scrollTo',
         'tourConfig',
         'debounce',
+        '$log',
         function ($window, $compile, $interpolate, $timeout, scrollTo, tourConfig, debounce, $log) {
             var startSym = $interpolate.startSymbol(), endSym = $interpolate.endSymbol();
             var template = '<div tour-popup></div>';
@@ -329,7 +330,7 @@
                         var targetElement = scope.ttElement ? angular.element(scope.ttElement) : element;
                         if (targetElement === null || targetElement.length === 0) {
                             //in case element was not found try to go to next step
-                            console.error("Unable to find element with selector " + scope.ttElement);
+                            $log.debug("Unable to find element with selector " + scope.ttElement);
                             scope.proceed();
                         } else {
                             angular.element(scope.ttContainerElement).append(tourtip);
