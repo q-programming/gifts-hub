@@ -1,8 +1,22 @@
-app.controller('help', ['$rootScope', '$scope', '$http', '$log', '$translate', 'AlertService',
-    function ($rootScope, $scope, $http, $log, $translate, AlertService) {
+app.controller('help', ['$rootScope', '$scope', '$http', '$log', '$translate', '$location', '$anchorScroll', 'AlertService',
+    function ($rootScope, $scope, $http, $log, $translate, $location, $anchorScroll, AlertService) {
         $translate("gift.status.claimed").then(function (translation) {
-            $scope.gift_tooltip = translation + " " + $rootScope.principal.fullname;
+            if ($rootScope.principal) {
+                $scope.gift_tooltip = translation + " " + $rootScope.principal.fullname;
+            }
+            else {
+                $scope.gift_tooltip = translation;
+            }
         });
+
+        $scope.anchor = function (anchor) {
+            if ($location.hash() !== anchor) {
+                $location.hash(anchor);
+            } else {
+                $anchorScroll();
+            }
+        };
+
         $scope.tourReset = function () {
             var url = 'api/user/tour-reset';
             $http.post(url).then(
@@ -15,3 +29,6 @@ app.controller('help', ['$rootScope', '$scope', '$http', '$log', '$translate', '
             });
         };
     }]);
+app.run(['$anchorScroll', function ($anchorScroll) {
+    $anchorScroll.yOffset = 60;   // always scroll by 50 extra pixels
+}]);

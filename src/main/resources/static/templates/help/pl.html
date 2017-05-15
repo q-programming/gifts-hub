@@ -1,4 +1,285 @@
-Customer documentation PL
-<span class="btn btn-default" ng-click="tourReset ()" id="tour-starter">
-    <i class="fa fa-graduation-cap"></i>&nbsp;Start tour from beginning!
-</span>
+<div class="row">
+    <div class="col-xs-12 text-center">
+        <h2><img src="images/logo.png" width="40px" height="40px"/>&nbsp;Witaj w Gifts Hub</h2>
+        <p>Wersja 0.5</p>
+    </div>
+    <div class="col-xs-12">
+        <p>
+            Gifts hub to miejsce gdzie możesz się podzielić swoją listą życzeń ze swoją rodziną i przyjaciółmi. Każdy
+            użytkownik ma swoją listę , na której możę łątwo dodać, eydtować lub usunąć prezenty jakie chciałby
+            otrzymać.<br>
+            Istnieje możliwośc logowania się po założeniu konta, lub logując się bezpośrednio za pomocą facebook'a lub
+            google.
+            W przypadku uzycia portali społecznościowych, w aplikacji tworzone jest konto z danymi i zdjęciem.
+        </p>
+        <p class="text-center">
+            W przypadku błędów lub pomysłów , skontaktuj się ze mną przez mój email: <br><a
+                href="mailto:jakub.romaniszyn@gmail.com">jakub.romaniszyn@gmail.com</a>
+        </p>
+        <p class="text-center">
+            <span class="btn btn-default" ng-click="tourReset ()" id="tour-starter">
+                <i class="fa fa-graduation-cap"></i>&nbsp;
+                <span>Rozpocznij przewodnik od nowa!</span>
+            </span>
+        </p>
+        <hr>
+    </div>
+    <div class="col-xs-12">
+        <h3>Menu nawigacji</h3>
+        <p>Zależnie od tego czy użytkownik używa aplikacji na komórce czy urządzeniu stacjonarnym, różne wersje menu
+            będą widoczne. Na wersji mobilnej np. nie jest widoczna pozycja zarządzania aplikacją (ale dalej można
+            otworzyć link bezpośrednio)
+        </p>
+        <!--MENU-->
+        Dostępne są następujące opcje
+        <div class="row">
+            <div class="col-xs-3 col-lg-1 clickable menu-item-help" ng-click="anchor('users')">
+                <span>
+                    <i class="fa fa-gift hidden-xs"></i>
+                    <i class="fa fa-2x fa-user"></i><br>
+                    <span translate="menu.users" class="hidden-xs"></span>
+                </span>
+            </div>
+            <div class="col-xs-9 col-lg-11">
+                Lista wszystkich użytkowników aplikacji
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-3 col-lg-1 clickable menu-item-help" ng-click="anchor('gifts')">
+                <span>
+                    <i class="fa fa-list hidden-xs"></i>
+                    <i class="fa fa-2x fa-gift"></i><br>
+                    <span translate="menu.wishlist" class="hidden-xs"></span>
+                </span>
+            </div>
+            <div class="col-xs-9 col-lg-11">
+                Listy życzeń użytkowników. Na tej stronie można dodawac, eydtować lub oglądać listy życzeń
+            </div>
+        </div>
+        <div class="row hidden-xs" ng-if="authenticated &amp;&amp; principal.role === 'ROLE_ADMIN'">
+            <div class="col-xs-3 col-lg-1 clickable menu-item-help" ng-click="anchor('manage')">
+                <span>
+                    <i class="fa fa-columns"></i>
+                    <i class="fa fa-2x fa-wrench"></i><br>
+                    <span translate="menu.manage" class="hidden-xs"></span>
+                </span>
+            </div>
+            <div class="col-xs-9 col-lg-11">
+                Zarządzanie aplikacją. Ta strona jest widoczna tylko dla administratora aplikacji
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-3 col-lg-1 menu-item-help">
+                <span>
+                    <i class="fa fa-2x fa-question-circle"></i><br>
+                    <span translate="menu.help" class="hidden-xs"></span>
+                </span>
+            </div>
+            <div class="col-xs-9 col-lg-11">
+                Ekran pomocy ( ta strona )
+            </div>
+        </div>
+        <div class="row hidden-xs">
+            <div class="col-lg-2 clickable menu-item-help" ng-click="anchor('settings')" style="padding: 12px;">
+                <span>
+                    {{principal.fullname}}<span class="caret"></span>
+                    <img ng-if="principal.avatar && principal.avatar !== 'NaN'" ng-src="{{principal.avatar}}"
+                         class="avatar nav-avatar"/>
+                    <img ng-if="!principal.avatar || principal.avatar ==='NaN'" src='images/avatar-placeholder.png'
+                         class="avatar nav-avatar"/>
+                </span>
+            </div>
+            <div class="col-lg-10">
+                Twoje menu ustawień ( widoczne po kliknięciu na twój awatar). Tam można otworzyć stronę ustawień lub
+                wylogować się z aplikacji
+            </div>
+        </div>
+        <div class="row visible-xs">
+            <div class="col-xs-3 clickable menu-item-help" ng-click="anchor('settings')">
+                <span>
+                    <i class="fa fa-2x fa-bars"></i><br>
+                </span>
+            </div>
+            <div class="col-xs-9">
+                Twoje menu systemowe. Na tej stronie możesz zmienić ustawienia profilu lub wylogować się.
+            </div>
+        </div>
+        <hr>
+    </div>
+    <!--END MENU-->
+    <!--USERS-->
+    <div class="col-xs-12">
+        <h3 id="users">Użytkownicy</h3>
+        <p>
+            Wszyscy użytkownicy aplikacji, są tutaj wylistowani, posortowani alfabetycznie lub pogrupowani po rodzinach.
+            <br><br>
+            Domyślne sortowanie może zostać zmienione w ustawieniach aplikacji przez administratora
+        </p>
+        <h4>Rodziny</h4>
+        <p>
+            Jedną z głównych funkcjonalnosci aplikacji jest grupwanie po rodzinach.<br>
+            Dzięki temu, można o wiele szybciej przeglądać prezenty oraz zarządać listami członków rodziny.<br>
+            Tworząć nową rodzinę, można dowolnie ją nazwać (w przypadku kiedy pozostawione puste, zostanie użyte twoje
+            nazwisko).
+            Podczas tworzenia, lub potem podczas edycji, możesz dodać innych użytkowników aplikacji, którzy jeszcze nie
+            są dodani do żadnej rodziny.<br><br>Możesz też określić administratorów rodziny, którzy będą mogli dodawać i
+            edytować prezenty do członków rodziny.<br>
+            Aby stworzyć rodzinę, na ekranie listy użytkowników, kliknij guzik
+            <span class="btn btn-success btn-sm">
+                                <i class="fa fa-plus"></i>&nbsp;
+                                <span class="hidden-xs" translate="user.family.create"></span>
+                    </span>, aby ją edytować , w tym samym miejscu będzie dostępny wtedy guzik
+            <span class="btn btn-success btn-sm"><i class="fa fa-pencil"></i>&nbsp;
+                        <span class="ng-scope" translate="user.family.edit"></span>
+                    </span>
+        </p>
+        <h4>Konto dziecka</h4>
+        <p>
+            Po stworzeniu rodziny, jako administrator rodziny będziesz mógł stworzyć konto dziecka, po kliknięciu na
+            guzik <span
+                class="btn btn-success btn-sm "><i class="fa fa-plus"></i><i
+                class="fa fa-child"></i>{{'user.family.add.kid'|translate}}</span>
+
+            <br>
+            Konto dziecka to spacjny rodzaj konta w aplikacji, na któr enie można się zalogować. Tylko administrator
+            rodziny może dodawać i eydtować prezebty dla tego konta.
+            <br><br>Tworząc konto dziecka , proszę okreś imię nazwisko oraz unikalny login ( aplikacja sprawdzi , czy
+            jest wolny) . Ustaw również awatar konta ( opcjonalnie )</p>
+        <p>Po stworzeniu, konto dziecka można edytować po kliknięciu guzika
+            <span class="btn btn-sm btn-default ng-scope">
+                    <i class="fa fa-pencil"></i>
+            </span> w wierszu konta dziecka na ekranie listy użytkowników.
+        </p>
+    </div>
+    <!--END USERS-->
+    <!--GIFTS-->
+    <div class="col-xs-12">
+        <h3 id="gifts">Gifts</h3>
+        <p>
+            In here all your gifts for currently browsed user
+        </p>
+        <p>
+            All gifts are grouped in categories and sorted by date. Newest gifts at top, old at the
+            bottom.<br><br>Claimed gifts are additionally colored in orange with information who claimed on mouse over
+            on claimed icon<br>(gift owner will not see this information).
+            <br><br>Claimed gifts are shown at the bottom in their category
+            Information like gift link , description and available search engines is shown for each row
+        </p>
+        <p>
+            <strong>Actions</strong><br>Here are all actions available for gift. Depending if you are on
+            your
+            list or other users list, different actions are available.<br><br><i
+                class="fa fa-fw fa-lg fa-check-circle-o"></i> - Mark gift as realised<br><i
+                class="fa fa-fw fa-lg fa-pencil"></i> - Edit gift<br><i class="fa fa-fw fa-lg fa-trash"></i> - Delete
+            gift<br><i class="fa fa-fw fa-lg fa-hand-paper-o"></i> - claim gift ( or remove claim)
+        </p>
+        <h4>Adding new gift</h4>
+        <p>
+            To add new gift, click <span class="btn btn-success"><i class="fa fa-plus"></i>Add new</span>button
+            on wish list view<br><br>If you are family administrator, you can add gifts on wish list of other family
+            members
+        </p>
+        <p>
+            While creating new gift, only <strong>name</strong> field is required.<br>When adding gift, try to
+            make it as a keyword, which will be used by search engines.<br><br>Other fields are optional but
+            helpfull.<br><br>It's good to add new gift to category, and select which search engines will be visible for
+            it
+        </p>
+        <h4>Claming gift</h4>
+        <p>
+            Each application user can claim other users gift. When claimed gift will be makred as claimed, with
+            information who claimed it on mouse hover
+            <br>
+            If claimed, gift will look like this:
+            <span class="gift-status claimed-gift"
+                  uib-tooltip="{{gift_tooltip}}">
+                <i class="fa fa-fw fa-hand-paper-o"></i>
+                <i class="fa fa-fw fa-2x fa-gift"></i>
+            </span>
+            <strong class="gift-claimed">Claimed gift</strong>
+        </p>
+        <h4>Search engines</h4>
+        <p>Search engines can be defined by application administrators.Whenever this engine will be created while
+            creating new gift, it's link will be shown next to gift link. When clicked search string will use gift name
+            and search using that search engine.<br> For example if google search engine will be used for gift with name
+            "MY_NAME", google will be used to search for <u>https://www.google.com/search?q=MY_NAME</u>
+        </p>
+        <h4>Gifts importing</h4>
+        <p>
+            It is also possible to import many gifts at once. Start by clicking <span class="btn btn-success"><i
+                class="fa fa-upload"></i></span> button on gifts page.
+        </p>
+        <p>Select previously filled in excel file (created based on downloaded template), and click
+            Import button<br><br>All valid gifts from file will be imported for current user<br>(or family member, which
+            gifts
+            were currently browsed)
+        </p>
+    </div>
+    <!--END GIFTS-->
+    <!--MANAGE-->
+    <!--END MANAGE-->
+    <div class="col-xs-12" ng-if="authenticated &amp;&amp; principal.role === 'ROLE_ADMIN'">
+        <h3 id="manage">Application management</h3>
+        <p>
+            Application administrator has additional menu available on desktop version of app. Manage view can be
+            accessed on mobile devices as well but only via direct link , not to obscure small mobile menu.
+            <br>Please note that all properties have to be set on first visit , otherwise it's not guarantied that
+            application will work correctly
+        </p>
+        <h4>{{'app.manage.language'|translate}}</h4>
+        <p>Here you can set application default language.This list is dynamically populated by API from all available
+            languages added in system.<br>
+            If you want to add your language just copy and translate <code>lang/messages_XX.properties</code> and add it
+            to application package. File can be manually added, but recommended is to add it to sources and perform
+            <code>mvn
+                package</code>. <br>Please note that in order for new language to be recognised it has to have at least
+            <code>main.language.name</code> property
+        </p>
+        <h4>{{'app.manage.gift.age'|translate}}</h4>
+        <p>{{'app.manage.gift.age.help '|translate}}</p>
+        <h4>{{app.manage.url}}</h4>
+        <p>This is application url, which will be used in mails and other forms of cumincation. It's recomended to set
+            it on first visit</p>
+        <h4>{{'user.sort.default'|translate}}</h4>
+        <p>How user will be sorted by default on user list view</p>
+        <h4>{{'app.manage.email'|translate}}</h4>
+        <p>Base application email settings. This server will be used to send some basic mails to users, using
+            application<br> After setting detials and saving , SMTP server will be tested if valid.</p>
+        <h4>Search engines</h4>
+        <p>Here you can define search engines which user will be able to use on their gifts<br>When defining new search
+            engine it's crucial to all fields be valid. <br>
+            <strong>Search engine name</strong> - name which will be shown on gift creation screen, and on mouse hover
+            over icon<br>
+            <strong>Search engine link</strong> - search query link. Gift name will be pasted at the end of it. Ussually
+            it's in form :
+            <code>http://google.com/search?q=</code><br>
+            <strong>Search icon</strong> - {{'app.manage.search.icon.help'|translate}}
+        </p>
+    </div>
+
+    <!--SETTINGS-->
+    <div class="col-xs-12">
+        <h3 id="settings">Settings</h3>
+
+        <p>
+            Your account settings are in menu under your avatar
+        </p>
+        <p>
+            On this screen you can set your custom avatar, change application display language and define if
+            your list can be public.
+        </p>
+        <h4>Public list</h4>
+        <p>
+            {{'user.settings.public.help'|translate}}<br>
+            By pressing <span class="btn btn-default">
+            <i class="fa fa-link" aria-hidden="true"></i></span>
+            button you can quickly coppy your public link to clipboard.
+        </p>
+        <h4>Removing account</h4>
+        <p>Here you can also {{'user.delete.help'|translate}}<br>
+            <strong>This operation cannot be undone , so please handle with care</strong>
+        </p>
+    </div>
+
+
+</div>

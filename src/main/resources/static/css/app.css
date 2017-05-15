@@ -16,6 +16,13 @@ body {
     /*margin-top: 15px;*/
 }
 
+.menu-item-help {
+    background: rgba(44, 90, 160, 0.8) !important;
+    padding: 4px 0;
+    text-align: center;
+    color: white;
+}
+
 /*NAVBAR*/
 
 .navbar.theme {
@@ -700,4 +707,26 @@ img.center {
         left: 0 !important;
         top: 25% !important;
     }
+}
+
+.back-to-top {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1;
+    width: 50px;
+    height: 50px;
+    background: rgba(44, 90, 160, 0.4);
+    display: none;
+}
+
+.back-to-top:hover {
+    background: rgba(44, 90, 160, 0.8);
+    cursor: pointer;
+}
+
+.back-to-top > i {
+    color: white;
+    font-size: 25px;
+    padding: 12px;
 }

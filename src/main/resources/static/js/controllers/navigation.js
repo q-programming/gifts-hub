@@ -15,5 +15,5 @@ app.controller('navigation', ['$scope', '$rootScope', '$http', '$location', '$ro
                 isMobile = true;
             }
             return isMobile;
-        }
+        };
     }]);
