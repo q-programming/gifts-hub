@@ -32,8 +32,12 @@ UtilsService.factory('UtilsService', ['$http', '$location', 'AlertService',
         };
 
         UtilsService.getPublicUrl = function (user) {
-            var url = $location.absUrl().split("#")[0];
+            var url = UtilsService.getAppUrl();
             return url + "#/public/" + user.id
+        };
+
+        UtilsService.getAppUrl = function () {
+            return $location.absUrl().split("#")[0];
         };
 
         return UtilsService;

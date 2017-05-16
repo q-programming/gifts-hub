@@ -2,6 +2,7 @@ package com.qprogramming.gifts.config.property;
 
 import com.qprogramming.gifts.messages.MessagesService;
 import com.qprogramming.gifts.support.Utils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
@@ -10,12 +11,16 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import static com.qprogramming.gifts.settings.Settings.APP_DEFAULT_LANG;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
+
 /**
  * Created by XE050991499 on 2017-03-20.
  */
 @Service
 public class PropertyService {
     public static final String LANG_DEFAULT_MSG = "NOT FOUND";
+    public static final String DEFAULT_APP_LANGUAGE = "pl";
 
     private PropertyRepository propertyRepository;
     private MessagesService msgSrv;
@@ -61,12 +66,29 @@ public class PropertyService {
     }
 
     /**
+     * Get default application language set by admin in app management. In case of it's empty, DEFAULT_APP_LANGUAGE is returned
+     *
+     * @return default application language
+     */
+    public String getDefaultLang() {
+        String lang = getProperty(APP_DEFAULT_LANG);
+        if (StringUtils.isBlank(lang)) {
+            return DEFAULT_APP_LANGUAGE;
+        }
+        return lang;
+    }
+
+    /**
      * Returns property. As database property is first in order it will be first place to look. Otherwise , file based properties will be searched
      *
      * @param key key for which value will be searched
      * @return String representation of parameter
      */
     public String getProperty(String key) {
-        return env.getProperty(key);
+        String property = env.getProperty(key);
+        if (StringUtils.isEmpty(property)) {
+            return EMPTY;
+        }
+        return property;
     }
 }

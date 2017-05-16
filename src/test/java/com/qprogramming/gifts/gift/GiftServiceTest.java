@@ -15,20 +15,21 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import static com.qprogramming.gifts.TestUtil.createGift;
 import static com.qprogramming.gifts.settings.Settings.APP_GIFT_AGE;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.anyCollectionOf;
+import static org.mockito.Mockito.*;
 
 /**
  * Created by Khobar on 10.03.2017.
  */
 
 public class GiftServiceTest {
-
     @Mock
     private AccountService accSrvMock;
     @Mock
@@ -56,42 +57,37 @@ public class GiftServiceTest {
 
     @Test
     public void createGiftSuccess() {
-        Gift gift = createGift(1L);
+        Gift gift = createGift(1L, testAccount);
         when(giftRepositoryMock.save(gift)).thenReturn(gift);
         Gift expected = giftService.create(gift);
         assertEquals(expected, gift);
     }
 
-    private Gift createGift(long id) {
-        Gift gift = new Gift();
-        gift.setId(id);
-        gift.setName("name");
-        gift.setLink("http://google.ocm");
-        gift.setUserId(testAccount.getId());
-        return gift;
-    }
-
     @Test
     public void findAllByCurrentUser() throws Exception {
-        Gift gift1 = createGift(1L);
-        Gift gift2 = createGift(2L);
-        gift2.setCreated(new LocalDate().minusMonths(3).toDate());
-        Gift gift3 = createGift(3L);
-        gift3.setCreated(new LocalDate().minusDays(13).toDate());
-        Gift gift4 = createGift(4L);
-        gift3.setCreated(new LocalDate().minusDays(14).toDate());
-        List<Gift> giftList = Arrays.asList(gift1, gift2, gift3, gift4);
+        Gift newGift = createGift(1L, testAccount);
+        newGift.setName("New");
+        Gift oldestGift = createGift(2L, testAccount);
+        oldestGift.setCreated(new LocalDate().minusMonths(3).toDate());
+        oldestGift.setName("Oldest");
+        Gift newButNotNewest = createGift(3L, testAccount);
+        newButNotNewest.setCreated(new LocalDate().minusDays(13).toDate());
+        newButNotNewest.setName("13 days old gift");
+        Gift oldGift = createGift(4L, testAccount);
+        oldGift.setCreated(new LocalDate().minusDays(14).toDate());
+        oldGift.setName("14 days old gift");
+        List<Gift> giftList = Arrays.asList(newGift, oldestGift, newButNotNewest, oldGift);
         when(giftRepositoryMock.findByUserIdOrderByCreatedDesc(TestUtil.USER_RANDOM_ID)).thenReturn(giftList);
         Map<Category, List<Gift>> result = giftService.findAllByCurrentUser();
-        assertTrue(result.get(gift1.getCategory())
+        assertTrue(result.get(newGift.getCategory())
                 .stream()
                 .filter(gift -> gift.getStatus() == GiftStatus.NEW).toArray().length == 2);
     }
 
     @Test
     public void findAllByUser() throws Exception {
-        Gift gift1 = createGift(1L);
-        Gift gift2 = createGift(2L);
+        Gift gift1 = createGift(1L, testAccount);
+        Gift gift2 = createGift(2L, testAccount);
         gift2.setCreated(new LocalDate().minusMonths(3).toDate());
         List<Gift> giftList = Arrays.asList(gift1, gift2);
         when(giftRepositoryMock.findByUserIdOrderByCreatedDesc(TestUtil.USER_RANDOM_ID)).thenReturn(giftList);
@@ -99,6 +95,19 @@ public class GiftServiceTest {
         assertTrue(result.get(gift1.getCategory())
                 .stream()
                 .filter(gift -> gift.getStatus() == GiftStatus.NEW).toArray().length == 1);
+    }
+
+    @Test
+    public void deleteClaims() throws Exception {
+        Account account = TestUtil.createAccount("John", "Doe");
+        account.setId("USER");
+        Gift gift1 = createGift(1L, account);
+        gift1.setClaimed(testAccount);
+        when(giftRepositoryMock.findByClaimed(testAccount)).thenReturn(Collections.singletonList(gift1));
+        giftService.deleteClaims(testAccount);
+        verify(giftRepositoryMock, times(1)).save(anyCollectionOf(Gift.class));
+        assertNull(gift1.getClaimed());
+
     }
 
 

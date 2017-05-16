@@ -10,11 +10,16 @@ import com.qprogramming.gifts.account.family.Family;
 import com.qprogramming.gifts.account.family.FamilyForm;
 import com.qprogramming.gifts.account.family.FamilyService;
 import com.qprogramming.gifts.account.family.KidForm;
+import com.qprogramming.gifts.config.mail.Mail;
+import com.qprogramming.gifts.config.mail.MailService;
+import com.qprogramming.gifts.gift.Gift;
+import com.qprogramming.gifts.gift.GiftService;
 import com.qprogramming.gifts.messages.MessagesService;
 import com.qprogramming.gifts.support.ResultData;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.hamcrest.collection.IsCollectionWithSize;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,17 +34,19 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import static com.qprogramming.gifts.TestUtil.USER_RANDOM_ID;
 import static org.junit.Assert.*;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class UserRestControllerTest {
+
     public static final String API_USER_REGISTER = "/api/user/register";
     public static final String API_USER_SETTINGS = "/api/user/settings";
     public static final String API_USER_VALIDATE_EMAIL = "/api/user/validate-email";
@@ -49,6 +56,8 @@ public class UserRestControllerTest {
     public static final String API_USER_FAMILY_UPDATE = "/api/user/family-update";
     public static final String API_USER_KID_ADD = "/api/user/kid-add";
     public static final String API_USER_KID_UPDATE = "/api/user/kid-update";
+    public static final String API_USER_USER_DELETE = "/api/user/delete/";
+    public static final String API_USER_SHARE = "/api/user/share";
     public static final String KID_ID = "KID-ID";
     private static final String API_USER = "/api/user";
     private MockMvc userRestCtrl;
@@ -64,13 +73,17 @@ public class UserRestControllerTest {
     private FamilyService familyServiceMock;
     @Mock
     private AnonymousAuthenticationToken annonymousTokenMock;
+    @Mock
+    private GiftService giftServiceMock;
+    @Mock
+    private MailService mailServiceMock;
 
     private Account testAccount;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        UserRestController userCtrl = new UserRestController(accSrvMock, msgSrvMock, familyServiceMock);
+        UserRestController userCtrl = new UserRestController(accSrvMock, msgSrvMock, familyServiceMock, giftServiceMock, mailServiceMock);
         testAccount = TestUtil.createAccount();
         when(securityMock.getAuthentication()).thenReturn(authMock);
         when(authMock.getPrincipal()).thenReturn(testAccount);
@@ -502,7 +515,87 @@ public class UserRestControllerTest {
         String contentAsString = mvcResult.getResponse().getContentAsString();
         Account result = TestUtil.convertJsonToObject(contentAsString, Account.class);
         assertEquals(testAccount, result);
+    }
 
+    @Test
+    public void deleteKidNotFound() throws Exception {
+        userRestCtrl.perform(delete(API_USER_USER_DELETE + "RANDOMID")).andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void deleteKidNotFamilyAdmin() throws Exception {
+        Account kid = TestUtil.createAccount("Little", "Kid");
+        kid.setId(TestUtil.USER_RANDOM_ID);
+        kid.setType(AccountType.KID);
+        Family family = new Family();
+        family.setId(1L);
+        family.getMembers().add(kid);
+        when(accSrvMock.findById(kid.getId())).thenReturn(kid);
+        when(familyServiceMock.getFamily(kid)).thenReturn(family);
+        userRestCtrl.perform(delete(API_USER_USER_DELETE + kid.getId())).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void deleteKidAdminButAccountNotKid() throws Exception {
+        Account kid = TestUtil.createAccount("Little", "Kid");
+        kid.setId(TestUtil.USER_RANDOM_ID);
+        kid.setType(AccountType.LOCAL);
+        Family family = new Family();
+        family.setId(1L);
+        family.getMembers().add(kid);
+        family.getMembers().add(testAccount);
+        family.getAdmins().add(testAccount);
+        when(accSrvMock.findById(kid.getId())).thenReturn(kid);
+        when(familyServiceMock.getFamily(kid)).thenReturn(family);
+        userRestCtrl.perform(delete(API_USER_USER_DELETE + kid.getId())).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void deleteKid() throws Exception {
+        Account kid = TestUtil.createAccount("Little", "Kid");
+        kid.setId(TestUtil.USER_RANDOM_ID);
+        kid.setType(AccountType.KID);
+        Family family = new Family();
+        family.setId(1L);
+        family.getMembers().add(kid);
+        family.getMembers().add(testAccount);
+        family.getAdmins().add(testAccount);
+        List<Gift> giftList = Arrays.asList(TestUtil.createGift(1L, kid), TestUtil.createGift(2L, kid), TestUtil.createGift(3L, kid));
+        when(accSrvMock.findById(kid.getId())).thenReturn(kid);
+        when(familyServiceMock.getFamily(kid)).thenReturn(family);
+        userRestCtrl.perform(delete(API_USER_USER_DELETE + kid.getId())).andExpect(status().isOk());
+        verify(giftServiceMock, times(1)).deleteUserGifts(kid);
+        verify(accSrvMock, times(1)).delete(kid);
+    }
+
+    @Test
+    public void deleteAccount() throws Exception {
+        Family family = new Family();
+        family.setId(1L);
+        family.getMembers().add(testAccount);
+        family.getMembers().add(testAccount);
+        family.getAdmins().add(testAccount);
+        List<Gift> giftList = Arrays.asList(TestUtil.createGift(1L, testAccount), TestUtil.createGift(2L, testAccount), TestUtil.createGift(3L, testAccount));
+        when(accSrvMock.findById(testAccount.getId())).thenReturn(testAccount);
+        when(familyServiceMock.getFamily(testAccount)).thenReturn(family);
+        userRestCtrl.perform(delete(API_USER_USER_DELETE + testAccount.getId())).andExpect(status().isOk());
+        verify(giftServiceMock, times(1)).deleteUserGifts(testAccount);
+        verify(giftServiceMock, times(1)).deleteClaims(testAccount);
+        verify(accSrvMock, times(1)).delete(testAccount);
+    }
+
+    @Test
+    public void shareGiftList() throws Exception {
+        testAccount.setPublicList(true);
+        userRestCtrl.perform(post(API_USER_SHARE).content("valid@email.com;invalid@;alsovalid@email.pl")).andExpect(status().isOk());
+        verify(mailServiceMock, times(1)).shareGiftList((List<Mail>) argThat(IsCollectionWithSize.<Mail>hasSize(2)));
+
+    }
+
+    @Test
+    public void shareGiftListNotPublic() throws Exception {
+        testAccount.setPublicList(false);
+        userRestCtrl.perform(post(API_USER_SHARE).content("valid@email.com;invalid@;alsovalid@email.pl")).andExpect(status().isBadRequest());
     }
 
 

@@ -9,11 +9,13 @@ var app = angular.module('app', [
     , 'ui.select'
     , 'ngCookies'
     , 'ng.httpLoader'
+    , 'angular-confirm'
+    , 'angular-tour'
     , 'AvatarService'
     , 'AuthService'
     , 'AlertService'
     , 'AppService'
-    ,'UtilsService']);
+    , 'UtilsService']);
 app.constant("MESSAGES", {
     SUCCESS: "success",
     ERROR: "danger",
@@ -26,6 +28,7 @@ app.constant("GIFT_STATUS", {
 });
 app.config(['$routeProvider', '$httpProvider', '$locationProvider', '$logProvider', 'localStorageServiceProvider', '$translateProvider', 'httpMethodInterceptorProvider',
     function ($routeProvider, $httpProvider, $locationProvider, $logProvider, localStorageServiceProvider, $translateProvider, httpMethodInterceptorProvider) {
+        const DEFAULT_LANGUAGE = 'pl';
         $routeProvider
             .when('/', {
                 templateUrl: 'home.html',
@@ -34,6 +37,10 @@ app.config(['$routeProvider', '$httpProvider', '$locationProvider', '$logProvide
             .when('/login', {
                 templateUrl: 'user/login.html',
                 controller: 'login'
+            })
+            .when('/logout', {
+                templateUrl: 'user/login.html',
+                controller: 'logout'
             })
             .when('/register', {
                 templateUrl: 'user/register.html',
@@ -59,6 +66,16 @@ app.config(['$routeProvider', '$httpProvider', '$locationProvider', '$logProvide
                 templateUrl: 'app/manage.html',
                 controller: 'manage'
             })
+            .when('/help/:language?', {
+                templateUrl: function (params) {
+                    if (params.language) {
+                        return 'help/' + params.language + '.html'
+                    } else {
+                        return 'help/' + DEFAULT_LANGUAGE + '.html'
+                    }
+                },
+                controller: 'help'
+            })
             .when('/404', {
                 templateUrl: 'error/404.html',
                 controller: 'error'
@@ -76,15 +93,20 @@ app.config(['$routeProvider', '$httpProvider', '$locationProvider', '$logProvide
             .setPrefix('gifts-hub');
         $translateProvider.useUrlLoader('api/messages');
         $translateProvider.useStorage('UrlLanguageStorage');
-        $translateProvider.preferredLanguage('pl');
-        $translateProvider.fallbackLanguage('pl');
+
+
+        $translateProvider.preferredLanguage(DEFAULT_LANGUAGE);
+        $translateProvider.fallbackLanguage(DEFAULT_LANGUAGE);
         //http loader
         httpMethodInterceptorProvider.whitelistLocalRequests();
+
     }]);
 app.factory('avatarCache', ['$cacheFactory',
     function ($cacheFactory) {
         return $cacheFactory('avatarCache');
     }]);
+
+//TODO move to directive js
 app.directive('showErrors', function () {
     return {
         restrict: 'A',
@@ -107,7 +129,17 @@ app.directive('showErrors', function () {
         }
     }
 });
-app.run(function ($rootScope) {
+app.run(['$rootScope', '$confirmModalDefaults', '$translate', '$http', function ($rootScope, $confirmModalDefaults, $translate, $http) {
     $rootScope.alerts = [];
-});
+    //confirm
+    $translate("main.confirm.yes").then(function (translation) {
+        $confirmModalDefaults.defaultLabels.ok = translation;
+    });
+    $translate("main.confirm.no").then(function (translation) {
+        $confirmModalDefaults.defaultLabels.cancel = translation;
+    });
+    $translate("main.confirm").then(function (translation) {
+        $confirmModalDefaults.defaultLabels.title = translation;
+    });
+}]);
 

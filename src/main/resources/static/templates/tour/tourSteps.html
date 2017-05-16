@@ -1,0 +1,72 @@
+<virtual-step tourtip="{{'tour.step.1'|translate}}" tourtip-placement="centered" tour-backdrop="true"
+              tourtip-title="Gifts Hub" tourtip-offset-vertical="-100" tourtip-offset-horizontal="100"
+              on-proceed="goToPage('/list')" use-source-scope="true" tourtip-next-label="{{'main.next'|translate}}">
+</virtual-step>
+<virtual-step tourtip="{{'tour.step.2'|translate}}" tourtip-element="#menu-gifts" on-show="showCreate()"
+              tourtip-placement="bottom" use-source-scope="false" tourtip-next-label="{{'main.next'|translate}}">
+</virtual-step>
+<virtual-step tourtip="{{'tour.step.2'|translate}}" tourtip-element="#menu-gifts-mobile" on-show="showCreate()"
+              tourtip-placement="bottom" use-source-scope="false" tourtip-next-label="{{'main.next'|translate}}">
+</virtual-step>
+<virtual-step tourtip="{{'tour.step.3'|translate}}" tourtip-element="#btn-add" tour-backdrop="true"
+              on-show="showCreate()" tourtip-placement="bottom" use-source-scope="false" tourtip-next-label="{{'main.next'|translate}}">
+</virtual-step>
+<virtual-step tourtip="{{'tour.step.4'|translate}}" tourtip-element="#gift-details"
+              tourtip-placement="centered" on-proceed="cancel()" tourtip-next-label="{{'main.next'|translate}}">
+</virtual-step>
+<virtual-step tourtip="{{'tour.step.5'|translate}}" tourtip-element="#btn-import" tour-backdrop="true"
+              on-show="showImport()" tourtip-placement="bottom" use-source-scope="false" tourtip-next-label="{{'main.next'|translate}}">
+</virtual-step>
+<virtual-step tourtip="{{'tour.step.6'|translate}}" tourtip-element="#gifts-import"
+              tourtip-placement="centered" on-proceed="cancel()" tourtip-next-label="{{'main.next'|translate}}">
+</virtual-step>
+<virtual-step tourtip="{{'tour.step.7'|translate}}" tourtip-element=".padded-row"
+              tourtip-placement="bottom" tourtip-next-label="{{'main.next'|translate}}">
+</virtual-step>
+<virtual-step tourtip="{{'tour.step.8'|translate}}" tourtip-element=".gift-link"
+              tourtip-placement="top" tourtip-next-label="{{'main.next'|translate}}">
+</virtual-step>
+<virtual-step tourtip="{{'tour.step.9'|translate}}" tourtip-element=".gift-actions"
+              tourtip-placement="left" tourtip-next-label="{{'main.next'|translate}}">
+</virtual-step>
+<virtual-step tourtip="{{'tour.step.10'|translate}}" tourtip-element=".family-members" tourtip-offset-vertical="-24"
+              tourtip-offset-horizontal="-24"
+              tourtip-placement="bottom" on-proceed="goToPage('/users')" use-source-scope="true" tourtip-next-label="{{'main.next'|translate}}">
+</virtual-step>
+<virtual-step tourtip="{{'tour.step.11'|translate}}" tourtip-element="#menu-users" tourtip-placement="bottom" tourtip-next-label="{{'main.next'|translate}}">
+</virtual-step>
+<virtual-step tourtip="{{'tour.step.11'|translate}}" tourtip-element="#menu-users-mobile" tourtip-placement="bottom" tourtip-next-label="{{'main.next'|translate}}">
+</virtual-step>
+<virtual-step tourtip="{{'tour.step.12'|translate}}" tourtip-element="#sortByFamilies" tourtip-placement="right"
+              tourtip-offset-vertical="-24" tourtip-next-label="{{'main.next'|translate}}">
+</virtual-step>
+<virtual-step tourtip="{{'tour.step.13'|translate}}" tourtip-element="#family-btns" tourtip-placement="bottom" tourtip-offset-vertical="30"
+              on-show="createFamily()" use-source-scope="false" tourtip-next-label="{{'main.next'|translate}}">
+</virtual-step>
+<virtual-step tourtip="{{'tour.step.14'|translate}}" tourtip-placement="centered" tourtip-element="#family-details"
+              on-proceed="cancel()" tourtip-next-label="{{'main.next'|translate}}">
+</virtual-step>
+<virtual-step tourtip="{{'tour.step.15'|translate}}" tourtip-element="#family-btns" tourtip-placement="bottom" tourtip-offset-vertical="30"
+              on-show="addKid()" use-source-scope="false" tourtip-next-label="{{'main.next'|translate}}">
+</virtual-step>
+<virtual-step tourtip="{{'tour.step.16'|translate}}" tourtip-placement="centered" tourtip-element="#kid-details"
+              on-proceed="cancel()" tourtip-next-label="{{'main.next'|translate}}">
+</virtual-step>
+<virtual-step tourtip="{{'tour.step.17'|translate}}" tourtip-placement="bottom" tourtip-element="#menu-settings"
+              on-show="goToPage('/settings')" use-source-scope="true" tourtip-next-label="{{'main.next'|translate}}">
+</virtual-step>
+<virtual-step tourtip="{{'tour.step.17'|translate}}" tourtip-placement="bottom" tourtip-element="#menu-settings-mobile"
+              on-show="goToPage('/settings')" use-source-scope="true" tourtip-next-label="{{'main.next'|translate}}">
+</virtual-step>
+<virtual-step tourtip="{{'tour.step.18'|translate}}" tourtip-placement="centered" tourtip-element="#settings" tourtip-next-label="{{'main.next'|translate}}">
+</virtual-step>
+<virtual-step tourtip="{{'tour.step.19'|translate}}" tourtip-placement="bottom" tourtip-element="#menu-help" tourtip-next-label="{{'main.next'|translate}}">
+</virtual-step>
+<virtual-step tourtip="{{'tour.step.19'|translate}}" tourtip-placement="bottom" tourtip-element="#menu-help-mobile" tourtip-next-label="{{'main.next'|translate}}">
+</virtual-step>
+<!--final step-->
+<virtual-step tourtip="{{'tour.step.final'|translate}}" tourtip-placement="centered" tour-backdrop="true"
+              tourtip-next-label="{{'tour.step.end'|translate}}" on-proceed="tourCompleted()" use-source-scope="true">
+</virtual-step>
+
+

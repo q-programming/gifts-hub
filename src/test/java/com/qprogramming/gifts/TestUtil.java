@@ -1,6 +1,7 @@
 package com.qprogramming.gifts;
 
 import com.qprogramming.gifts.account.Account;
+import com.qprogramming.gifts.gift.Gift;
 import com.qprogramming.gifts.settings.SearchEngine;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.type.TypeFactory;
@@ -72,5 +73,16 @@ public class TestUtil {
         engine.setIcon(icon);
         return engine;
     }
+
+
+    public static Gift createGift(long id, Account account) {
+        Gift gift = new Gift();
+        gift.setId(id);
+        gift.setName("name");
+        gift.setLink("http://google.ocm");
+        gift.setUserId(account.getId());
+        return gift;
+    }
+
 
 }

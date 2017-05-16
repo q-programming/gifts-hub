@@ -3,7 +3,7 @@
     <div class="row">
         <div class="form-group col-md-offset-2 col-md-6">
             <h1 translate="app.manage"></h1>
-            <h4 for="app-lang">
+            <h4>
                 <i class="fa fa-globe" aria-hidden="true"></i>
                 &nbsp;<span translate="app.manage.language"></span>
             </h4>
@@ -18,6 +18,7 @@
             </div>
         </div>
     </div>
+    <!--GIFT AGE-->
     <div class="row">
         <div class="col-md-offset-2 col-md-6">
             <h4>
@@ -30,21 +31,38 @@
                         <div class="input-group">
                             <input type="text" class="form-control" id="gift_age"
                                    placeholder="{{'app.manage.gift.age.days' | translate}}"
-                                   ng-model="settings.giftAge" required>
+                                   ng-model="settings.giftAge" required style="width: 260px">
                             <div class="input-group-addon" translate="app.manage.gift.age.days"></div>
                         </div>
                     </div>
-                    <!--<div class="form-group col-xs-6">-->
-                    <!--<span class="btn btn-success" ng-click="update()">-->
-                    <!--<i class="fa fa-floppy-o" aria-hidden="true"></i>&nbsp;-->
-                    <!--<span translate="main.save"></span>-->
-                    <!--</span>-->
-                    <!--</div>-->
                 </form>
             </div>
             <span class="help-block" translate="app.manage.gift.age.help "></span>
         </div>
     </div>
+    <!--APP URL-->
+    <div class="row">
+        <div class="form-group col-md-offset-2 col-md-6">
+            <h4>
+                <i class="fa fa-link" aria-hidden="true"></i>
+                &nbsp;<span translate="app.manage.url"></span>
+            </h4>
+            <div class="row">
+                <div class="form-group col-xs-12">
+                    <input class="form-control" id="applicationName" name="name" style="width: 260px;float:left"
+                           ng-model="settings.appUrl">
+                    <button class="btn btn-success" ng-click="saveAppUrl()">
+                        <i class="fa fa-arrow-down" aria-hidden="true"></i>
+                        <i class="fa fa-link"></i>
+                        &nbsp;{{'app.manage.url.get'|translate}}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!--SORTING-->
     <div class="row">
         <div class="col-md-offset-2 col-md-6">
             <h4>
@@ -67,12 +85,77 @@
                         </label>
                     </form>
                 </div>
-                <div class="form-group col-xs-12">
-                        <span class="btn btn-success pull-right" ng-click="update()">
-                            <i class="fa fa-floppy-o" aria-hidden="true"></i>&nbsp;
-                            <span translate="main.save"></span>
-                        </span>
+            </div>
+            <div class="form-group col-xs-12">
+                <span class="btn btn-success pull-right" ng-click="update()">
+                    <i class="fa fa-floppy-o" aria-hidden="true"></i>&nbsp;
+                    <span translate="main.save"></span>
+                </span>
+            </div>
+        </div>
+    </div>
+    <!--EMAIL SETTINGS-->
+    <div class="row">
+        <div class="col-md-offset-2 col-md-6">
+            <h4>
+                <i class="fa fa-envelope" aria-hidden="true"></i>
+                &nbsp;<span translate="app.manage.email"></span>
+            </h4>
+            <div class="row">
+                <div class="col-xs-8 col-sm-6">
+                    <label>{{'app.manage.email.host' |translate}}</label>:
                 </div>
+                <div class="col-xs-4">
+                    <label>{{'app.manage.email.port' |translate}}</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-8 col-sm-6">
+                    <input class="form-control" id="emailHost" name="emailHost" ng-model="settings.email.host">
+                </div>
+                <div class="col-xs-4">
+                    <input class="form-control" id="emailPort" name="emailPort" maxlength="4"
+                           ng-model="settings.email.port">
+                </div>
+            </div>
+            <span class="help-block">
+                {{'app.manage.email.host.help' |translate}}
+            </span>
+            <div class="row">
+                <div class="col-xs-8 col-sm-6">
+                    <label for="emailUsername">
+                        {{'app.manage.email.username' |translate}}
+                    </label>:
+                    <input class="form-control" id="emailUsername" name="emailUsername"
+                           ng-model="settings.email.username">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-8 col-sm-6">
+                    <label for="emailPass">
+                        {{'app.manage.email.password' |translate}}
+                    </label>:
+                    <input type="password" class="form-control" id="emailPass" name="emailPass"
+                           ng-model="settings.email.password">
+                </div>
+            </div>
+            <span class="help-block">
+                {{'app.manage.email.username.help' |translate}}
+            </span>
+            <div class="row">
+                <div class="col-xs-6 col-sm-4">
+                    <label>
+                        {{'app.manage.email.encoding' |translate}}
+                    </label>
+                    <input class="form-control" id="emailEncoding" name="emailEncoding"
+                           ng-model="settings.email.encoding">
+                </div>
+            </div>
+            <div class="form-group col-xs-12">
+                <span class="btn btn-success pull-right" ng-click="updateEmail()">
+                    <i class="fa fa-floppy-o" aria-hidden="true"></i>&nbsp;
+                    <span translate="app.manage.email.save"></span>
+                </span>
             </div>
         </div>
     </div>
@@ -145,11 +228,15 @@
                         <span ng-class="'fa '+ engine.icon"></span>
                     </div>
                     <div class="col-md-1 text-center">
-                        <span class="clickable" ng-click="deleteSearchEngine(engine)">
-                            <i class="fa fa-trash" aria-hidden="true"></i>
+                        <span class="clickable" ng-click="deleteSearchEngine(engine)"
+                              confirm="{{'main.delete.confirm' | translate}}"
+                              confirm-title="{{'main.confirm.sure' | translate}}"
+                              confirm-icon="fa-trash"
+                              confirm-ok="{{'main.delete'| translate}}">
+                            <i class="fa fa-trash" aria-hidden="true" uib-tooltip="{{'main.delete' | translate}}"></i>
                         </span>
                         <span class="clickable" ng-click="editSearchEngine(engine)">
-                            <i class="fa fa-pencil" aria-hidden="true"></i>
+                            <i class="fa fa-pencil" aria-hidden="true" uib-tooltip="{{'main.edit'| translate}}"></i>
                         </span>
                     </div>
                 </div>

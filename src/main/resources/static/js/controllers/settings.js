@@ -1,9 +1,10 @@
-app.controller('settings', ['$rootScope', '$scope', '$http', '$location', '$translate', '$log', '$window', 'AlertService', 'AvatarService', 'AppService', 'UtilsService',
-    function ($rootScope, $scope, $http, $location, $translate, $log, $window, AlertService, AvatarService, AppService, UtilsService) {
+app.controller('settings', ['$rootScope', '$scope', '$http', '$location', '$translate', '$log', '$window', 'AlertService', 'AvatarService', 'AppService', 'UtilsService', 'AuthService',
+    function ($rootScope, $scope, $http, $location, $translate, $log, $window, AlertService, AvatarService, AppService, UtilsService, AuthService) {
         $scope.avatarUploadInProgress = false;
         $scope.avatarImage = '';
         $scope.croppedAvatar = '';
         $scope.languages = {};
+        $scope.useremails = '';
         if ($rootScope.authenticated) {
             AppService.getLanguageList().then(function (response) {
                 $scope.languages = response.data
@@ -56,19 +57,36 @@ app.controller('settings', ['$rootScope', '$scope', '$http', '$location', '$tran
 
         $scope.getPublicUrl = function (user) {
             return UtilsService.getPublicUrl($rootScope.principal);
-            // var url = $location.absUrl().split("#")[0];
-            // return url + "#/public/" + $rootScope.principal.id
         };
 
         $scope.copyLink = function () {
             UtilsService.copyLink();
-            // var el = document.getElementById('public-link');
-            // var range = document.createRange();
-            // range.selectNode(el);
-            // window.getSelection().removeAllRanges();
-            // window.getSelection().addRange(range);
-            // document.execCommand('copy');
-            // window.getSelection().removeAllRanges();
-            // AlertService.addSuccess("user.settings.public.copy.success");
         };
+
+        $scope.shareListWithEmails = function (useremails) {
+            var url = 'api/user/share/';
+            $http.post(url, useremails).then(
+                function (response) {
+                    useremails = '';
+                    $log.debug("[DEBUG] shared emails");
+                    AlertService.addSuccessMessage(response.data.message);
+                }).catch(function (response) {
+                AlertService.addError("error.general", response);
+                $log.debug(response);
+            });
+        };
+
+        $scope.deleteAccount = function () {
+            var url = 'api/user/delete/' + $rootScope.principal.id;
+            $http.delete(url).then(
+                function (response) {
+                    $log.debug("[DEBUG] Account deleted");
+                    AlertService.addSuccessMessage(response.data.message);
+                    AuthService.logout();
+                }).catch(function (response) {
+                AlertService.addError("error.general", response);
+                $log.debug(response);
+            });
+        };
+
     }]);

@@ -1,5 +1,7 @@
 package com.qprogramming.gifts.config;
 
+import com.qprogramming.gifts.config.property.PropertyService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -15,10 +17,17 @@ import java.util.Locale;
 @Import({PropertiesConfiguration.class})
 public class LocaleConfig {
 
+    private PropertyService propertyService;
+
+    @Autowired
+    public LocaleConfig(PropertyService propertyService) {
+        this.propertyService = propertyService;
+    }
+
     @Bean
     public LocaleResolver localeResolver() {
         SessionLocaleResolver slr = new SessionLocaleResolver();
-        slr.setDefaultLocale(new Locale("pl"));//TODO change to application properties
+        slr.setDefaultLocale(new Locale(propertyService.getDefaultLang()));//TODO change to application properties
         return slr;
     }
 

@@ -1,12 +1,15 @@
 package com.qprogramming.gifts.account.family;
 
 import com.qprogramming.gifts.account.Account;
+import com.qprogramming.gifts.account.AccountType;
 import com.qprogramming.gifts.support.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by Khobar on 04.04.2017.
@@ -88,6 +91,31 @@ public class FamilyService {
         return null;
     }
 
+    /**
+     * Removes from family .
+     * If account was last member of it, family will be removed.Otherwise first found non kid account will be granted admin.
+     * If no non kid accounts were found, family members will be cleared and family removed as well
+     *
+     * @param account
+     * @param family
+     */
+    public void removeFromFamily(Account account, Family family) {
+        family.getMembers().remove(account);
+        family.getAdmins().remove(account);
+        if (family.getAdmins().isEmpty() && family.getMembers().isEmpty()) {
+            delete(family);
+        } else if (family.getAdmins().isEmpty() && !family.getMembers().isEmpty()) {
+            Optional<Account> first = family.getMembers().stream().filter(member -> !AccountType.KID.equals(member.getType())).findFirst();
+            if (first.isPresent()) {
+                family.getAdmins().add(first.get());
+                //TODO add event about granting admin
+            } else {
+                family.setMembers(new HashSet<>());
+                delete(family);
+            }
+        }
+    }
+
 
     /**
      * Returns Family where passed account is member
@@ -106,5 +134,9 @@ public class FamilyService {
 
     public Family update(Family family) {
         return familyRepository.save(family);
+    }
+
+    public void delete(Family family) {
+        familyRepository.delete(family);
     }
 }

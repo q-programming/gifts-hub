@@ -2,11 +2,15 @@ package com.qprogramming.gifts.api.user;
 
 import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.AccountService;
+import com.qprogramming.gifts.account.AccountType;
 import com.qprogramming.gifts.account.RegisterForm;
 import com.qprogramming.gifts.account.family.Family;
 import com.qprogramming.gifts.account.family.FamilyForm;
 import com.qprogramming.gifts.account.family.FamilyService;
 import com.qprogramming.gifts.account.family.KidForm;
+import com.qprogramming.gifts.config.mail.Mail;
+import com.qprogramming.gifts.config.mail.MailService;
+import com.qprogramming.gifts.gift.GiftService;
 import com.qprogramming.gifts.login.token.TokenBasedAuthentication;
 import com.qprogramming.gifts.messages.MessagesService;
 import com.qprogramming.gifts.support.ResultData;
@@ -23,14 +27,16 @@ import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
 import javax.validation.Valid;
 import java.security.Principal;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/user")
@@ -41,12 +47,16 @@ public class UserRestController {
     private AccountService accountService;
     private MessagesService msgSrv;
     private FamilyService familyService;
+    private GiftService giftService;
+    private MailService mailService;
 
     @Autowired
-    public UserRestController(AccountService accountService, MessagesService msgSrv, FamilyService familyService) {
+    public UserRestController(AccountService accountService, MessagesService msgSrv, FamilyService familyService, GiftService giftService, MailService mailService) {
         this.accountService = accountService;
         this.msgSrv = msgSrv;
         this.familyService = familyService;
+        this.giftService = giftService;
+        this.mailService = mailService;
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
@@ -57,7 +67,7 @@ public class UserRestController {
         }
         if (accountService.findByUsername(userform.getUsername()) != null) {
             String message = msgSrv.getMessage("user.register.username.exists") + " " + msgSrv.getMessage("user.register.alreadyexists");
-            return new ResultData.ResultBuilder().error().message(msgSrv.getMessage(message)).build();
+            return new ResultData.ResultBuilder().error().message(message).build();
         }
         if (!userform.getPassword().equals(userform.getConfirmpassword())) {
             return new ResultData.ResultBuilder().error().message(msgSrv.getMessage("user.register.password.nomatch")).build();
@@ -235,6 +245,32 @@ public class UserRestController {
         return ResponseEntity.ok(new ResultData.ResultBuilder().error().message("User exists").build());
     }
 
+    @RequestMapping(value = "/tour-complete", method = RequestMethod.POST)
+    public ResponseEntity completeTour() {
+        Account account = accountService.findById(Utils.getCurrentAccountId());
+        if (account == null) {
+            return new ResultData.ResultBuilder().notFound().build();
+        }
+        Utils.getCurrentAccount().setTourComplete(true);
+        account.setTourComplete(true);
+        accountService.update(account);
+        accountService.signin(account);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/tour-reset", method = RequestMethod.POST)
+    public ResponseEntity resetTour() {
+        Account account = accountService.findById(Utils.getCurrentAccountId());
+        if (account == null) {
+            return new ResultData.ResultBuilder().notFound().build();
+        }
+        Utils.getCurrentAccount().setTourComplete(false);
+        account.setTourComplete(false);
+        accountService.update(account);
+        accountService.signin(account);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 
     @RequestMapping(value = "/settings", method = RequestMethod.POST)
     public ResponseEntity changeSettings(@RequestBody String jsonObj) {
@@ -251,8 +287,38 @@ public class UserRestController {
             account.setPublicList(object.getBoolean("publicList"));
         }
         accountService.update(account);
+        accountService.signin(account);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @Transactional
+    @RequestMapping(value = "/delete/{userID}", method = RequestMethod.DELETE)
+    public ResponseEntity deleteAccount(@PathVariable(value = "userID") String id) {
+        Account account = accountService.findById(id);
+        if (account == null) {
+            return new ResultData.ResultBuilder().notFound().build();
+        }
+        String message;
+        if (!account.equals(Utils.getCurrentAccount())) {
+            if (!account.getType().equals(AccountType.KID)) {
+                return new ResultData.ResultBuilder().badReqest().error().message(msgSrv.getMessage("user.delete.error")).build();
+            }
+            //if not deleting his account
+            Family family = familyService.getFamily(account);
+            if (family == null || !family.getAdmins().contains(Utils.getCurrentAccount())) {
+                return new ResultData.ResultBuilder().badReqest().error().message(msgSrv.getMessage("user.family.delete.error")).build();
+            }
+            message = msgSrv.getMessage("user.family.delete.kid.success");
+        } else {
+            message = msgSrv.getMessage("user.delete.success");
+        }
+        giftService.deleteClaims(account);
+        giftService.deleteUserGifts(account);
+        accountService.delete(account);
+        //TODO add complete event newsleter
+        return new ResultData.ResultBuilder().ok().message(message).build();
+    }
+
 
     @RequestMapping
     public Account user(@RequestParam(required = false) String identification, Principal user) {
@@ -279,4 +345,38 @@ public class UserRestController {
         return account;
     }
 
+    /**
+     * Shares public link with email recipients. Passed emails should be ; delimited. Only valid emails will be used to send emails to
+     *
+     * @param emails ; delimited email address
+     * @return
+     */
+    @RequestMapping(value = "/share", method = RequestMethod.POST)
+    public ResponseEntity shareGiftList(@RequestBody String emails) {
+        if (!Utils.getCurrentAccount().getPublicList()) {
+            return new ResultData.ResultBuilder().badReqest().error().build();
+        }
+        List<Mail> mailList = new ArrayList<>();
+        List<String> emailLists = Arrays.stream(emails.split(";")).filter(Utils::validateEmail).collect(Collectors.toList());
+        for (String email : emailLists) {
+            Mail mail = new Mail();
+            Account byEmail = accountService.findByEmail(email);
+            mail.setMailTo(email);
+            mail.setMailFrom(Utils.getCurrentAccount().getEmail());
+            if (byEmail != null) {
+                mail.setLocale(byEmail.getLanguage());
+                mail.addToModel("name", byEmail.getFullname());
+            }
+            mail.addToModel("owner", Utils.getCurrentAccount().getFullname());
+            mailList.add(mail);
+        }
+        try {
+            mailService.shareGiftList(mailList);
+        } catch (MessagingException e) {
+            LOG.error("Error while sending emailLists {}", e);
+            return new ResultData.ResultBuilder().badReqest().error().message(e.getMessage()).build();
+        }
+        String message = msgSrv.getMessage("gift.share.success", new Object[]{StringUtils.join(emailLists, ", ")}, "", Utils.getCurrentLocale());
+        return new ResultData.ResultBuilder().ok().message(message).build();
+    }
 }

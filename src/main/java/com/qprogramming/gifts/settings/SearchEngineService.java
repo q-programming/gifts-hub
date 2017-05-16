@@ -2,6 +2,7 @@ package com.qprogramming.gifts.settings;
 
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -39,6 +40,9 @@ public class SearchEngineService {
     }
 
     public Set<SearchEngine> getSearchEngines(List<Long> searchEngines) {
-        return searchEngines.stream().map(this::findById).collect(Collectors.toSet());
+        if (searchEngines != null) {
+            return searchEngines.stream().map(this::findById).collect(Collectors.toSet());
+        }
+        return Collections.emptySet();
     }
 }

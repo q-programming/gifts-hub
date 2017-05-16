@@ -3,6 +3,7 @@ package com.qprogramming.gifts.account.family;
 import com.qprogramming.gifts.MockSecurityContext;
 import com.qprogramming.gifts.TestUtil;
 import com.qprogramming.gifts.account.Account;
+import com.qprogramming.gifts.account.AccountType;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -19,7 +20,6 @@ import static org.mockito.Mockito.*;
  * Created by Khobar on 04.04.2017.
  */
 public class FamilyServiceTest {
-
     Account testAccount;
     FamilyService familyService;
     @Mock
@@ -95,5 +95,71 @@ public class FamilyServiceTest {
         assertNotNull(result);
         assertTrue(family.getMembers().contains(testAccount));
     }
+
+    @Test
+    public void removeFromFamilyLastMember() throws Exception {
+        Family family = new Family();
+        family.setId(1L);
+        family.getMembers().add(testAccount);
+        family.getAdmins().add(testAccount);
+        familyService.removeFromFamily(testAccount, family);
+        verify(familyRepositoryMock, times(1)).delete(family);
+    }
+
+    @Test
+    public void removeFromFamilyGrantAdmin() throws Exception {
+        Account account = TestUtil.createAccount("John", "Doe");
+        account.setId("USER_ID");
+        account.setType(AccountType.LOCAL);
+        Account kid = TestUtil.createAccount("Little", "Kid");
+        kid.setId("USER_ID2");
+        kid.setType(AccountType.KID);
+        Family family = new Family();
+        family.setId(1L);
+        family.getMembers().add(testAccount);
+        family.getMembers().add(account);
+        family.getMembers().add(kid);
+        family.getAdmins().add(testAccount);
+        familyService.removeFromFamily(testAccount, family);
+        assertTrue(family.getAdmins().contains(account));
+    }
+
+    @Test
+    public void removeFromFamilyLastAccountButKidLeft() throws Exception {
+        Account kid = TestUtil.createAccount("Little", "Kid");
+        kid.setId("USER_ID2");
+        kid.setType(AccountType.KID);
+        Family family = new Family();
+        family.setId(1L);
+        family.getMembers().add(testAccount);
+        family.getMembers().add(kid);
+        family.getAdmins().add(testAccount);
+        familyService.removeFromFamily(testAccount, family);
+        assertTrue(family.getAdmins().isEmpty());
+        assertTrue(family.getMembers().isEmpty());
+        verify(familyRepositoryMock, times(1)).delete(family);
+
+    }
+
+
+    @Test
+    public void removeFromFamilyOtherMembersLeft() throws Exception {
+        Account account = TestUtil.createAccount("John", "Doe");
+        account.setId("USER_ID");
+        account.setType(AccountType.LOCAL);
+        Account kid = TestUtil.createAccount("Little", "Kid");
+        kid.setId("USER_ID2");
+        kid.setType(AccountType.KID);
+        Family family = new Family();
+        family.setId(1L);
+        family.getMembers().add(testAccount);
+        family.getMembers().add(account);
+        family.getMembers().add(kid);
+        family.getAdmins().add(account);
+        familyService.removeFromFamily(testAccount, family);
+        assertFalse(family.getMembers().contains(testAccount));
+
+    }
+
 
 }

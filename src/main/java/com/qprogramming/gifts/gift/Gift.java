@@ -6,14 +6,12 @@ import com.qprogramming.gifts.settings.SearchEngine;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
 
-/**
- * Created by Khobar on 10.03.2017.
- */
 @Entity
-public class Gift {
+public class Gift implements Serializable,Comparable<Gift> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "gift_seq_gen")
@@ -166,5 +164,11 @@ public class Gift {
                 ", name='" + name + '\'' +
                 ", userId='" + userId + '\'' +
                 '}';
+    }
+
+    @Override
+    public int compareTo(Gift gift) {
+
+        return 0;
     }
 }

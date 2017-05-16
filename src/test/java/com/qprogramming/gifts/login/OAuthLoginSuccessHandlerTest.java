@@ -1,10 +1,10 @@
 package com.qprogramming.gifts.login;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.qprogramming.gifts.TestUtil;
 import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.account.AccountType;
+import com.qprogramming.gifts.config.property.PropertyService;
 import com.qprogramming.gifts.login.token.TokenService;
 import org.junit.Before;
 import org.junit.Test;
@@ -51,7 +51,7 @@ public class OAuthLoginSuccessHandlerTest {
     @Mock
     private TokenService tokenServiceMock;
     @Mock
-    private ObjectMapper objectMapperMock;
+    private PropertyService propertyServiceMock;
 
     private OAuthLoginSuccessHandler handler;
 
@@ -62,7 +62,8 @@ public class OAuthLoginSuccessHandlerTest {
         when(authMock.getUserAuthentication()).thenReturn(authenticationMock);
         when((OAuth2AuthenticationDetails) authMock.getDetails()).thenReturn(oauthDetailsMock);
         when(authenticationMock.getDetails()).thenReturn(details);
-        handler = spy(new OAuthLoginSuccessHandler(accSrvMock, tokenServiceMock));
+        when(propertyServiceMock.getLanguages()).thenReturn(languageList());
+        handler = spy(new OAuthLoginSuccessHandler(accSrvMock, tokenServiceMock, propertyServiceMock));
     }
 
     @Test
@@ -110,7 +111,7 @@ public class OAuthLoginSuccessHandlerTest {
                 , OAuthLoginSuccessHandler.LOCALE};
         User fbUser = spy(new User(testAccount.getId(), testAccount.getFullname()
                 , testAccount.getName(), testAccount.getSurname()
-                , "Male", new Locale(testAccount.getLanguage())));
+                , "Male", new Locale("fr")));
         when(oauthDetailsMock.getTokenValue()).thenReturn("RANDOM_TOKEN");
         when(accSrvMock.createOAuthAcount(any(Account.class))).thenReturn(testAccount);
         when(fbUser.getEmail()).thenReturn(testAccount.getEmail());
@@ -119,7 +120,18 @@ public class OAuthLoginSuccessHandlerTest {
         when(facebookTemplateMock.userOperations()).thenReturn(userOperationsMock);
         when(userOperationsMock.getUserProfileImage()).thenReturn(new byte[2]);
         when(accSrvMock.update(any(Account.class))).thenReturn(testAccount);
+        when(propertyServiceMock.getDefaultLang()).thenReturn("en");
         handler.onAuthenticationSuccess(requestMock, responseMock, authMock);
+        verify(accSrvMock, times(1)).createOAuthAcount(any(Account.class));
+        verify(accSrvMock, times(1)).signin(testAccount);
+
+    }
+
+    private Map<String, String> languageList() {
+        Map<String, String> langs = new HashMap<>();
+        langs.put("en", "English");
+        langs.put("pl", "Polish");
+        return langs;
     }
 
 }

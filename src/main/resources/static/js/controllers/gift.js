@@ -1,6 +1,6 @@
 app.controller('gift', [
-    '$rootScope', '$scope', '$http', '$log', '$routeParams', '$route', '$location', '$window', '$translate', '$uibModal', 'AlertService', 'AvatarService', 'GIFT_STATUS',
-    function ($rootScope, $scope, $http, $log, $routeParams, $route, $location, $window, $translate, $uibModal, AlertService, AvatarService, GIFT_STATUS) {
+    '$rootScope', '$scope', '$http', '$log', '$routeParams', '$route', '$location', '$window', '$translate', '$uibModal', '$sce', 'AlertService', 'AvatarService', 'GIFT_STATUS',
+    function ($rootScope, $scope, $http, $log, $routeParams, $route, $location, $window, $translate, $uibModal, $sce, AlertService, AvatarService, GIFT_STATUS) {
         $scope.giftForm = {};
         $scope.giftsList = [];
         $scope.searchEngines = [];
@@ -8,13 +8,22 @@ app.controller('gift', [
         $scope.userList = false;
         $scope.userGiftList = {};
         $scope.listTitle = "";
+
+        $scope.importedFile = null;
+
+
         $scope.categoryOther = "";
+        $scope.categoryRealised = "";
 
         $scope.searchWith = '';
 
         $translate("gift.category.other").then(function (translation) {
             $scope.categoryOther = translation;
         });
+        $translate("gift.category.realised").then(function (translation) {
+            $scope.categoryRealised = translation;
+        });
+
         //INIT
         getGiftList();
         if ($rootScope.authenticated) {
@@ -79,6 +88,56 @@ app.controller('gift', [
                 }
             });
         };
+        $scope.showImport = function () {
+            $uibModal.open({
+                templateUrl: 'modals/giftImport.html',
+                scope: $scope,
+                controller: function ($uibModalInstance, $scope) {
+                    $scope.fileName = "";
+                    $scope.gotFile = null;
+                    $scope.logmessage = "";
+                    $scope.importFinished = null;
+                    $scope.importInProgress = null;
+                    $scope.cancel = function () {
+                        $uibModalInstance.dismiss('cancel');
+                    };
+                    $scope.close = function () {
+                        getGiftList();
+                        getCategories();
+                        $uibModalInstance.close();
+                    };
+                    $scope.action = function () {
+                        $log.debug($scope.importedFile);
+                        var fd = new FormData();
+                        fd.append("file", $scope.importedFile);
+                        if ($routeParams.username) {
+                            fd.append("user", $routeParams.username);
+                        }
+                        var url = 'api/gift/import';
+                        $scope.importInProgress = true;
+                        $http.post(url, fd, {
+                            transformRequest: angular.identity,
+                            headers: {'Content-Type': undefined}
+                        }).then(function (response) {
+                            $scope.logmessage = $sce.trustAsHtml(response.data.message);
+                            $scope.importInProgress = false;
+                            $scope.importFinished = true
+                        }).catch(function (response) {
+                            $uibModalInstance.close();
+                            AlertService.addError("error.general", response);
+                            $log.debug(response);
+                        });
+                    };
+                    $scope.handleFileSelect = function (evt) {
+                        $scope.importedFile = evt.files[0];
+                        $scope.fileName = $scope.importedFile.name;
+                        $scope.gotFile = true;
+                        $scope.$apply();
+                    };
+                }
+            });
+        };
+
 
         /**
          * Reset gift form
@@ -177,8 +236,8 @@ app.controller('gift', [
             return (gift.status !== GIFT_STATUS.REALISED && (gift.claimed && gift.claimed.id === $rootScope.principal.id))
         };
         $scope.claimGift = function (gift) {
-            var url = 'api/gift/claim?gift=' + gift.id;
-            $http.get(url).then(
+            var url = 'api/gift/claim/' + gift.id;
+            $http.put(url).then(
                 function (response) {
                     $log.debug("[DEBUG] Gift claimed");
                     AlertService.addSuccessMessage(response.data.message);
@@ -189,8 +248,8 @@ app.controller('gift', [
             });
         };
         $scope.unClaimGift = function (gift) {
-            var url = 'api/gift/unclaim?gift=' + gift.id;
-            $http.get(url).then(
+            var url = 'api/gift/unclaim/' + gift.id;
+            $http.put(url).then(
                 function (response) {
                     $log.debug("[DEBUG] Gift unclaimed");
                     AlertService.addSuccessMessage(response.data.message);
@@ -215,8 +274,8 @@ app.controller('gift', [
         };
 
         $scope.realiseGift = function (gift) {
-            var url = 'api/gift/complete?gift=' + gift.id;
-            $http.get(url).then(
+            var url = 'api/gift/complete/' + gift.id;
+            $http.put(url).then(
                 function (response) {
                     $log.debug("[DEBUG] Gift realised");
                     AlertService.addSuccessMessage(response.data.message);
@@ -227,8 +286,8 @@ app.controller('gift', [
             });
         };
         $scope.undoRealiseGift = function (gift) {
-            var url = 'api/gift/undo-complete?gift=' + gift.id;
-            $http.get(url).then(
+            var url = 'api/gift/undo-complete/' + gift.id;
+            $http.put(url).then(
                 function (response) {
                     $log.debug("[DEBUG] Gift undo realised");
                     AlertService.addSuccessMessage(response.data.message);
@@ -239,8 +298,32 @@ app.controller('gift', [
             });
         };
 
+        // Delete
+        $scope.deleteGift = function (gift) {
+            var url = 'api/gift/delete/' + gift.id;
+            $http.delete(url).then(
+                function (response) {
+                    $log.debug("[DEBUG] Gift deleted");
+                    AlertService.addSuccessMessage(response.data.message);
+                    getGiftList();
+                }).catch(function (response) {
+                AlertService.addError("error.general", response);
+                $log.debug(response);
+            });
+        };
+
 
         // HELPER FUNCTIONS
+
+        $scope.getGiftClass = function (gift) {
+            if (gift.status === GIFT_STATUS.REALISED) {
+                return 'gift-realised';
+            } else if (gift.claimed && gift.userId !== $rootScope.principal.id) {
+                return 'gift-claimed';
+            }
+            return '';
+        };
+
         function getGiftList() {
             var username;
             var url;
@@ -273,12 +356,13 @@ app.controller('gift', [
                     angular.forEach(response.data, function (value, key) {
                         if (key === '') {
                             key = $scope.categoryOther;
+                        } else if (key === 'REALISED') {
+                            key = $scope.categoryRealised;
                         }
                         $scope.giftsList[key] = value;
                     });
                 }).catch(function (response) {
                 if (response.status === 404) {
-                    // AlertService.addError('error.page.notfound');
                     $location.url('/404');
                 } else if (response.status === 400) {
                     $scope.isPublicList = false;

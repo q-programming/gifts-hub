@@ -4,6 +4,7 @@ import com.qprogramming.gifts.MockSecurityContext;
 import com.qprogramming.gifts.TestUtil;
 import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.Roles;
+import com.qprogramming.gifts.config.mail.MailService;
 import com.qprogramming.gifts.config.property.PropertyService;
 import com.qprogramming.gifts.settings.SearchEngine;
 import com.qprogramming.gifts.settings.SearchEngineService;
@@ -44,6 +45,8 @@ public class AppRestControllerTest {
     private MockSecurityContext securityMock;
     @Mock
     private Authentication authMock;
+    @Mock
+    private MailService mailServiceMock;
 
     private Account testAccount;
 
@@ -51,7 +54,7 @@ public class AppRestControllerTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        AppRestController mngCtrl = new AppRestController(propertyServiceMock, searchEngineServiceMock);
+        AppRestController mngCtrl = new AppRestController(propertyServiceMock, searchEngineServiceMock, mailServiceMock);
         testAccount = TestUtil.createAccount();
         when(securityMock.getAuthentication()).thenReturn(authMock);
         when(authMock.getPrincipal()).thenReturn(testAccount);

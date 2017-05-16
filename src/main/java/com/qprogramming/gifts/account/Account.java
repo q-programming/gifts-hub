@@ -11,9 +11,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 
-/**
- * Created by Khobar on 28.02.2017.
- */
 @Entity
 public class Account implements Serializable, UserDetails {
 
@@ -24,7 +21,7 @@ public class Account implements Serializable, UserDetails {
     @JsonIgnore
     private String password;
     @Column
-    private String language = "en";
+    private String language;
     @Column
     private String name;
     @Column
@@ -45,6 +42,9 @@ public class Account implements Serializable, UserDetails {
 
     @Column
     private Boolean publicList = false;
+
+    @Column
+    private Boolean tourComplete = false;
 
     private String fullname;
 
@@ -126,6 +126,14 @@ public class Account implements Serializable, UserDetails {
 
     private GrantedAuthority createAuthority(Roles role) {
         return new SimpleGrantedAuthority(role.toString());
+    }
+
+    public Boolean getTourComplete() {
+        return tourComplete;
+    }
+
+    public void setTourComplete(Boolean tourComplete) {
+        this.tourComplete = tourComplete;
     }
 
     @Override

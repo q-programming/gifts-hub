@@ -8,6 +8,7 @@ import com.qprogramming.gifts.login.OAuthLoginSuccessHandler;
 import com.qprogramming.gifts.login.RestAuthenticationEntryPoint;
 import com.qprogramming.gifts.login.token.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
@@ -50,6 +51,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private String USER_COOKIE;
     @Autowired
     private RestAuthenticationEntryPoint restAuthenticationEntryPoint;
+    @Qualifier("oauth2ClientContext")
     @Autowired
     private OAuth2ClientContext oauth2ClientContext;
     @Autowired
