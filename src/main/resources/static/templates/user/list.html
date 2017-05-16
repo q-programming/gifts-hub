@@ -110,8 +110,9 @@
                       class="btn btn-sm btn-default" ng-click="editKid(user)">
                     <i class="fa fa-pencil"></i>
                 </span>
-                <a class="btn btn-sm btn-default" ng-href="#/list/{{user.username}}"><i class="fa fa-fw fa-gift"></i>Gift
-                list</a>
+                <a class="btn btn-sm btn-default" ng-href="#/list/{{user.username}}"><i class="fa fa-fw fa-gift"></i>
+                    <span class="hidden-xs">{{'gift.list.short'|translate}}</span>
+                </a>
             </span>
     </div>
 </script>

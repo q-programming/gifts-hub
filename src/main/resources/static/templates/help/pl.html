@@ -1,6 +1,6 @@
 <div class="row">
     <div class="col-xs-12 text-center">
-        <h2><img src="images/logo.png" width="40px" height="40px"/>&nbsp;Witaj w Gifts Hub</h2>
+        <h2><img src="images/logo.png" width="60px" height="60px"/>&nbsp;Witaj w Gifts Hub</h2>
         <p>Wersja 0.5</p>
     </div>
     <div class="col-xs-12">
@@ -9,9 +9,10 @@
             użytkownik ma swoją listę , na której możę łątwo dodać, eydtować lub usunąć prezenty jakie chciałby
             otrzymać.<br>
             Istnieje możliwośc logowania się po założeniu konta, lub logując się bezpośrednio za pomocą facebook'a lub
-            google.
+            google.<br>
             W przypadku uzycia portali społecznościowych, w aplikacji tworzone jest konto z danymi i zdjęciem.
         </p>
+        <br>
         <p class="text-center">
             W przypadku błędów lub pomysłów , skontaktuj się ze mną przez mój email: <br><a
                 href="mailto:jakub.romaniszyn@gmail.com">jakub.romaniszyn@gmail.com</a>
@@ -80,7 +81,7 @@
             </div>
         </div>
         <div class="row hidden-xs">
-            <div class="col-lg-2 clickable menu-item-help" ng-click="anchor('settings')" style="padding: 12px;">
+            <div class="col-sm-4 col-lg-2 clickable menu-item-help" ng-click="anchor('settings')" style="padding: 12px;">
                 <span>
                     {{principal.fullname}}<span class="caret"></span>
                     <img ng-if="principal.avatar && principal.avatar !== 'NaN'" ng-src="{{principal.avatar}}"
@@ -89,7 +90,7 @@
                          class="avatar nav-avatar"/>
                 </span>
             </div>
-            <div class="col-lg-10">
+            <div class="col-sm-8 col-lg-10">
                 Twoje menu ustawień ( widoczne po kliknięciu na twój awatar). Tam można otworzyć stronę ustawień lub
                 wylogować się z aplikacji
             </div>
@@ -154,132 +155,145 @@
     <!--END USERS-->
     <!--GIFTS-->
     <div class="col-xs-12">
-        <h3 id="gifts">Gifts</h3>
+        <h3 id="gifts">Prezenty</h3>
         <p>
-            In here all your gifts for currently browsed user
+            Tutaj znajdują się wszystkie prezenty dla obecnie przeglądanego uzytkownika
         </p>
         <p>
-            All gifts are grouped in categories and sorted by date. Newest gifts at top, old at the
-            bottom.<br><br>Claimed gifts are additionally colored in orange with information who claimed on mouse over
-            on claimed icon<br>(gift owner will not see this information).
-            <br><br>Claimed gifts are shown at the bottom in their category
-            Information like gift link , description and available search engines is shown for each row
+            rezenty są pogrupowane po kategoriach i srotowane po datach. Najnowszy prezent na samej górze, starsze na
+            dole.
+            Kazdy wiersz zawiera informację o nazwie, opisie , link oraz dostępne dla tego prezentu silniki
+            wyszukiwania.
+            <br><br>Prezenty, które zostały zarezerwowane są dodatkowo pokolorowane na pomarańczowo z informacją kto
+            zarezerwował widoczną po najechaniu kuroserem na ikonę prezentu
+            <br>(właściciel prezentu nie zobaczy tej informacji).
+            <br><br>Prezenty zarezerwowane są dodatkowo pokazane na dole listy w swojej kategorii.<br>
         </p>
         <p>
-            <strong>Actions</strong><br>Here are all actions available for gift. Depending if you are on
-            your
-            list or other users list, different actions are available.<br><br><i
-                class="fa fa-fw fa-lg fa-check-circle-o"></i> - Mark gift as realised<br><i
-                class="fa fa-fw fa-lg fa-pencil"></i> - Edit gift<br><i class="fa fa-fw fa-lg fa-trash"></i> - Delete
-            gift<br><i class="fa fa-fw fa-lg fa-hand-paper-o"></i> - claim gift ( or remove claim)
+            <strong>Akcje</strong><br>Zależnie od tego czy jesteś na liscie swojej, czyjejś lub liscie innego członka
+            twojej rodziny, dostepne dla Ciebie będą różne akcje.
+            <br><br>
+            <i class="fa fa-fw fa-lg fa-check-circle-o"></i> - Oznacz prezent jako zrealizowany<br>
+            <i class="fa fa-fw fa-lg fa-pencil"></i> - Edytuj prezent<br>
+            <i class="fa fa-fw fa-lg fa-trash"></i> - Usuń prezent<br>
+            <i class="fa fa-fw fa-lg fa-hand-paper-o"></i> - Zarezerwuj prezent ( lub usuń rezerwację)
         </p>
-        <h4>Adding new gift</h4>
+        <h4>Dodawanie nowego prezentu</h4>
         <p>
-            To add new gift, click <span class="btn btn-success"><i class="fa fa-plus"></i>Add new</span>button
-            on wish list view<br><br>If you are family administrator, you can add gifts on wish list of other family
+            Aby dodać nowy prezent, kliknij przycisk <span class="btn btn-success"><i class="fa fa-plus"></i>{{'gift.new.add'|translate}}</span>
+            na widoku listy życzeń<br><br>Jeżeli jesteś administratorem rodziny, możesz dodawać prezenty dla innych
+            członków twojej rodziny
             members
         </p>
         <p>
-            While creating new gift, only <strong>name</strong> field is required.<br>When adding gift, try to
-            make it as a keyword, which will be used by search engines.<br><br>Other fields are optional but
-            helpfull.<br><br>It's good to add new gift to category, and select which search engines will be visible for
-            it
+            Tworząć nowy prezent , tylko pole <strong>nazwa</strong> jest wymagane,<br>Określając nazwę prezentu
+            postaraj sie aby była ona jednocześnie słowem klucz , który będzie uzywany przez silniki wyszukiwarki.
+            <br><br>Inne pola są opcjonalne, ale pomocne.<br><br>Dobrze tez jest dodać prezent do którejś kategori
+            (również tworząć nową) i wybrać dostępne silniki wyszkuwarki
         </p>
-        <h4>Claming gift</h4>
+        <h4>Rezerwacja prezentu</h4>
         <p>
-            Each application user can claim other users gift. When claimed gift will be makred as claimed, with
-            information who claimed it on mouse hover
+            Każdy uzytkownik aplikacji może zarezerwować prezent innego użytkownika. Kiedy zarezerwowany, prezent
+            zostanie odpowiednio oznaczony, z informacją kto zarezerwował dostępną po najechaniu kursorem
             <br>
-            If claimed, gift will look like this:
+            Zarezerwowany prezent będzie wyglądał wtedy mniej więcej tak :
             <span class="gift-status claimed-gift"
                   uib-tooltip="{{gift_tooltip}}">
                 <i class="fa fa-fw fa-hand-paper-o"></i>
                 <i class="fa fa-fw fa-2x fa-gift"></i>
             </span>
-            <strong class="gift-claimed">Claimed gift</strong>
+            <strong class="gift-claimed">{{'gift.status.claimed'|translate}}</strong>
         </p>
-        <h4>Search engines</h4>
-        <p>Search engines can be defined by application administrators.Whenever this engine will be created while
-            creating new gift, it's link will be shown next to gift link. When clicked search string will use gift name
-            and search using that search engine.<br> For example if google search engine will be used for gift with name
-            "MY_NAME", google will be used to search for <u>https://www.google.com/search?q=MY_NAME</u>
+        <h4>Silniki wyszukiwania</h4>
+        <p>Silniki wyszukiwania mogą być zdefiniowane przez administratora aplikacji . Kiedy dany silnik zostanie
+            oznaczony podczas tworzenia nowego prezentu, link do tego silnika będzie wyświetlony obok linka prezentu. Po
+            kliknięciu, w nowym oknie zostanie wyświetlony rezultat wyszukiwania w tym silniku po słowie kluczowym (
+            nazwa prezentu).
+            <br> Na przykład, jeżeli zostanie użyty silnik wyszukiwania google, dla nazwy prezentu "MOJA_NAZWA",
+            zostanie
+            wyświetlony rezultat szukania dla <u>https://www.google.com/search?q=MOJA_NAZWA</u>
         </p>
-        <h4>Gifts importing</h4>
+        <h4>Importowanie prezentów</h4>
         <p>
-            It is also possible to import many gifts at once. Start by clicking <span class="btn btn-success"><i
-                class="fa fa-upload"></i></span> button on gifts page.
+            Możliwe jest importowanie wielu prezentów na raz. Rozpocznij poprzez kliknięcie na przycisk<span
+                class="btn btn-success"><i
+                class="fa fa-upload"></i></span> widoczny na ekranie listy życzeń.
         </p>
-        <p>Select previously filled in excel file (created based on downloaded template), and click
-            Import button<br><br>All valid gifts from file will be imported for current user<br>(or family member, which
-            gifts
-            were currently browsed)
+        <p>Wybierz wcześniej wypełniony excel (stworzony na podstawie wcześniej pobranego szablonu ), i kliknij przycisk
+            Importuj<br><br>Wszystkie poprawne zdefiniowane przenty zostaną zaimportowane dla danego uzytkownika<br>(lub
+            członka rodziny , którego prezenty w danej chwili wyświetlaliśmy)
         </p>
     </div>
     <!--END GIFTS-->
     <!--MANAGE-->
     <!--END MANAGE-->
     <div class="col-xs-12" ng-if="authenticated &amp;&amp; principal.role === 'ROLE_ADMIN'">
-        <h3 id="manage">Application management</h3>
+        <h3 id="manage">Zarządzanie aplikacją</h3>
         <p>
-            Application administrator has additional menu available on desktop version of app. Manage view can be
-            accessed on mobile devices as well but only via direct link , not to obscure small mobile menu.
-            <br>Please note that all properties have to be set on first visit , otherwise it's not guarantied that
-            application will work correctly
+            Administrator aplikacji ma dodatkową opcję w menu w stacjonarnej wersji aplikacji. Do widok zarządzania
+            aplikacją można dostać się na urządzeniach mobilnych poprzez bezposredni link
+            <br>Proszę pamiętać aby ustawić wszystkie parametry podczas pierwszej wizyty , inaczej aplikacja nie będzie
+            działać poprawnie
         </p>
         <h4>{{'app.manage.language'|translate}}</h4>
-        <p>Here you can set application default language.This list is dynamically populated by API from all available
-            languages added in system.<br>
-            If you want to add your language just copy and translate <code>lang/messages_XX.properties</code> and add it
-            to application package. File can be manually added, but recommended is to add it to sources and perform
+        <p>Określenie domyslnego języka dla aplikacji. Lista będzie wypełniana przez API dynamicznie na podstawie na
+            podstawie języków dodanych do aplikacji
+            <br>Jeżeli chcesz dodać wsparcie dla nowego języka, skopiuj i przetłumacz
+            <code>lang/messages_XX.properties</code> i dodaj do paczki aplikacji.
+            Plik można dodać ręcznie , ale rekomendowane jest aby dodać do żródeł aplikacji i zbudować całość za pomocą
+            komendy
             <code>mvn
-                package</code>. <br>Please note that in order for new language to be recognised it has to have at least
-            <code>main.language.name</code> property
+                package</code>.
+            <br>Aby nowy język został uwzględniony musi mieć przynajmniej ustawioną wartość dla klucza
+            <code>main.language.name</code>
         </p>
         <h4>{{'app.manage.gift.age'|translate}}</h4>
         <p>{{'app.manage.gift.age.help '|translate}}</p>
         <h4>{{app.manage.url}}</h4>
-        <p>This is application url, which will be used in mails and other forms of cumincation. It's recomended to set
-            it on first visit</p>
+        <p>To jest link aplikacji, który będzie używany w wysyłaniu wiadomości e-mail i innych form komunikacji.
+            Rekomendowane jest ustawienie tego parametru podczas pierwszej wizity</p>
         <h4>{{'user.sort.default'|translate}}</h4>
-        <p>How user will be sorted by default on user list view</p>
+        <p>Jak domyślnie będą sortowani użytkownicy na widoku listy użytkowników</p>
         <h4>{{'app.manage.email'|translate}}</h4>
-        <p>Base application email settings. This server will be used to send some basic mails to users, using
-            application<br> After setting detials and saving , SMTP server will be tested if valid.</p>
-        <h4>Search engines</h4>
-        <p>Here you can define search engines which user will be able to use on their gifts<br>When defining new search
-            engine it's crucial to all fields be valid. <br>
-            <strong>Search engine name</strong> - name which will be shown on gift creation screen, and on mouse hover
-            over icon<br>
-            <strong>Search engine link</strong> - search query link. Gift name will be pasted at the end of it. Ussually
-            it's in form :
+        <p>Podstawowe ustawienia serwera mailowego. Serwer ten będzie używany do wysyłania podstawowych wiadomości
+            e-mail do użytkowników aplikacji
+            <br>Po ustawieniu detali i zapisaniu, poprawność konfiguracji SMTP zostanie automatycznie sprawdzona</p>
+        <h4>Silniki wyszukiwania</h4>
+        <p>Tutaj możesz określić silniki wyszukiwania jakie uzytkownicy będą mogli użyć na swoich prezentach<br>Definiując
+            nowy silnik wyszukiwania istotne jest aby poprawnie okreslić wszystkie pola
+            <br>
+            <strong>{{'app.manage.search.name'|translate}}</strong> - nazwa jaka będzie wyświetlana podczas tworzenia
+            nowego prezentu oraz po najechaniu kursorem na ikonę wyszukiwarki<br>
+            <strong>{{'app.manage.search.link'|translate}}</strong> - link wyszukiwarki. Nazwa prezentu zostanie
+            doklejona na koniec tego linku.
+            Najczęsciej link ma format :
             <code>http://google.com/search?q=</code><br>
-            <strong>Search icon</strong> - {{'app.manage.search.icon.help'|translate}}
+            <strong>{{'app.manage.search.icon'|translate}}</strong> - {{'app.manage.search.icon.help'|translate}}
         </p>
     </div>
 
     <!--SETTINGS-->
     <div class="col-xs-12">
-        <h3 id="settings">Settings</h3>
+        <h3 id="settings">Ustawienia</h3>
 
         <p>
-            Your account settings are in menu under your avatar
+            Twoje ustawienia konta znajdują się w menu pod twoim awatarem
         </p>
         <p>
-            On this screen you can set your custom avatar, change application display language and define if
-            your list can be public.
+            Na tym ekranie możesz dodać swój niestandardowy awatar, zmienić język w którym wyświetlana jest aplikacja i
+            okreslić czy twoja lista będzie publiczna
         </p>
-        <h4>Public list</h4>
+        <h4>Lista Publiczna</h4>
         <p>
             {{'user.settings.public.help'|translate}}<br>
-            By pressing <span class="btn btn-default">
-            <i class="fa fa-link" aria-hidden="true"></i></span>
-            button you can quickly coppy your public link to clipboard.
+            Klikająć na przycisk <span class="btn btn-default">
+            <i class="fa fa-link"></i></span>
+            obok publicznego linka, zostanie on skopiowany do schowka
         </p>
-        <h4>Removing account</h4>
-        <p>Here you can also {{'user.delete.help'|translate}}<br>
-            <strong>This operation cannot be undone , so please handle with care</strong>
+        <h4>Usuwanie konta</h4>
+        <p>Możesz permametnie usunąć swoje konto z aplikacji. Tej operacji nie da się cofnąć, wszystkie twoje prezenty i
+            rezerwacje zostaną usunięte wraz z twoim kontem<br>
+            <strong>Pamiętaj, żę tej operacji nie da się cofnąć , dlatego proszę używać jej z rozwagą!</strong>
         </p>
     </div>
-
-
 </div>

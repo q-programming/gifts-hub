@@ -1,6 +1,6 @@
 <div class="row">
     <div class="col-xs-12 text-center">
-        <h2><img src="images/logo.png" width="40px" height="40px"/>&nbsp;Welcome to Gifts Hub</h2>
+        <h2><img src="images/logo.png" width="60px" height="60px"/>&nbsp;Welcome to Gifts Hub</h2>
         <p>Version 0.5</p>
     </div>
     <div class="col-xs-12">
@@ -9,7 +9,7 @@
             list , where he can easly add , edit or remove gifts he would like to receive
             <br>
             There is possibility to login using previously registered account, or loggin using social media like
-            facebook and google.
+            facebook and google.<br>
             In case of social media profile being used, application will create new local account with detials and photo
             from your public profile
         </p>
@@ -82,7 +82,7 @@
             </div>
         </div>
         <div class="row hidden-xs">
-            <div class="col-lg-2 clickable menu-item-help" ng-click="anchor('settings')" style="padding: 12px;">
+            <div class="col-sm-4 col-lg-2 clickable menu-item-help" ng-click="anchor('settings')" style="padding: 12px;">
                 <span>
                     <span ng-if="principal">{{principal.fullname}}</span>
                     <span ng-if="!principal">{{'user.firstname'|translate}}&nbsp;{{'user.surname'|translate}}</span>
@@ -95,7 +95,7 @@
                          class="avatar nav-avatar"/>
                 </span>
             </div>
-            <div class="col-lg-10">
+            <div class="col-sm-8 col-lg-10">
                 Your avatar and settings menu (visible after clicking on avatar). There you can either logoff or go to
                 settings page
             </div>
@@ -203,10 +203,10 @@
                 <i class="fa fa-fw fa-hand-paper-o"></i>
                 <i class="fa fa-fw fa-2x fa-gift"></i>
             </span>
-            <strong class="gift-claimed">Claimed gift</strong>
+            <strong class="gift-claimed">{{'gift.status.claimed'|translate}}</strong>
         </p>
         <h4>Search engines</h4>
-        <p>Search engines can be defined by application administrators.Whenever this engine will be created while
+        <p>Search engines can be defined by application administrators.Whenever this engine will be selected while
             creating new gift, it's link will be shown next to gift link. When clicked search string will use gift name
             and search using that search engine.<br> For example if google search engine will be used for gift with name
             "MY_NAME", google will be used to search for <u>https://www.google.com/search?q=MY_NAME</u>
@@ -255,12 +255,14 @@
         <h4>Search engines</h4>
         <p>Here you can define search engines which user will be able to use on their gifts<br>When defining new search
             engine it's crucial to all fields be valid. <br>
-            <strong>Search engine name</strong> - name which will be shown on gift creation screen, and on mouse hover
+            <strong>{{'app.manage.search.name'|translate}}</strong> - name which will be shown on gift creation screen,
+            and on mouse hover
             over icon<br>
-            <strong>Search engine link</strong> - search query link. Gift name will be pasted at the end of it. Ussually
+            <strong>{{'app.manage.search.link'|translate}}</strong> - search query link. Gift name will be pasted at the
+            end of it. Ussually
             it's in form :
             <code>http://google.com/search?q=</code><br>
-            <strong>Search icon</strong> - {{'app.manage.search.icon.help'|translate}}
+            <strong>{{'app.manage.search.icon'|translate}}</strong> - {{'app.manage.search.icon.help'|translate}}
         </p>
     </div>
 
