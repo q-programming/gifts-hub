@@ -83,6 +83,7 @@ public class UserRestController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
+    @Transactional
     @RequestMapping("/{id}/avatar")
     public ResponseEntity<?> userAvatar(@PathVariable(value = "id") String id) {
         Account account = accountService.findById(id);
@@ -92,6 +93,7 @@ public class UserRestController {
         return ResponseEntity.ok(accountService.getAccountAvatar(account));
     }
 
+    @Transactional
     @RequestMapping("/avatar-upload")
     public ResponseEntity<?> uploadNewAvatar(@RequestBody String avatarStream) {
         Account account = Utils.getCurrentAccount();
