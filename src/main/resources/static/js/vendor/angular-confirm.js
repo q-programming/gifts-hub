@@ -1,4 +1,4 @@
-/*
+/**
  * angular-confirm
  * https://github.com/Schlogen/angular-confirm
  * @version v1.2.6 - 2016-09-06

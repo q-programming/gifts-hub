@@ -74,7 +74,7 @@ app.controller('gift', [
             $uibModal.open({
                 templateUrl: 'modals/gift.html',
                 scope: $scope,
-                controller: function ($uibModalInstance, $scope) {
+                controller: ['$uibModalInstance', '$scope', function ($uibModalInstance, $scope) {
                     $scope.cancel = function () {
                         $uibModalInstance.dismiss('cancel');
                     };
@@ -85,7 +85,7 @@ app.controller('gift', [
                             $uibModalInstance.close()
                         }
                     };
-                }
+                }]
             });
         };
         $scope.showImport = function () {

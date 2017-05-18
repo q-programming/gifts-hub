@@ -71,7 +71,7 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
             var modalInstance = $uibModal.open({
                 templateUrl: 'modals/family.html',
                 scope: $scope,
-                controller: function ($uibModalInstance, $scope) {
+                controller: ['$uibModalInstance', '$scope',function ($uibModalInstance, $scope) {
                     getUsersWithoutFamily();
                     $scope.cancel = function () {
                         $uibModalInstance.dismiss('cancel');
@@ -81,7 +81,7 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
                         sendFamilyData($scope.family, true);
                         $uibModalInstance.close()
                     };
-                }
+                }]
             });
         };
 
@@ -98,7 +98,7 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
             var modalInstance = $uibModal.open({
                 templateUrl: 'modals/family.html',
                 scope: $scope,
-                controller: function ($uibModalInstance, $scope) {
+                controller: ['$uibModalInstance', '$scope',function ($uibModalInstance, $scope) {
                     getUsersWithoutFamily();
                     $scope.cancel = function (dismissMessage) {
                         if (angular.isUndefined(dismissMessage)) {
@@ -111,7 +111,7 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
                         sendFamilyData($scope.family, false);
                         $uibModalInstance.close()
                     };
-                }
+                }]
             });
         };
 
@@ -275,7 +275,7 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
             var modalInstance = $uibModal.open({
                 templateUrl: 'modals/kid.html',
                 scope: $scope,
-                controller: function ($uibModalInstance, $scope) {
+                controller: ['$uibModalInstance', '$scope',function ($uibModalInstance, $scope) {
                     $scope.cancel = function () {
                         $uibModalInstance.dismiss('cancel');
                     };
@@ -286,7 +286,7 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
                         sendChildData($scope.formData, true);
                         $uibModalInstance.close()
                     };
-                }
+                }]
             });
         };
 
@@ -303,7 +303,7 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
             var modalInstance = $uibModal.open({
                 templateUrl: 'modals/kid.html',
                 scope: $scope,
-                controller: function ($uibModalInstance, $scope) {
+                controller: ['$uibModalInstance', '$scope',function ($uibModalInstance, $scope) {
                     $scope.cancel = function () {
                         $uibModalInstance.dismiss('cancel');
                     };
@@ -318,7 +318,7 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
                         $uibModalInstance.close()
                     };
 
-                }
+                }]
             });
         };
 

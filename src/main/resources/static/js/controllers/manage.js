@@ -46,7 +46,7 @@ app.controller('manage', ['$rootScope', '$scope', '$http', '$log', '$uibModal', 
                     $uibModal.open({
                         templateUrl: 'modals/search.html',
                         scope: $scope,
-                        controller: function ($uibModalInstance, $scope) {
+                        controller: ['$uibModalInstance', '$scope',function ($uibModalInstance, $scope) {
                             $scope.cancel = function () {
                                 $scope.reset();
                                 $uibModalInstance.dismiss('cancel');
@@ -59,7 +59,7 @@ app.controller('manage', ['$rootScope', '$scope', '$http', '$log', '$uibModal', 
                                     $uibModalInstance.close()
                                 }
                             };
-                        }
+                        }]
                     });
                 };
 
