@@ -112,7 +112,7 @@ public class AppRestControllerTest {
     @Test
     public void applicationSettingsDataRecived() throws Exception {
         testAccount.setRole(Roles.ROLE_ADMIN);
-        when(propertyServiceMock.getProperty(APP_DEFAULT_LANG)).thenReturn(EN);
+        when(propertyServiceMock.getDefaultLang()).thenReturn(EN);
         MvcResult mvcResult = manageRestController.perform(get(API_APPLICATION_SETTINGS)).andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
         Settings settings = TestUtil.convertJsonToObject(contentAsString, Settings.class);

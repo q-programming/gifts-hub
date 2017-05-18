@@ -214,38 +214,54 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
 
-            <!--<plugin>-->
-            <!--<groupId>com.samaxes.maven</groupId>-->
-            <!--<artifactId>minify-maven-plugin</artifactId>-->
-            <!--<version>1.7.6</version>-->
-            <!--<executions>-->
-            <!--<execution>-->
-            <!--<id>default-minify</id>-->
-            <!--<goals>-->
-            <!--<goal>minify</goal>-->
-            <!--</goals>-->
-            <!--&lt;!&ndash; To be able to use it in mvn tomcat:run, will run after sass-->
-            <!--compile &ndash;&gt;-->
-            <!--<phase>compile</phase>-->
-            <!--&lt;!&ndash; <phase>package</phase> &ndash;&gt;-->
-            <!--<configuration>-->
-            <!--<charset>UTF-8</charset>-->
-            <!--<cssSourceDir>../resources/static/css</cssSourceDir>-->
-            <!--<cssFinalFile>style.css</cssFinalFile>-->
-            <!--<jsSourceDir>../resources/static/js</jsSourceDir>-->
-            <!--<jsFinalFile>app.js</jsFinalFile>-->
-            <!--<jsEngine>CLOSURE</jsEngine>-->
-            <!--<closureAngularPass>true</closureAngularPass>-->
-            <!--<cssSourceIncludes>-->
-            <!--<cssSourceInclude>**/*.css</cssSourceInclude>-->
-            <!--</cssSourceIncludes>-->
-            <!--<jsSourceIncludes>-->
-            <!--<jsSourceInclude>**/*.js</jsSourceInclude>-->
-            <!--</jsSourceIncludes>-->
-            <!--</configuration>-->
-            <!--</execution>-->
-            <!--</executions>-->
-            <!--</plugin>-->
+            <plugin>
+                <groupId>com.samaxes.maven</groupId>
+                <artifactId>minify-maven-plugin</artifactId>
+                <version>1.7.6</version>
+                <executions>
+                    <execution>
+                        <id>default-minify</id>
+                        <goals>
+                            <goal>minify</goal>
+                        </goals>
+                        <!-- To be able to use it in mvn tomcat:run, will run after sass
+                        compile -->
+                        <phase>compile</phase>
+                        <!-- <phase>package</phase> -->
+                        <configuration>
+                            <charset>UTF-8</charset>
+                            <cssSourceDir>../resources/static/css</cssSourceDir>
+                            <cssFinalFile>style.css</cssFinalFile>
+                            <jsSourceDir>../resources/static/js</jsSourceDir>
+                            <jsFinalFile>app.js</jsFinalFile>
+                            <jsEngine>CLOSURE</jsEngine>
+                            <closureAngularPass>true</closureAngularPass>
+                            <cssSourceIncludes>
+                                <cssSourceInclude>**/*.css</cssSourceInclude>
+                            </cssSourceIncludes>
+                            <jsSourceIncludes>
+                                <jsSourceInclude>**/*.js</jsSourceInclude>
+                            </jsSourceIncludes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.3</version>
+                <configuration>
+                    <warSourceExcludes>**/*.css,**/*.js</warSourceExcludes>
+                    <warName>${project.artifactId}</warName>
+                    <webResources>
+                        <resource>
+                            <!-- this is relative to the pom.xml directory -->
+                            <directory>target/resources</directory>
+                            <targetPath>WEB-INF/classes/</targetPath>
+                        </resource>
+                    </webResources>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
