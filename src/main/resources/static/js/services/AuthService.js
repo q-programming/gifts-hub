@@ -20,7 +20,7 @@ AuthService.factory('AuthService', ['$http', '$log', 'avatarCache', '$rootScope'
                         $location.search('lang', $rootScope.principal.language);
                         AvatarService.getUserAvatar($rootScope.principal);
                         if ($rootScope.principal && $rootScope.principal.role === 'ROLE_ADMIN') {
-                            $http.get("/api/app/setup").then(
+                            $http.get("api/app/setup").then(
                                 function (response) {
                                     if (response.data) {
                                         AlertService.addWarning('app.manage.setup');

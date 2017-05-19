@@ -399,6 +399,7 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
                         AlertService.addSuccess("user.family.add.kid.success");
                     } else {
                         AlertService.addSuccess("user.family.edit.kid.success");
+                        AvatarService.clearCache(formData.id)
                     }
                     showUsersWithDefaultSorting();
                 }).catch(function (response) {

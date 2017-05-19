@@ -28,6 +28,9 @@ AvatarService.factory('AvatarService', ['$http', '$log', '$rootScope', 'localSto
                 user.avatar = image;
             }
         };
+        AvatarService.clearCache = function (userId) {
+            localStorageService.clearAll("avatar:" + userId);
+        };
 
         AvatarService.uploadAvatar = function (avatarSource) {
             $http.put('api/user/avatar-upload', avatarSource).then(function () {
