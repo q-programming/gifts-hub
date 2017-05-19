@@ -154,6 +154,7 @@ public class AccountService implements UserDetailsService {
     /**
      * Update user avatar with passed bytes.
      * In case of avatar was not there, it will be created out of passed bytes
+     * As LOB object is updated , this function must be called within transaction
      *
      * @param account updated account
      * @param bytes   image bytes
@@ -170,6 +171,7 @@ public class AccountService implements UserDetailsService {
 
     /**
      * Creates new avatar from given URL
+     * As LOB object is updated , this function must be called within transaction
      *
      * @param account account for which avatar is created
      * @param url     url from which avatar image will be fetched
@@ -184,6 +186,7 @@ public class AccountService implements UserDetailsService {
 
     /**
      * Creates avatar from bytes
+     * As LOB object is updated , this function must be called within transaction
      *
      * @param account Account for which avatar is created
      * @param bytes   bytes containing avatar

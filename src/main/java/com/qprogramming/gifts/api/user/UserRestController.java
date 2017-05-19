@@ -174,6 +174,7 @@ public class UserRestController {
         return new ResultData.ResultBuilder().badReqest().message(msgSrv.getMessage("user.family.admin.error")).build();
     }
 
+    @Transactional
     @RequestMapping("/kid-add")
     public ResponseEntity<?> addKid(@RequestBody @Valid KidForm form) {
         if (accountService.findByUsername(form.getUsername()) != null) {
@@ -199,6 +200,7 @@ public class UserRestController {
         return ResponseEntity.ok(kidAccount);
     }
 
+    @Transactional
     @RequestMapping("/kid-update")
     public ResponseEntity<?> updateKid(@RequestBody @Valid KidForm form) {
         Account currentAccount = Utils.getCurrentAccount();
