@@ -105,6 +105,12 @@ public class UserRestController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    /**
+     * Returns user list, if passed param family is true, will return all accounts without family
+     *
+     * @param family if true , returned list will contain only accounts without family
+     * @return
+     */
     @RequestMapping("/users")
     public ResponseEntity<?> userList(@RequestParam(required = false) boolean family) {
         if (family) {
@@ -335,6 +341,20 @@ public class UserRestController {
             return (Account) ((TokenBasedAuthentication) user).getPrincipal();
         }
         return null;
+    }
+
+    /**
+     * Return list of all admins in application.
+     *
+     * @return {@link List}<{@link Account}>admins or forbidden if current account is empty or is not admin
+     */
+    @RequestMapping(value = "admins", method = RequestMethod.GET)
+    public ResponseEntity admins() {
+        Account currentAccount = Utils.getCurrentAccount();
+        if (currentAccount == null || !currentAccount.getIsAdmin()) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+        return ResponseEntity.ok(accountService.findAdmins());
     }
 
     private Account getAccountByUsernameOrId(@RequestParam(required = false) String identification) {

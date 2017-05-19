@@ -1,6 +1,6 @@
 var AuthService = angular.module('AuthService', []);
-AuthService.factory('AuthService', ['$http', '$log', 'avatarCache', '$rootScope', '$translate', '$cookies', '$location', 'AvatarService',
-    function ($http, $log, avatarCache, $rootScope, $translate, $cookies, $location, AvatarService) {
+AuthService.factory('AuthService', ['$http', '$log', 'avatarCache', '$rootScope', '$translate', '$cookies', '$location', 'AvatarService', 'AlertService',
+    function ($http, $log, avatarCache, $rootScope, $translate, $cookies, $location, AvatarService, AlertService) {
         var AuthService = {};
 
         AuthService.isAuthenticated = function () {
@@ -19,6 +19,22 @@ AuthService.factory('AuthService', ['$http', '$log', 'avatarCache', '$rootScope'
                         $translate.use($rootScope.principal.language);
                         $location.search('lang', $rootScope.principal.language);
                         AvatarService.getUserAvatar($rootScope.principal);
+                        if ($rootScope.principal && $rootScope.principal.role === 'ROLE_ADMIN') {
+                            $http.get("/api/app/setup").then(
+                                function (response) {
+                                    if (response.data) {
+                                        AlertService.addWarning('app.manage.setup');
+                                        $location.path("/manage");
+                                    } else {
+                                        $location.path("/");
+                                    }
+                                }).catch(function (response) {
+                                AlertService.addError("error.general", response);
+                                $log.debug(response);
+                            });
+                        } else {
+                            $location.path("/");
+                        }
                     } else {
                         $rootScope.authenticated = false;
                     }

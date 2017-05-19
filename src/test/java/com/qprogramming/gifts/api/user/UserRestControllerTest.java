@@ -2,10 +2,7 @@ package com.qprogramming.gifts.api.user;
 
 import com.qprogramming.gifts.MockSecurityContext;
 import com.qprogramming.gifts.TestUtil;
-import com.qprogramming.gifts.account.Account;
-import com.qprogramming.gifts.account.AccountService;
-import com.qprogramming.gifts.account.AccountType;
-import com.qprogramming.gifts.account.RegisterForm;
+import com.qprogramming.gifts.account.*;
 import com.qprogramming.gifts.account.family.Family;
 import com.qprogramming.gifts.account.family.FamilyForm;
 import com.qprogramming.gifts.account.family.FamilyService;
@@ -58,6 +55,7 @@ public class UserRestControllerTest {
     public static final String API_USER_KID_UPDATE = "/api/user/kid-update";
     public static final String API_USER_USER_DELETE = "/api/user/delete/";
     public static final String API_USER_SHARE = "/api/user/share";
+    public static final String API_USER_ADMINS = "/api/user/admins";
     public static final String KID_ID = "KID-ID";
     private static final String API_USER = "/api/user";
     private MockMvc userRestCtrl;
@@ -596,6 +594,22 @@ public class UserRestControllerTest {
     public void shareGiftListNotPublic() throws Exception {
         testAccount.setPublicList(false);
         userRestCtrl.perform(post(API_USER_SHARE).content("valid@email.com;invalid@;alsovalid@email.pl")).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void getAdminsNotAdmin() throws Exception {
+        testAccount.setRole(Roles.ROLE_USER);
+        userRestCtrl.perform(get(API_USER_ADMINS)).andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void getAdmins() throws Exception {
+        testAccount.setRole(Roles.ROLE_ADMIN);
+        when(accSrvMock.findAdmins()).thenReturn(Collections.singletonList(testAccount));
+        MvcResult mvcResult = userRestCtrl.perform(get(API_USER_ADMINS)).andExpect(status().isOk()).andReturn();
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        List<Account> result = TestUtil.convertJsonToList(contentAsString, List.class, Account.class);
+        assertTrue(result.contains(testAccount));
     }
 
 

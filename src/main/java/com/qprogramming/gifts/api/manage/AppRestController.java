@@ -122,6 +122,16 @@ public class AppRestController {
         return ResponseEntity.ok(settings);
     }
 
+    @RolesAllowed("ROLE_ADMIN")
+    @RequestMapping(value = "/setup", method = RequestMethod.GET)
+    public ResponseEntity setupNeeded() {
+        Account currentAccount = Utils.getCurrentAccount();
+        if (currentAccount == null || !currentAccount.getIsAdmin()) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+        return ResponseEntity.ok(StringUtils.isBlank(propertyService.getProperty(APP_URL)) || searchEngineService.getAllSearchEngines().isEmpty());
+    }
+
     @RequestMapping(value = "/search-engines", method = RequestMethod.GET)
     public ResponseEntity getAllSearchEngines() {
         return ResponseEntity.ok(searchEngineService.getAllSearchEngines());

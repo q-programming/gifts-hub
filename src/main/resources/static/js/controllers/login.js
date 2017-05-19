@@ -9,20 +9,17 @@ app.controller('login', ['$rootScope', '$scope', '$http', '$log', '$location', '
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 }
-            })
-                .then(function (result) {
-                    $rootScope.authenticated = true;
-                    $location.path("#/");
-                    AlertService.clearAlerts();
-                    AuthService.getUser();
-                })
-                .catch(function (result) {
-                    $rootScope.authenticated = false;
-                    AlertService.addError('user.login.failed');
-                    $log.debug(result);
-                    $location.path("/login");
+            }).then(function (result) {
+                $rootScope.authenticated = true;
+                AlertService.clearAlerts();
+                AuthService.getUser();
+            }).catch(function (result) {
+                $rootScope.authenticated = false;
+                AlertService.addError('user.login.failed');
+                $log.debug(result);
+                $location.path("/login");
 
-                });
+            });
         };
     }]);
 app.controller('logout', ['$scope', '$rootScope', 'AuthService',

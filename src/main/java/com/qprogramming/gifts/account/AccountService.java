@@ -278,4 +278,9 @@ public class AccountService implements UserDetailsService {
         }
         accountRepository.delete(account);
     }
+
+    public List<Account> findAdmins() {
+        return accountRepository.findByRole(Roles.ROLE_ADMIN);
+
+    }
 }

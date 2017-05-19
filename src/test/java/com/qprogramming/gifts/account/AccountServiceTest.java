@@ -19,6 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -50,6 +51,8 @@ public class AccountServiceTest {
     private AvatarRepository avatarRepositoryMock;
     @Mock
     private PropertyService propertyServiceMock;
+    @Mock
+    private HttpServletResponse responseMock;
 
 
     private Account testAccount;
@@ -251,6 +254,4 @@ public class AccountServiceTest {
         verify(familyServiceMock, times(1)).removeFromFamily(testAccount, family);
         verify(accountRepositoryMock, times(1)).delete(testAccount);
     }
-
-
 }

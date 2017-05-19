@@ -20,10 +20,11 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import static com.qprogramming.gifts.settings.Settings.APP_DEFAULT_LANG;
-import static org.junit.Assert.assertEquals;
+import static com.qprogramming.gifts.settings.Settings.APP_URL;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -33,8 +34,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Created by Khobar on 20.03.2017.
  */
 public class AppRestControllerTest {
+
     public static final String EN = "en";
     private static final String API_APPLICATION_SETTINGS = "/api/app/settings";
+    private static final String API_APPLICATION_SETUP = "/api/app/setup";
     private static final String API_APPLICATION_SEARCH_ENGINES = "/api/app/search-engines";
     private MockMvc manageRestController;
     @Mock
@@ -47,7 +50,6 @@ public class AppRestControllerTest {
     private Authentication authMock;
     @Mock
     private MailService mailServiceMock;
-
     private Account testAccount;
 
 
@@ -130,4 +132,41 @@ public class AppRestControllerTest {
         List<SearchEngine> result = TestUtil.convertJsonToList(contentAsString, List.class, SearchEngine.class);
         assertEquals(expected, result);
     }
+
+    @Test
+    public void setupNeededEmptyURL() throws Exception {
+        testAccount.setRole(Roles.ROLE_ADMIN);
+        when(propertyServiceMock.getProperty(APP_URL)).thenReturn(null);
+        MvcResult mvcResult = manageRestController.perform(get(API_APPLICATION_SETUP)).andReturn();
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        Boolean result = TestUtil.convertJsonToObject(contentAsString, Boolean.class);
+        assertTrue(result);
+
+    }
+
+    @Test
+    public void setupNeededEmptySearchEngines() throws Exception {
+        testAccount.setRole(Roles.ROLE_ADMIN);
+        when(propertyServiceMock.getProperty(APP_URL)).thenReturn("link");
+        when(searchEngineServiceMock.getAllSearchEngines()).thenReturn(Collections.emptyList());
+        MvcResult mvcResult = manageRestController.perform(get(API_APPLICATION_SETUP)).andReturn();
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        Boolean result = TestUtil.convertJsonToObject(contentAsString, Boolean.class);
+        assertTrue(result);
+    }
+
+    @Test
+    public void setupNotNeeded() throws Exception {
+        testAccount.setRole(Roles.ROLE_ADMIN);
+        when(propertyServiceMock.getProperty(APP_URL)).thenReturn("link");
+        SearchEngine engine = new SearchEngine();
+        engine.setId(1L);
+        when(searchEngineServiceMock.getAllSearchEngines()).thenReturn(Collections.singletonList(engine));
+        MvcResult mvcResult = manageRestController.perform(get(API_APPLICATION_SETUP)).andReturn();
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        Boolean result = TestUtil.convertJsonToObject(contentAsString, Boolean.class);
+        assertFalse(result);
+    }
+
+
 }
