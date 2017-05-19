@@ -92,7 +92,7 @@ app.controller('gift', [
             $uibModal.open({
                 templateUrl: 'modals/giftImport.html',
                 scope: $scope,
-                controller: function ($uibModalInstance, $scope) {
+                controller: ['$uibModalInstance', '$scope',function ($uibModalInstance, $scope) {
                     $scope.fileName = "";
                     $scope.gotFile = null;
                     $scope.logmessage = "";
@@ -134,7 +134,7 @@ app.controller('gift', [
                         $scope.gotFile = true;
                         $scope.$apply();
                     };
-                }
+                }]
             });
         };
 

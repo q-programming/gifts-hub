@@ -29,7 +29,7 @@
         <div class="navbar-header">
             <a class="navbar-brand" href="#/"><img src="images/logo-white.png" width="40px" height="40px"/></a>
             <span class="stylish brand pull-left" style="font-size: xx-large">Gifts hub</span>
-            <div id="navbar-mobile" class="visible-xs" ng-if="isMobile()">
+            <div id="navbar-mobile" ng-if="isMobile()">
                 <ul class="nav navbar-nav navbar-right nav-stacked">
                     <li ng-if="!authenticated" ng-class="{active:tab('navigation')}" class="white">
                         <a href="#/login">
@@ -70,7 +70,7 @@
         </div>
         <!--DESKTOP MENU-->
         <div id="navbar" class="navbar-collapse collapse">
-            <ul class="nav navbar-nav navbar-right hidden-xs" ng-if="!isMobile()">
+            <ul class="nav navbar-nav navbar-right" ng-if="!isMobile()">
                 <li ng-if="authenticated" ng-class="{active:tab('userlist')}" class="text-center side-menu">
                     <a href="#/users" id="menu-users">
                         <span>
