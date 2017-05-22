@@ -32,9 +32,12 @@
                 <input type="text" class="form-control" id="username" name="username" ng-model="formData.username"
                        ng-change="checkUsername()" required="required" ng-model-options="{ debounce: 1000 }"/>
                 <span class="validation-error" ng-show="userForm.username.$error.exists">
-            <span translate="user.register.username.exists"></span>&nbsp;<strong>{{formData.username}}</strong>&nbsp;<span
-                        translate="user.register.alreadyexists"></span>
-        </span>
+                    <span translate="user.register.username.exists"></span>&nbsp;<strong>{{formData.username}}</strong>
+                    &nbsp;<span translate="user.register.alreadyexists"></span>
+                </span>
+                <span class="validation-error" ng-show="userForm.username.$error.illegalchar">
+                    <span translate="user.register.username.chars"></span>
+                </span>
             </div>
             <div class="form-group" show-errors="">
                 <label for="password" translate="user.password"></label>

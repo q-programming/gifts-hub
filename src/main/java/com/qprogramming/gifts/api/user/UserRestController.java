@@ -43,6 +43,7 @@ import java.util.stream.Collectors;
 public class UserRestController {
 
     public static final String PASSWORD_REGEXP = "^^(?=.*[A-Z])(?=.*[0-9])(?=.*[a-z].*[a-z].*[a-z]).{8,}$";
+    public static final String USERNAME_REGEXP = "^[a-zA-Z0-9_]+$";
     private static final Logger LOG = LoggerFactory.getLogger(UserRestController.class);
     private AccountService accountService;
     private MessagesService msgSrv;
@@ -65,6 +66,12 @@ public class UserRestController {
             String message = msgSrv.getMessage("user.register.email.exists") + " " + msgSrv.getMessage("user.register.alreadyexists");
             return new ResultData.ResultBuilder().error().message(message).build();
         }
+        Pattern pattern = Pattern.compile(USERNAME_REGEXP);
+        Matcher matcher = pattern.matcher(userform.getUsername());
+        if (!matcher.matches()) {
+            return new ResultData.ResultBuilder().error().message(msgSrv.getMessage("user.register.username.chars")).build();
+        }
+
         if (accountService.findByUsername(userform.getUsername()) != null) {
             String message = msgSrv.getMessage("user.register.username.exists") + " " + msgSrv.getMessage("user.register.alreadyexists");
             return new ResultData.ResultBuilder().error().message(message).build();
@@ -72,8 +79,8 @@ public class UserRestController {
         if (!userform.getPassword().equals(userform.getConfirmpassword())) {
             return new ResultData.ResultBuilder().error().message(msgSrv.getMessage("user.register.password.nomatch")).build();
         }
-        Pattern pattern = Pattern.compile(PASSWORD_REGEXP);
-        Matcher matcher = pattern.matcher(userform.getPassword());
+        pattern = Pattern.compile(PASSWORD_REGEXP);
+        matcher = pattern.matcher(userform.getPassword());
         if (!matcher.matches()) {
             return new ResultData.ResultBuilder().error().message(msgSrv.getMessage("user.register.password.tooweak")).build();
         }
