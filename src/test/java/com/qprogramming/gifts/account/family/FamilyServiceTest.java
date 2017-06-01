@@ -23,7 +23,9 @@ public class FamilyServiceTest {
     Account testAccount;
     FamilyService familyService;
     @Mock
-    FamilyRepository familyRepositoryMock;
+    private FamilyRepository familyRepositoryMock;
+    @Mock
+    private FamilyEventRepository familyEventRepositoryMock;
     @Mock
     private MockSecurityContext securityMock;
     @Mock
@@ -36,7 +38,7 @@ public class FamilyServiceTest {
         when(securityMock.getAuthentication()).thenReturn(authMock);
         when(authMock.getPrincipal()).thenReturn(testAccount);
         SecurityContextHolder.setContext(securityMock);
-        familyService = new FamilyService(familyRepositoryMock);
+        familyService = new FamilyService(familyRepositoryMock, familyEventRepositoryMock);
     }
 
     @Test
@@ -158,6 +160,11 @@ public class FamilyServiceTest {
         family.getAdmins().add(account);
         familyService.removeFromFamily(testAccount, family);
         assertFalse(family.getMembers().contains(testAccount));
+
+    }
+
+    @Test
+    public void sendFamilyInvite(){
 
     }
 

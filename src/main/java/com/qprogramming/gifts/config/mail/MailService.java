@@ -1,6 +1,7 @@
 package com.qprogramming.gifts.config.mail;
 
 
+import com.qprogramming.gifts.account.family.FamilyEvent;
 import com.qprogramming.gifts.config.property.DataBasePropertySource;
 import com.qprogramming.gifts.config.property.PropertyService;
 import com.qprogramming.gifts.messages.MessagesService;
@@ -149,4 +150,31 @@ public class MailService {
     }
 
 
+    public void sendInvite(Mail mail, FamilyEvent event) throws MessagingException {
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
+        String application = propertyService.getProperty(APP_URL);
+        String inviteLink = application + "#/invite/" + event.getUuid();
+        Locale locale = getMailLocale(mail);
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
+        String familyName = event.getFamily().getName();
+        mimeMessageHelper.setSubject(msgSrv.getMessage("user.family.invite", new Object[]{familyName}, "", locale));
+        mimeMessageHelper.setFrom(mail.getMailFrom());
+        mimeMessageHelper.setTo(mail.getMailTo());
+        mail.addToModel("confirmLink", inviteLink);
+        mail.addToModel("application", application);
+        mail.addToModel("familyName", familyName);
+        switch (event.getType()) {
+            case FAMILY_MEMEBER:
+                mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/familyInvite.ftl"));
+                break;
+            case FAMILY_ADMIN:
+                mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/familyAdmin.ftl"));
+                break;
+            case FAMILY_REMOVE:
+                break;
+        }
+        mimeMessageHelper.setText(mail.getMailContent(), true);
+        mailSender.send(mimeMessageHelper.getMimeMessage());
+
+    }
 }

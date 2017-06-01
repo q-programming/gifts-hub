@@ -3,10 +3,7 @@ package com.qprogramming.gifts.api.user;
 import com.qprogramming.gifts.MockSecurityContext;
 import com.qprogramming.gifts.TestUtil;
 import com.qprogramming.gifts.account.*;
-import com.qprogramming.gifts.account.family.Family;
-import com.qprogramming.gifts.account.family.FamilyForm;
-import com.qprogramming.gifts.account.family.FamilyService;
-import com.qprogramming.gifts.account.family.KidForm;
+import com.qprogramming.gifts.account.family.*;
 import com.qprogramming.gifts.config.mail.Mail;
 import com.qprogramming.gifts.config.mail.MailService;
 import com.qprogramming.gifts.gift.Gift;
@@ -272,8 +269,8 @@ public class UserRestControllerTest {
         String contentAsString = mvcResult.getResponse().getContentAsString();
         Family result = TestUtil.convertJsonToObject(contentAsString, Family.class);
         verify(familyServiceMock, times(1)).update(any(Family.class));
-        assertTrue(result.getMembers().size() == 2);
-        assertTrue(result.getAdmins().contains(memberAndAdmin));
+        verify(familyServiceMock, times(1)).inviteAccount(memberAndAdmin, result, FamilyEventType.FAMILY_MEMEBER);
+        verify(mailServiceMock, times(1)).sendInvite(any(Mail.class), any(FamilyEvent.class));
     }
 
 

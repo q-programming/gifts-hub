@@ -1,5 +1,6 @@
 package com.qprogramming.gifts.account.family;
 
+import com.fasterxml.uuid.Generators;
 import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.AccountType;
 import com.qprogramming.gifts.support.Utils;
@@ -18,10 +19,12 @@ import java.util.Optional;
 public class FamilyService {
 
     private FamilyRepository familyRepository;
+    private FamilyEventRepository familyEventRepository;
 
     @Autowired
-    public FamilyService(FamilyRepository familyRepository) {
+    public FamilyService(FamilyRepository familyRepository, FamilyEventRepository familyEventRepository) {
         this.familyRepository = familyRepository;
+        this.familyEventRepository = familyEventRepository;
     }
 
     /**
@@ -116,7 +119,6 @@ public class FamilyService {
         }
     }
 
-
     /**
      * Returns Family where passed account is member
      *
@@ -138,5 +140,14 @@ public class FamilyService {
 
     public void delete(Family family) {
         familyRepository.delete(family);
+    }
+
+    public FamilyEvent inviteAccount(Account account, Family family, FamilyEventType type) {
+        FamilyEvent event = new FamilyEvent();
+        event.setAccount(account);
+        event.setFamily(family);
+        event.setType(type);
+        event.setUuid(Generators.timeBasedGenerator().generate().toString());
+        return familyEventRepository.save(event);
     }
 }

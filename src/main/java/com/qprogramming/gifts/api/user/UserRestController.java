@@ -4,10 +4,7 @@ import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.account.AccountType;
 import com.qprogramming.gifts.account.RegisterForm;
-import com.qprogramming.gifts.account.family.Family;
-import com.qprogramming.gifts.account.family.FamilyForm;
-import com.qprogramming.gifts.account.family.FamilyService;
-import com.qprogramming.gifts.account.family.KidForm;
+import com.qprogramming.gifts.account.family.*;
 import com.qprogramming.gifts.config.mail.Mail;
 import com.qprogramming.gifts.config.mail.MailService;
 import com.qprogramming.gifts.gift.GiftService;
@@ -155,13 +152,19 @@ public class UserRestController {
             return new ResultData.ResultBuilder().badReqest().message(msgSrv.getMessage("user.family.exists.error")).build();
         }
         family = familyService.createFamily();
-        family.getMembers().addAll(accountService.findByIds(form.getMembers()));
-        family.getAdmins().addAll(accountService.findByIds(form.getAdmins()));
         if (StringUtils.isBlank(form.getName())) {
             form.setName(Utils.getCurrentAccount().getSurname());
         }
         family.setName(form.getName());
-        return ResponseEntity.ok(familyService.update(family));
+        family = familyService.update(family);
+        List<Account> members = accountService.findByIds(form.getMembers());
+        try {
+            sendInvites(members, family, FamilyEventType.FAMILY_MEMEBER);
+        } catch (MessagingException e) {
+            return new ResultData.ResultBuilder().badReqest().message(msgSrv.getMessage("user.family.invite.mailError")).build();
+        }
+        //family.getAdmins().addAll(accountService.findByIds(form.getAdmins()));
+        return ResponseEntity.ok(family);
     }
 
     @RequestMapping("/family-update")
@@ -172,6 +175,7 @@ public class UserRestController {
             return ResponseEntity.notFound().build();
         }
         if (family.getAdmins().contains(currentAccount)) {
+            //TODO update members and send potential invites
             Set<Account> members = new HashSet<>(accountService.findByIds(form.getMembers()));
             members.add(currentAccount);
             Set<Account> admins = new HashSet<>(accountService.findByIds(form.getAdmins()));
@@ -185,6 +189,17 @@ public class UserRestController {
             return ResponseEntity.ok(familyService.update(family));
         }
         return new ResultData.ResultBuilder().badReqest().message(msgSrv.getMessage("user.family.admin.error")).build();
+    }
+
+    private void sendInvites(List<Account> members, Family family, FamilyEventType type) throws MessagingException {
+        for (Account account : members) {
+            if (!AccountType.KID.equals(account.getType())) {
+                FamilyEvent event = familyService.inviteAccount(account, family, type);
+                mailService.sendInvite(createMail(account), event);
+            } else {
+                familyService.addAccountToFamily(account, family);
+            }
+        }
     }
 
     @Transactional
@@ -409,5 +424,21 @@ public class UserRestController {
         }
         String message = msgSrv.getMessage("gift.share.success", new Object[]{StringUtils.join(emailLists, ", ")}, "", Utils.getCurrentLocale());
         return new ResultData.ResultBuilder().ok().message(message).build();
+    }
+
+    /**
+     * Creates mail out of account
+     *
+     * @param account account for which mail will be created
+     * @return list of {@link Mail}
+     */
+    private Mail createMail(Account account) {
+        Mail mail = new Mail();
+        mail.setMailTo(account.getEmail());
+        mail.setMailFrom(Utils.getCurrentAccount().getEmail());
+        mail.setLocale(account.getLanguage());
+        mail.addToModel("name", account.getFullname());
+        mail.addToModel("owner", Utils.getCurrentAccount().getFullname());
+        return mail;
     }
 }
