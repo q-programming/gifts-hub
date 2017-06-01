@@ -3,6 +3,9 @@ package com.qprogramming.gifts.account.family;
 import com.fasterxml.uuid.Generators;
 import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.AccountType;
+import com.qprogramming.gifts.account.event.AccountEvent;
+import com.qprogramming.gifts.account.event.AccountEventRepository;
+import com.qprogramming.gifts.account.event.AccountEventType;
 import com.qprogramming.gifts.support.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -19,12 +22,12 @@ import java.util.Optional;
 public class FamilyService {
 
     private FamilyRepository familyRepository;
-    private FamilyEventRepository familyEventRepository;
+    private AccountEventRepository accountEventRepository;
 
     @Autowired
-    public FamilyService(FamilyRepository familyRepository, FamilyEventRepository familyEventRepository) {
+    public FamilyService(FamilyRepository familyRepository, AccountEventRepository accountEventRepository) {
         this.familyRepository = familyRepository;
-        this.familyEventRepository = familyEventRepository;
+        this.accountEventRepository = accountEventRepository;
     }
 
     /**
@@ -142,12 +145,12 @@ public class FamilyService {
         familyRepository.delete(family);
     }
 
-    public FamilyEvent inviteAccount(Account account, Family family, FamilyEventType type) {
-        FamilyEvent event = new FamilyEvent();
+    public AccountEvent inviteAccount(Account account, Family family, AccountEventType type) {
+        AccountEvent event = new AccountEvent();
         event.setAccount(account);
         event.setFamily(family);
         event.setType(type);
         event.setUuid(Generators.timeBasedGenerator().generate().toString());
-        return familyEventRepository.save(event);
+        return accountEventRepository.save(event);
     }
 }

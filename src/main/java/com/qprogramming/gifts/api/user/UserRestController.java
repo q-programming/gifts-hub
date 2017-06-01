@@ -4,6 +4,8 @@ import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.account.AccountType;
 import com.qprogramming.gifts.account.RegisterForm;
+import com.qprogramming.gifts.account.event.AccountEvent;
+import com.qprogramming.gifts.account.event.AccountEventType;
 import com.qprogramming.gifts.account.family.*;
 import com.qprogramming.gifts.config.mail.Mail;
 import com.qprogramming.gifts.config.mail.MailService;
@@ -159,7 +161,7 @@ public class UserRestController {
         family = familyService.update(family);
         List<Account> members = accountService.findByIds(form.getMembers());
         try {
-            sendInvites(members, family, FamilyEventType.FAMILY_MEMEBER);
+            sendInvites(members, family, AccountEventType.FAMILY_MEMEBER);
         } catch (MessagingException e) {
             return new ResultData.ResultBuilder().badReqest().message(msgSrv.getMessage("user.family.invite.mailError")).build();
         }
@@ -191,11 +193,11 @@ public class UserRestController {
         return new ResultData.ResultBuilder().badReqest().message(msgSrv.getMessage("user.family.admin.error")).build();
     }
 
-    private void sendInvites(List<Account> members, Family family, FamilyEventType type) throws MessagingException {
+    private void sendInvites(List<Account> members, Family family, AccountEventType type) throws MessagingException {
         for (Account account : members) {
             if (!AccountType.KID.equals(account.getType())) {
-                FamilyEvent event = familyService.inviteAccount(account, family, type);
-                mailService.sendInvite(createMail(account), event);
+                AccountEvent event = familyService.inviteAccount(account, family, type);
+                mailService.sendConfirmMail(createMail(account), event);
             } else {
                 familyService.addAccountToFamily(account, family);
             }

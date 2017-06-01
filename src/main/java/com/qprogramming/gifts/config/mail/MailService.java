@@ -1,7 +1,7 @@
 package com.qprogramming.gifts.config.mail;
 
 
-import com.qprogramming.gifts.account.family.FamilyEvent;
+import com.qprogramming.gifts.account.event.AccountEvent;
 import com.qprogramming.gifts.config.property.DataBasePropertySource;
 import com.qprogramming.gifts.config.property.PropertyService;
 import com.qprogramming.gifts.messages.MessagesService;
@@ -24,6 +24,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
+import static com.qprogramming.gifts.account.event.AccountEventType.FAMILY_ADMIN;
+import static com.qprogramming.gifts.account.event.AccountEventType.FAMILY_MEMEBER;
+import static com.qprogramming.gifts.account.event.AccountEventType.FAMILY_REMOVE;
 import static com.qprogramming.gifts.settings.Settings.*;
 
 @Service
@@ -150,22 +153,22 @@ public class MailService {
     }
 
 
-    public void sendInvite(Mail mail, FamilyEvent event) throws MessagingException {
+    public void sendConfirmMail(Mail mail, AccountEvent event) throws MessagingException {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         String application = propertyService.getProperty(APP_URL);
-        String inviteLink = application + "#/invite/" + event.getUuid();
+        String confirmLink = application + "#/confirm/" + event.getUuid();
+        mail.addToModel("confirmLink", confirmLink);
         Locale locale = getMailLocale(mail);
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
         String familyName = event.getFamily().getName();
         mimeMessageHelper.setSubject(msgSrv.getMessage("user.family.invite", new Object[]{familyName}, "", locale));
         mimeMessageHelper.setFrom(mail.getMailFrom());
         mimeMessageHelper.setTo(mail.getMailTo());
-        mail.addToModel("confirmLink", inviteLink);
         mail.addToModel("application", application);
-        mail.addToModel("familyName", familyName);
         switch (event.getType()) {
             case FAMILY_MEMEBER:
                 mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/familyInvite.ftl"));
+                mail.addToModel("familyName", familyName);
                 break;
             case FAMILY_ADMIN:
                 mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/familyAdmin.ftl"));

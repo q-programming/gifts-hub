@@ -1,14 +1,12 @@
-package com.qprogramming.gifts.account.family;
+package com.qprogramming.gifts.account.event;
 
 import com.qprogramming.gifts.account.Account;
+import com.qprogramming.gifts.account.family.Family;
 
 import javax.persistence.*;
 
-/**
- * Created by XE050991499 on 2017-06-01.
- */
 @Entity
-public class FamilyEvent {
+public class AccountEvent {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "family_event_seq_gen")
     @SequenceGenerator(name = "family_event_seq_gen", sequenceName = "family_event_id_seq", allocationSize = 1)
@@ -18,7 +16,7 @@ public class FamilyEvent {
     private Account account;
 
     @Enumerated(EnumType.STRING)
-    private FamilyEventType type;
+    private AccountEventType type;
 
     @ManyToOne
     private Family family;
@@ -42,11 +40,11 @@ public class FamilyEvent {
         this.account = account;
     }
 
-    public FamilyEventType getType() {
+    public AccountEventType getType() {
         return type;
     }
 
-    public void setType(FamilyEventType type) {
+    public void setType(AccountEventType type) {
         this.type = type;
     }
 
@@ -71,7 +69,7 @@ public class FamilyEvent {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        FamilyEvent that = (FamilyEvent) o;
+        AccountEvent that = (AccountEvent) o;
 
         if (id != null ? !id.equals(that.id) : that.id != null) return false;
         if (account != null ? !account.equals(that.account) : that.account != null) return false;

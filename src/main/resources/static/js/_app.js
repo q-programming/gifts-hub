@@ -66,6 +66,10 @@ app.config(['$routeProvider', '$httpProvider', '$locationProvider', '$logProvide
                 templateUrl: 'app/manage.html',
                 controller: 'manage'
             })
+            .when('/confirm/:uuid?', {
+                templateUrl: 'home.html',
+                controller: 'confirm'
+            })
             .when('/help/:language?', {
                 templateUrl: function (params) {
                     if (params.language) {
