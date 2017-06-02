@@ -6,7 +6,10 @@ import com.qprogramming.gifts.account.AccountType;
 import com.qprogramming.gifts.account.RegisterForm;
 import com.qprogramming.gifts.account.event.AccountEvent;
 import com.qprogramming.gifts.account.event.AccountEventType;
-import com.qprogramming.gifts.account.family.*;
+import com.qprogramming.gifts.account.family.Family;
+import com.qprogramming.gifts.account.family.FamilyForm;
+import com.qprogramming.gifts.account.family.FamilyService;
+import com.qprogramming.gifts.account.family.KidForm;
 import com.qprogramming.gifts.config.mail.Mail;
 import com.qprogramming.gifts.config.mail.MailService;
 import com.qprogramming.gifts.gift.GiftService;
@@ -16,6 +19,7 @@ import com.qprogramming.gifts.support.ResultData;
 import com.qprogramming.gifts.support.Utils;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -191,6 +195,43 @@ public class UserRestController {
             return ResponseEntity.ok(familyService.update(family));
         }
         return new ResultData.ResultBuilder().badReqest().message(msgSrv.getMessage("user.family.admin.error")).build();
+    }
+
+    @RequestMapping("/confirm")
+    public ResponseEntity confirmOperation(@RequestBody String token) {
+        UUID uuid = UUID.fromString(token);
+        DateTime date = new DateTime(Utils.getTimeFromUUID(uuid));
+        DateTime expireDate = date.plusDays(7);
+        if (new DateTime().isAfter(expireDate)) {
+            return new ResultData.ResultBuilder().badReqest().message(msgSrv.getMessage("user.confirm.token.errro.time")).build();
+        }
+        AccountEvent event = accountService.findEvent(token);
+        if (event == null) {
+            return new ResultData.ResultBuilder().notFound().build();
+        }
+        switch (event.getType()) {
+            case FAMILY_MEMEBER:
+                Family family = familyService.getFamily(Utils.getCurrentAccount());
+                if (family != null) {
+                    return new ResultData.ResultBuilder()
+                            .badReqest()
+                            .message(msgSrv.getMessage("user.confirm.family.exists", new Object[]{family.getName()}, "", Utils.getCurrentLocale()))
+                            .build();
+                }
+                family = familyService.addAccountToFamily(Utils.getCurrentAccount(), event.getFamily());
+                accountService.eventConfirmed(event);
+                return new ResultData.ResultBuilder()
+                        .ok()
+                        .message(msgSrv.getMessage("user.confirm.family.success", new Object[]{family.getName()}, "", Utils.getCurrentLocale()))
+                        .build();
+            case FAMILY_ADMIN:
+                //TODO not used
+                break;
+            case FAMILY_REMOVE:
+                //TODO not used
+                break;
+        }
+        return new ResultData.ResultBuilder().badReqest().build();
     }
 
     private void sendInvites(List<Account> members, Family family, AccountEventType type) throws MessagingException {

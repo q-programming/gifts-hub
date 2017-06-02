@@ -66,7 +66,7 @@ app.config(['$routeProvider', '$httpProvider', '$locationProvider', '$logProvide
                 templateUrl: 'app/manage.html',
                 controller: 'manage'
             })
-            .when('/confirm/:uuid?', {
+            .when('/confirm/:token?', {
                 templateUrl: 'home.html',
                 controller: 'confirm'
             })

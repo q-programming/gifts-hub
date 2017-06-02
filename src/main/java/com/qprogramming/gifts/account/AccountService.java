@@ -2,6 +2,8 @@ package com.qprogramming.gifts.account;
 
 import com.qprogramming.gifts.account.avatar.Avatar;
 import com.qprogramming.gifts.account.avatar.AvatarRepository;
+import com.qprogramming.gifts.account.event.AccountEvent;
+import com.qprogramming.gifts.account.event.AccountEventRepository;
 import com.qprogramming.gifts.account.family.Family;
 import com.qprogramming.gifts.account.family.FamilyService;
 import com.qprogramming.gifts.config.property.PropertyService;
@@ -49,14 +51,17 @@ public class AccountService implements UserDetailsService {
     private AvatarRepository avatarRepository;
     private FamilyService familyService;
     private PropertyService propertyService;
+    private AccountEventRepository accountEventRepository;
+
 
     @Autowired
-    public AccountService(AccountRepository accountRepository, PasswordEncoder passwordEncoder, AvatarRepository avatarRepository, FamilyService familyService, PropertyService propertyService) {
+    public AccountService(AccountRepository accountRepository, PasswordEncoder passwordEncoder, AvatarRepository avatarRepository, FamilyService familyService, PropertyService propertyService, AccountEventRepository accountEventRepository) {
         this.accountRepository = accountRepository;
         this.passwordEncoder = passwordEncoder;
         this.avatarRepository = avatarRepository;
         this.familyService = familyService;
         this.propertyService = propertyService;
+        this.accountEventRepository = accountEventRepository;
     }
 
     @PostConstruct
@@ -282,5 +287,14 @@ public class AccountService implements UserDetailsService {
     public List<Account> findAdmins() {
         return accountRepository.findByRole(Roles.ROLE_ADMIN);
 
+    }
+
+    public AccountEvent findEvent(String token) {
+        return accountEventRepository.findByToken(token);
+    }
+
+
+    public void eventConfirmed(AccountEvent event) {
+        accountEventRepository.delete(event);
     }
 }

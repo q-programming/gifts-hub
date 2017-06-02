@@ -4,6 +4,7 @@ import com.qprogramming.gifts.MockSecurityContext;
 import com.qprogramming.gifts.TestUtil;
 import com.qprogramming.gifts.account.avatar.Avatar;
 import com.qprogramming.gifts.account.avatar.AvatarRepository;
+import com.qprogramming.gifts.account.event.AccountEventRepository;
 import com.qprogramming.gifts.account.family.Family;
 import com.qprogramming.gifts.account.family.FamilyService;
 import com.qprogramming.gifts.config.property.PropertyService;
@@ -53,6 +54,8 @@ public class AccountServiceTest {
     private PropertyService propertyServiceMock;
     @Mock
     private HttpServletResponse responseMock;
+    @Mock
+    private AccountEventRepository accountEventRepositoryMock;
 
 
     private Account testAccount;
@@ -65,7 +68,7 @@ public class AccountServiceTest {
         when(securityMock.getAuthentication()).thenReturn(authMock);
         when(authMock.getPrincipal()).thenReturn(testAccount);
         SecurityContextHolder.setContext(securityMock);
-        accountService = new AccountService(accountRepositoryMock, passwordEncoderMock, avatarRepositoryMock, familyServiceMock, propertyServiceMock);
+        accountService = new AccountService(accountRepositoryMock, passwordEncoderMock, avatarRepositoryMock, familyServiceMock, propertyServiceMock, accountEventRepositoryMock);
     }
 
 

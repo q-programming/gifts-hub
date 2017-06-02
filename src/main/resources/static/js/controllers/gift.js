@@ -28,7 +28,7 @@ app.controller('gift', [
         getGiftList();
         if ($rootScope.authenticated) {
             $translate("gift.search").then(function (translation) {
-                $scope.searchWith = translation;
+                $scope.searchWith = translation + " ";
             });
             getSearchEngines();
             getCategories();
@@ -92,7 +92,7 @@ app.controller('gift', [
             $uibModal.open({
                 templateUrl: 'modals/giftImport.html',
                 scope: $scope,
-                controller: ['$uibModalInstance', '$scope',function ($uibModalInstance, $scope) {
+                controller: ['$uibModalInstance', '$scope', function ($uibModalInstance, $scope) {
                     $scope.fileName = "";
                     $scope.gotFile = null;
                     $scope.logmessage = "";

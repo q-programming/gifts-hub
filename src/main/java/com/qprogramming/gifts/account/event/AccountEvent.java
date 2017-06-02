@@ -21,8 +21,8 @@ public class AccountEvent {
     @ManyToOne
     private Family family;
 
-    @Column
-    private String uuid;
+    @Column(unique = true)
+    private String token;
 
     public Long getId() {
         return id;
@@ -56,12 +56,12 @@ public class AccountEvent {
         this.family = family;
     }
 
-    public String getUuid() {
-        return uuid;
+    public String getToken() {
+        return token;
     }
 
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
+    public void setToken(String token) {
+        this.token = token;
     }
 
     @Override
@@ -75,7 +75,7 @@ public class AccountEvent {
         if (account != null ? !account.equals(that.account) : that.account != null) return false;
         if (type != that.type) return false;
         if (family != null ? !family.equals(that.family) : that.family != null) return false;
-        return uuid != null ? uuid.equals(that.uuid) : that.uuid == null;
+        return token != null ? token.equals(that.token) : that.token == null;
     }
 
     @Override
@@ -84,7 +84,7 @@ public class AccountEvent {
         result = 31 * result + (account != null ? account.hashCode() : 0);
         result = 31 * result + (type != null ? type.hashCode() : 0);
         result = 31 * result + (family != null ? family.hashCode() : 0);
-        result = 31 * result + (uuid != null ? uuid.hashCode() : 0);
+        result = 31 * result + (token != null ? token.hashCode() : 0);
         return result;
     }
 }

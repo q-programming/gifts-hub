@@ -1,6 +1,9 @@
 app.controller('login', ['$rootScope', '$scope', '$http', '$log', '$location', '$httpParamSerializerJQLike', 'AlertService', 'AuthService',
     function ($rootScope, $scope, $http, $log, $location, $httpParamSerializerJQLike, AlertService, AuthService) {
         $scope.credentials = {};
+        if ($rootScope.authenticated) {
+            $location.path("#/");
+        }
         $scope.login = function () {
             $http({
                 url: 'login',

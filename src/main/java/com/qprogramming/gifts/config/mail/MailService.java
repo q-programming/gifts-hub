@@ -24,9 +24,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
-import static com.qprogramming.gifts.account.event.AccountEventType.FAMILY_ADMIN;
-import static com.qprogramming.gifts.account.event.AccountEventType.FAMILY_MEMEBER;
-import static com.qprogramming.gifts.account.event.AccountEventType.FAMILY_REMOVE;
 import static com.qprogramming.gifts.settings.Settings.*;
 
 @Service
@@ -156,7 +153,7 @@ public class MailService {
     public void sendConfirmMail(Mail mail, AccountEvent event) throws MessagingException {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         String application = propertyService.getProperty(APP_URL);
-        String confirmLink = application + "#/confirm/" + event.getUuid();
+        String confirmLink = application + "#/confirm/" + event.getToken();
         mail.addToModel("confirmLink", confirmLink);
         Locale locale = getMailLocale(mail);
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
@@ -167,10 +164,11 @@ public class MailService {
         mail.addToModel("application", application);
         switch (event.getType()) {
             case FAMILY_MEMEBER:
-                mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/familyInvite.ftl"));
                 mail.addToModel("familyName", familyName);
+                mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/familyInvite.ftl"));
                 break;
             case FAMILY_ADMIN:
+                mail.addToModel("familyName", familyName);
                 mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/familyAdmin.ftl"));
                 break;
             case FAMILY_REMOVE:

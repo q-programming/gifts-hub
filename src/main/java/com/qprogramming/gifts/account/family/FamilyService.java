@@ -150,7 +150,15 @@ public class FamilyService {
         event.setAccount(account);
         event.setFamily(family);
         event.setType(type);
-        event.setUuid(Generators.timeBasedGenerator().generate().toString());
+        event.setToken(generateToken());
         return accountEventRepository.save(event);
+    }
+
+    public String generateToken() {
+        String token = Generators.timeBasedGenerator().generate().toString();
+        while (accountEventRepository.findByToken(token) != null) {
+            token = Generators.timeBasedGenerator().generate().toString();
+        }
+        return token;
     }
 }

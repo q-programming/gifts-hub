@@ -6,5 +6,5 @@ public interface AccountEventRepository extends JpaRepository<AccountEvent, Long
 
     AccountEvent findById(Long id);
 
-    AccountEvent findByUuid(String uuid);
+    AccountEvent findByToken(String token);
 }

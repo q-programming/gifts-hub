@@ -26,7 +26,7 @@ AuthService.factory('AuthService', ['$http', '$log', 'avatarCache', '$rootScope'
                                         AlertService.addWarning('app.manage.setup');
                                         $location.path("/manage");
                                     } else {
-                                        $location.path("#/");
+                                        // $location.path("#/");
                                         // $location.path("/");
                                     }
                                 }).catch(function (response) {
@@ -34,7 +34,7 @@ AuthService.factory('AuthService', ['$http', '$log', 'avatarCache', '$rootScope'
                                 $log.debug(response);
                             });
                         } else {
-                            $location.path("#/");
+                            // $location.path("#/");
                             // $location.path("/");
                         }
                     } else {
