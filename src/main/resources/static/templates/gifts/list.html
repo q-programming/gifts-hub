@@ -93,7 +93,7 @@
             </div>
             <div class="col-xs-12 col-sm-3">{{gift.description}}</div>
             <div class="col-xs-12 col-sm-3">
-                <a ng-if="gift.link" ng-href="{{gift.link}}" class="gift-link">{{ gift.name }}</a>
+                <a target="_blank" ng-if="gift.link" ng-href="{{gift.link}}" class="gift-link">{{ gift.name }}</a>
                 <span ng-repeat="engine in gift.engines" class="search-engines">
                 <a class="pull-right" ng-href="{{engine.searchString + gift.name}}" target="_blank">
                 <i ng-class="'fa fa-fw '+ engine.icon"

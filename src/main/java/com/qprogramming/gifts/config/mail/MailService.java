@@ -158,16 +158,17 @@ public class MailService {
         Locale locale = getMailLocale(mail);
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
         String familyName = event.getFamily().getName();
-        mimeMessageHelper.setSubject(msgSrv.getMessage("user.family.invite", new Object[]{familyName}, "", locale));
         mimeMessageHelper.setFrom(mail.getMailFrom());
         mimeMessageHelper.setTo(mail.getMailTo());
         mail.addToModel("application", application);
         switch (event.getType()) {
             case FAMILY_MEMEBER:
+                mimeMessageHelper.setSubject(msgSrv.getMessage("user.family.invite", new Object[]{familyName}, "", locale));
                 mail.addToModel("familyName", familyName);
                 mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/familyInvite.ftl"));
                 break;
             case FAMILY_ADMIN:
+                mimeMessageHelper.setSubject(msgSrv.getMessage("user.family.admin", new Object[]{familyName}, "", locale));
                 mail.addToModel("familyName", familyName);
                 mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/familyAdmin.ftl"));
                 break;

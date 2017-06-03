@@ -314,7 +314,7 @@ public class UserRestControllerTest {
         family.getAdmins().add(testAccount);
         Account memberAndAdmin = TestUtil.createAccount("John", "Doe");
         memberAndAdmin.setId(USER_RANDOM_ID + "1");
-        when(accSrvMock.findByIds(Collections.singletonList(USER_RANDOM_ID + "1"))).thenReturn(Collections.singletonList(memberAndAdmin));
+        when(accSrvMock.findByIds(Arrays.asList(USER_RANDOM_ID + "1", testAccount.getId()))).thenReturn(Arrays.asList(memberAndAdmin, testAccount));
         when(familyServiceMock.getFamily(testAccount)).thenReturn(family);
         when(familyServiceMock.update(family)).then(returnsFirstArg());
         MvcResult mvcResult = userRestCtrl.perform(post(API_USER_FAMILY_UPDATE)
@@ -322,9 +322,9 @@ public class UserRestControllerTest {
                 .content(TestUtil.convertObjectToJsonBytes(form))).andExpect(status().isOk()).andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
         Family result = TestUtil.convertJsonToObject(contentAsString, Family.class);
+        verify(familyServiceMock, times(1)).inviteAccount(memberAndAdmin, family, AccountEventType.FAMILY_ADMIN);
         verify(familyServiceMock, times(1)).update(any(Family.class));
-        assertTrue(result.getMembers().size() == 2);
-        assertTrue(result.getAdmins().contains(memberAndAdmin));
+        assertTrue(result.getMembers().size() == 1);
     }
 
     @Test
@@ -648,6 +648,7 @@ public class UserRestControllerTest {
         event.setFamily(family);
         event.setType(AccountEventType.FAMILY_MEMEBER);
         when(accSrvMock.findEvent(token)).thenReturn(event);
+        when(familyServiceMock.addAccountToFamily(testAccount,family)).thenReturn(family);
         userRestCtrl.perform(post(API_USER_CONFIRM).content(token)).andExpect(status().isOk());
         verify(familyServiceMock, times(1)).addAccountToFamily(testAccount, family);
     }

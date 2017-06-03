@@ -181,13 +181,27 @@ public class UserRestController {
             return ResponseEntity.notFound().build();
         }
         if (family.getAdmins().contains(currentAccount)) {
-            //TODO update members and send potential invites
-            Set<Account> members = new HashSet<>(accountService.findByIds(form.getMembers()));
-            members.add(currentAccount);
-            Set<Account> admins = new HashSet<>(accountService.findByIds(form.getAdmins()));
-            admins.add(currentAccount);
-            family.setMembers(members);
-            family.setAdmins(admins);
+            //set members
+            form.getMembers().add(Utils.getCurrentAccountId());
+            Set<Account> formMembers = new HashSet<>(accountService.findByIds(form.getMembers()));
+            Set<Account> membersToInvite = formMembers.stream().filter(account -> !family.getMembers().contains(account)).collect(Collectors.toSet());
+            formMembers.removeAll(membersToInvite);
+            family.setMembers(formMembers);
+            //set admins
+            form.getAdmins().add(Utils.getCurrentAccountId());
+            Set<Account> formAdmins = new HashSet<>(accountService.findByIds(form.getAdmins()));
+            Set<Account> adminsToInvite = formAdmins.stream().filter(account -> !family.getAdmins().contains(account)).collect(Collectors.toSet());
+            formAdmins.removeAll(adminsToInvite);
+            family.setAdmins(formAdmins);
+            //send invites, remove all double members if are in admin list
+            try {
+                membersToInvite.removeAll(adminsToInvite);
+                sendInvites(membersToInvite, family, AccountEventType.FAMILY_MEMEBER);
+                sendInvites(adminsToInvite, family, AccountEventType.FAMILY_ADMIN);
+            } catch (MessagingException e) {
+                return new ResultData.ResultBuilder().badReqest().message(msgSrv.getMessage("user.family.invite.mailError")).build();
+            }
+
             if (StringUtils.isBlank(form.getName())) {
                 form.setName(Utils.getCurrentAccount().getSurname());
             }
@@ -209,14 +223,11 @@ public class UserRestController {
         if (event == null) {
             return new ResultData.ResultBuilder().notFound().build();
         }
+        Family family = familyService.getFamily(Utils.getCurrentAccount());
         switch (event.getType()) {
             case FAMILY_MEMEBER:
-                Family family = familyService.getFamily(Utils.getCurrentAccount());
                 if (family != null) {
-                    return new ResultData.ResultBuilder()
-                            .badReqest()
-                            .message(msgSrv.getMessage("user.confirm.family.exists", new Object[]{family.getName()}, "", Utils.getCurrentLocale()))
-                            .build();
+                    return familyExistsResponse(family);
                 }
                 family = familyService.addAccountToFamily(Utils.getCurrentAccount(), event.getFamily());
                 accountService.eventConfirmed(event);
@@ -225,13 +236,33 @@ public class UserRestController {
                         .message(msgSrv.getMessage("user.confirm.family.success", new Object[]{family.getName()}, "", Utils.getCurrentLocale()))
                         .build();
             case FAMILY_ADMIN:
-                //TODO not used
-                break;
+                if (family != null && family != event.getFamily()) {
+                    return familyExistsResponse(family);
+                }
+                family = familyService.addAccountToFamily(Utils.getCurrentAccount(), event.getFamily());
+                family = familyService.addAccountToFamilyAdmins(Utils.getCurrentAccount(), family);
+                accountService.eventConfirmed(event);
+                return new ResultData.ResultBuilder()
+                        .ok()
+                        .message(msgSrv.getMessage("user.confirm.family.admin.success", new Object[]{family.getName()}, "", Utils.getCurrentLocale()))
+                        .build();
             case FAMILY_REMOVE:
                 //TODO not used
                 break;
         }
         return new ResultData.ResultBuilder().badReqest().build();
+    }
+
+    private ResponseEntity familyExistsResponse(Family family) {
+        return new ResultData.ResultBuilder()
+                .badReqest()
+                .message(msgSrv.getMessage("user.confirm.family.exists", new Object[]{family.getName()}, "", Utils.getCurrentLocale()))
+                .build();
+    }
+
+    private void sendInvites(Set<Account> members, Family family, AccountEventType type) throws MessagingException {
+        List<Account> list = new ArrayList<>(members);
+        sendInvites(list, family, type);
     }
 
     private void sendInvites(List<Account> members, Family family, AccountEventType type) throws MessagingException {

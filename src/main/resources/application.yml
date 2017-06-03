@@ -27,8 +27,8 @@ spring:
     username: sa
     password:
 #    url: jdbc:postgresql://localhost:5432/gifts
-#    username: postgres
-#    password: admin
+#    username: giftshub
+#    password: h9fj67kmZ9FyU75ndwZU
   mvc:
     favicon:
       enabled: false
