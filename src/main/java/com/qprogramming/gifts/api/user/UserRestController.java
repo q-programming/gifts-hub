@@ -121,7 +121,7 @@ public class UserRestController {
      * @param family if true , returned list will contain only accounts without family
      * @return
      */
-    @RequestMapping("/users")
+    @RequestMapping(value = "/users", method = RequestMethod.GET)
     public ResponseEntity<?> userList(@RequestParam(required = false) boolean family) {
         if (family) {
             return ResponseEntity.ok(accountService.findWithoutFamily());
@@ -131,7 +131,17 @@ public class UserRestController {
 
     @RequestMapping("/families")
     public ResponseEntity<?> familyList() {
-        return ResponseEntity.ok(familyService.findAll());
+        List<Family> families = familyService.findAll();
+        families.forEach(this::markAdmins);
+        return ResponseEntity.ok(families);
+    }
+
+    private void markAdmins(Family family) {
+        family.getMembers().forEach(account -> {
+            if (family.getAdmins().contains(account)) {
+                account.setFamilyAdmin(true);
+            }
+        });
     }
 
     /**
@@ -139,7 +149,7 @@ public class UserRestController {
      *
      * @return {@link com.qprogramming.gifts.account.family.Family}
      */
-    @RequestMapping("/family")
+    @RequestMapping(value = "/family", method = RequestMethod.GET)
     public ResponseEntity<?> getUserFamily(@RequestParam(required = false) String username) {
         if (StringUtils.isNotBlank(username)) {
             Account account = accountService.findByUsername(username);
@@ -151,7 +161,7 @@ public class UserRestController {
         return ResponseEntity.ok(familyService.getFamily(Utils.getCurrentAccount()));
     }
 
-    @RequestMapping("/family-create")
+    @RequestMapping(value = "/family-create", method = RequestMethod.PUT)
     public ResponseEntity<?> createFamily(@RequestBody FamilyForm form) {
         Family family = familyService.getFamily(Utils.getCurrentAccount());
         if (family != null) {
@@ -173,7 +183,8 @@ public class UserRestController {
         return ResponseEntity.ok(family);
     }
 
-    @RequestMapping("/family-update")
+    @Transactional
+    @RequestMapping(value = "/family-update", method = RequestMethod.PUT)
     public ResponseEntity<?> updateFamily(@RequestBody FamilyForm form) {
         Account currentAccount = Utils.getCurrentAccount();
         Family family = familyService.getFamily(currentAccount);
@@ -211,6 +222,19 @@ public class UserRestController {
         return new ResultData.ResultBuilder().badReqest().message(msgSrv.getMessage("user.family.admin.error")).build();
     }
 
+    @RequestMapping(value = "/family-leave", method = RequestMethod.PUT)
+    public ResponseEntity<?> leaveFamily() {
+        Account currentAccount = Utils.getCurrentAccount();
+        Family family = familyService.getFamily(currentAccount);
+        if (family == null) {
+            return ResponseEntity.notFound().build();
+        }
+        family.getMembers().remove(currentAccount);
+        return ResponseEntity.ok(familyService.update(family));
+    }
+
+
+    @Transactional
     @RequestMapping("/confirm")
     public ResponseEntity confirmOperation(@RequestBody String token) {
         UUID uuid = UUID.fromString(token);
@@ -252,6 +276,7 @@ public class UserRestController {
         }
         return new ResultData.ResultBuilder().badReqest().build();
     }
+
 
     private ResponseEntity familyExistsResponse(Family family) {
         return new ResultData.ResultBuilder()

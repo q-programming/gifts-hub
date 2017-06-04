@@ -27,7 +27,10 @@
         </div>
     </div>
     <div class="text-center margin-top20">
-        <span class="btn btn-danger">Leave family</span>
+        <span class="btn btn-danger" ng-click="leave()"
+              confirm="{{'user.family.leave.confirm'|translate}}"
+              confirm-title="{{'user.family.leave'|translate}} ?"
+              confirm-ok="{{'user.family.leave'| translate}}">{{'user.family.leave'|translate}}</span>
     </div>
 </div>
 <div class="modal-footer">

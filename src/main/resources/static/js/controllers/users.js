@@ -128,6 +128,20 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
                         }
                         $uibModalInstance.dismiss(dismissMessage);
                     };
+                    $scope.leave = function () {
+                        $log.debug("[DEBUG] leaving family");
+                        url = 'api/user/family-leave';
+                        $http.put(url).then(
+                            function () {
+                                AlertService.addSuccess("user.family.left");
+                                showUsersWithDefaultSorting()
+                            }).catch(function (response) {
+                            showUsersWithDefaultSorting();
+                            AlertService.addError("error.general", response);
+                            $log.debug(response);
+                        });
+                        $uibModalInstance.close()
+                    };
                 }]
             });
         };
@@ -189,7 +203,7 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
             }
             dataToSend.name = familyForm.name;
             $scope.family = {};
-            $http.post(url, dataToSend).then(
+            $http.put(url, dataToSend).then(
                 function (response) {
                     if (create) {
                         AlertService.addSuccess("user.family.create.success");
@@ -251,8 +265,9 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
         function getFamily() {
             $http.get('api/user/family').then(
                 function (response) {
+                    $scope.family.length = 0;
+                    $scope.hasFamily = false;
                     if (response.data) {
-                        $scope.family.length = 0;
                         $scope.family = response.data;
                         $scope.hasFamily = true;
                         isFamilyAdmin();

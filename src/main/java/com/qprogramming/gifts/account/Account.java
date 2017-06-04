@@ -48,6 +48,8 @@ public class Account implements Serializable, UserDetails {
 
     private String fullname;
 
+    private Boolean familyAdmin = false;
+
     @Transient
     private String tokenValue;
 
@@ -183,6 +185,14 @@ public class Account implements Serializable, UserDetails {
 
     public void setPublicList(Boolean publicList) {
         this.publicList = publicList;
+    }
+
+    public boolean isFamilyAdmin() {
+        return familyAdmin != null ? familyAdmin : false;
+    }
+
+    public void setFamilyAdmin(boolean familyAdmin) {
+        this.familyAdmin = familyAdmin;
     }
 
     @JsonIgnore

@@ -90,7 +90,7 @@ app.config(['$routeProvider', '$httpProvider', '$locationProvider', '$logProvide
         //location
         $locationProvider.hashPrefix('');
         //logs
-        $logProvider.debugEnabled(false);
+        $logProvider.debugEnabled(true);
         //locale
         localStorageServiceProvider
             .setStorageType('sessionStorage')
