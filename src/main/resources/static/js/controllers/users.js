@@ -71,7 +71,7 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
             var modalInstance = $uibModal.open({
                 templateUrl: 'modals/family.html',
                 scope: $scope,
-                controller: ['$uibModalInstance', '$scope',function ($uibModalInstance, $scope) {
+                controller: ['$uibModalInstance', '$scope', function ($uibModalInstance, $scope) {
                     getUsersWithoutFamily();
                     $scope.cancel = function () {
                         $uibModalInstance.dismiss('cancel');
@@ -98,7 +98,7 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
             var modalInstance = $uibModal.open({
                 templateUrl: 'modals/family.html',
                 scope: $scope,
-                controller: ['$uibModalInstance', '$scope',function ($uibModalInstance, $scope) {
+                controller: ['$uibModalInstance', '$scope', function ($uibModalInstance, $scope) {
                     getUsersWithoutFamily();
                     $scope.cancel = function (dismissMessage) {
                         if (angular.isUndefined(dismissMessage)) {
@@ -207,6 +207,16 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
             });
         }
 
+        $scope.getAdminCandidates = function () {
+            var candidates = [];
+            angular.forEach($scope.family.members, function (member) {
+                if (member.type !== 'KID') {
+                    candidates.push(member);
+                }
+            });
+            return candidates
+        };
+
         /**
          * Check if currently logged in user is admin of his family
          */
@@ -275,7 +285,7 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
             var modalInstance = $uibModal.open({
                 templateUrl: 'modals/kid.html',
                 scope: $scope,
-                controller: ['$uibModalInstance', '$scope',function ($uibModalInstance, $scope) {
+                controller: ['$uibModalInstance', '$scope', function ($uibModalInstance, $scope) {
                     $scope.cancel = function () {
                         $uibModalInstance.dismiss('cancel');
                     };
@@ -303,7 +313,7 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
             var modalInstance = $uibModal.open({
                 templateUrl: 'modals/kid.html',
                 scope: $scope,
-                controller: ['$uibModalInstance', '$scope',function ($uibModalInstance, $scope) {
+                controller: ['$uibModalInstance', '$scope', function ($uibModalInstance, $scope) {
                     $scope.cancel = function () {
                         $uibModalInstance.dismiss('cancel');
                     };

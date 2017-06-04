@@ -47,7 +47,7 @@
                 {{$item.fullname}} ({{$item.username}})
             </ui-select-match>
             <ui-select-choices
-                    repeat="user in (family.members | propsFilter: {fullname: $select.search, username: $select.search}) track by user.id">
+                    repeat="user in (getAdminCandidates() | propsFilter: {fullname: $select.search, username: $select.search}) track by user.id">
                 <div class="row">
                     <div class="col-xs-1">
                         <img ng-if="user.avatar && user.avatar !=='NaN'" ng-src="{{user.avatar}}" class="avatar small"/>
