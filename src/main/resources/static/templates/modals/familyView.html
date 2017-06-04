@@ -1,0 +1,35 @@
+<div class="modal-header">
+    <h3 class="modal-title" id="modal-title"><i class="fa fa-users" aria-hidden="true"></i>&nbsp;{{family.name}}</h3>
+</div>
+<div class="modal-body" id="family-details">
+    <h4>{{'user.family.members' | translate}}</h4>
+    <div class="row margin-top10" ng-class-even="'row-color'" ng-repeat="user in family.members">
+        <div class="col-xs-1">
+            <img ng-if="user.avatar && user.avatar !=='NaN'" ng-src="{{user.avatar}}" class="avatar small"/>
+            <img ng-if="!user.avatar || user.avatar ==='NaN'" src='images/avatar-placeholder.png' class="avatar small"/>
+        </div>
+        <div class="col-xs-11">
+            {{user.fullname}}&nbsp;({{user.username}})
+        </div>
+    </div>
+    <div>
+        <h4>{{'user.family.admins' | translate}}</h4>
+        <div class="row margin-top10" ng-class-odd="'row-color'"
+             ng-repeat="user in family.admins">
+            <div class="col-xs-1">
+                <img ng-if="user.avatar && user.avatar !=='NaN'" ng-src="{{user.avatar}}" class="avatar small"/>
+                <img ng-if="!user.avatar || user.avatar ==='NaN'" src='images/avatar-placeholder.png'
+                     class="avatar small"/>
+            </div>
+            <div class="col-xs-11">
+                {{user.fullname}}&nbsp;({{user.username}})
+            </div>
+        </div>
+    </div>
+    <div class="text-center margin-top20">
+        <span class="btn btn-danger">Leave family</span>
+    </div>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-primary" type="button" ng-click="cancel()">Ok</button>
+</div>

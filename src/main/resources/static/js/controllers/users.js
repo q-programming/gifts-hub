@@ -69,7 +69,7 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
                 $scope.modalHelp = translation;
             });
             var modalInstance = $uibModal.open({
-                templateUrl: 'modals/family.html',
+                templateUrl: 'modals/familyEdit.html',
                 scope: $scope,
                 controller: ['$uibModalInstance', '$scope', function ($uibModalInstance, $scope) {
                     getUsersWithoutFamily();
@@ -96,7 +96,7 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
             filterAndAddAvatar($scope.family.members);
             filterAndAddAvatar($scope.family.admins);
             var modalInstance = $uibModal.open({
-                templateUrl: 'modals/family.html',
+                templateUrl: 'modals/familyEdit.html',
                 scope: $scope,
                 controller: ['$uibModalInstance', '$scope', function ($uibModalInstance, $scope) {
                     getUsersWithoutFamily();
@@ -110,6 +110,23 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
                         $log.debug("[DEBUG] Creating family");
                         sendFamilyData($scope.family, false);
                         $uibModalInstance.close()
+                    };
+                }]
+            });
+        };
+        $scope.viewFamily = function () {
+            filterAndAddAvatar($scope.family.members);
+            filterAndAddAvatar($scope.family.admins);
+            var modalInstance = $uibModal.open({
+                templateUrl: 'modals/familyView.html',
+                scope: $scope,
+                controller: ['$uibModalInstance', '$scope', function ($uibModalInstance, $scope) {
+                    getUsersWithoutFamily();
+                    $scope.cancel = function (dismissMessage) {
+                        if (angular.isUndefined(dismissMessage)) {
+                            dismissMessage = 'cancel';
+                        }
+                        $uibModalInstance.dismiss(dismissMessage);
                     };
                 }]
             });

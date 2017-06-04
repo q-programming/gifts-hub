@@ -27,11 +27,18 @@
                         <i class="fa fa-plus"></i><i class="fa fa-child" aria-hidden="true"></i>&nbsp;
                         <span class="hidden-xs" translate="user.family.add.kid"></span>
                     </span>
-                        <span class="btn btn-success btn-sm pull-right margin5 " ng-if="hasFamily"
+                        <!--edit-->
+                        <span class="btn btn-success btn-sm pull-right margin5 " ng-if="hasFamily && familyAdmin"
                               ng-click="editFamily()">
-                        <i class="fa fa-pencil"></i>&nbsp;
-                        <span class="hidden-xs" translate="user.family.edit"></span>
-                    </span>
+                            <i class="fa fa-pencil"></i>&nbsp;
+                            <span class="hidden-xs" translate="user.family.edit"></span>
+                        </span>
+                        <span class="btn btn-success btn-sm pull-right margin5 " ng-if="hasFamily && !familyAdmin"
+                              ng-click="viewFamily()">
+                            <i class="fa fa-users"></i>&nbsp;
+                            <span class="hidden-xs" translate="user.family"></span>
+                        </span>
+                        <!--view-->
                         <span id="family-btns" class="pull-right"></span>
                     </div>
                 </div>
