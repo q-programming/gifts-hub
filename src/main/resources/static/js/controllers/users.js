@@ -211,14 +211,10 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
             $scope.family = {};
             $http.put(url, dataToSend).then(
                 function (response) {
-                    if (create) {
-                        AlertService.addSuccess("user.family.create.success");
-                    } else {
-                        AlertService.addSuccess("user.family.edit.success");
-                    }
+                    AlertService.addSuccessMessage(response.data.message);
                     showUsersWithDefaultSorting()
                 }).catch(function (response) {
-                showUsersWithDefaultSorting()
+                showUsersWithDefaultSorting();
                 AlertService.addError("error.general", response);
                 $log.debug(response);
             });

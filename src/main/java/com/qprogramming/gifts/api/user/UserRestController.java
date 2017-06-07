@@ -193,7 +193,10 @@ public class UserRestController {
             return new ResultData.ResultBuilder().badReqest().message(msgSrv.getMessage("user.family.invite.mailError")).build();
         }
         //family.getAdmins().addAll(accountService.findByIds(form.getAdmins()));
-        return ResponseEntity.ok(family);
+        if (members.size() > 0) {
+            return new ResultData.ResultBuilder().ok().message(msgSrv.getMessage("user.family.create.success.invites")).build();
+        }
+        return new ResultData.ResultBuilder().ok().message(msgSrv.getMessage("user.family.create.success")).build();
     }
 
     @Transactional
@@ -230,7 +233,10 @@ public class UserRestController {
                 form.setName(Utils.getCurrentAccount().getSurname());
             }
             family.setName(form.getName());
-            return ResponseEntity.ok(familyService.update(family));
+            if(membersToInvite.size()>0 || adminsToInvite.size()>0){
+                return new ResultData.ResultBuilder().ok().message(msgSrv.getMessage("user.family.edit.success.invites")).build();
+            }
+            return new ResultData.ResultBuilder().ok().message(msgSrv.getMessage("user.family.edit.success")).build();
         }
         return new ResultData.ResultBuilder().badReqest().message(msgSrv.getMessage("user.family.admin.error")).build();
     }

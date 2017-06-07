@@ -70,7 +70,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-xs-3 col-lg-1 menu-item-help">
+            <div class="col-xs-3 col-lg-2 menu-item-help">
                 <span>
                     <i class="fa fa-2x fa-question-circle"></i><br>
                     <span translate="menu.help" class="hidden-xs"></span>
@@ -81,7 +81,8 @@
             </div>
         </div>
         <div class="row hidden-xs">
-            <div class="col-sm-4 col-lg-2 clickable menu-item-help" ng-click="anchor('settings')" style="padding: 12px;">
+            <div class="col-sm-4 col-lg-2 clickable menu-item-help" ng-click="anchor('settings')"
+                 style="padding: 12px;">
                 <span>
                     {{principal.fullname}}<span class="caret"></span>
                     <img ng-if="principal.avatar && principal.avatar !== 'NaN'" ng-src="{{principal.avatar}}"
@@ -123,7 +124,10 @@
             Tworząć nową rodzinę, można dowolnie ją nazwać (w przypadku kiedy pozostawione puste, zostanie użyte twoje
             nazwisko).
             Podczas tworzenia, lub potem podczas edycji, możesz dodać innych użytkowników aplikacji, którzy jeszcze nie
-            są dodani do żadnej rodziny.<br><br>Możesz też określić administratorów rodziny, którzy będą mogli dodawać i
+            są dodani do żadnej rodziny.<br><br>Każdy nowo zaproszony użytkownik otrzyma wiadomość e-mail z linkiem,
+            który należy otworzyć aby potwierdzić chęć należęnia do rodziny.
+            <br><br>
+            Możesz też określić administratorów rodziny, którzy będą mogli dodawać i
             edytować prezenty do członków rodziny.<br>
             Aby stworzyć rodzinę, na ekranie listy użytkowników, kliknij guzik
             <span class="btn btn-success btn-sm">
