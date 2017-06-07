@@ -13,6 +13,12 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
         //triggers
         $scope.sortByName = null;
         $scope.sortByFamily = null;
+        $translate("gift.gifts").then(function (translation) {
+            $scope.giftsText = translation;
+        });
+        $translate("gift.gift").then(function (translation) {
+            $scope.giftText = translation;
+        });
 
         if ($rootScope.authenticated) {
             showUsersWithDefaultSorting();
@@ -409,8 +415,8 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
         $scope.isUsersFamilyKid = function (kid) {
             if ($scope.family && $scope.family.members) {
                 return $scope.family.members.map(function (e) {
-                        return e.id;
-                    }).indexOf(kid.id) > -1
+                    return e.id;
+                }).indexOf(kid.id) > -1
             }
             return false;
         };
@@ -477,6 +483,14 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
             UtilsService.copyLink(true);
 
         };
+
+        $scope.showUserGiftsCount = function (user) {
+            if (user && user.giftsCount === 1) {
+                return user.giftsCount + ' ' + $scope.giftText;
+            }
+            return user.giftsCount + ' ' + $scope.giftsText;
+
+        }
 
         // ***********************USERS********************************
 

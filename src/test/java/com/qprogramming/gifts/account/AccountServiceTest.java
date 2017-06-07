@@ -8,6 +8,7 @@ import com.qprogramming.gifts.account.event.AccountEventRepository;
 import com.qprogramming.gifts.account.family.Family;
 import com.qprogramming.gifts.account.family.FamilyService;
 import com.qprogramming.gifts.config.property.PropertyService;
+import com.qprogramming.gifts.gift.GiftService;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -56,6 +57,8 @@ public class AccountServiceTest {
     private HttpServletResponse responseMock;
     @Mock
     private AccountEventRepository accountEventRepositoryMock;
+    @Mock
+    private GiftService giftServiceMock;
 
 
     private Account testAccount;
@@ -67,8 +70,9 @@ public class AccountServiceTest {
         testAccount = TestUtil.createAccount();
         when(securityMock.getAuthentication()).thenReturn(authMock);
         when(authMock.getPrincipal()).thenReturn(testAccount);
+        when(giftServiceMock.countAllByUser(anyString())).thenReturn(1);
         SecurityContextHolder.setContext(securityMock);
-        accountService = new AccountService(accountRepositoryMock, passwordEncoderMock, avatarRepositoryMock, familyServiceMock, propertyServiceMock, accountEventRepositoryMock);
+        accountService = new AccountService(accountRepositoryMock, passwordEncoderMock, avatarRepositoryMock, familyServiceMock, propertyServiceMock, accountEventRepositoryMock, giftServiceMock);
     }
 
 

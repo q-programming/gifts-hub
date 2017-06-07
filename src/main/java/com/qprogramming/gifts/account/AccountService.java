@@ -7,6 +7,7 @@ import com.qprogramming.gifts.account.event.AccountEventRepository;
 import com.qprogramming.gifts.account.family.Family;
 import com.qprogramming.gifts.account.family.FamilyService;
 import com.qprogramming.gifts.config.property.PropertyService;
+import com.qprogramming.gifts.gift.GiftService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,16 +53,18 @@ public class AccountService implements UserDetailsService {
     private FamilyService familyService;
     private PropertyService propertyService;
     private AccountEventRepository accountEventRepository;
+    private GiftService giftService;
 
 
     @Autowired
-    public AccountService(AccountRepository accountRepository, PasswordEncoder passwordEncoder, AvatarRepository avatarRepository, FamilyService familyService, PropertyService propertyService, AccountEventRepository accountEventRepository) {
+    public AccountService(AccountRepository accountRepository, PasswordEncoder passwordEncoder, AvatarRepository avatarRepository, FamilyService familyService, PropertyService propertyService, AccountEventRepository accountEventRepository, GiftService giftService) {
         this.accountRepository = accountRepository;
         this.passwordEncoder = passwordEncoder;
         this.avatarRepository = avatarRepository;
         this.familyService = familyService;
         this.propertyService = propertyService;
         this.accountEventRepository = accountEventRepository;
+        this.giftService = giftService;
     }
 
     @PostConstruct
@@ -253,7 +256,8 @@ public class AccountService implements UserDetailsService {
     }
 
     public List<Account> findAll() {
-        return accountRepository.findAll(new Sort("surname", "name", "username"));
+        List<Account> list = accountRepository.findAll(new Sort("surname", "name", "username"));
+        return list;
     }
 
     /**

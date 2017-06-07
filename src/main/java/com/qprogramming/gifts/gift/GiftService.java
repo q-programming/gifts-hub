@@ -76,6 +76,13 @@ public class GiftService {
         return toGiftTreeMap(giftList, sort);
     }
 
+    public int countAllByUser(String id) {
+        return (int) giftRepository.findByUserIdOrderByCreatedDesc(id)
+                .stream()
+                .filter(gift -> gift.getStatus() == null || !GiftStatus.REALISED.equals(gift.getStatus()))
+                .count();
+    }
+
     public Gift findById(Long id) {
         return giftRepository.findOne(id);
     }

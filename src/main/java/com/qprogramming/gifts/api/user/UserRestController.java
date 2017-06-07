@@ -123,17 +123,30 @@ public class UserRestController {
      */
     @RequestMapping(value = "/users", method = RequestMethod.GET)
     public ResponseEntity<?> userList(@RequestParam(required = false) boolean family) {
+        Set<Account> list;
         if (family) {
-            return ResponseEntity.ok(accountService.findWithoutFamily());
+            list = new HashSet<>(accountService.findWithoutFamily());
+        } else {
+            list = new HashSet<>(accountService.findAll());
         }
-        return ResponseEntity.ok(accountService.findAll());
+        addGiftCounts(list);
+        return ResponseEntity.ok(list);
     }
 
     @RequestMapping("/families")
     public ResponseEntity<?> familyList() {
         List<Family> families = familyService.findAll();
-        families.forEach(this::markAdmins);
+        families.forEach(family -> {
+            addGiftCounts(family.getMembers());
+            markAdmins(family);
+        });
         return ResponseEntity.ok(families);
+    }
+
+    private void addGiftCounts(Set<Account> list) {
+        list.forEach(account -> {
+            account.setGiftsCount(giftService.countAllByUser(account.getId()));
+        });
     }
 
     private void markAdmins(Family family) {
