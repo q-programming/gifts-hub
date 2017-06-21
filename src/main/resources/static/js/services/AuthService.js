@@ -1,6 +1,6 @@
 var AuthService = angular.module('AuthService', []);
-AuthService.factory('AuthService', ['$http', '$log', 'avatarCache', '$rootScope', '$translate', '$cookies', '$location', 'AvatarService',
-    function ($http, $log, avatarCache, $rootScope, $translate, $cookies, $location, AvatarService) {
+AuthService.factory('AuthService', ['$http', '$log', 'avatarCache', '$rootScope', '$translate', '$cookies', '$location', 'AvatarService', 'AlertService',
+    function ($http, $log, avatarCache, $rootScope, $translate, $cookies, $location, AvatarService, AlertService) {
         var AuthService = {};
 
         AuthService.isAuthenticated = function () {
@@ -19,13 +19,30 @@ AuthService.factory('AuthService', ['$http', '$log', 'avatarCache', '$rootScope'
                         $translate.use($rootScope.principal.language);
                         $location.search('lang', $rootScope.principal.language);
                         AvatarService.getUserAvatar($rootScope.principal);
+                        if ($rootScope.principal && $rootScope.principal.role === 'ROLE_ADMIN') {
+                            $http.get("api/app/setup").then(
+                                function (response) {
+                                    if (response.data) {
+                                        AlertService.addWarning('app.manage.setup');
+                                        $location.path("/manage");
+                                    } else {
+                                        // $location.path("#/");
+                                        // $location.path("/");
+                                    }
+                                }).catch(function (response) {
+                                AlertService.addError("error.general", response);
+                                $log.debug(response);
+                            });
+                        } else {
+                            // $location.path("#/");
+                            // $location.path("/");
+                        }
                     } else {
                         $rootScope.authenticated = false;
                     }
                 }
             );
         };
-
         AuthService.logout = function () {
             $http.post('logout', {}).then(
                 function successCallback() {
@@ -35,38 +52,6 @@ AuthService.factory('AuthService', ['$http', '$log', 'avatarCache', '$rootScope'
                 },
                 function errorCallback() {
                     $rootScope.authenticated = false;
-                });
-        };
-        /**
-         * @Depreciated
-         *
-         * @param credentials
-         * @param callback
-         */
-        AuthService.authenticate = function (credentials, callback) {
-            var headers = credentials ? {
-                authorization: "Basic "
-                + btoa(credentials.username + ":" + credentials.password)
-            } : {};
-
-            $http.get('api/user', {headers: headers}, {timeout: 5000}).then(
-                function (response) {
-                    var data = response.data;
-                    if (data.id) {
-                        $rootScope.authenticated = true;
-                        $rootScope.principal = data;
-                        $translate.use($rootScope.principal.language);
-                        $location.search('lang', $rootScope.principal.language);
-                        AvatarService.getUserAvatar($rootScope.principal);
-                        $log.debug("[DEBUG] User logged in " + $rootScope.principal.id);
-                    } else {
-                        $rootScope.authenticated = false;
-                    }
-                    callback && callback();
-                },
-                function () {
-                    $rootScope.authenticated = false;
-                    callback && callback();
                 });
         };
         return AuthService;

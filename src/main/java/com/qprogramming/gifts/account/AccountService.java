@@ -2,9 +2,12 @@ package com.qprogramming.gifts.account;
 
 import com.qprogramming.gifts.account.avatar.Avatar;
 import com.qprogramming.gifts.account.avatar.AvatarRepository;
+import com.qprogramming.gifts.account.event.AccountEvent;
+import com.qprogramming.gifts.account.event.AccountEventRepository;
 import com.qprogramming.gifts.account.family.Family;
 import com.qprogramming.gifts.account.family.FamilyService;
 import com.qprogramming.gifts.config.property.PropertyService;
+import com.qprogramming.gifts.gift.GiftService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,14 +52,19 @@ public class AccountService implements UserDetailsService {
     private AvatarRepository avatarRepository;
     private FamilyService familyService;
     private PropertyService propertyService;
+    private AccountEventRepository accountEventRepository;
+    private GiftService giftService;
+
 
     @Autowired
-    public AccountService(AccountRepository accountRepository, PasswordEncoder passwordEncoder, AvatarRepository avatarRepository, FamilyService familyService, PropertyService propertyService) {
+    public AccountService(AccountRepository accountRepository, PasswordEncoder passwordEncoder, AvatarRepository avatarRepository, FamilyService familyService, PropertyService propertyService, AccountEventRepository accountEventRepository, GiftService giftService) {
         this.accountRepository = accountRepository;
         this.passwordEncoder = passwordEncoder;
         this.avatarRepository = avatarRepository;
         this.familyService = familyService;
         this.propertyService = propertyService;
+        this.accountEventRepository = accountEventRepository;
+        this.giftService = giftService;
     }
 
     @PostConstruct
@@ -154,6 +162,7 @@ public class AccountService implements UserDetailsService {
     /**
      * Update user avatar with passed bytes.
      * In case of avatar was not there, it will be created out of passed bytes
+     * As LOB object is updated , this function must be called within transaction
      *
      * @param account updated account
      * @param bytes   image bytes
@@ -170,6 +179,7 @@ public class AccountService implements UserDetailsService {
 
     /**
      * Creates new avatar from given URL
+     * As LOB object is updated , this function must be called within transaction
      *
      * @param account account for which avatar is created
      * @param url     url from which avatar image will be fetched
@@ -184,6 +194,7 @@ public class AccountService implements UserDetailsService {
 
     /**
      * Creates avatar from bytes
+     * As LOB object is updated , this function must be called within transaction
      *
      * @param account Account for which avatar is created
      * @param bytes   bytes containing avatar
@@ -245,7 +256,8 @@ public class AccountService implements UserDetailsService {
     }
 
     public List<Account> findAll() {
-        return accountRepository.findAll(new Sort("surname", "name", "username"));
+        List<Account> list = accountRepository.findAll(new Sort("surname", "name", "username"));
+        return list;
     }
 
     /**
@@ -274,5 +286,19 @@ public class AccountService implements UserDetailsService {
             avatarRepository.delete(avatar);
         }
         accountRepository.delete(account);
+    }
+
+    public List<Account> findAdmins() {
+        return accountRepository.findByRole(Roles.ROLE_ADMIN);
+
+    }
+
+    public AccountEvent findEvent(String token) {
+        return accountEventRepository.findByToken(token);
+    }
+
+
+    public void eventConfirmed(AccountEvent event) {
+        accountEventRepository.delete(event);
     }
 }

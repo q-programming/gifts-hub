@@ -48,6 +48,10 @@ public class Account implements Serializable, UserDetails {
 
     private String fullname;
 
+    private Boolean familyAdmin = false;
+
+    private Integer giftsCount = 0;
+
     @Transient
     private String tokenValue;
 
@@ -184,6 +188,23 @@ public class Account implements Serializable, UserDetails {
     public void setPublicList(Boolean publicList) {
         this.publicList = publicList;
     }
+
+    public boolean isFamilyAdmin() {
+        return familyAdmin != null ? familyAdmin : false;
+    }
+
+    public void setFamilyAdmin(boolean familyAdmin) {
+        this.familyAdmin = familyAdmin;
+    }
+
+    public Integer getGiftsCount() {
+        return giftsCount != null ? giftsCount : 0;
+    }
+
+    public void setGiftsCount(Integer giftsCount) {
+        this.giftsCount = giftsCount;
+    }
+
 
     @JsonIgnore
     public String getTokenValue() {

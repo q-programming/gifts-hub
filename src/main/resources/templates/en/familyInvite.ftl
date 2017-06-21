@@ -2,18 +2,18 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Wish list</title>
+    <title>Invitation to ${familyName} family</title>
 </head>
 <body>
 <#if name??>
-<p>Hello ${name}</p>
+<p>Hello ${name},</p>
 </#if>
 <div>
-${owner} wanted to share with you his wish list in Gifts Hub application
+${owner} wanted to invite you to his family "${familyName}" in Gifts Hub application
 </div>
-<p>Click below to view it </p>
+<p>Click link below to confirm invitation </p>
 <p>
-    <a href="${publicLink}">${publicLink}</a>
+    <a href="${confirmLink}">${confirmLink}</a>
 </p>
 <div>
     This is automatic message send from <a href="${application!'#'}" target="_blank">${application!'#'}</a>.

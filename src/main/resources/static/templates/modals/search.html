@@ -1,0 +1,31 @@
+<div class="modal-header theme">
+    <h4 class="modal-title"><i class="fa fa-search"></i>&nbsp;{{'app.manage.search.engine'|translate}}</h4>
+</div>
+<div class="modal-body">
+    <form role="form" name="searchForm">
+        <input type="hidden" id="id" name="id" ng-model="searchEngine.id"/>
+        <div class="form-group" show-errors="">
+            <label for="name" translate="app.manage.search.name"></label>
+            <input type="text" class="form-control" id="name" name="name" required="required"
+                   ng-model="searchEngine.name"/>
+        </div>
+        <div class="form-group" show-errors="">
+            <label for="searchString" translate="app.manage.search.link"></label>
+            <input type="url" class="form-control" id="searchString" name="searchString" required="required"
+                   ng-model="searchEngine.searchString"/>
+            <span class="validation-error" ng-show="searchForm.link.$error.url"
+                  translate="gift.link.error">
+                        </span>
+        </div>
+        <div class="form-group">
+            <label for="icon" translate="app.manage.search.icon"></label>
+            <input type="text" class="form-control" id="icon" name="icon" ng-model="searchEngine.icon"
+                   required="required"/>
+            <span class="help-block" translate="app.manage.search.icon.help"></span>
+        </div>
+    </form>
+</div>
+<div class="modal-footer theme">
+    <button class="btn btn-default" ng-click="cancel()">{{'main.cancel'|translate}}</button>
+    <button class="btn btn-primary" ng-click="action()">{{(editSearch ? 'main.edit':'main.create')|translate}}</button>
+</div>

@@ -1,6 +1,7 @@
 package com.qprogramming.gifts.config.mail;
 
 
+import com.qprogramming.gifts.account.event.AccountEvent;
 import com.qprogramming.gifts.config.property.DataBasePropertySource;
 import com.qprogramming.gifts.config.property.PropertyService;
 import com.qprogramming.gifts.messages.MessagesService;
@@ -149,4 +150,33 @@ public class MailService {
     }
 
 
+    public void sendConfirmMail(Mail mail, AccountEvent event) throws MessagingException {
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
+        String application = propertyService.getProperty(APP_URL);
+        String confirmLink = application + "#/confirm/" + event.getToken();
+        mail.addToModel("confirmLink", confirmLink);
+        Locale locale = getMailLocale(mail);
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
+        String familyName = event.getFamily().getName();
+        mimeMessageHelper.setFrom(mail.getMailFrom());
+        mimeMessageHelper.setTo(mail.getMailTo());
+        mail.addToModel("application", application);
+        switch (event.getType()) {
+            case FAMILY_MEMEBER:
+                mimeMessageHelper.setSubject(msgSrv.getMessage("user.family.invite", new Object[]{familyName}, "", locale));
+                mail.addToModel("familyName", familyName);
+                mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/familyInvite.ftl"));
+                break;
+            case FAMILY_ADMIN:
+                mimeMessageHelper.setSubject(msgSrv.getMessage("user.family.admin", new Object[]{familyName}, "", locale));
+                mail.addToModel("familyName", familyName);
+                mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/familyAdmin.ftl"));
+                break;
+            case FAMILY_REMOVE:
+                break;
+        }
+        mimeMessageHelper.setText(mail.getMailContent(), true);
+        mailSender.send(mimeMessageHelper.getMimeMessage());
+
+    }
 }

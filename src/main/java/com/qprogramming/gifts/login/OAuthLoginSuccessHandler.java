@@ -116,7 +116,8 @@ public class OAuthLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
     }
 
     private void setUsername(Account account) {
-        StringBuilder username = new StringBuilder(account.getEmail().split("@")[0]);
+        String userString = account.getEmail().split("@")[0];
+        StringBuilder username = new StringBuilder(userString.replace(".", "_"));
         Account exists = accountService.findByUsername(username.toString());
         while (exists != null) {
             username.append("_").append(account.getType().getCode());

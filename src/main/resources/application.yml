@@ -23,12 +23,12 @@ spring:
     port: 25
     protocol: smtp
   datasource:
-    url: jdbc:h2:./db/h2databaseFile;AUTO_SERVER=TRUE
-    username: sa
-    password:
-#    url: jdbc:postgresql://localhost:5432/gifts
-#    username: postgres
-#    password: admin
+#    url: jdbc:h2:./db/h2databaseFile;AUTO_SERVER=TRUE
+#    username: sa
+#    password:
+    url: jdbc:postgresql://localhost:5432/gifts
+    username: giftshub
+    password: h9fj67kmZ9FyU75ndwZU
   mvc:
     favicon:
       enabled: false

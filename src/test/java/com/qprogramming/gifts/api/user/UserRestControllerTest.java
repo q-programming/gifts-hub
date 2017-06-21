@@ -1,11 +1,11 @@
 package com.qprogramming.gifts.api.user;
 
+import com.fasterxml.uuid.Generators;
 import com.qprogramming.gifts.MockSecurityContext;
 import com.qprogramming.gifts.TestUtil;
-import com.qprogramming.gifts.account.Account;
-import com.qprogramming.gifts.account.AccountService;
-import com.qprogramming.gifts.account.AccountType;
-import com.qprogramming.gifts.account.RegisterForm;
+import com.qprogramming.gifts.account.*;
+import com.qprogramming.gifts.account.event.AccountEvent;
+import com.qprogramming.gifts.account.event.AccountEventType;
 import com.qprogramming.gifts.account.family.Family;
 import com.qprogramming.gifts.account.family.FamilyForm;
 import com.qprogramming.gifts.account.family.FamilyService;
@@ -47,18 +47,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class UserRestControllerTest {
 
-    public static final String API_USER_REGISTER = "/api/user/register";
-    public static final String API_USER_SETTINGS = "/api/user/settings";
-    public static final String API_USER_VALIDATE_EMAIL = "/api/user/validate-email";
-    public static final String API_USER_VALIDATE_USERNAME = "/api/user/validate-username";
-    public static final String API_USER_UPDATE_AVATAR = "/api/user/avatar-upload";
-    public static final String API_USER_FAMILY_CREATE = "/api/user/family-create";
-    public static final String API_USER_FAMILY_UPDATE = "/api/user/family-update";
-    public static final String API_USER_KID_ADD = "/api/user/kid-add";
-    public static final String API_USER_KID_UPDATE = "/api/user/kid-update";
-    public static final String API_USER_USER_DELETE = "/api/user/delete/";
-    public static final String API_USER_SHARE = "/api/user/share";
-    public static final String KID_ID = "KID-ID";
+    private static final String API_USER_REGISTER = "/api/user/register";
+    private static final String API_USER_SETTINGS = "/api/user/settings";
+    private static final String API_USER_VALIDATE_EMAIL = "/api/user/validate-email";
+    private static final String API_USER_VALIDATE_USERNAME = "/api/user/validate-username";
+    private static final String API_USER_UPDATE_AVATAR = "/api/user/avatar-upload";
+    private static final String API_USER_FAMILY_CREATE = "/api/user/family-create";
+    private static final String API_USER_FAMILY_UPDATE = "/api/user/family-update";
+    private static final String API_USER_FAMILY_LEAVE = "/api/user/family-leave";
+    private static final String API_USER_KID_ADD = "/api/user/kid-add";
+    private static final String API_USER_KID_UPDATE = "/api/user/kid-update";
+    private static final String API_USER_USER_DELETE = "/api/user/delete/";
+    private static final String API_USER_SHARE = "/api/user/share";
+    private static final String API_USER_ADMINS = "/api/user/admins";
+    private static final String KID_ID = "KID-ID";
+    private static final String API_USER_CONFIRM = "/api/user/confirm";
     private static final String API_USER = "/api/user";
     private MockMvc userRestCtrl;
     @Mock
@@ -248,7 +251,7 @@ public class UserRestControllerTest {
         family.getAdmins().add(testAccount);
         when(familyServiceMock.createFamily()).thenReturn(family);
         when(familyServiceMock.update(family)).then(returnsFirstArg());
-        userRestCtrl.perform(post(API_USER_FAMILY_CREATE)
+        userRestCtrl.perform(put(API_USER_FAMILY_CREATE)
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(form))).andExpect(status().isOk());
         verify(familyServiceMock, times(1)).update(any(Family.class));
@@ -268,14 +271,13 @@ public class UserRestControllerTest {
         when(accSrvMock.findByIds(Collections.singletonList(USER_RANDOM_ID + "1"))).thenReturn(Collections.singletonList(memberAndAdmin));
         when(familyServiceMock.createFamily()).thenReturn(family);
         when(familyServiceMock.update(family)).then(returnsFirstArg());
-        MvcResult mvcResult = userRestCtrl.perform(post(API_USER_FAMILY_CREATE)
+        MvcResult mvcResult = userRestCtrl.perform(put(API_USER_FAMILY_CREATE)
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(form))).andExpect(status().isOk()).andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
-        Family result = TestUtil.convertJsonToObject(contentAsString, Family.class);
         verify(familyServiceMock, times(1)).update(any(Family.class));
-        assertTrue(result.getMembers().size() == 2);
-        assertTrue(result.getAdmins().contains(memberAndAdmin));
+        verify(familyServiceMock, times(1)).inviteAccount(memberAndAdmin, family, AccountEventType.FAMILY_MEMEBER);
+        verify(mailServiceMock, times(1)).sendConfirmMail(any(Mail.class), any(AccountEvent.class));
     }
 
 
@@ -285,7 +287,7 @@ public class UserRestControllerTest {
         Family family = new Family();
         family.setId(1L);
         when(familyServiceMock.getFamily(testAccount)).thenReturn(family);
-        userRestCtrl.perform(post(API_USER_FAMILY_CREATE)
+        userRestCtrl.perform(put(API_USER_FAMILY_CREATE)
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(form))).andExpect(status().isBadRequest());
     }
@@ -296,7 +298,7 @@ public class UserRestControllerTest {
         FamilyForm form = new FamilyForm();
         Family family = new Family();
         family.setId(1L);
-        userRestCtrl.perform(post(API_USER_FAMILY_UPDATE)
+        userRestCtrl.perform(put(API_USER_FAMILY_UPDATE)
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(form))).andExpect(status().isNotFound());
     }
@@ -312,17 +314,15 @@ public class UserRestControllerTest {
         family.getAdmins().add(testAccount);
         Account memberAndAdmin = TestUtil.createAccount("John", "Doe");
         memberAndAdmin.setId(USER_RANDOM_ID + "1");
-        when(accSrvMock.findByIds(Collections.singletonList(USER_RANDOM_ID + "1"))).thenReturn(Collections.singletonList(memberAndAdmin));
+        when(accSrvMock.findByIds(Arrays.asList(USER_RANDOM_ID + "1", testAccount.getId()))).thenReturn(Arrays.asList(memberAndAdmin, testAccount));
         when(familyServiceMock.getFamily(testAccount)).thenReturn(family);
         when(familyServiceMock.update(family)).then(returnsFirstArg());
-        MvcResult mvcResult = userRestCtrl.perform(post(API_USER_FAMILY_UPDATE)
+        MvcResult mvcResult = userRestCtrl.perform(put(API_USER_FAMILY_UPDATE)
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(form))).andExpect(status().isOk()).andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
-        Family result = TestUtil.convertJsonToObject(contentAsString, Family.class);
-        verify(familyServiceMock, times(1)).update(any(Family.class));
-        assertTrue(result.getMembers().size() == 2);
-        assertTrue(result.getAdmins().contains(memberAndAdmin));
+        verify(familyServiceMock, times(1)).inviteAccount(memberAndAdmin, family, AccountEventType.FAMILY_ADMIN);
+        assertTrue(family.getMembers().size() == 1);
     }
 
     @Test
@@ -334,9 +334,30 @@ public class UserRestControllerTest {
         family.setId(1L);
         family.getMembers().add(testAccount);
         when(familyServiceMock.getFamily(testAccount)).thenReturn(family);
-        userRestCtrl.perform(post(API_USER_FAMILY_UPDATE)
+        userRestCtrl.perform(put(API_USER_FAMILY_UPDATE)
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(form))).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void leaveFamilyNoFamily() throws Exception {
+        userRestCtrl.perform(put(API_USER_FAMILY_LEAVE)).andExpect(status().isNotFound());
+
+    }
+
+    @Test
+    public void leaveFamily() throws Exception {
+        Family family = new Family();
+        family.setId(1L);
+        family.getMembers().add(testAccount);
+        when(familyServiceMock.getFamily(testAccount)).thenReturn(family);
+        when(familyServiceMock.update(family)).then(returnsFirstArg());
+        MvcResult mvcResult = userRestCtrl.perform(put(API_USER_FAMILY_LEAVE)).andExpect(status().isOk()).andReturn();
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        Family result = TestUtil.convertJsonToObject(contentAsString, Family.class);
+        verify(familyServiceMock, times(1)).update(result);
+        assertTrue(result.getMembers().size() == 0);
+
     }
 
     @Test
@@ -596,6 +617,65 @@ public class UserRestControllerTest {
     public void shareGiftListNotPublic() throws Exception {
         testAccount.setPublicList(false);
         userRestCtrl.perform(post(API_USER_SHARE).content("valid@email.com;invalid@;alsovalid@email.pl")).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void getAdminsNotAdmin() throws Exception {
+        testAccount.setRole(Roles.ROLE_USER);
+        userRestCtrl.perform(get(API_USER_ADMINS)).andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void getAdmins() throws Exception {
+        testAccount.setRole(Roles.ROLE_ADMIN);
+        when(accSrvMock.findAdmins()).thenReturn(Collections.singletonList(testAccount));
+        MvcResult mvcResult = userRestCtrl.perform(get(API_USER_ADMINS)).andExpect(status().isOk()).andReturn();
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        List<Account> result = TestUtil.convertJsonToList(contentAsString, List.class, Account.class);
+        assertTrue(result.contains(testAccount));
+    }
+
+    //TODO uncomment after 10.06.2017 :)
+//    @Test
+//    public void confirmFamilymemberTokenExpired() throws Exception {
+//        String token = "09011a27-478c-11e7-bcf7-930b1424157e";
+//        userRestCtrl.perform(post(API_USER_CONFIRM).content(token)).andExpect(status().isBadRequest());
+//    }
+
+    @Test
+    public void confirmFamilymemberAlreadyMember() throws Exception {
+        String token = Generators.timeBasedGenerator().generate().toString();
+        Family family = new Family();
+        family.getMembers().add(testAccount);
+        AccountEvent event = new AccountEvent();
+        event.setToken(token);
+        event.setAccount(testAccount);
+        event.setFamily(family);
+        event.setType(AccountEventType.FAMILY_MEMEBER);
+        when(familyServiceMock.getFamily(testAccount)).thenReturn(family);
+        when(accSrvMock.findEvent(token)).thenReturn(event);
+        userRestCtrl.perform(post(API_USER_CONFIRM).content(token)).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void confirmFamilymemberSuccess() throws Exception {
+        String token = Generators.timeBasedGenerator().generate().toString();
+        Family family = new Family();
+        AccountEvent event = new AccountEvent();
+        event.setToken(token);
+        event.setAccount(testAccount);
+        event.setFamily(family);
+        event.setType(AccountEventType.FAMILY_MEMEBER);
+        when(accSrvMock.findEvent(token)).thenReturn(event);
+        when(familyServiceMock.addAccountToFamily(testAccount, family)).thenReturn(family);
+        userRestCtrl.perform(post(API_USER_CONFIRM).content(token)).andExpect(status().isOk());
+        verify(familyServiceMock, times(1)).addAccountToFamily(testAccount, family);
+    }
+
+    @Test
+    public void confirmFamilymemberEventNotFound() throws Exception {
+        String token = Generators.timeBasedGenerator().generate().toString();
+        userRestCtrl.perform(post(API_USER_CONFIRM).content(token)).andExpect(status().isNotFound());
     }
 
 

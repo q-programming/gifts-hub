@@ -1,5 +1,5 @@
-app.controller('manage', ['$rootScope', '$scope', '$http', '$log', 'AlertService', 'AppService', 'UtilsService',
-    function ($rootScope, $scope, $http, $log, AlertService, AppService, UtilsService) {
+app.controller('manage', ['$rootScope', '$scope', '$http', '$log', '$uibModal', 'AlertService', 'AppService', 'UtilsService',
+    function ($rootScope, $scope, $http, $log, $uibModal, AlertService, AppService, UtilsService) {
         $scope.settings = {};
         $scope.searchEngine = {};
         $scope.searchEngineList = [];
@@ -18,7 +18,6 @@ app.controller('manage', ['$rootScope', '$scope', '$http', '$log', 'AlertService
                 getAppSettings();
 
                 $scope.update = function () {
-                    $scope.showSearchForm = false;
                     $scope.editSearch = false;
                     $http.post('api/app/settings', $scope.settings).then(
                         function () {
@@ -43,13 +42,29 @@ app.controller('manage', ['$rootScope', '$scope', '$http', '$log', 'AlertService
                     $scope.settings.appUrl = UtilsService.getAppUrl();
                     $scope.update();
                 };
-
-                $scope.show = function () {
-                    $scope.showSearchForm = true;
+                $scope.openModalForm = function () {
+                    $uibModal.open({
+                        templateUrl: 'modals/search.html',
+                        scope: $scope,
+                        controller: ['$uibModalInstance', '$scope',function ($uibModalInstance, $scope) {
+                            $scope.cancel = function () {
+                                $scope.reset();
+                                $uibModalInstance.dismiss('cancel');
+                            };
+                            $scope.action = function () {
+                                if ($scope.searchForm.$valid) {
+                                    $log.debug("[DEBUG] sending search engine data");
+                                    $scope.updateSearchEngine();
+                                    $scope.reset();
+                                    $uibModalInstance.close()
+                                }
+                            };
+                        }]
+                    });
                 };
+
                 $scope.reset = function () {
                     $scope.searchEngine = {};
-                    $scope.showSearchForm = false;
                     $scope.editSearch = false;
                 };
 
@@ -57,7 +72,6 @@ app.controller('manage', ['$rootScope', '$scope', '$http', '$log', 'AlertService
                     if (!$scope.editSearch) {
                         $scope.settings.searchEngines.push($scope.searchEngine);
                         $scope.searchEngine = {};
-                        $scope.showSearchForm = false;
                     } else {
                         var indexes = $.map($scope.settings.searchEngines, function (engine, index) {
                             if (engine.id === $scope.searchEngine.id) {
@@ -66,7 +80,6 @@ app.controller('manage', ['$rootScope', '$scope', '$http', '$log', 'AlertService
                         });
                         $scope.settings.searchEngines[indexes[0]] = $scope.searchEngine;
                     }
-                    //TODO validation
                     $scope.update();
                 };
 
@@ -80,13 +93,14 @@ app.controller('manage', ['$rootScope', '$scope', '$http', '$log', 'AlertService
 
                 $scope.editSearchEngine = function (engine) {
                     $scope.searchEngine = $.extend({}, engine);
-                    $scope.showSearchForm = true;
                     $scope.editSearch = true;
+                    $scope.openModalForm()
                 }
             }
         } else {
             $location.path("/login");
         }
+
         function getAppSettings() {
             $http.get('api/app/settings').then(
                 function (result) {

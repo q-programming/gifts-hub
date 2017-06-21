@@ -35,8 +35,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Created by Khobar on 10.03.2017.
@@ -52,6 +51,7 @@ public class GiftRestController {
     private static final int CATEGORY_CELL = 3;
     private static final String COLS = "ABCDEFGHIJKLMNOPRSTUVWXYZ";
     private final Logger LOG = LoggerFactory.getLogger(this.getClass());
+    private List<String> prohibitedCategories = new ArrayList<>();
     private AccountService accountService;
     private GiftService giftService;
     private SearchEngineService searchEngineService;
@@ -67,6 +67,21 @@ public class GiftRestController {
         this.categoryRepository = categoryRepository;
         this.msgSrv = msgSrv;
         this.familyService = familyService;
+        initProhibited();
+    }
+
+    private void initProhibited() {
+        for (Locale locale : Locale.getAvailableLocales()) {
+            String realised = msgSrv.getMessage("gift.category.realised", null, "", locale);
+            String other = msgSrv.getMessage("gift.category.other", null, "", locale);
+            if (StringUtils.isNotBlank(realised)) {
+                prohibitedCategories.add(realised);
+            }
+            if (StringUtils.isNotBlank(other)) {
+                prohibitedCategories.add(other);
+            }
+        }
+
     }
 
     @Transactional
@@ -211,6 +226,8 @@ public class GiftRestController {
                 category = categoryRepository.save(new Category(name));
             }
             gift.setCategory(category);
+        } else {
+            gift.setCategory(null);
         }
         gift.setEngines(searchEngineService.getSearchEngines(giftForm.getSearchEngines()));
         //update or create
@@ -263,6 +280,19 @@ public class GiftRestController {
             return ResponseEntity.ok(categoryRepository.findByNameContainingIgnoreCase(term));
         }
     }
+
+    @RequestMapping(value = "/allowed-category")
+    public ResponseEntity checkProhibited(@RequestParam String category) {
+        if (!allowedCategoryName(category)) {
+            return new ResultData.ResultBuilder().error().message(msgSrv.getMessage("gift.category.prohibited", new Object[]{category}, "", Utils.getCurrentLocale())).build();
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    private boolean allowedCategoryName(String category) {
+        return prohibitedCategories.stream().noneMatch(s -> s.equalsIgnoreCase(category));
+    }
+
 
     @Transactional
     @RequestMapping(value = "/import", method = RequestMethod.POST)
@@ -333,7 +363,7 @@ public class GiftRestController {
                 }
                 //CATEGORIES
                 if (categoryCell != null) {
-                    giftForm.setCategory(categoryCell.getStringCellValue());
+                    setCategoryFromRow(logger, rowNo, cellAddress, categoryCell, giftForm);
                 }
                 newGift = updateGiftFromForm(giftForm, newGift);
                 String added = msgSrv.getMessage("gift.import.added"
@@ -343,7 +373,6 @@ public class GiftRestController {
                 logger.append(added);
                 logger.append(BR);
             } else {
-
                 String notEmpty = msgSrv.getMessage("gift.import.nameEmpty"
                         , new Object[]{rowNo, cellAddress}
                         , ""
@@ -352,6 +381,20 @@ public class GiftRestController {
                 logger.append(BR);
             }
             rowNo++;
+        }
+    }
+
+    private void setCategoryFromRow(StringBuilder logger, int rowNo, String cellAddress, Cell categoryCell, GiftForm giftForm) {
+        String category = categoryCell.getStringCellValue();
+        if (allowedCategoryName(category)) {
+            giftForm.setCategory(category);
+        } else {
+            String wrongCategory = msgSrv.getMessage("gift.import.category.prohibited"
+                    , new Object[]{rowNo, cellAddress}
+                    , ""
+                    , Utils.getCurrentLocale());
+            logger.append(wrongCategory);
+            logger.append(BR);
         }
     }
 

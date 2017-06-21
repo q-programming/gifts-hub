@@ -4,9 +4,11 @@ import com.qprogramming.gifts.MockSecurityContext;
 import com.qprogramming.gifts.TestUtil;
 import com.qprogramming.gifts.account.avatar.Avatar;
 import com.qprogramming.gifts.account.avatar.AvatarRepository;
+import com.qprogramming.gifts.account.event.AccountEventRepository;
 import com.qprogramming.gifts.account.family.Family;
 import com.qprogramming.gifts.account.family.FamilyService;
 import com.qprogramming.gifts.config.property.PropertyService;
+import com.qprogramming.gifts.gift.GiftService;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,6 +21,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -50,6 +53,12 @@ public class AccountServiceTest {
     private AvatarRepository avatarRepositoryMock;
     @Mock
     private PropertyService propertyServiceMock;
+    @Mock
+    private HttpServletResponse responseMock;
+    @Mock
+    private AccountEventRepository accountEventRepositoryMock;
+    @Mock
+    private GiftService giftServiceMock;
 
 
     private Account testAccount;
@@ -61,8 +70,9 @@ public class AccountServiceTest {
         testAccount = TestUtil.createAccount();
         when(securityMock.getAuthentication()).thenReturn(authMock);
         when(authMock.getPrincipal()).thenReturn(testAccount);
+        when(giftServiceMock.countAllByUser(anyString())).thenReturn(1);
         SecurityContextHolder.setContext(securityMock);
-        accountService = new AccountService(accountRepositoryMock, passwordEncoderMock, avatarRepositoryMock, familyServiceMock, propertyServiceMock);
+        accountService = new AccountService(accountRepositoryMock, passwordEncoderMock, avatarRepositoryMock, familyServiceMock, propertyServiceMock, accountEventRepositoryMock, giftServiceMock);
     }
 
 
@@ -251,6 +261,4 @@ public class AccountServiceTest {
         verify(familyServiceMock, times(1)).removeFromFamily(testAccount, family);
         verify(accountRepositoryMock, times(1)).delete(testAccount);
     }
-
-
 }

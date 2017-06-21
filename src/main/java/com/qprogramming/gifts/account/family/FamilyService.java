@@ -1,7 +1,11 @@
 package com.qprogramming.gifts.account.family;
 
+import com.fasterxml.uuid.Generators;
 import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.AccountType;
+import com.qprogramming.gifts.account.event.AccountEvent;
+import com.qprogramming.gifts.account.event.AccountEventRepository;
+import com.qprogramming.gifts.account.event.AccountEventType;
 import com.qprogramming.gifts.support.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -18,10 +22,12 @@ import java.util.Optional;
 public class FamilyService {
 
     private FamilyRepository familyRepository;
+    private AccountEventRepository accountEventRepository;
 
     @Autowired
-    public FamilyService(FamilyRepository familyRepository) {
+    public FamilyService(FamilyRepository familyRepository, AccountEventRepository accountEventRepository) {
         this.familyRepository = familyRepository;
+        this.accountEventRepository = accountEventRepository;
     }
 
     /**
@@ -116,7 +122,6 @@ public class FamilyService {
         }
     }
 
-
     /**
      * Returns Family where passed account is member
      *
@@ -138,5 +143,22 @@ public class FamilyService {
 
     public void delete(Family family) {
         familyRepository.delete(family);
+    }
+
+    public AccountEvent inviteAccount(Account account, Family family, AccountEventType type) {
+        AccountEvent event = new AccountEvent();
+        event.setAccount(account);
+        event.setFamily(family);
+        event.setType(type);
+        event.setToken(generateToken());
+        return accountEventRepository.save(event);
+    }
+
+    public String generateToken() {
+        String token = Generators.timeBasedGenerator().generate().toString();
+        while (accountEventRepository.findByToken(token) != null) {
+            token = Generators.timeBasedGenerator().generate().toString();
+        }
+        return token;
     }
 }

@@ -28,7 +28,7 @@ app.controller('gift', [
         getGiftList();
         if ($rootScope.authenticated) {
             $translate("gift.search").then(function (translation) {
-                $scope.searchWith = translation;
+                $scope.searchWith = translation + " ";
             });
             getSearchEngines();
             getCategories();
@@ -74,7 +74,7 @@ app.controller('gift', [
             $uibModal.open({
                 templateUrl: 'modals/gift.html',
                 scope: $scope,
-                controller: function ($uibModalInstance, $scope) {
+                controller: ['$uibModalInstance', '$scope', function ($uibModalInstance, $scope) {
                     $scope.cancel = function () {
                         $uibModalInstance.dismiss('cancel');
                     };
@@ -85,14 +85,14 @@ app.controller('gift', [
                             $uibModalInstance.close()
                         }
                     };
-                }
+                }]
             });
         };
         $scope.showImport = function () {
             $uibModal.open({
                 templateUrl: 'modals/giftImport.html',
                 scope: $scope,
-                controller: function ($uibModalInstance, $scope) {
+                controller: ['$uibModalInstance', '$scope', function ($uibModalInstance, $scope) {
                     $scope.fileName = "";
                     $scope.gotFile = null;
                     $scope.logmessage = "";
@@ -134,7 +134,7 @@ app.controller('gift', [
                         $scope.gotFile = true;
                         $scope.$apply();
                     };
-                }
+                }]
             });
         };
 
@@ -310,6 +310,22 @@ app.controller('gift', [
                 AlertService.addError("error.general", response);
                 $log.debug(response);
             });
+        };
+        $scope.checkCategory = function (item, form) {
+            var url = 'api/gift/allowed-category';
+            form.categoryError = null
+            if (item) {
+                $http.get(url, {params: {category: item.name}}).then(
+                    function (response) {
+                        if (response.data && response.data.code === 'ERROR') {
+                            form.categoryError = $sce.trustAsHtml(response.data.message);
+                            form.category = null;
+                        }
+                    }).catch(function (response) {
+                    AlertService.addError("error.general", response);
+                    $log.debug(response);
+                });
+            }
         };
 
 

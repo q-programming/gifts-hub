@@ -4,6 +4,7 @@ import com.qprogramming.gifts.MockSecurityContext;
 import com.qprogramming.gifts.TestUtil;
 import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.AccountType;
+import com.qprogramming.gifts.account.event.AccountEventRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -23,7 +24,9 @@ public class FamilyServiceTest {
     Account testAccount;
     FamilyService familyService;
     @Mock
-    FamilyRepository familyRepositoryMock;
+    private FamilyRepository familyRepositoryMock;
+    @Mock
+    private AccountEventRepository accountEventRepositoryMock;
     @Mock
     private MockSecurityContext securityMock;
     @Mock
@@ -36,7 +39,7 @@ public class FamilyServiceTest {
         when(securityMock.getAuthentication()).thenReturn(authMock);
         when(authMock.getPrincipal()).thenReturn(testAccount);
         SecurityContextHolder.setContext(securityMock);
-        familyService = new FamilyService(familyRepositoryMock);
+        familyService = new FamilyService(familyRepositoryMock, accountEventRepositoryMock);
     }
 
     @Test
@@ -158,6 +161,11 @@ public class FamilyServiceTest {
         family.getAdmins().add(account);
         familyService.removeFromFamily(testAccount, family);
         assertFalse(family.getMembers().contains(testAccount));
+
+    }
+
+    @Test
+    public void sendFamilyInvite(){
 
     }
 

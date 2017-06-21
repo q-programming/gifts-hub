@@ -18,4 +18,6 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     Account findOneById(String id);
 
     List<Account> findByIdIn(List<String> list);
+
+    List<Account> findByRole(Roles role);
 }

@@ -66,16 +66,22 @@ app.controller('register', ['$scope', '$rootScope', '$http', '$log', 'AlertServi
         };
         $scope.checkUsername = function () {
             if ($scope.formData.username) {
-                $http.post('api/user/validate-username', $scope.formData.username).then(
-                    function (response) {
-                        if (response.data.body.code === 'ERROR') {
-                            $scope.userForm.username.$setValidity("exists", false);
-                        } else {
-                            $scope.userForm.username.$setValidity("exists", true);
-                        }
-                    }).catch(function (response) {
-                    AlertService.addError("error.general", response);
-                });
+                //
+                if ($scope.formData.username.match('^[a-zA-Z0-9_]+$')){
+                    $scope.userForm.username.$setValidity("illegalchar", true);
+                    $http.post('api/user/validate-username', $scope.formData.username).then(
+                        function (response) {
+                            if (response.data.body.code === 'ERROR') {
+                                $scope.userForm.username.$setValidity("exists", false);
+                            } else {
+                                $scope.userForm.username.$setValidity("exists", true);
+                            }
+                        }).catch(function (response) {
+                        AlertService.addError("error.general", response);
+                    });
+                }else{
+                    $scope.userForm.username.$setValidity("illegalchar", false);
+                }
             }
         };
         $scope.checkPasswords = function () {
@@ -88,7 +94,7 @@ app.controller('register', ['$scope', '$rootScope', '$http', '$log', 'AlertServi
 
         $scope.createUsername = function () {
             if (!$scope.formData.username && !$scope.formData.email.$invalid) {
-                $scope.formData.username = $scope.formData.email.split("@")[0];
+                $scope.formData.username = $scope.formData.email.split("@")[0].replace(".", "_");
             }
         }
     }]);

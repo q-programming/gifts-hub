@@ -27,11 +27,18 @@
                         <i class="fa fa-plus"></i><i class="fa fa-child" aria-hidden="true"></i>&nbsp;
                         <span class="hidden-xs" translate="user.family.add.kid"></span>
                     </span>
-                        <span class="btn btn-success btn-sm pull-right margin5 " ng-if="hasFamily"
+                        <!--edit-->
+                        <span class="btn btn-success btn-sm pull-right margin5 " ng-if="hasFamily && familyAdmin"
                               ng-click="editFamily()">
-                        <i class="fa fa-pencil"></i>&nbsp;
-                        <span class="hidden-xs" translate="user.family.edit"></span>
-                    </span>
+                            <i class="fa fa-pencil"></i>&nbsp;
+                            <span class="hidden-xs" translate="user.family.edit"></span>
+                        </span>
+                        <span class="btn btn-success btn-sm pull-right margin5 " ng-if="hasFamily && !familyAdmin"
+                              ng-click="viewFamily()">
+                            <i class="fa fa-users"></i>&nbsp;
+                            <span class="hidden-xs" translate="user.family"></span>
+                        </span>
+                        <!--view-->
                         <span id="family-btns" class="pull-right"></span>
                     </div>
                 </div>
@@ -93,8 +100,10 @@
         <img ng-if="!user.avatar || user.avatar ==='NaN'" src='images/avatar-placeholder.png' class="avatar"/>
     </div>
     <div class="col-xs-11 col-sm-5">
-        <i class="fa fa-child" aria-hidden="true" ng-if="user.type ==='KID'"
-           uib-tooltip="{{'user.family.kid'|translate}}">
+        <i class="fa fa-child" ng-if="user.type ==='KID'" uib-tooltip="{{'user.family.kid'|translate}}">
+        </i>
+        <i class="fa fa-address-card-o" ng-if="user.familyAdmin"
+           uib-tooltip="{{'user.family.administrator'|translate}}">
         </i>
         <a class="black" ng-href="#/list/{{user.username}}">{{user.name}}&nbsp;{{user.surname}} ({{user.username}})</a>
     </div>
@@ -110,7 +119,10 @@
                       class="btn btn-sm btn-default" ng-click="editKid(user)">
                     <i class="fa fa-pencil"></i>
                 </span>
-                <a class="btn btn-sm btn-default" ng-href="#/list/{{user.username}}"><i class="fa fa-fw fa-gift"></i>
+                <a class="btn btn-sm btn-default" ng-href="#/list/{{user.username}}"
+                   uib-tooltip="{{showUserGiftsCount(user)}}">
+                    {{user.giftsCount}}&nbsp;
+                    <i class="fa fa-fw fa-gift"></i>
                     <span class="hidden-xs">{{'gift.list.short'|translate}}</span>
                 </a>
             </span>

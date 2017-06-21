@@ -4,6 +4,8 @@ import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.account.AccountType;
 import com.qprogramming.gifts.account.RegisterForm;
+import com.qprogramming.gifts.account.event.AccountEvent;
+import com.qprogramming.gifts.account.event.AccountEventType;
 import com.qprogramming.gifts.account.family.Family;
 import com.qprogramming.gifts.account.family.FamilyForm;
 import com.qprogramming.gifts.account.family.FamilyService;
@@ -17,6 +19,7 @@ import com.qprogramming.gifts.support.ResultData;
 import com.qprogramming.gifts.support.Utils;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +46,7 @@ import java.util.stream.Collectors;
 public class UserRestController {
 
     public static final String PASSWORD_REGEXP = "^^(?=.*[A-Z])(?=.*[0-9])(?=.*[a-z].*[a-z].*[a-z]).{8,}$";
+    public static final String USERNAME_REGEXP = "^[a-zA-Z0-9_]+$";
     private static final Logger LOG = LoggerFactory.getLogger(UserRestController.class);
     private AccountService accountService;
     private MessagesService msgSrv;
@@ -65,6 +69,12 @@ public class UserRestController {
             String message = msgSrv.getMessage("user.register.email.exists") + " " + msgSrv.getMessage("user.register.alreadyexists");
             return new ResultData.ResultBuilder().error().message(message).build();
         }
+        Pattern pattern = Pattern.compile(USERNAME_REGEXP);
+        Matcher matcher = pattern.matcher(userform.getUsername());
+        if (!matcher.matches()) {
+            return new ResultData.ResultBuilder().error().message(msgSrv.getMessage("user.register.username.chars")).build();
+        }
+
         if (accountService.findByUsername(userform.getUsername()) != null) {
             String message = msgSrv.getMessage("user.register.username.exists") + " " + msgSrv.getMessage("user.register.alreadyexists");
             return new ResultData.ResultBuilder().error().message(message).build();
@@ -72,8 +82,8 @@ public class UserRestController {
         if (!userform.getPassword().equals(userform.getConfirmpassword())) {
             return new ResultData.ResultBuilder().error().message(msgSrv.getMessage("user.register.password.nomatch")).build();
         }
-        Pattern pattern = Pattern.compile(PASSWORD_REGEXP);
-        Matcher matcher = pattern.matcher(userform.getPassword());
+        pattern = Pattern.compile(PASSWORD_REGEXP);
+        matcher = pattern.matcher(userform.getPassword());
         if (!matcher.matches()) {
             return new ResultData.ResultBuilder().error().message(msgSrv.getMessage("user.register.password.tooweak")).build();
         }
@@ -83,6 +93,7 @@ public class UserRestController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
+    @Transactional
     @RequestMapping("/{id}/avatar")
     public ResponseEntity<?> userAvatar(@PathVariable(value = "id") String id) {
         Account account = accountService.findById(id);
@@ -92,6 +103,7 @@ public class UserRestController {
         return ResponseEntity.ok(accountService.getAccountAvatar(account));
     }
 
+    @Transactional
     @RequestMapping("/avatar-upload")
     public ResponseEntity<?> uploadNewAvatar(@RequestBody String avatarStream) {
         Account account = Utils.getCurrentAccount();
@@ -103,17 +115,46 @@ public class UserRestController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @RequestMapping("/users")
+    /**
+     * Returns user list, if passed param family is true, will return all accounts without family
+     *
+     * @param family if true , returned list will contain only accounts without family
+     * @return
+     */
+    @RequestMapping(value = "/users", method = RequestMethod.GET)
     public ResponseEntity<?> userList(@RequestParam(required = false) boolean family) {
+        Set<Account> list;
         if (family) {
-            return ResponseEntity.ok(accountService.findWithoutFamily());
+            list = new HashSet<>(accountService.findWithoutFamily());
+        } else {
+            list = new HashSet<>(accountService.findAll());
         }
-        return ResponseEntity.ok(accountService.findAll());
+        addGiftCounts(list);
+        return ResponseEntity.ok(list);
     }
 
     @RequestMapping("/families")
     public ResponseEntity<?> familyList() {
-        return ResponseEntity.ok(familyService.findAll());
+        List<Family> families = familyService.findAll();
+        families.forEach(family -> {
+            addGiftCounts(family.getMembers());
+            markAdmins(family);
+        });
+        return ResponseEntity.ok(families);
+    }
+
+    private void addGiftCounts(Set<Account> list) {
+        list.forEach(account -> {
+            account.setGiftsCount(giftService.countAllByUser(account.getId()));
+        });
+    }
+
+    private void markAdmins(Family family) {
+        family.getMembers().forEach(account -> {
+            if (family.getAdmins().contains(account)) {
+                account.setFamilyAdmin(true);
+            }
+        });
     }
 
     /**
@@ -121,7 +162,7 @@ public class UserRestController {
      *
      * @return {@link com.qprogramming.gifts.account.family.Family}
      */
-    @RequestMapping("/family")
+    @RequestMapping(value = "/family", method = RequestMethod.GET)
     public ResponseEntity<?> getUserFamily(@RequestParam(required = false) String username) {
         if (StringUtils.isNotBlank(username)) {
             Account account = accountService.findByUsername(username);
@@ -133,23 +174,33 @@ public class UserRestController {
         return ResponseEntity.ok(familyService.getFamily(Utils.getCurrentAccount()));
     }
 
-    @RequestMapping("/family-create")
+    @RequestMapping(value = "/family-create", method = RequestMethod.PUT)
     public ResponseEntity<?> createFamily(@RequestBody FamilyForm form) {
         Family family = familyService.getFamily(Utils.getCurrentAccount());
         if (family != null) {
             return new ResultData.ResultBuilder().badReqest().message(msgSrv.getMessage("user.family.exists.error")).build();
         }
         family = familyService.createFamily();
-        family.getMembers().addAll(accountService.findByIds(form.getMembers()));
-        family.getAdmins().addAll(accountService.findByIds(form.getAdmins()));
         if (StringUtils.isBlank(form.getName())) {
             form.setName(Utils.getCurrentAccount().getSurname());
         }
         family.setName(form.getName());
-        return ResponseEntity.ok(familyService.update(family));
+        family = familyService.update(family);
+        List<Account> members = accountService.findByIds(form.getMembers());
+        try {
+            sendInvites(members, family, AccountEventType.FAMILY_MEMEBER);
+        } catch (MessagingException e) {
+            return new ResultData.ResultBuilder().badReqest().message(msgSrv.getMessage("user.family.invite.mailError")).build();
+        }
+        //family.getAdmins().addAll(accountService.findByIds(form.getAdmins()));
+        if (members.size() > 0) {
+            return new ResultData.ResultBuilder().ok().message(msgSrv.getMessage("user.family.create.success.invites")).build();
+        }
+        return new ResultData.ResultBuilder().ok().message(msgSrv.getMessage("user.family.create.success")).build();
     }
 
-    @RequestMapping("/family-update")
+    @Transactional
+    @RequestMapping(value = "/family-update", method = RequestMethod.PUT)
     public ResponseEntity<?> updateFamily(@RequestBody FamilyForm form) {
         Account currentAccount = Utils.getCurrentAccount();
         Family family = familyService.getFamily(currentAccount);
@@ -157,21 +208,118 @@ public class UserRestController {
             return ResponseEntity.notFound().build();
         }
         if (family.getAdmins().contains(currentAccount)) {
-            Set<Account> members = new HashSet<>(accountService.findByIds(form.getMembers()));
-            members.add(currentAccount);
-            Set<Account> admins = new HashSet<>(accountService.findByIds(form.getAdmins()));
-            admins.add(currentAccount);
-            family.setMembers(members);
-            family.setAdmins(admins);
+            //set members
+            form.getMembers().add(Utils.getCurrentAccountId());
+            Set<Account> formMembers = new HashSet<>(accountService.findByIds(form.getMembers()));
+            Set<Account> membersToInvite = formMembers.stream().filter(account -> !family.getMembers().contains(account)).collect(Collectors.toSet());
+            formMembers.removeAll(membersToInvite);
+            family.setMembers(formMembers);
+            //set admins
+            form.getAdmins().add(Utils.getCurrentAccountId());
+            Set<Account> formAdmins = new HashSet<>(accountService.findByIds(form.getAdmins()));
+            Set<Account> adminsToInvite = formAdmins.stream().filter(account -> !family.getAdmins().contains(account)).collect(Collectors.toSet());
+            formAdmins.removeAll(adminsToInvite);
+            family.setAdmins(formAdmins);
+            //send invites, remove all double members if are in admin list
+            try {
+                membersToInvite.removeAll(adminsToInvite);
+                sendInvites(membersToInvite, family, AccountEventType.FAMILY_MEMEBER);
+                sendInvites(adminsToInvite, family, AccountEventType.FAMILY_ADMIN);
+            } catch (MessagingException e) {
+                return new ResultData.ResultBuilder().badReqest().message(msgSrv.getMessage("user.family.invite.mailError")).build();
+            }
             if (StringUtils.isBlank(form.getName())) {
                 form.setName(Utils.getCurrentAccount().getSurname());
             }
             family.setName(form.getName());
-            return ResponseEntity.ok(familyService.update(family));
+            if(membersToInvite.size()>0 || adminsToInvite.size()>0){
+                return new ResultData.ResultBuilder().ok().message(msgSrv.getMessage("user.family.edit.success.invites")).build();
+            }
+            return new ResultData.ResultBuilder().ok().message(msgSrv.getMessage("user.family.edit.success")).build();
         }
         return new ResultData.ResultBuilder().badReqest().message(msgSrv.getMessage("user.family.admin.error")).build();
     }
 
+    @RequestMapping(value = "/family-leave", method = RequestMethod.PUT)
+    public ResponseEntity<?> leaveFamily() {
+        Account currentAccount = Utils.getCurrentAccount();
+        Family family = familyService.getFamily(currentAccount);
+        if (family == null) {
+            return ResponseEntity.notFound().build();
+        }
+        family.getMembers().remove(currentAccount);
+        return ResponseEntity.ok(familyService.update(family));
+    }
+
+
+    @Transactional
+    @RequestMapping("/confirm")
+    public ResponseEntity confirmOperation(@RequestBody String token) {
+        UUID uuid = UUID.fromString(token);
+        DateTime date = new DateTime(Utils.getTimeFromUUID(uuid));
+        DateTime expireDate = date.plusDays(7);
+        if (new DateTime().isAfter(expireDate)) {
+            return new ResultData.ResultBuilder().badReqest().message(msgSrv.getMessage("user.confirm.token.errro.time")).build();
+        }
+        AccountEvent event = accountService.findEvent(token);
+        if (event == null) {
+            return new ResultData.ResultBuilder().notFound().build();
+        }
+        Family family = familyService.getFamily(Utils.getCurrentAccount());
+        switch (event.getType()) {
+            case FAMILY_MEMEBER:
+                if (family != null) {
+                    return familyExistsResponse(family);
+                }
+                family = familyService.addAccountToFamily(Utils.getCurrentAccount(), event.getFamily());
+                accountService.eventConfirmed(event);
+                return new ResultData.ResultBuilder()
+                        .ok()
+                        .message(msgSrv.getMessage("user.confirm.family.success", new Object[]{family.getName()}, "", Utils.getCurrentLocale()))
+                        .build();
+            case FAMILY_ADMIN:
+                if (family != null && family != event.getFamily()) {
+                    return familyExistsResponse(family);
+                }
+                family = familyService.addAccountToFamily(Utils.getCurrentAccount(), event.getFamily());
+                family = familyService.addAccountToFamilyAdmins(Utils.getCurrentAccount(), family);
+                accountService.eventConfirmed(event);
+                return new ResultData.ResultBuilder()
+                        .ok()
+                        .message(msgSrv.getMessage("user.confirm.family.admin.success", new Object[]{family.getName()}, "", Utils.getCurrentLocale()))
+                        .build();
+            case FAMILY_REMOVE:
+                //TODO not used
+                break;
+        }
+        return new ResultData.ResultBuilder().badReqest().build();
+    }
+
+
+    private ResponseEntity familyExistsResponse(Family family) {
+        return new ResultData.ResultBuilder()
+                .badReqest()
+                .message(msgSrv.getMessage("user.confirm.family.exists", new Object[]{family.getName()}, "", Utils.getCurrentLocale()))
+                .build();
+    }
+
+    private void sendInvites(Set<Account> members, Family family, AccountEventType type) throws MessagingException {
+        List<Account> list = new ArrayList<>(members);
+        sendInvites(list, family, type);
+    }
+
+    private void sendInvites(List<Account> members, Family family, AccountEventType type) throws MessagingException {
+        for (Account account : members) {
+            if (!AccountType.KID.equals(account.getType())) {
+                AccountEvent event = familyService.inviteAccount(account, family, type);
+                mailService.sendConfirmMail(createMail(account), event);
+            } else {
+                familyService.addAccountToFamily(account, family);
+            }
+        }
+    }
+
+    @Transactional
     @RequestMapping("/kid-add")
     public ResponseEntity<?> addKid(@RequestBody @Valid KidForm form) {
         if (accountService.findByUsername(form.getUsername()) != null) {
@@ -197,6 +345,7 @@ public class UserRestController {
         return ResponseEntity.ok(kidAccount);
     }
 
+    @Transactional
     @RequestMapping("/kid-update")
     public ResponseEntity<?> updateKid(@RequestBody @Valid KidForm form) {
         Account currentAccount = Utils.getCurrentAccount();
@@ -333,6 +482,20 @@ public class UserRestController {
         return null;
     }
 
+    /**
+     * Return list of all admins in application.
+     *
+     * @return {@link List}<{@link Account}>admins or forbidden if current account is empty or is not admin
+     */
+    @RequestMapping(value = "admins", method = RequestMethod.GET)
+    public ResponseEntity admins() {
+        Account currentAccount = Utils.getCurrentAccount();
+        if (currentAccount == null || !currentAccount.getIsAdmin()) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+        return ResponseEntity.ok(accountService.findAdmins());
+    }
+
     private Account getAccountByUsernameOrId(@RequestParam(required = false) String identification) {
         Account account = accountService.findByUsername(identification);
         if (account == null) {
@@ -378,5 +541,21 @@ public class UserRestController {
         }
         String message = msgSrv.getMessage("gift.share.success", new Object[]{StringUtils.join(emailLists, ", ")}, "", Utils.getCurrentLocale());
         return new ResultData.ResultBuilder().ok().message(message).build();
+    }
+
+    /**
+     * Creates mail out of account
+     *
+     * @param account account for which mail will be created
+     * @return list of {@link Mail}
+     */
+    private Mail createMail(Account account) {
+        Mail mail = new Mail();
+        mail.setMailTo(account.getEmail());
+        mail.setMailFrom(Utils.getCurrentAccount().getEmail());
+        mail.setLocale(account.getLanguage());
+        mail.addToModel("name", account.getFullname());
+        mail.addToModel("owner", Utils.getCurrentAccount().getFullname());
+        return mail;
     }
 }

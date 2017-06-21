@@ -46,7 +46,7 @@
                 {{userGiftList.fullname}} ({{userGiftList.username}})
             </span>
                     </div>
-                    <div class="col-xs-12 col-sm-offset-1 col-sm-2 col-md-offset-2 col-lg-offset-4 col-md-3">
+                    <div class="col-xs-12 col-sm-3 col-md-offset-2 col-lg-offset-4 col-md-3">
                         <button type="button" class="btn btn-success pull-right" ng-click="showImport()" id="btn-import"
                                 uib-tooltip="{{'gift.import'| translate}}"
                                 ng-show="userList || family.familyAdmin">
@@ -93,7 +93,7 @@
             </div>
             <div class="col-xs-12 col-sm-3">{{gift.description}}</div>
             <div class="col-xs-12 col-sm-3">
-                <a ng-if="gift.link" ng-href="{{gift.link}}" class="gift-link">{{ gift.name }}</a>
+                <a target="_blank" ng-if="gift.link" ng-href="{{gift.link}}" class="gift-link">{{ gift.name }}</a>
                 <span ng-repeat="engine in gift.engines" class="search-engines">
                 <a class="pull-right" ng-href="{{engine.searchString + gift.name}}" target="_blank">
                 <i ng-class="'fa fa-fw '+ engine.icon"

@@ -13,6 +13,12 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
         //triggers
         $scope.sortByName = null;
         $scope.sortByFamily = null;
+        $translate("gift.gifts").then(function (translation) {
+            $scope.giftsText = translation;
+        });
+        $translate("gift.gift").then(function (translation) {
+            $scope.giftText = translation;
+        });
 
         if ($rootScope.authenticated) {
             showUsersWithDefaultSorting();
@@ -69,9 +75,9 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
                 $scope.modalHelp = translation;
             });
             var modalInstance = $uibModal.open({
-                templateUrl: 'modals/family.html',
+                templateUrl: 'modals/familyEdit.html',
                 scope: $scope,
-                controller: function ($uibModalInstance, $scope) {
+                controller: ['$uibModalInstance', '$scope', function ($uibModalInstance, $scope) {
                     getUsersWithoutFamily();
                     $scope.cancel = function () {
                         $uibModalInstance.dismiss('cancel');
@@ -81,7 +87,7 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
                         sendFamilyData($scope.family, true);
                         $uibModalInstance.close()
                     };
-                }
+                }]
             });
         };
 
@@ -96,9 +102,9 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
             filterAndAddAvatar($scope.family.members);
             filterAndAddAvatar($scope.family.admins);
             var modalInstance = $uibModal.open({
-                templateUrl: 'modals/family.html',
+                templateUrl: 'modals/familyEdit.html',
                 scope: $scope,
-                controller: function ($uibModalInstance, $scope) {
+                controller: ['$uibModalInstance', '$scope', function ($uibModalInstance, $scope) {
                     getUsersWithoutFamily();
                     $scope.cancel = function (dismissMessage) {
                         if (angular.isUndefined(dismissMessage)) {
@@ -111,7 +117,38 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
                         sendFamilyData($scope.family, false);
                         $uibModalInstance.close()
                     };
-                }
+                }]
+            });
+        };
+        $scope.viewFamily = function () {
+            filterAndAddAvatar($scope.family.members);
+            filterAndAddAvatar($scope.family.admins);
+            var modalInstance = $uibModal.open({
+                templateUrl: 'modals/familyView.html',
+                scope: $scope,
+                controller: ['$uibModalInstance', '$scope', function ($uibModalInstance, $scope) {
+                    getUsersWithoutFamily();
+                    $scope.cancel = function (dismissMessage) {
+                        if (angular.isUndefined(dismissMessage)) {
+                            dismissMessage = 'cancel';
+                        }
+                        $uibModalInstance.dismiss(dismissMessage);
+                    };
+                    $scope.leave = function () {
+                        $log.debug("[DEBUG] leaving family");
+                        url = 'api/user/family-leave';
+                        $http.put(url).then(
+                            function () {
+                                AlertService.addSuccess("user.family.left");
+                                showUsersWithDefaultSorting()
+                            }).catch(function (response) {
+                            showUsersWithDefaultSorting();
+                            AlertService.addError("error.general", response);
+                            $log.debug(response);
+                        });
+                        $uibModalInstance.close()
+                    };
+                }]
             });
         };
 
@@ -172,16 +209,12 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
             }
             dataToSend.name = familyForm.name;
             $scope.family = {};
-            $http.post(url, dataToSend).then(
+            $http.put(url, dataToSend).then(
                 function (response) {
-                    if (create) {
-                        AlertService.addSuccess("user.family.create.success");
-                    } else {
-                        AlertService.addSuccess("user.family.edit.success");
-                    }
+                    AlertService.addSuccessMessage(response.data.message);
                     showUsersWithDefaultSorting()
                 }).catch(function (response) {
-                showUsersWithDefaultSorting()
+                showUsersWithDefaultSorting();
                 AlertService.addError("error.general", response);
                 $log.debug(response);
             });
@@ -207,6 +240,16 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
             });
         }
 
+        $scope.getAdminCandidates = function () {
+            var candidates = [];
+            angular.forEach($scope.family.members, function (member) {
+                if (member.type !== 'KID') {
+                    candidates.push(member);
+                }
+            });
+            return candidates
+        };
+
         /**
          * Check if currently logged in user is admin of his family
          */
@@ -224,8 +267,9 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
         function getFamily() {
             $http.get('api/user/family').then(
                 function (response) {
+                    $scope.family.length = 0;
+                    $scope.hasFamily = false;
                     if (response.data) {
-                        $scope.family.length = 0;
                         $scope.family = response.data;
                         $scope.hasFamily = true;
                         isFamilyAdmin();
@@ -275,7 +319,7 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
             var modalInstance = $uibModal.open({
                 templateUrl: 'modals/kid.html',
                 scope: $scope,
-                controller: function ($uibModalInstance, $scope) {
+                controller: ['$uibModalInstance', '$scope', function ($uibModalInstance, $scope) {
                     $scope.cancel = function () {
                         $uibModalInstance.dismiss('cancel');
                     };
@@ -286,7 +330,7 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
                         sendChildData($scope.formData, true);
                         $uibModalInstance.close()
                     };
-                }
+                }]
             });
         };
 
@@ -303,7 +347,7 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
             var modalInstance = $uibModal.open({
                 templateUrl: 'modals/kid.html',
                 scope: $scope,
-                controller: function ($uibModalInstance, $scope) {
+                controller: ['$uibModalInstance', '$scope', function ($uibModalInstance, $scope) {
                     $scope.cancel = function () {
                         $uibModalInstance.dismiss('cancel');
                     };
@@ -318,7 +362,7 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
                         $uibModalInstance.close()
                     };
 
-                }
+                }]
             });
         };
 
@@ -367,8 +411,8 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
         $scope.isUsersFamilyKid = function (kid) {
             if ($scope.family && $scope.family.members) {
                 return $scope.family.members.map(function (e) {
-                        return e.id;
-                    }).indexOf(kid.id) > -1
+                    return e.id;
+                }).indexOf(kid.id) > -1
             }
             return false;
         };
@@ -399,6 +443,7 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
                         AlertService.addSuccess("user.family.add.kid.success");
                     } else {
                         AlertService.addSuccess("user.family.edit.kid.success");
+                        AvatarService.clearCache(formData.id)
                     }
                     showUsersWithDefaultSorting();
                 }).catch(function (response) {
@@ -434,6 +479,14 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
             UtilsService.copyLink(true);
 
         };
+
+        $scope.showUserGiftsCount = function (user) {
+            if (user && user.giftsCount === 1) {
+                return user.giftsCount + ' ' + $scope.giftText;
+            }
+            return user.giftsCount + ' ' + $scope.giftsText;
+
+        }
 
         // ***********************USERS********************************
 

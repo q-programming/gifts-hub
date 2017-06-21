@@ -1,7 +1,7 @@
 <div class="row">
     <div class="col-xs-12 text-center">
         <h2><img src="images/logo.png" width="60px" height="60px"/>&nbsp;Welcome to Gifts Hub</h2>
-        <p>Version 0.5</p>
+        <p>Version 0.6</p>
     </div>
     <div class="col-xs-12">
         <p>
@@ -82,7 +82,8 @@
             </div>
         </div>
         <div class="row hidden-xs">
-            <div class="col-sm-4 col-lg-2 clickable menu-item-help" ng-click="anchor('settings')" style="padding: 12px;">
+            <div class="col-sm-4 col-lg-2 clickable menu-item-help" ng-click="anchor('settings')"
+                 style="padding: 12px;">
                 <span>
                     <span ng-if="principal">{{principal.fullname}}</span>
                     <span ng-if="!principal">{{'user.firstname'|translate}}&nbsp;{{'user.surname'|translate}}</span>
@@ -128,7 +129,10 @@
             Thanks to this, we can browse gifts quicker and manage them faster by family
             administrators.<br>
             When creating family you can name it with custom name (if left empty , your surname will be
-            used),and you can add other application users that are not yet part of family.<br><br>You can also
+            used),and you can add other application users that are not yet part of family.<br><br>
+            Every user that was invited to family, will receive email message with link, which has to be accessed in
+            order to confirm that invite.
+            <br><br>You can also
             designate
             family administrator, who will be able to add and edit other family members gifts list.
             To create family click
