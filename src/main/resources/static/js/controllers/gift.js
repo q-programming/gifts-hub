@@ -311,6 +311,22 @@ app.controller('gift', [
                 $log.debug(response);
             });
         };
+        $scope.checkCategory = function (item, form) {
+            var url = 'api/gift/allowed-category';
+            form.categoryError = null
+            if (item) {
+                $http.get(url, {params: {category: item.name}}).then(
+                    function (response) {
+                        if (response.data && response.data.code === 'ERROR') {
+                            form.categoryError = $sce.trustAsHtml(response.data.message);
+                            form.category = null;
+                        }
+                    }).catch(function (response) {
+                    AlertService.addError("error.general", response);
+                    $log.debug(response);
+                });
+            }
+        };
 
 
         // HELPER FUNCTIONS

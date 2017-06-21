@@ -228,7 +228,6 @@ public class UserRestController {
             } catch (MessagingException e) {
                 return new ResultData.ResultBuilder().badReqest().message(msgSrv.getMessage("user.family.invite.mailError")).build();
             }
-
             if (StringUtils.isBlank(form.getName())) {
                 form.setName(Utils.getCurrentAccount().getSurname());
             }

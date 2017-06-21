@@ -275,9 +275,8 @@ public class UserRestControllerTest {
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(form))).andExpect(status().isOk()).andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
-        Family result = TestUtil.convertJsonToObject(contentAsString, Family.class);
         verify(familyServiceMock, times(1)).update(any(Family.class));
-        verify(familyServiceMock, times(1)).inviteAccount(memberAndAdmin, result, AccountEventType.FAMILY_MEMEBER);
+        verify(familyServiceMock, times(1)).inviteAccount(memberAndAdmin, family, AccountEventType.FAMILY_MEMEBER);
         verify(mailServiceMock, times(1)).sendConfirmMail(any(Mail.class), any(AccountEvent.class));
     }
 
@@ -322,10 +321,8 @@ public class UserRestControllerTest {
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(form))).andExpect(status().isOk()).andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
-        Family result = TestUtil.convertJsonToObject(contentAsString, Family.class);
         verify(familyServiceMock, times(1)).inviteAccount(memberAndAdmin, family, AccountEventType.FAMILY_ADMIN);
-        verify(familyServiceMock, times(1)).update(any(Family.class));
-        assertTrue(result.getMembers().size() == 1);
+        assertTrue(family.getMembers().size() == 1);
     }
 
     @Test

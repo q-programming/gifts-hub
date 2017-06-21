@@ -15,6 +15,7 @@ import com.qprogramming.gifts.gift.category.CategoryRepository;
 import com.qprogramming.gifts.messages.MessagesService;
 import com.qprogramming.gifts.settings.SearchEngine;
 import com.qprogramming.gifts.settings.SearchEngineService;
+import com.qprogramming.gifts.support.ResultData;
 import com.qprogramming.gifts.support.Utils;
 import org.json.JSONObject;
 import org.junit.Before;
@@ -53,6 +54,7 @@ public class GiftRestControllerTest {
     private static final String API_GIFT_DELETE = "/api/gift/delete/";
     private static final String API_GIFT_IMPORT = "/api/gift/import";
     private static final String API_GIFT_TEMPLATE = "/api/gift/get-template";
+    private static final String API_GIFT_ALLOWED_CATEGORY = "/api/gift/allowed-category";
     private static final String OTHER_USER = "OTHER_USER";
     private static final String JOHN = "John";
     private static final String DOE = "Doe";
@@ -89,11 +91,12 @@ public class GiftRestControllerTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        GiftRestController giftsCtrl = new GiftRestController(accSrvMock, giftServiceMock, searchEngineServiceMock, categoryRepositoryMock, messagesServiceMock, familyServiceMock);
         testAccount = TestUtil.createAccount();
+        when(messagesServiceMock.getMessage("gift.category.other", null, "", new Locale("en"))).thenReturn("Other");
         when(securityMock.getAuthentication()).thenReturn(authMock);
         when(authMock.getPrincipal()).thenReturn(testAccount);
         SecurityContextHolder.setContext(securityMock);
+        GiftRestController giftsCtrl = new GiftRestController(accSrvMock, giftServiceMock, searchEngineServiceMock, categoryRepositoryMock, messagesServiceMock, familyServiceMock);
         this.giftsRestCtrl = MockMvcBuilders.standaloneSetup(giftsCtrl).build();
     }
 
@@ -415,7 +418,7 @@ public class GiftRestControllerTest {
                 getClass().getResourceAsStream("sampleImport.xls"));
         giftsRestCtrl.perform(MockMvcRequestBuilders.fileUpload(API_GIFT_IMPORT).file(mockMultipartFile)).andExpect(status().isOk());
         verify(categoryRepositoryMock, times(2)).save(any(Category.class));
-        verify(giftServiceMock, times(4)).create(any(Gift.class));
+        verify(giftServiceMock, times(5)).create(any(Gift.class));
     }
 
     @Test
@@ -457,5 +460,16 @@ public class GiftRestControllerTest {
         assertTrue(contentAsByteArray.length > 0);
     }
 
+    @Test
+    public void allowedCategory() throws Exception {
+        giftsRestCtrl.perform(get(API_GIFT_ALLOWED_CATEGORY).param("category", "Category")).andExpect(status().isOk());
+    }
 
+    @Test
+    public void notAllowedCategory() throws Exception {
+        MvcResult mvcResult = giftsRestCtrl.perform(get(API_GIFT_ALLOWED_CATEGORY).param("category", "other")).andReturn();
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        ResultData resultData = TestUtil.convertJsonToObject(contentAsString, ResultData.class);
+        assertEquals(resultData.code, ResultData.Code.ERROR);
+    }
 }
