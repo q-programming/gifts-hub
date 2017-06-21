@@ -211,6 +211,8 @@ public class GiftRestController {
                 category = categoryRepository.save(new Category(name));
             }
             gift.setCategory(category);
+        } else {
+            gift.setCategory(null);
         }
         gift.setEngines(searchEngineService.getSearchEngines(giftForm.getSearchEngines()));
         //update or create

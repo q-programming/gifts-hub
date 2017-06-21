@@ -11,7 +11,7 @@
                 <input type="hidden" ng-model="giftForm.username">
                 <input type="hidden" ng-model="giftForm.id">
                 <div class="form-group" show-errors="">
-                    <label for="name" >{{'gift.name'|translate}}*</label>
+                    <label for="name">{{'gift.name'|translate}}*</label>
                     <input type="text" class="form-control" id="name" name="name" ng-model="giftForm.name"
                            required="required"/>
                 </div>
@@ -29,7 +29,7 @@
                 <div class="form-group">
                     <label for="category" translate="gift.category"></label>
                     <ui-select ng-model="giftForm.category" id="category">
-                        <ui-select-match placeholder="{{'gift.category.choose'|translate}}">
+                        <ui-select-match placeholder="{{'gift.category.choose'|translate}}" allow-clear="true">
                             <span ng-bind="$select.selected.name"></span>
                         </ui-select-match>
                         <ui-select-choices
