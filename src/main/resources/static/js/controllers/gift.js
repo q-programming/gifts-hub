@@ -12,6 +12,8 @@ app.controller('gift', [
         $scope.importedFile = null;
 
 
+        $scope.filterShow = false;
+        $scope.categoryFilter = null;
         $scope.categoryOther = "";
         $scope.categoryRealised = "";
 

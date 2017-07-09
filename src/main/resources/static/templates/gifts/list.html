@@ -1,8 +1,8 @@
 <div ng-if="authenticated">
     <div>
         <div class="row header-fixed animate-appear" fixed-top="fix-to-top">
+            <!--ACCOUNT SWITCHER-->
             <div>
-                <!--ACCOUNT SWITCHER-->
                 <div class="row margin-bottom5" ng-cloak>
                     <div class="col-xs-2 col-sm-2 col-md-2 col-lg-1">
                         <img ng-if="userGiftList.avatar && userGiftList.avatar !=='NaN'"
@@ -74,8 +74,23 @@
                         <strong translate="gift.add.date"></strong>
                     </div>
                     <div class="col-sm-1 hidden-xs">
-                        <strong translate="main.action"></strong>
+                        <i class="fa fa-lg fa-filter clickable" ng-click="filterShow=!filterShow"
+                           uib-tooltip="{{'gift.category.filter'|translate}}"></i>
+                        <i class="fa fa-cogs clickable" uib-tooltip="{{'main.action'|translate}}"></i>
                     </div>
+                </div>
+                <!--FILTER-->
+                <div ng-show="filterShow">
+                    <ui-select id="category" on-select="filterCategory($item)" ng-model="categoryFilter">
+                        <ui-select-match placeholder="{{'gift.category.choose'|translate}}" allow-clear="true">
+                            <span ng-bind="$select.selected.name"></span>
+                        </ui-select-match>
+                        <ui-select-choices
+                                repeat="category in (categories | filter: $select.search) track by category.id"
+                                refresh="refreshResults($select)" refresh-delay="0">
+                            <span ng-bind="category.name"></span>
+                        </ui-select-choices>
+                    </ui-select>
                 </div>
             </div>
         </div>
