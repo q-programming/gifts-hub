@@ -1,6 +1,7 @@
 app.controller('gift', [
-    '$rootScope', '$scope', '$http', '$log', '$routeParams', '$route', '$location', '$window', '$translate', '$uibModal', '$sce', 'AlertService', 'AvatarService', 'GIFT_STATUS',
-    function ($rootScope, $scope, $http, $log, $routeParams, $route, $location, $window, $translate, $uibModal, $sce, AlertService, AvatarService, GIFT_STATUS) {
+    '$rootScope', '$scope', '$http', '$log', '$routeParams', '$route', '$location', '$window', '$translate', '$uibModal', '$sce', 'AlertService', 'AvatarService', 'UtilsService', 'GIFT_STATUS',
+    function ($rootScope, $scope, $http, $log, $routeParams, $route, $location, $window, $translate, $uibModal, $sce, AlertService, AvatarService, UtilsService, GIFT_STATUS) {
+        $scope.utils = UtilsService;
         $scope.giftForm = {};
         $scope.giftsList = {};
         $scope.giftsListAll = {};

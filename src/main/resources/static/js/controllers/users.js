@@ -1,5 +1,6 @@
 app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal', '$filter', '$translate', '$location', '$timeout', 'AlertService', 'AvatarService', 'AppService', 'UtilsService',
     function ($scope, $rootScope, $http, $log, $uibModal, $filter, $translate, $location, $timeout, AlertService, AvatarService, AppService, UtilsService) {
+        $scope.utils = UtilsService;
         //lists
         $scope.users = [];
         $scope.families = [];
