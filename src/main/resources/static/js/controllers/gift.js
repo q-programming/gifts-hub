@@ -445,6 +445,7 @@ app.controller('gift', [
                         $scope.categories.push({id: cat.id, name: cat.name})
                     });
                     angular.copy($scope.categories, $scope.categoriesFilter);
+                    $scope.categoriesFilter.push({id: Math.pow(2, 53) - 2, name: $scope.categoryOther});
                     $scope.categoriesFilter.push({id: Math.pow(2, 53) - 1, name: $scope.categoryRealised});
                 }).catch(function (response) {
                 AlertService.addError("error.general");

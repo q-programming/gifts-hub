@@ -969,3 +969,11 @@ img.center {
 .filter-div {
     padding-top: 25px;
 }
+
+.filter-active {
+    position: relative !important;
+    left: 8px;
+    bottom: -5px;
+    font-size: x-small !important;
+    color: #5cb85c !important;
+}

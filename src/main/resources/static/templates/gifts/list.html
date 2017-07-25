@@ -74,8 +74,8 @@
                         <strong translate="gift.add.date"></strong>
                     </div>
                     <div class="col-sm-1 hidden-xs">
-                        <i class="fa fa-plus-circle" ng-show="filteredCategory"></i>
-                        <i class="fa fa-lg fa-filter clickable" ng-click="filterShow=!filterShow"
+                        <i class="fa fa-plus-circle filter-active" ng-show="filteredCategory"></i>
+                        <i id="filter-btn" class="fa fa-lg fa-filter clickable" ng-click="filterShow=!filterShow"
                            uib-tooltip="{{'gift.category.filter'|translate}}"></i>
                         <i class="fa fa-cogs clickable" uib-tooltip="{{'main.action'|translate}}"></i>
                     </div>
