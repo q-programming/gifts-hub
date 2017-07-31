@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -82,6 +83,29 @@ public class TestUtil {
         gift.setLink("http://google.ocm");
         gift.setUserId(account.getId());
         return gift;
+    }
+
+    public static List<Account> createAccountList() {
+        Account account1 = TestUtil.createAccount("Bob", "Doe");
+        account1.setId(USER_RANDOM_ID + "1");
+        Account account2 = TestUtil.createAccount("Andy", "Doe");
+        account2.setId(USER_RANDOM_ID + "2");
+        Account account3 = TestUtil.createAccount("John", "Doe");
+        account3.setId(USER_RANDOM_ID + "3");
+        Account account4 = TestUtil.createAccount("John", "Doe");
+        account4.setId(USER_RANDOM_ID + "4");
+        Account account5 = TestUtil.createAccount("John", "Doe");
+        account5.setId(USER_RANDOM_ID + "5");
+        Account account6 = TestUtil.createAccount("John", "Doe");
+        account6.setId(USER_RANDOM_ID + "6");
+        List<Account> all = new ArrayList<>();
+        all.add(account1);
+        all.add(account2);
+        all.add(account3);
+        all.add(account4);
+        all.add(account5);
+        all.add(account6);
+        return all;
     }
 
 

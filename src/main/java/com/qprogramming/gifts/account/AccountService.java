@@ -36,10 +36,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -256,8 +253,29 @@ public class AccountService implements UserDetailsService {
     }
 
     public List<Account> findAll() {
-        List<Account> list = accountRepository.findAll(new Sort("surname", "name", "username"));
-        return list;
+        return accountRepository.findAll(new Sort("surname", "name", "username"));
+    }
+
+
+    /**
+     * Search for all users within application.
+     * If user has family , user from that family will be shown firsts. Other users are sorted per Surname/Name
+     *
+     * @param account account for which potential family will be used to sort
+     * @return list of all sorted users
+     */
+    public Set<Account> findAllSortByFamily(Account account) {
+        Family family = familyService.getFamily(account);
+        List<Account> list = findAll();
+        Set<Account> result = new LinkedHashSet<>();
+        Comparator<Account> accountComparator = Comparator.comparing(Account::getName).thenComparing(Account::getSurname);
+        if (family != null) {
+            //Add all from user's family first
+            result.addAll(list.stream().filter(family.getMembers()::contains).sorted(accountComparator).collect(Collectors.toList()));
+            list.removeAll(result);
+        }
+        result.addAll(list.stream().sorted(accountComparator).collect(Collectors.toList()));
+        return result;
     }
 
     /**

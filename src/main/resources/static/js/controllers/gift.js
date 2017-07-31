@@ -32,17 +32,20 @@ app.controller('gift', [
         //INIT
         getGiftList();
         if ($rootScope.authenticated) {
+            if (!$rootScope.principal) {
+                $window.location.reload();//in case of loosing session, principal fetch is delayed. Reload location to prevent errors
+            }
+            $scope.userList = !$routeParams.username || $routeParams.username === $rootScope.principal.username;
             $translate("gift.search").then(function (translation) {
                 $scope.searchWith = translation + " ";
             });
             getSearchEngines();
             getCategories();
             getFamily();
-            if (!$rootScope.principal) {
-                $window.location.reload();//in case of loosing session, principal fetch is delayed. Reload location to prevent errors
-            }
-            $scope.userList = !$routeParams.username || $routeParams.username === $rootScope.principal.username;
+            getUsers();
         }
+        //End init
+
         $scope.goToMemberList = function (user) {
             $location.path('/list/' + user.username);
 
@@ -464,12 +467,30 @@ app.controller('gift', [
             });
         }
 
-        function getFamilyAvatars() {
-            angular.forEach($scope.family.members, function (user) {
+        function getUsersAvatars(users) {
+            angular.forEach(users, function (user) {
                 AvatarService.getUserAvatar(user);
             });
         }
 
+
+        function getUsers() {
+            var url;
+            if ($routeParams.username) {
+                url = 'api/user/userList?username=' + $routeParams.username;
+            }
+            else {
+                url = 'api/user/userList';
+            }
+            $http.get(url).then(
+                function (response) {
+                    if (response.data) {
+                        $scope.users = response.data;
+                        getUsersAvatars($scope.users);
+                    }
+                }
+            );
+        }
 
         function getFamily() {
             var url;
@@ -484,7 +505,7 @@ app.controller('gift', [
                     if (response.data) {
                         $scope.family = response.data;
                         isFamilyAdmin();
-                        getFamilyAvatars();
+                        getUsersAvatars($scope.family.members);
                     }
                 }
             );

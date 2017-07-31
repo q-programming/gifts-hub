@@ -118,13 +118,13 @@ public class UserRestController {
     /**
      * Returns user list, if passed param family is true, will return all accounts without family
      *
-     * @param family if true , returned list will contain only accounts without family
+     * @param noFamily if true , returned list will contain only accounts without family
      * @return
      */
     @RequestMapping(value = "/users", method = RequestMethod.GET)
-    public ResponseEntity<?> userList(@RequestParam(required = false) boolean family) {
+    public ResponseEntity<?> userList(@RequestParam(required = false) boolean noFamily) {
         Set<Account> list;
-        if (family) {
+        if (noFamily) {
             list = new HashSet<>(accountService.findWithoutFamily());
         } else {
             list = new HashSet<>(accountService.findAll());
@@ -132,6 +132,20 @@ public class UserRestController {
         addGiftCounts(list);
         return ResponseEntity.ok(list);
     }
+
+    @RequestMapping(value = "/userList", method = RequestMethod.GET)
+    public ResponseEntity<?> userSearchList(@RequestParam(required = false) String username) {
+        Account account = Utils.getCurrentAccount();
+        if (StringUtils.isNotBlank(username)) {
+            account = accountService.findByUsername(username);
+            if (account == null) {
+                return ResponseEntity.notFound().build();
+            }
+        }
+        Set<Account> list = accountService.findAllSortByFamily(account);
+        return ResponseEntity.ok(list);
+    }
+
 
     @RequestMapping("/families")
     public ResponseEntity<?> familyList() {
@@ -232,7 +246,7 @@ public class UserRestController {
                 form.setName(Utils.getCurrentAccount().getSurname());
             }
             family.setName(form.getName());
-            if(membersToInvite.size()>0 || adminsToInvite.size()>0){
+            if (membersToInvite.size() > 0 || adminsToInvite.size() > 0) {
                 return new ResultData.ResultBuilder().ok().message(msgSrv.getMessage("user.family.edit.success.invites")).build();
             }
             return new ResultData.ResultBuilder().ok().message(msgSrv.getMessage("user.family.edit.success")).build();

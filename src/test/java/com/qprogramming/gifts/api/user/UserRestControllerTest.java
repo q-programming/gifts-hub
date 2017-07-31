@@ -2,7 +2,6 @@ package com.qprogramming.gifts.api.user;
 
 import com.fasterxml.uuid.Generators;
 import com.qprogramming.gifts.MockSecurityContext;
-import com.qprogramming.gifts.TestUtil;
 import com.qprogramming.gifts.account.*;
 import com.qprogramming.gifts.account.event.AccountEvent;
 import com.qprogramming.gifts.account.event.AccountEventType;
@@ -36,9 +35,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
-import static com.qprogramming.gifts.TestUtil.USER_RANDOM_ID;
+import static com.qprogramming.gifts.TestUtil.*;
 import static org.junit.Assert.*;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.Mockito.*;
@@ -62,6 +62,7 @@ public class UserRestControllerTest {
     private static final String API_USER_ADMINS = "/api/user/admins";
     private static final String KID_ID = "KID-ID";
     private static final String API_USER_CONFIRM = "/api/user/confirm";
+    private static final String API_USER_FETCH = "/api/user/userList";
     private static final String API_USER = "/api/user";
     private MockMvc userRestCtrl;
     @Mock
@@ -87,7 +88,7 @@ public class UserRestControllerTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         UserRestController userCtrl = new UserRestController(accSrvMock, msgSrvMock, familyServiceMock, giftServiceMock, mailServiceMock);
-        testAccount = TestUtil.createAccount();
+        testAccount = createAccount();
         when(securityMock.getAuthentication()).thenReturn(authMock);
         when(authMock.getPrincipal()).thenReturn(testAccount);
         when(msgSrvMock.getMessage(anyString())).thenReturn("MESSAGE");
@@ -105,7 +106,7 @@ public class UserRestControllerTest {
         form.setEmail(testAccount.getEmail());
         form.setPassword("PasswordPassword!23");
         form.setConfirmpassword("PasswordPassword!23");
-        userRestCtrl.perform(post(API_USER_REGISTER).contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(form)))
+        userRestCtrl.perform(post(API_USER_REGISTER).contentType(APPLICATION_JSON_UTF8).content(convertObjectToJsonBytes(form)))
                 .andExpect(status().isCreated());
         verify(accSrvMock, times(1)).createLocalAccount(any(Account.class));
 
@@ -129,7 +130,7 @@ public class UserRestControllerTest {
         form.setPassword("password");
         form.setConfirmpassword("password");
         when(accSrvMock.findByEmail(testAccount.getEmail())).thenReturn(testAccount);
-        MvcResult mvcResult = userRestCtrl.perform(post(API_USER_REGISTER).contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(form)))
+        MvcResult mvcResult = userRestCtrl.perform(post(API_USER_REGISTER).contentType(APPLICATION_JSON_UTF8).content(convertObjectToJsonBytes(form)))
                 .andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
         assertTrue(contentAsString.contains(ResultData.Code.ERROR.toString()));
@@ -144,7 +145,7 @@ public class UserRestControllerTest {
         form.setEmail(testAccount.getEmail());
         form.setPassword("password");
         form.setConfirmpassword("password2");
-        MvcResult mvcResult = userRestCtrl.perform(post(API_USER_REGISTER).contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(form)))
+        MvcResult mvcResult = userRestCtrl.perform(post(API_USER_REGISTER).contentType(APPLICATION_JSON_UTF8).content(convertObjectToJsonBytes(form)))
                 .andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
         assertTrue(contentAsString.contains(ResultData.Code.ERROR.toString()));
@@ -159,7 +160,7 @@ public class UserRestControllerTest {
         form.setEmail(testAccount.getEmail());
         form.setPassword("password");
         form.setConfirmpassword("password");
-        MvcResult mvcResult = userRestCtrl.perform(post(API_USER_REGISTER).contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(form)))
+        MvcResult mvcResult = userRestCtrl.perform(post(API_USER_REGISTER).contentType(APPLICATION_JSON_UTF8).content(convertObjectToJsonBytes(form)))
                 .andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
         assertTrue(contentAsString.contains(ResultData.Code.ERROR.toString()));
@@ -172,7 +173,7 @@ public class UserRestControllerTest {
         object.put("id", USER_RANDOM_ID);
         object.put("language", "pl");
         userRestCtrl.perform(post(API_USER_SETTINGS)
-                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .contentType(APPLICATION_JSON_UTF8)
                 .content(object.toString())).andExpect(status().isOk());
         verify(accSrvMock, times(1)).update(testAccount);
     }
@@ -183,7 +184,7 @@ public class UserRestControllerTest {
         object.put("id", USER_RANDOM_ID);
         object.put("language", "pl");
         userRestCtrl.perform(post(API_USER_SETTINGS)
-                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .contentType(APPLICATION_JSON_UTF8)
                 .content(object.toString())).andExpect(status().isNotFound());
     }
 
@@ -191,7 +192,7 @@ public class UserRestControllerTest {
     @Test
     public void validateEmailOk() throws Exception {
         MvcResult mvcResult = userRestCtrl.perform(post(API_USER_VALIDATE_EMAIL)
-                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .contentType(APPLICATION_JSON_UTF8)
                 .content(testAccount.getEmail())).andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
         assertFalse(contentAsString.contains(ResultData.Code.ERROR.toString()));
@@ -201,7 +202,7 @@ public class UserRestControllerTest {
     public void validateEmailExists() throws Exception {
         when(accSrvMock.findByEmail(testAccount.getEmail())).thenReturn(testAccount);
         MvcResult mvcResult = userRestCtrl.perform(post(API_USER_VALIDATE_EMAIL)
-                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .contentType(APPLICATION_JSON_UTF8)
                 .content(testAccount.getEmail())).andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
         assertTrue(contentAsString.contains(ResultData.Code.ERROR.toString()));
@@ -211,7 +212,7 @@ public class UserRestControllerTest {
     public void validateUsernameExists() throws Exception {
         when(accSrvMock.findByUsername(testAccount.getUsername())).thenReturn(testAccount);
         MvcResult mvcResult = userRestCtrl.perform(post(API_USER_VALIDATE_USERNAME)
-                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .contentType(APPLICATION_JSON_UTF8)
                 .content(testAccount.getUsername())).andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
         assertTrue(contentAsString.contains(ResultData.Code.ERROR.toString()));
@@ -220,7 +221,7 @@ public class UserRestControllerTest {
     @Test
     public void validateUsernameOk() throws Exception {
         MvcResult mvcResult = userRestCtrl.perform(post(API_USER_VALIDATE_USERNAME)
-                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .contentType(APPLICATION_JSON_UTF8)
                 .content(testAccount.getUsername())).andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
         assertFalse(contentAsString.contains(ResultData.Code.ERROR.toString()));
@@ -234,7 +235,7 @@ public class UserRestControllerTest {
             imgBytes = IOUtils.toByteArray(avatarFile);
             String imgStream = Base64.encodeBase64String(imgBytes);
             userRestCtrl.perform(post(API_USER_UPDATE_AVATAR)
-                    .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                    .contentType(APPLICATION_JSON_UTF8)
                     .content(imgStream)).andExpect(status().isOk());
             verify(accSrvMock, times(1)).updateAvatar(testAccount, imgBytes);
         } catch (IOException e) {
@@ -252,8 +253,8 @@ public class UserRestControllerTest {
         when(familyServiceMock.createFamily()).thenReturn(family);
         when(familyServiceMock.update(family)).then(returnsFirstArg());
         userRestCtrl.perform(put(API_USER_FAMILY_CREATE)
-                .contentType(TestUtil.APPLICATION_JSON_UTF8)
-                .content(TestUtil.convertObjectToJsonBytes(form))).andExpect(status().isOk());
+                .contentType(APPLICATION_JSON_UTF8)
+                .content(convertObjectToJsonBytes(form))).andExpect(status().isOk());
         verify(familyServiceMock, times(1)).update(any(Family.class));
     }
 
@@ -266,14 +267,14 @@ public class UserRestControllerTest {
         family.setId(1L);
         family.getMembers().add(testAccount);
         family.getAdmins().add(testAccount);
-        Account memberAndAdmin = TestUtil.createAccount("John", "Doe");
+        Account memberAndAdmin = createAccount("John", "Doe");
         memberAndAdmin.setId(USER_RANDOM_ID + "1");
         when(accSrvMock.findByIds(Collections.singletonList(USER_RANDOM_ID + "1"))).thenReturn(Collections.singletonList(memberAndAdmin));
         when(familyServiceMock.createFamily()).thenReturn(family);
         when(familyServiceMock.update(family)).then(returnsFirstArg());
         MvcResult mvcResult = userRestCtrl.perform(put(API_USER_FAMILY_CREATE)
-                .contentType(TestUtil.APPLICATION_JSON_UTF8)
-                .content(TestUtil.convertObjectToJsonBytes(form))).andExpect(status().isOk()).andReturn();
+                .contentType(APPLICATION_JSON_UTF8)
+                .content(convertObjectToJsonBytes(form))).andExpect(status().isOk()).andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
         verify(familyServiceMock, times(1)).update(any(Family.class));
         verify(familyServiceMock, times(1)).inviteAccount(memberAndAdmin, family, AccountEventType.FAMILY_MEMEBER);
@@ -288,8 +289,8 @@ public class UserRestControllerTest {
         family.setId(1L);
         when(familyServiceMock.getFamily(testAccount)).thenReturn(family);
         userRestCtrl.perform(put(API_USER_FAMILY_CREATE)
-                .contentType(TestUtil.APPLICATION_JSON_UTF8)
-                .content(TestUtil.convertObjectToJsonBytes(form))).andExpect(status().isBadRequest());
+                .contentType(APPLICATION_JSON_UTF8)
+                .content(convertObjectToJsonBytes(form))).andExpect(status().isBadRequest());
     }
 
 
@@ -299,8 +300,8 @@ public class UserRestControllerTest {
         Family family = new Family();
         family.setId(1L);
         userRestCtrl.perform(put(API_USER_FAMILY_UPDATE)
-                .contentType(TestUtil.APPLICATION_JSON_UTF8)
-                .content(TestUtil.convertObjectToJsonBytes(form))).andExpect(status().isNotFound());
+                .contentType(APPLICATION_JSON_UTF8)
+                .content(convertObjectToJsonBytes(form))).andExpect(status().isNotFound());
     }
 
     @Test
@@ -312,14 +313,14 @@ public class UserRestControllerTest {
         family.setId(1L);
         family.getMembers().add(testAccount);
         family.getAdmins().add(testAccount);
-        Account memberAndAdmin = TestUtil.createAccount("John", "Doe");
+        Account memberAndAdmin = createAccount("John", "Doe");
         memberAndAdmin.setId(USER_RANDOM_ID + "1");
         when(accSrvMock.findByIds(Arrays.asList(USER_RANDOM_ID + "1", testAccount.getId()))).thenReturn(Arrays.asList(memberAndAdmin, testAccount));
         when(familyServiceMock.getFamily(testAccount)).thenReturn(family);
         when(familyServiceMock.update(family)).then(returnsFirstArg());
         MvcResult mvcResult = userRestCtrl.perform(put(API_USER_FAMILY_UPDATE)
-                .contentType(TestUtil.APPLICATION_JSON_UTF8)
-                .content(TestUtil.convertObjectToJsonBytes(form))).andExpect(status().isOk()).andReturn();
+                .contentType(APPLICATION_JSON_UTF8)
+                .content(convertObjectToJsonBytes(form))).andExpect(status().isOk()).andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
         verify(familyServiceMock, times(1)).inviteAccount(memberAndAdmin, family, AccountEventType.FAMILY_ADMIN);
         assertTrue(family.getMembers().size() == 1);
@@ -335,8 +336,8 @@ public class UserRestControllerTest {
         family.getMembers().add(testAccount);
         when(familyServiceMock.getFamily(testAccount)).thenReturn(family);
         userRestCtrl.perform(put(API_USER_FAMILY_UPDATE)
-                .contentType(TestUtil.APPLICATION_JSON_UTF8)
-                .content(TestUtil.convertObjectToJsonBytes(form))).andExpect(status().isBadRequest());
+                .contentType(APPLICATION_JSON_UTF8)
+                .content(convertObjectToJsonBytes(form))).andExpect(status().isBadRequest());
     }
 
     @Test
@@ -354,7 +355,7 @@ public class UserRestControllerTest {
         when(familyServiceMock.update(family)).then(returnsFirstArg());
         MvcResult mvcResult = userRestCtrl.perform(put(API_USER_FAMILY_LEAVE)).andExpect(status().isOk()).andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
-        Family result = TestUtil.convertJsonToObject(contentAsString, Family.class);
+        Family result = convertJsonToObject(contentAsString, Family.class);
         verify(familyServiceMock, times(1)).update(result);
         assertTrue(result.getMembers().size() == 0);
 
@@ -367,8 +368,8 @@ public class UserRestControllerTest {
         form.setSurname("Doe");
         form.setUsername("john");
         userRestCtrl.perform(post(API_USER_KID_ADD)
-                .contentType(TestUtil.APPLICATION_JSON_UTF8)
-                .content(TestUtil.convertObjectToJsonBytes(form))).andExpect(status().isBadRequest());
+                .contentType(APPLICATION_JSON_UTF8)
+                .content(convertObjectToJsonBytes(form))).andExpect(status().isBadRequest());
     }
 
     @Test
@@ -382,8 +383,8 @@ public class UserRestControllerTest {
         form.setSurname("Doe");
         form.setUsername("john");
         userRestCtrl.perform(post(API_USER_KID_ADD)
-                .contentType(TestUtil.APPLICATION_JSON_UTF8)
-                .content(TestUtil.convertObjectToJsonBytes(form))).andExpect(status().isBadRequest());
+                .contentType(APPLICATION_JSON_UTF8)
+                .content(convertObjectToJsonBytes(form))).andExpect(status().isBadRequest());
     }
 
     @Test
@@ -394,8 +395,8 @@ public class UserRestControllerTest {
         form.setSurname("Doe");
         form.setUsername(testAccount.getUsername());
         userRestCtrl.perform(post(API_USER_KID_ADD)
-                .contentType(TestUtil.APPLICATION_JSON_UTF8)
-                .content(TestUtil.convertObjectToJsonBytes(form))).andExpect(status().isBadRequest());
+                .contentType(APPLICATION_JSON_UTF8)
+                .content(convertObjectToJsonBytes(form))).andExpect(status().isBadRequest());
     }
 
     @Test
@@ -416,12 +417,12 @@ public class UserRestControllerTest {
             family.getAdmins().add(testAccount);
             when(familyServiceMock.getFamily(testAccount)).thenReturn(family);
             Account kid = form.createAccount();
-            kid.setId(TestUtil.USER_RANDOM_ID + (Math.random() * 100));
+            kid.setId(USER_RANDOM_ID + (Math.random() * 100));
             kid.setType(AccountType.KID);
             when(accSrvMock.createKidAccount(any(Account.class))).thenReturn(kid);
             userRestCtrl.perform(post(API_USER_KID_ADD)
-                    .contentType(TestUtil.APPLICATION_JSON_UTF8)
-                    .content(TestUtil.convertObjectToJsonBytes(form))).andExpect(status().isOk());
+                    .contentType(APPLICATION_JSON_UTF8)
+                    .content(convertObjectToJsonBytes(form))).andExpect(status().isOk());
             family.getMembers().add(kid);
             verify(accSrvMock, times(1)).createKidAccount(any(Account.class));
             verify(accSrvMock, times(1)).updateAvatar(kid, imgBytes);
@@ -444,8 +445,8 @@ public class UserRestControllerTest {
         family.getAdmins().add(testAccount);
         when(familyServiceMock.getFamily(testAccount)).thenReturn(family);
         userRestCtrl.perform(post(API_USER_KID_UPDATE)
-                .contentType(TestUtil.APPLICATION_JSON_UTF8)
-                .content(TestUtil.convertObjectToJsonBytes(form))).andExpect(status().isNotFound());
+                .contentType(APPLICATION_JSON_UTF8)
+                .content(convertObjectToJsonBytes(form))).andExpect(status().isNotFound());
     }
 
     @Test
@@ -456,8 +457,8 @@ public class UserRestControllerTest {
         form.setUsername("username");
         form.setId(KID_ID);
         userRestCtrl.perform(post(API_USER_KID_UPDATE)
-                .contentType(TestUtil.APPLICATION_JSON_UTF8)
-                .content(TestUtil.convertObjectToJsonBytes(form))).andExpect(status().isBadRequest());
+                .contentType(APPLICATION_JSON_UTF8)
+                .content(convertObjectToJsonBytes(form))).andExpect(status().isBadRequest());
     }
 
     @Test
@@ -472,13 +473,13 @@ public class UserRestControllerTest {
         family.getMembers().add(testAccount);
         when(familyServiceMock.getFamily(testAccount)).thenReturn(family);
         userRestCtrl.perform(post(API_USER_KID_UPDATE)
-                .contentType(TestUtil.APPLICATION_JSON_UTF8)
-                .content(TestUtil.convertObjectToJsonBytes(form))).andExpect(status().isBadRequest());
+                .contentType(APPLICATION_JSON_UTF8)
+                .content(convertObjectToJsonBytes(form))).andExpect(status().isBadRequest());
     }
 
     @Test
     public void updateKidFamily() throws Exception {
-        Account kidAccount = TestUtil.createAccount("name", "surname");
+        Account kidAccount = createAccount("name", "surname");
         kidAccount.setId(KID_ID);
         ClassLoader loader = this.getClass().getClassLoader();
         try (InputStream avatarFile = loader.getResourceAsStream("static/images/logo-white.png")) {
@@ -496,10 +497,10 @@ public class UserRestControllerTest {
             when(familyServiceMock.getFamily(testAccount)).thenReturn(family);
             when(accSrvMock.findById(KID_ID)).thenReturn(kidAccount);
             MvcResult mvcResult = userRestCtrl.perform(post(API_USER_KID_UPDATE)
-                    .contentType(TestUtil.APPLICATION_JSON_UTF8)
-                    .content(TestUtil.convertObjectToJsonBytes(form))).andExpect(status().isOk()).andReturn();
+                    .contentType(APPLICATION_JSON_UTF8)
+                    .content(convertObjectToJsonBytes(form))).andExpect(status().isOk()).andReturn();
             String contentAsString = mvcResult.getResponse().getContentAsString();
-            Account result = TestUtil.convertJsonToObject(contentAsString, Account.class);
+            Account result = convertJsonToObject(contentAsString, Account.class);
             verify(accSrvMock, times(1)).updateAvatar(any(Account.class), any(byte[].class));
             verify(accSrvMock, times(1)).update(any(Account.class));
             assertEquals(result.getName(), form.getName());
@@ -513,7 +514,7 @@ public class UserRestControllerTest {
         when(accSrvMock.findById(testAccount.getId())).thenReturn(testAccount);
         MvcResult mvcResult = userRestCtrl.perform(get(API_USER + "?identification=" + testAccount.getId())).andExpect(status().isOk()).andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
-        Account result = TestUtil.convertJsonToObject(contentAsString, Account.class);
+        Account result = convertJsonToObject(contentAsString, Account.class);
         assertEquals(testAccount, result);
 
     }
@@ -534,7 +535,7 @@ public class UserRestControllerTest {
         when(securityMock.getAuthentication()).thenReturn(annonymousTokenMock);
         MvcResult mvcResult = userRestCtrl.perform(get(API_USER + "?identification=" + testAccount.getId())).andExpect(status().isOk()).andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
-        Account result = TestUtil.convertJsonToObject(contentAsString, Account.class);
+        Account result = convertJsonToObject(contentAsString, Account.class);
         assertEquals(testAccount, result);
     }
 
@@ -545,8 +546,8 @@ public class UserRestControllerTest {
 
     @Test
     public void deleteKidNotFamilyAdmin() throws Exception {
-        Account kid = TestUtil.createAccount("Little", "Kid");
-        kid.setId(TestUtil.USER_RANDOM_ID);
+        Account kid = createAccount("Little", "Kid");
+        kid.setId(USER_RANDOM_ID);
         kid.setType(AccountType.KID);
         Family family = new Family();
         family.setId(1L);
@@ -558,8 +559,8 @@ public class UserRestControllerTest {
 
     @Test
     public void deleteKidAdminButAccountNotKid() throws Exception {
-        Account kid = TestUtil.createAccount("Little", "Kid");
-        kid.setId(TestUtil.USER_RANDOM_ID);
+        Account kid = createAccount("Little", "Kid");
+        kid.setId(USER_RANDOM_ID);
         kid.setType(AccountType.LOCAL);
         Family family = new Family();
         family.setId(1L);
@@ -573,15 +574,15 @@ public class UserRestControllerTest {
 
     @Test
     public void deleteKid() throws Exception {
-        Account kid = TestUtil.createAccount("Little", "Kid");
-        kid.setId(TestUtil.USER_RANDOM_ID);
+        Account kid = createAccount("Little", "Kid");
+        kid.setId(USER_RANDOM_ID);
         kid.setType(AccountType.KID);
         Family family = new Family();
         family.setId(1L);
         family.getMembers().add(kid);
         family.getMembers().add(testAccount);
         family.getAdmins().add(testAccount);
-        List<Gift> giftList = Arrays.asList(TestUtil.createGift(1L, kid), TestUtil.createGift(2L, kid), TestUtil.createGift(3L, kid));
+        List<Gift> giftList = Arrays.asList(createGift(1L, kid), createGift(2L, kid), createGift(3L, kid));
         when(accSrvMock.findById(kid.getId())).thenReturn(kid);
         when(familyServiceMock.getFamily(kid)).thenReturn(family);
         userRestCtrl.perform(delete(API_USER_USER_DELETE + kid.getId())).andExpect(status().isOk());
@@ -596,7 +597,7 @@ public class UserRestControllerTest {
         family.getMembers().add(testAccount);
         family.getMembers().add(testAccount);
         family.getAdmins().add(testAccount);
-        List<Gift> giftList = Arrays.asList(TestUtil.createGift(1L, testAccount), TestUtil.createGift(2L, testAccount), TestUtil.createGift(3L, testAccount));
+        List<Gift> giftList = Arrays.asList(createGift(1L, testAccount), createGift(2L, testAccount), createGift(3L, testAccount));
         when(accSrvMock.findById(testAccount.getId())).thenReturn(testAccount);
         when(familyServiceMock.getFamily(testAccount)).thenReturn(family);
         userRestCtrl.perform(delete(API_USER_USER_DELETE + testAccount.getId())).andExpect(status().isOk());
@@ -631,7 +632,7 @@ public class UserRestControllerTest {
         when(accSrvMock.findAdmins()).thenReturn(Collections.singletonList(testAccount));
         MvcResult mvcResult = userRestCtrl.perform(get(API_USER_ADMINS)).andExpect(status().isOk()).andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
-        List<Account> result = TestUtil.convertJsonToList(contentAsString, List.class, Account.class);
+        List<Account> result = convertJsonToList(contentAsString, List.class, Account.class);
         assertTrue(result.contains(testAccount));
     }
 
@@ -676,6 +677,35 @@ public class UserRestControllerTest {
     public void confirmFamilymemberEventNotFound() throws Exception {
         String token = Generators.timeBasedGenerator().generate().toString();
         userRestCtrl.perform(post(API_USER_CONFIRM).content(token)).andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void userSearchListAccountNotFound() throws Exception {
+        userRestCtrl.perform(get(API_USER_FETCH).param("username", "test")).andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void userSearchListForCurrentUser() throws Exception {
+        List<Account> accountList = createAccountList();
+        accountList.add(testAccount);
+        when(accSrvMock.findAllSortByFamily(testAccount)).thenReturn(new HashSet<>(accountList));
+        MvcResult mvcResult = userRestCtrl.perform(get(API_USER_FETCH)).andExpect(status().isOk()).andReturn();
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        List<Account> result = convertJsonToList(contentAsString, List.class, Account.class);
+        assertTrue(result.contains(testAccount));
+    }
+
+    @Test
+    public void userSearchListForOtherUser() throws Exception {
+        List<Account> accountList = createAccountList();
+        accountList.add(testAccount);
+        when(accSrvMock.findAllSortByFamily(testAccount)).thenReturn(new HashSet<>(accountList));
+        when(accSrvMock.findByUsername(testAccount.getUsername())).thenReturn(testAccount);
+        MvcResult mvcResult = userRestCtrl.perform(get(API_USER_FETCH).param("username", testAccount.getUsername()))
+                .andExpect(status().isOk()).andReturn();
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        List<Account> result = convertJsonToList(contentAsString, List.class, Account.class);
+        assertTrue(result.contains(testAccount));
     }
 
 
