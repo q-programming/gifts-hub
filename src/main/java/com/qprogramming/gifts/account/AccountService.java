@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -39,10 +38,13 @@ import java.net.URLConnection;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.qprogramming.gifts.support.Utils.ACCOUNT_COMPARATOR;
+
 @Service
 @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class AccountService implements UserDetailsService {
     private final Logger LOG = LoggerFactory.getLogger(this.getClass());
+
 
     private AccountRepository accountRepository;
     private PasswordEncoder passwordEncoder;
@@ -253,7 +255,7 @@ public class AccountService implements UserDetailsService {
     }
 
     public List<Account> findAll() {
-        return accountRepository.findAll(new Sort("surname", "name", "username"));
+        return sortedAccounts(accountRepository.findAll());
     }
 
 
@@ -268,14 +270,23 @@ public class AccountService implements UserDetailsService {
         Family family = familyService.getFamily(account);
         List<Account> list = findAll();
         Set<Account> result = new LinkedHashSet<>();
-        Comparator<Account> accountComparator = Comparator.comparing(Account::getName).thenComparing(Account::getSurname);
         if (family != null) {
             //Add all from user's family first
-            result.addAll(list.stream().filter(family.getMembers()::contains).sorted(accountComparator).collect(Collectors.toList()));
+            result.addAll(list.stream().filter(family.getMembers()::contains).sorted(ACCOUNT_COMPARATOR).collect(Collectors.toList()));
             list.removeAll(result);
         }
-        result.addAll(list.stream().sorted(accountComparator).collect(Collectors.toList()));
+        result.addAll(list);
         return result;
+    }
+
+    /**
+     * Returns list of sorted accounts by name,surname,username
+     *
+     * @param list list of accounts to be sorted
+     * @return List with accounts sorted by name,surname,username
+     */
+    public List<Account> sortedAccounts(List<Account> list) {
+        return list.stream().sorted(ACCOUNT_COMPARATOR).collect(Collectors.toList());
     }
 
     /**

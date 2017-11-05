@@ -239,7 +239,7 @@ public class AccountServiceTest {
         all.add(account5);
         all.add(account6);
         when(familyServiceMock.findAll()).thenReturn(Arrays.asList(family1, family2));
-        when(accountRepositoryMock.findAll(any(Sort.class))).thenReturn(all);
+        when(accountRepositoryMock.findAll()).thenReturn(all);
         List<Account> withoutFamily = accountService.findWithoutFamily();
         assertTrue(withoutFamily.contains(account5));
         assertTrue(withoutFamily.contains(account6));
@@ -268,7 +268,7 @@ public class AccountServiceTest {
         Account andyAccount = all.get(1);
         Account bobAccount = all.get(0);
         family1.getMembers().addAll(Arrays.asList(testAccount, andyAccount, bobAccount));
-        when(accountRepositoryMock.findAll(any(Sort.class))).thenReturn(all);
+        when(accountRepositoryMock.findAll()).thenReturn(all);
         when(familyServiceMock.getFamily(testAccount)).thenReturn(family1);
         Set<Account> result = accountService.findAllSortByFamily(testAccount);
         //convert result to array to test order
@@ -283,7 +283,7 @@ public class AccountServiceTest {
         all.add(testAccount);
         Account andyAccount = all.get(1);
         Account bobAccount = all.get(0);
-        when(accountRepositoryMock.findAll(any(Sort.class))).thenReturn(all);
+        when(accountRepositoryMock.findAll()).thenReturn(all);
         Set<Account> result = accountService.findAllSortByFamily(testAccount);
         //convert result to array to test order
         Object[] ordered = result.toArray();

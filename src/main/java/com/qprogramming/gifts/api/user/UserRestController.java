@@ -125,9 +125,9 @@ public class UserRestController {
     public ResponseEntity<?> userList(@RequestParam(required = false) boolean noFamily) {
         Set<Account> list;
         if (noFamily) {
-            list = new HashSet<>(accountService.findWithoutFamily());
+            list = new LinkedHashSet<>(accountService.findWithoutFamily());
         } else {
-            list = new HashSet<>(accountService.findAll());
+            list = new LinkedHashSet<>(accountService.findAll());
         }
         addGiftCounts(list);
         return ResponseEntity.ok(list);
@@ -151,6 +151,7 @@ public class UserRestController {
     public ResponseEntity<?> familyList() {
         List<Family> families = familyService.findAll();
         families.forEach(family -> {
+            family.setMembers(new TreeSet<>(family.getMembers()));
             addGiftCounts(family.getMembers());
             markAdmins(family);
         });
