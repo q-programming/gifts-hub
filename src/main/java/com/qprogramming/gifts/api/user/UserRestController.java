@@ -430,7 +430,20 @@ public class UserRestController {
         }
         Utils.getCurrentAccount().setTourComplete(false);
         account.setTourComplete(false);
-        accountService.update(account);
+        account = accountService.update(account);
+        accountService.signin(account);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/changelog", method = RequestMethod.POST)
+    public ResponseEntity changelogRead() {
+        Account account = accountService.findById(Utils.getCurrentAccountId());
+        if (account == null) {
+            return new ResultData.ResultBuilder().notFound().build();
+        }
+        Utils.getCurrentAccount().setSeenChangelog(true);
+        account.setSeenChangelog(true);
+        account = accountService.update(account);
         accountService.signin(account);
         return new ResponseEntity<>(HttpStatus.OK);
     }

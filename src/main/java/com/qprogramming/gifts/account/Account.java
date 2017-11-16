@@ -48,6 +48,9 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
     @Column
     private Boolean tourComplete = false;
 
+    @Column
+    private Boolean seenChangelog = false;
+
     private String fullname;
 
     private Boolean familyAdmin = false;
@@ -207,6 +210,13 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
         this.giftsCount = giftsCount;
     }
 
+    public Boolean getSeenChangelog() {
+        return seenChangelog;
+    }
+
+    public void setSeenChangelog(Boolean seenChangelog) {
+        this.seenChangelog = seenChangelog;
+    }
 
     @JsonIgnore
     public String getTokenValue() {
