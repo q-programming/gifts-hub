@@ -385,7 +385,6 @@ app.controller('gift', [
             } else {
                 $translate("gift.list.mine").then(function (translation) {
                     $scope.listTitle = translation;
-
                 });
                 url = 'api/gift/mine';
                 $scope.userGiftList = $rootScope.principal;
@@ -404,6 +403,7 @@ app.controller('gift', [
                         $scope.giftsList[key] = value;
                     });
                     $scope.giftsListAll = $.extend({}, $scope.giftsList);//clone list for listing purpose
+                    $scope.filterCategory($scope.filteredCategory);
                 }).catch(function (response) {
                 if (response.status === 404) {
                     $location.url('/404');
