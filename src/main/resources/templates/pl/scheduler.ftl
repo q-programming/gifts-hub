@@ -3,7 +3,7 @@
 <head>
     <meta name="viewport" content="width=device-width">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Administrator rodziny ${familyName}</title>
+    <title>Podsumowanie ostatniego tygodnia</title>
     <style>
         * {
             margin: 0;
@@ -79,7 +79,7 @@
         }
 
         .header {
-            background-color: #567bb3 !important;
+            background-color: rgba(44, 90, 160, 0.8) !important;
             color: white;
             padding: 5px;
             font-weight: bold;
@@ -146,6 +146,19 @@
             padding: 10px;
         }
 
+        table.worklog_table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px lightgray;
+            border-bottom-style: solid;
+        }
+
+        table.worklog_table td {
+            width: 50%;
+            padding: 1px 1px 1px 5px;
+            border: 1px solid lightgray;
+        }
+
         .avatar {
             height: 50px;
             padding: 2px;
@@ -162,18 +175,10 @@
         <tbody>
         <tr>
             <td valign="top" style="vertical-align: top; width:70px">
-                <img class="avatar" src='cid:userAvatar.png'>
+            <#--<img src='cid:avatar' style="height:50px; padding:2px">-->
             </td>
             <td>
-                <#if name??>
-                    <p>Witaj ${name},</p>
-                </#if>
-                <div>
-                ${owner} oznaczy&#322; Ci&#281; jako administratora rodziny "${familyName}" w aplikacji Gifts Hub
-                </div>
-                <p>Kliknij link poni&#380;ej aby potwierdzi&#263;</p>
                 <p>
-                    <a href="${confirmLink}">${confirmLink}</a>
                 </p>
             </td>
         </tr>

@@ -1,24 +1,33 @@
 package com.qprogramming.gifts.config.mail;
 
 
+import com.qprogramming.gifts.account.Account;
+import com.qprogramming.gifts.account.AccountService;
+import com.qprogramming.gifts.account.avatar.Avatar;
 import com.qprogramming.gifts.account.event.AccountEvent;
 import com.qprogramming.gifts.config.property.DataBasePropertySource;
 import com.qprogramming.gifts.config.property.PropertyService;
 import com.qprogramming.gifts.messages.MessagesService;
+import com.qprogramming.gifts.settings.Settings;
 import com.qprogramming.gifts.support.Utils;
 import freemarker.template.Configuration;
+import org.imgscalr.Scalr;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 
+import javax.imageio.ImageIO;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -35,14 +44,16 @@ public class MailService {
     private Configuration freemarkerConfiguration;
     private MessagesService msgSrv;
     private DataBasePropertySource dbSource;
+    private AccountService accountService;
 
 
     @Autowired
-    public MailService(PropertyService propertyService, @Qualifier("freeMarkerConfiguration") Configuration freemarkerConfiguration, MessagesService msgSrv, DataBasePropertySource dataBasePropertySource) {
+    public MailService(PropertyService propertyService, @Qualifier("freeMarkerConfiguration") Configuration freemarkerConfiguration, MessagesService msgSrv, DataBasePropertySource dataBasePropertySource, AccountService accountService) {
         this.propertyService = propertyService;
         this.freemarkerConfiguration = freemarkerConfiguration;
         this.msgSrv = msgSrv;
         this.dbSource = dataBasePropertySource;
+        this.accountService = accountService;
         initMailSender();
     }
 
@@ -133,7 +144,7 @@ public class MailService {
         String publicLink = application + "#/public/" + Utils.getCurrentAccountId();
         for (Mail mail : emails) {
             Locale locale = getMailLocale(mail);
-            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
+            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, propertyService.getProperty(Settings.APP_EMAIL_ENCODING));
             mimeMessageHelper.setSubject(msgSrv.getMessage("gift.share.subject", new Object[]{Utils.getCurrentAccount().getFullname()}, "", locale));
             mimeMessageHelper.setFrom(mail.getMailFrom());
             mimeMessageHelper.setTo(mail.getMailTo());
@@ -141,7 +152,30 @@ public class MailService {
             mail.addToModel("application", application);
             mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/giftList.ftl"));
             mimeMessageHelper.setText(mail.getMailContent(), true);
+            mimeMessageHelper.addInline("logo.png", new ClassPathResource("static/images/logo_email.png"));
+            addUserAvatar(mimeMessageHelper, Utils.getCurrentAccount());
             mailSender.send(mimeMessageHelper.getMimeMessage());
+        }
+    }
+
+    private void addUserAvatar(MimeMessageHelper mimeMessageHelper, Account account) throws MessagingException {
+        try {
+            BufferedImage originalImage;
+            Avatar accountAvatar = accountService.getAccountAvatar(account);
+            if (accountAvatar != null) {
+                InputStream is = new ByteArrayInputStream(accountAvatar.getImage());
+                originalImage = ImageIO.read(is);
+            } else {
+                File avatarFile = new ClassPathResource("static/images/avatar-placeholder.png").getFile();
+                originalImage = ImageIO.read(avatarFile);
+            }
+            BufferedImage scaledImg = Scalr.resize(originalImage, 50);
+            File temp = File.createTempFile(account.getId(), ".png");
+            ImageIO.write(scaledImg, "png", temp);
+            mimeMessageHelper.addInline("userAvatar.png", temp);
+            temp.deleteOnExit();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -160,6 +194,8 @@ public class MailService {
         String familyName = event.getFamily().getName();
         mimeMessageHelper.setFrom(mail.getMailFrom());
         mimeMessageHelper.setTo(mail.getMailTo());
+        mimeMessageHelper.addInline("logo.png", new ClassPathResource("static/images/logo_email.png"));
+        addUserAvatar(mimeMessageHelper, Utils.getCurrentAccount());
         mail.addToModel("application", application);
         switch (event.getType()) {
             case FAMILY_MEMEBER:
