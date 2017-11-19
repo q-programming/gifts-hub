@@ -327,7 +327,7 @@ public class UserRestController {
         for (Account account : members) {
             if (!AccountType.KID.equals(account.getType())) {
                 AccountEvent event = familyService.inviteAccount(account, family, type);
-                mailService.sendConfirmMail(createMail(account), event);
+                mailService.sendConfirmMail(Utils.createMail(account), event);
             } else {
                 familyService.addAccountToFamily(account, family);
             }
@@ -569,21 +569,5 @@ public class UserRestController {
         }
         String message = msgSrv.getMessage("gift.share.success", new Object[]{StringUtils.join(emailLists, ", ")}, "", Utils.getCurrentLocale());
         return new ResultData.ResultBuilder().ok().message(message).build();
-    }
-
-    /**
-     * Creates mail out of account
-     *
-     * @param account account for which mail will be created
-     * @return list of {@link Mail}
-     */
-    private Mail createMail(Account account) {
-        Mail mail = new Mail();
-        mail.setMailTo(account.getEmail());
-        mail.setMailFrom(Utils.getCurrentAccount().getEmail());
-        mail.setLocale(account.getLanguage());
-        mail.addToModel("name", account.getFullname());
-        mail.addToModel("owner", Utils.getCurrentAccount().getFullname());
-        return mail;
     }
 }

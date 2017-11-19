@@ -6,6 +6,7 @@ import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.config.property.PropertyService;
 import com.qprogramming.gifts.gift.category.Category;
+import com.qprogramming.gifts.schedule.AppEventService;
 import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;

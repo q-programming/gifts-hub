@@ -13,6 +13,7 @@ import com.qprogramming.gifts.gift.GiftStatus;
 import com.qprogramming.gifts.gift.category.Category;
 import com.qprogramming.gifts.gift.category.CategoryRepository;
 import com.qprogramming.gifts.messages.MessagesService;
+import com.qprogramming.gifts.schedule.AppEventService;
 import com.qprogramming.gifts.settings.SearchEngine;
 import com.qprogramming.gifts.settings.SearchEngineService;
 import com.qprogramming.gifts.support.ResultData;
@@ -85,6 +86,8 @@ public class GiftRestControllerTest {
     private ServletOutputStream outputStreamMock;
     @Mock
     private MockMultipartFile mockMultipartFile;
+    @Mock
+    private AppEventService eventServiceMock;
 
     private Account testAccount;
 
@@ -96,7 +99,7 @@ public class GiftRestControllerTest {
         when(securityMock.getAuthentication()).thenReturn(authMock);
         when(authMock.getPrincipal()).thenReturn(testAccount);
         SecurityContextHolder.setContext(securityMock);
-        GiftRestController giftsCtrl = new GiftRestController(accSrvMock, giftServiceMock, searchEngineServiceMock, categoryRepositoryMock, messagesServiceMock, familyServiceMock);
+        GiftRestController giftsCtrl = new GiftRestController(accSrvMock, giftServiceMock, searchEngineServiceMock, categoryRepositoryMock, messagesServiceMock, familyServiceMock, eventServiceMock);
         this.giftsRestCtrl = MockMvcBuilders.standaloneSetup(giftsCtrl).build();
     }
 

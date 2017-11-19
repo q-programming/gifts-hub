@@ -1,6 +1,7 @@
 package com.qprogramming.gifts.support;
 
 import com.qprogramming.gifts.account.Account;
+import com.qprogramming.gifts.config.mail.Mail;
 import com.qprogramming.gifts.gift.Gift;
 import com.qprogramming.gifts.gift.category.Category;
 import org.apache.commons.lang3.StringUtils;
@@ -201,6 +202,22 @@ public class Utils {
     public static boolean validateEmail(String emailStr) {
         Matcher matcher = VALID_EMAIL_ADDRESS_REGEX.matcher(emailStr);
         return matcher.find();
+    }
+
+    /**
+     * Creates mail out of account
+     *
+     * @param account account for which mail will be created
+     * @return list of {@link Mail}
+     */
+    public static Mail createMail(Account account) {
+        Mail mail = new Mail();
+        mail.setMailTo(account.getEmail());
+        mail.setMailFrom(getCurrentAccount().getEmail());
+        mail.setLocale(account.getLanguage());
+        mail.addToModel("name", account.getFullname());
+        mail.addToModel("owner", getCurrentAccount().getFullname());
+        return mail;
     }
 
 }

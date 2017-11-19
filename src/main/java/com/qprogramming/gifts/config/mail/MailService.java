@@ -8,6 +8,8 @@ import com.qprogramming.gifts.account.event.AccountEvent;
 import com.qprogramming.gifts.config.property.DataBasePropertySource;
 import com.qprogramming.gifts.config.property.PropertyService;
 import com.qprogramming.gifts.messages.MessagesService;
+import com.qprogramming.gifts.schedule.AppEvent;
+import com.qprogramming.gifts.schedule.AppEventService;
 import com.qprogramming.gifts.settings.Settings;
 import com.qprogramming.gifts.support.Utils;
 import freemarker.template.Configuration;
@@ -27,11 +29,11 @@ import javax.imageio.ImageIO;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.awt.image.BufferedImage;
-import java.io.*;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Properties;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
 
 import static com.qprogramming.gifts.settings.Settings.*;
 
@@ -45,15 +47,19 @@ public class MailService {
     private MessagesService msgSrv;
     private DataBasePropertySource dbSource;
     private AccountService accountService;
+    private AppEventService eventService;
+    private Map<Account, File> avatarBuffer;
 
 
     @Autowired
-    public MailService(PropertyService propertyService, @Qualifier("freeMarkerConfiguration") Configuration freemarkerConfiguration, MessagesService msgSrv, DataBasePropertySource dataBasePropertySource, AccountService accountService) {
+    public MailService(PropertyService propertyService, @Qualifier("freeMarkerConfiguration") Configuration freemarkerConfiguration, MessagesService msgSrv, DataBasePropertySource dataBasePropertySource, AccountService accountService, AppEventService eventService) {
         this.propertyService = propertyService;
         this.freemarkerConfiguration = freemarkerConfiguration;
         this.msgSrv = msgSrv;
         this.dbSource = dataBasePropertySource;
         this.accountService = accountService;
+        this.eventService = eventService;
+        avatarBuffer = new HashMap<>();
         initMailSender();
     }
 
@@ -152,31 +158,36 @@ public class MailService {
             mail.addToModel("application", application);
             mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/giftList.ftl"));
             mimeMessageHelper.setText(mail.getMailContent(), true);
-            mimeMessageHelper.addInline("logo.png", new ClassPathResource("static/images/logo_email.png"));
-            addUserAvatar(mimeMessageHelper, Utils.getCurrentAccount());
+            addAppLogo(mimeMessageHelper);
+            File avatarTempFile = getUserAvatar(Utils.getCurrentAccount());
+            mimeMessageHelper.addInline("userAvatar.png", avatarTempFile);
             mailSender.send(mimeMessageHelper.getMimeMessage());
         }
     }
 
-    private void addUserAvatar(MimeMessageHelper mimeMessageHelper, Account account) throws MessagingException {
+    private File getUserAvatar(Account account) {
+        File avatarTempFile = avatarBuffer.get(account);
         try {
-            BufferedImage originalImage;
-            Avatar accountAvatar = accountService.getAccountAvatar(account);
-            if (accountAvatar != null) {
-                InputStream is = new ByteArrayInputStream(accountAvatar.getImage());
-                originalImage = ImageIO.read(is);
-            } else {
-                File avatarFile = new ClassPathResource("static/images/avatar-placeholder.png").getFile();
-                originalImage = ImageIO.read(avatarFile);
+            if (avatarTempFile == null) {
+                BufferedImage originalImage;
+                Avatar accountAvatar = accountService.getAccountAvatar(account);
+                if (accountAvatar != null) {
+                    InputStream is = new ByteArrayInputStream(accountAvatar.getImage());
+                    originalImage = ImageIO.read(is);
+                } else {
+                    File avatarFile = new ClassPathResource("static/images/avatar-placeholder.png").getFile();
+                    originalImage = ImageIO.read(avatarFile);
+                }
+                BufferedImage scaledImg = Scalr.resize(originalImage, 50);
+                avatarTempFile = File.createTempFile(account.getId(), ".png");
+                avatarTempFile.deleteOnExit();
+                ImageIO.write(scaledImg, "png", avatarTempFile);
+                avatarBuffer.put(account, avatarTempFile);
             }
-            BufferedImage scaledImg = Scalr.resize(originalImage, 50);
-            File temp = File.createTempFile(account.getId(), ".png");
-            ImageIO.write(scaledImg, "png", temp);
-            mimeMessageHelper.addInline("userAvatar.png", temp);
-            temp.deleteOnExit();
         } catch (IOException e) {
-            e.printStackTrace();
+            LOG.error("Failed to properly resize image. {}", e);
         }
+        return avatarTempFile;
     }
 
     private Locale getMailLocale(Mail mail) {
@@ -194,8 +205,9 @@ public class MailService {
         String familyName = event.getFamily().getName();
         mimeMessageHelper.setFrom(mail.getMailFrom());
         mimeMessageHelper.setTo(mail.getMailTo());
-        mimeMessageHelper.addInline("logo.png", new ClassPathResource("static/images/logo_email.png"));
-        addUserAvatar(mimeMessageHelper, Utils.getCurrentAccount());
+        addAppLogo(mimeMessageHelper);
+        File avatarTempFile = getUserAvatar(Utils.getCurrentAccount());
+        mimeMessageHelper.addInline("userAvatar.png", avatarTempFile);
         mail.addToModel("application", application);
         switch (event.getType()) {
             case FAMILY_MEMEBER:
@@ -213,6 +225,31 @@ public class MailService {
         }
         mimeMessageHelper.setText(mail.getMailContent(), true);
         mailSender.send(mimeMessageHelper.getMimeMessage());
+    }
 
+    public void sendEvents() throws MessagingException {
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
+        String application = propertyService.getProperty(APP_URL);
+        Map<Account, List<AppEvent>> eventMap = eventService.getEventsGroupedByAccount();
+        for (Map.Entry<Account, List<AppEvent>> entry : eventMap.entrySet()) {
+            Account account = entry.getKey();
+            Mail mail = Utils.createMail(account);
+            Locale locale = getMailLocale(mail);
+            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, propertyService.getProperty(Settings.APP_EMAIL_ENCODING));
+            mimeMessageHelper.setSubject(msgSrv.getMessage("schedule.event.summary", null, "", locale));
+            mimeMessageHelper.setFrom(mail.getMailFrom());
+            mimeMessageHelper.setTo(mail.getMailTo());
+            mail.addToModel("application", application);
+            mail.addToModel("events", eventMap);
+            mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/scheduler.ftl"));
+            mimeMessageHelper.setText(mail.getMailContent(), true);
+            addAppLogo(mimeMessageHelper);
+            mimeMessageHelper.addInline("avatar_" + account.getId(), getUserAvatar(account));
+            mailSender.send(mimeMessageHelper.getMimeMessage());
+        }
+    }
+
+    private void addAppLogo(MimeMessageHelper mimeMessageHelper) throws MessagingException {
+        mimeMessageHelper.addInline("logo.png", new ClassPathResource("static/images/logo_email.png"));
     }
 }

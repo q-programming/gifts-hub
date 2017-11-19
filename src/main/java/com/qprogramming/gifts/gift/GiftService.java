@@ -3,6 +3,8 @@ package com.qprogramming.gifts.gift;
 import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.config.property.PropertyService;
 import com.qprogramming.gifts.gift.category.Category;
+import com.qprogramming.gifts.schedule.AppEventService;
+import com.qprogramming.gifts.schedule.AppEventType;
 import com.qprogramming.gifts.support.Utils;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
