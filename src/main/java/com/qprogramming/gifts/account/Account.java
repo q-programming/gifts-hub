@@ -51,6 +51,10 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
     @Column
     private Boolean seenChangelog = false;
 
+    @Column
+    private Boolean newsletter = false;
+
+
     private String fullname;
 
     private Boolean familyAdmin = false;
@@ -216,6 +220,14 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
 
     public void setSeenChangelog(Boolean seenChangelog) {
         this.seenChangelog = seenChangelog;
+    }
+
+    public Boolean isNewsletter() {
+        return newsletter;
+    }
+
+    public void setNewsletter(Boolean newsletter) {
+        this.newsletter = newsletter;
     }
 
     @JsonIgnore

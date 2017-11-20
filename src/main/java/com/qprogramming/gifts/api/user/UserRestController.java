@@ -570,4 +570,17 @@ public class UserRestController {
         String message = msgSrv.getMessage("gift.share.success", new Object[]{StringUtils.join(emailLists, ", ")}, "", Utils.getCurrentLocale());
         return new ResultData.ResultBuilder().ok().message(message).build();
     }
+
+    //TODO delete afterwards
+    @RequestMapping(value = "/scheduler", method = RequestMethod.POST)
+    public ResponseEntity sendScheduler() {
+        try {
+            mailService.sendEvents();
+        } catch (MessagingException e) {
+            LOG.error("Error while sending emailLists {}", e);
+            return new ResultData.ResultBuilder().badReqest().error().message(e.getMessage()).build();
+        }
+        String message = msgSrv.getMessage("gift.share.success", null, "", Utils.getCurrentLocale());
+        return new ResultData.ResultBuilder().ok().message(message).build();
+    }
 }

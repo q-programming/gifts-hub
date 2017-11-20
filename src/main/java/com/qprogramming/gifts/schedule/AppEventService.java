@@ -1,8 +1,8 @@
 package com.qprogramming.gifts.schedule;
 
 import com.qprogramming.gifts.account.Account;
+import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.gift.Gift;
-import com.qprogramming.gifts.support.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,10 +14,12 @@ import java.util.stream.Collectors;
 public class AppEventService {
 
     private AppEventRepo eventRepo;
+    private AccountService accountService;
 
     @Autowired
-    public AppEventService(AppEventRepo eventRepo) {
+    public AppEventService(AppEventRepo eventRepo, AccountService accountService) {
         this.eventRepo = eventRepo;
+        this.accountService = accountService;
     }
 
     public List<AppEvent> findAllNotProcessed() {
@@ -45,7 +47,7 @@ public class AppEventService {
 
     public void addEvent(Gift gift, AppEventType type) {
         AppEvent event = new AppEvent();
-        event.setAccount(Utils.getCurrentAccount());
+        event.setAccount(accountService.findById(gift.getUserId()));
         event.setGift(gift);
         event.setType(type);
         eventRepo.save(event);
@@ -57,7 +59,7 @@ public class AppEventService {
      * @param gift
      */
     public void tryToUndoEvent(Gift gift) {
-        AppEvent event = eventRepo.findByAccountAndGiftAndType(Utils.getCurrentAccount(), gift, AppEventType.REALISED);
+        AppEvent event = eventRepo.findByAccountAndGiftAndType(accountService.findById(gift.getUserId()), gift, AppEventType.REALISED);
         if (event != null) {
             eventRepo.delete(event);
         }

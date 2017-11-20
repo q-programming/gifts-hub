@@ -3,6 +3,7 @@ package com.qprogramming.gifts.schedule;
 import com.qprogramming.gifts.MockSecurityContext;
 import com.qprogramming.gifts.TestUtil;
 import com.qprogramming.gifts.account.Account;
+import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.gift.Gift;
 import com.qprogramming.gifts.support.Utils;
 import org.junit.Before;
@@ -34,15 +35,18 @@ public class AppEventServiceTest {
     private MockSecurityContext securityMock;
     @Mock
     private Authentication authMock;
+    @Mock
+    private AccountService accountServiceMock;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        eventSrv = new AppEventService(eventRepoMock);
+        eventSrv = new AppEventService(eventRepoMock, accountServiceMock);
         testAccount = TestUtil.createAccount();
         when(securityMock.getAuthentication()).thenReturn(authMock);
         when(authMock.getPrincipal()).thenReturn(testAccount);
         SecurityContextHolder.setContext(securityMock);
+        when(accountServiceMock.findById(testAccount.getId())).thenReturn(testAccount);
     }
 
     @Test
@@ -59,9 +63,7 @@ public class AppEventServiceTest {
         AppEvent event2 = createEvent();
         List<AppEvent> appEvents = Arrays.asList(event, event2);
         eventSrv.processEvents(appEvents);
-        verify(eventRepoMock, times(1)).save(anyCollectionOf(AppEvent.class));
-
-
+        verify(eventRepoMock, times(1)).delete(anyCollectionOf(AppEvent.class));
     }
 
     @Test
@@ -78,6 +80,7 @@ public class AppEventServiceTest {
     public void addEventTest() {
         Gift gift = new Gift();
         gift.setName("name");
+        gift.setUserId(testAccount.getId());
         eventSrv.addEvent(gift, AppEventType.NEW);
         eventSrv.addEvent(gift, AppEventType.REALISED);
         eventSrv.addEvent(gift, AppEventType.DELETED);
@@ -99,6 +102,7 @@ public class AppEventServiceTest {
         event.setType(AppEventType.NEW);
         Gift gift = new Gift();
         gift.setName("name");
+        gift.setUserId(testAccount.getId());
         event.setGift(gift);
         return event;
     }

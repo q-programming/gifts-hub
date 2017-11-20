@@ -74,12 +74,16 @@
             color: #666;
         }
 
+        .date {
+            font-size: 12px;
+        }
+
         table.footer-wrap a {
             color: #999;
         }
 
         .header {
-            background-color: rgba(44, 90, 160, 0.8) !important;
+            background-color: #567bb3 !important;
             color: white;
             padding: 5px;
             font-weight: bold;
@@ -161,8 +165,28 @@
 
         .avatar {
             height: 50px;
-            padding: 2px;
-            border-radius: 50%
+            padding: 2px 4px 2px 2px;
+            border-radius: 50%;
+            display: inline;
+        }
+
+        .new {
+            color: green;
+        }
+
+        .realised {
+            color: gray;
+            text-decoration: line-through;
+        }
+
+        .filler {
+            height: 1px;
+            background: lightgray;
+            margin-bottom: 5px;
+            margin-top: 5px;
+        }
+        .black {
+            color: #000 !important;
         }
     </style>
 </head>
@@ -174,14 +198,45 @@
     <table class="main">
         <tbody>
         <tr>
-            <td valign="top" style="vertical-align: top; width:70px">
-            <#--<img src='cid:avatar' style="height:50px; padding:2px">-->
-            </td>
-            <td>
-                <p>
-                </p>
+            <td colspan="2">
+                <#if name??>
+                    <p>Witaj ${name},</p>
+                </#if>
+                <p>Poni&#380;ej lista wydarze&#324; w Gifts Hub z ostatniego tygodnia</p>
             </td>
         </tr>
+        <#list events?keys as account>
+        <tr>
+            <td colspan="2">
+                <div class="filler"></div>
+            </td>
+        </tr>
+        <tr>
+            <td valign="top" style="vertical-align: top; width:250px;">
+                <div>
+                    <img src='cid:avatar_${account.id}' class="avatar">&nbsp;
+                    <a class="black" target="_blank" href="${application!'#'}#list/${account.username}">${account.fullname}</a>
+                </div>
+            </td>
+            <td>
+                <#list events?values[account_index] as event>
+                    <#if event.type == 'NEW'>
+                        <div class="new">
+                            <strong>+</strong> ${event.time?string["dd.MM.yyyy"]} ${event.gift.name}
+                        </div>
+                    <#elseif event.type == 'REALISED'>
+                        <div class="realised">
+                            &#10003; ${event.time?string["dd.MM.yyyy"]} ${event.gift.name}
+                        </div>
+                    <#else>
+                        <div>
+                            &nbsp; ${event.time?string["dd.MM.yyyy"]} ${event.gift.name}
+                        </div>
+                    </#if>
+                </#list>
+            </td>
+        </tr>
+        </#list>
         </tbody>
     </table>
 </div>
@@ -201,7 +256,7 @@
                                 To jest automatyczna wiadomo&#347;&#263; wys&#322;ana z <a
                                     href="${application!'#'}" target="_blank">${application!'#'}"</a>.</br>
                                 Je&#380;eli nie chcesz otrzymywa&#263; wi&#281;cej powiadomie&#324; poprzez
-                                e-mail, odznacz prosz&#281; opcj&#281; w paneu sterowania.
+                                e-mail, odznacz prosz&#281; opcj&#281; newslettera w paneu sterowania.
                             </p>
                         </td>
                     </tr>

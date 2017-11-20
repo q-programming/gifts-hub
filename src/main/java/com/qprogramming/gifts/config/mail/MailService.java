@@ -165,6 +165,13 @@ public class MailService {
         }
     }
 
+    /**
+     * Get resized user avatar and store it as temporary file deleted on server restart
+     * Once retrieved it will be stored in avatar buffer for future usages
+     *
+     * @param account account for which avatar should be resized and retireved
+     * @return resized avatar stored in temporary file
+     */
     private File getUserAvatar(Account account) {
         File avatarTempFile = avatarBuffer.get(account);
         try {
@@ -230,22 +237,42 @@ public class MailService {
     public void sendEvents() throws MessagingException {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         String application = propertyService.getProperty(APP_URL);
+        List<Account> allAccounts = accountService.findAllWithNewsletter();//TODO has newsletter checked
         Map<Account, List<AppEvent>> eventMap = eventService.getEventsGroupedByAccount();
-        for (Map.Entry<Account, List<AppEvent>> entry : eventMap.entrySet()) {
-            Account account = entry.getKey();
-            Mail mail = Utils.createMail(account);
-            Locale locale = getMailLocale(mail);
-            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, propertyService.getProperty(Settings.APP_EMAIL_ENCODING));
-            mimeMessageHelper.setSubject(msgSrv.getMessage("schedule.event.summary", null, "", locale));
-            mimeMessageHelper.setFrom(mail.getMailFrom());
-            mimeMessageHelper.setTo(mail.getMailTo());
-            mail.addToModel("application", application);
-            mail.addToModel("events", eventMap);
-            mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/scheduler.ftl"));
-            mimeMessageHelper.setText(mail.getMailContent(), true);
-            addAppLogo(mimeMessageHelper);
-            mimeMessageHelper.addInline("avatar_" + account.getId(), getUserAvatar(account));
-            mailSender.send(mimeMessageHelper.getMimeMessage());
+        for (Account account : allAccounts) {
+            sendEventForAccount(mimeMessage, application, eventMap, account);//TODO remove my own events?
+        }
+    }
+
+    public void sendEvent() throws MessagingException {
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
+        String application = propertyService.getProperty(APP_URL);
+        Map<Account, List<AppEvent>> eventMap = eventService.getEventsGroupedByAccount();
+        sendEventForAccount(mimeMessage, application, eventMap, Utils.getCurrentAccount());
+    }
+
+
+    private void sendEventForAccount(MimeMessage mimeMessage, String application, Map<Account, List<AppEvent>> eventMap, Account account) throws MessagingException {
+        Mail mail = Utils.createMail(account);
+        Locale locale = getMailLocale(mail);
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, propertyService.getProperty(Settings.APP_EMAIL_ENCODING));
+        mimeMessageHelper.setSubject(msgSrv.getMessage("schedule.event.summary", null, "", locale));
+        mimeMessageHelper.setFrom(mail.getMailFrom());
+        mimeMessageHelper.setTo(mail.getMailTo());
+        mail.addToModel("application", application);
+        mail.addToModel("name", account.getName());
+        mail.addToModel("events", eventMap);
+        mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/scheduler.ftl"));
+        mimeMessageHelper.setText(mail.getMailContent(), true);
+        addAppLogo(mimeMessageHelper);
+        addEventAccountsAvatars(eventMap, mimeMessageHelper);
+        LOG.debug("Sending scheduled email to {}", account.getEmail());
+        mailSender.send(mimeMessageHelper.getMimeMessage());
+    }
+
+    private void addEventAccountsAvatars(Map<Account, List<AppEvent>> eventMap, MimeMessageHelper mimeMessageHelper) throws MessagingException {
+        for (Account eventAccount : eventMap.keySet()) {
+            mimeMessageHelper.addInline("avatar_" + eventAccount.getId(), getUserAvatar(eventAccount));
         }
     }
 

@@ -20,4 +20,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     List<Account> findByIdIn(List<String> list);
 
     List<Account> findByRole(Roles role);
+
+    List<Account> findByNewsletterIsTrueAndEmailNotNullAndTypeIsNot(AccountType type);
+
 }

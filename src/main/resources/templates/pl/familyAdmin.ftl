@@ -30,31 +30,6 @@
             color: #348eda;
         }
 
-        .btn-primary, .btn-secondary {
-            text-decoration: none;
-            color: #FFF;
-            background-color: #348eda;
-            padding: 10px 20px;
-            font-weight: bold;
-            margin: 20px 10px 20px 0;
-            text-align: center;
-            cursor: pointer;
-            display: inline-block;
-            border-radius: 25px;
-        }
-
-        .btn-secondary {
-            background: #aaa;
-        }
-
-        .last {
-            margin-bottom: 0;
-        }
-
-        .first {
-            margin-top: 0;
-        }
-
         table.body-wrap {
             width: 100%;
             padding: 20px;
@@ -83,10 +58,6 @@
             color: white;
             padding: 5px;
             font-weight: bold;
-            vertical-align: middle;
-        }
-
-        .text {
             vertical-align: middle;
         }
 

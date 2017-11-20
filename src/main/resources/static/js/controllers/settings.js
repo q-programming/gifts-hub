@@ -75,6 +75,17 @@ app.controller('settings', ['$rootScope', '$scope', '$http', '$location', '$tran
                 $log.debug(response);
             });
         };
+        $scope.scheduler = function () {
+            var url = 'api/user/scheduler/';
+            $http.post(url).then(
+                function (response) {
+                    $log.debug("[DEBUG] shared emails");
+                    AlertService.addSuccessMessage(response.data.message);
+                }).catch(function (response) {
+                AlertService.addError("error.general", response);
+                $log.debug(response);
+            });
+        };
 
         $scope.deleteAccount = function () {
             var url = 'api/user/delete/' + $rootScope.principal.id;
