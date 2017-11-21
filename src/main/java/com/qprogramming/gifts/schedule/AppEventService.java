@@ -64,4 +64,14 @@ public class AppEventService {
             eventRepo.delete(event);
         }
     }
+
+    /**
+     * Tries to find all app event regarding this gift
+     *
+     * @param gift gift for which all events will be deleted
+     */
+    public void deleteGiftEvents(Gift gift) {
+        List<AppEvent> events = eventRepo.findByAccountAndGift(accountService.findById(gift.getUserId()), gift);
+        eventRepo.delete(events);
+    }
 }

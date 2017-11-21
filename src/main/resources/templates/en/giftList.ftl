@@ -165,7 +165,7 @@
                         <td align="center">
                             <p>
                                 This is automatic message sent from <a
-                                    href="${application!'#'}" target="_blank">${application!'#'}"</a>.</br>
+                                    href="${application!'#'}" target="_blank">${application!'#'}</a>.</br>
                                 If you wish to stop receiving e-mail notifications, please deselect newsletter option in
                                 your user settings.
                             </p>

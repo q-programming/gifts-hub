@@ -254,7 +254,7 @@
                         <td align="center">
                             <p>
                                 To jest automatyczna wiadomo&#347;&#263; wys&#322;ana z <a
-                                    href="${application!'#'}" target="_blank">${application!'#'}"</a>.</br>
+                                    href="${application!'#'}" target="_blank">${application!'#'}</a>.</br>
                                 Je&#380;eli nie chcesz otrzymywa&#263; wi&#281;cej powiadomie&#324; poprzez
                                 e-mail, odznacz prosz&#281; opcj&#281; newslettera w paneu sterowania.
                             </p>

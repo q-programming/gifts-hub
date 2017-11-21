@@ -27,6 +27,7 @@ import org.springframework.scheduling.TriggerContext;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 
 import javax.imageio.ImageIO;
@@ -56,8 +57,8 @@ public class MailService {
     private static final String PNG = "png";
     private static final String PUBLIC_LINK = "publicLink";
     private final Logger LOG = LoggerFactory.getLogger(this.getClass());
-    private PropertyService propertyService;
     JavaMailSender mailSender;
+    private PropertyService propertyService;
     private Configuration freemarkerConfiguration;
     private MessagesService msgSrv;
     private DataBasePropertySource dbSource;
@@ -306,8 +307,10 @@ public class MailService {
      * @throws MessagingException if there were errors while sending email
      */
     @Scheduled(cron = "${app.newsletter.schedule}")
+    @Transactional
     public void sendEvents() throws MessagingException {
         LOG.info("Begin sending scheduled newsletter");
+        int mailsSent = 0;
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         String application = propertyService.getProperty(APP_URL);
         List<Account> allAccounts = accountService.findAllWithNewsletter();//TODO has newsletter checked
@@ -318,8 +321,11 @@ public class MailService {
                     .collect(Collectors.toMap(Map.Entry::getKey, entry -> new ArrayList<>(entry.getValue())));
             if (!eventsWithoutAccount.isEmpty()) {
                 sendEventForAccount(mimeMessage, application, eventsWithoutAccount, account);
+                mailsSent++;
             }
         }
+        eventService.processEvents(eventService.findAllNotProcessed());
+        LOG.info("Newsletter sent to {} recipients", mailsSent);
     }
 
     /**

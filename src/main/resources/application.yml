@@ -6,7 +6,7 @@ app:
   gift:
     age: 30
   newsletter:
-    schedule: 0 00 20 * * TUE
+    schedule: 0 0 10-12 * * MON
 security:
 #  user:
 #    password: password

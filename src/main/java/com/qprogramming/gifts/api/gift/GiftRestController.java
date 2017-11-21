@@ -182,7 +182,6 @@ public class GiftRestController {
         gift.setStatus(GiftStatus.REALISED);
         giftService.update(gift);
         eventService.addEvent(gift, AppEventType.REALISED);
-        //TODO add complete event newsleter
         return new ResultData.ResultBuilder().ok().message(msgSrv.getMessage("gift.complete.success", new Object[]{gift.getName()}, "", Utils.getCurrentLocale()))
                 .build();
     }
@@ -196,7 +195,6 @@ public class GiftRestController {
         gift.setStatus(null);
         giftService.update(gift);
         eventService.tryToUndoEvent(gift);
-        //TODO add complete event newsleter
         return new ResultData.ResultBuilder().ok().message(msgSrv.getMessage("gift.complete.undo.success")).build();
     }
 
@@ -209,8 +207,8 @@ public class GiftRestController {
         if (!canOperateOnGift(gift)) {
             return new ResultData.ResultBuilder().badReqest().error().message(msgSrv.getMessage("gift.delete.error")).build();
         }
+        eventService.deleteGiftEvents(gift);
         giftService.delete(gift);
-        //TODO add complete event newsleter
         return new ResultData.ResultBuilder().ok().message(msgSrv.getMessage("gift.delete.success", new Object[]{gift.getName()}, "", Utils.getCurrentLocale())).build();
     }
 
