@@ -18,10 +18,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.TriggerContext;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 
@@ -60,10 +64,17 @@ public class MailService {
     private AccountService accountService;
     private AppEventService eventService;
     private Map<Account, File> avatarBuffer;
+    private String cron_scheduler;
 
 
     @Autowired
-    public MailService(PropertyService propertyService, @Qualifier("freeMarkerConfiguration") Configuration freemarkerConfiguration, MessagesService msgSrv, DataBasePropertySource dataBasePropertySource, AccountService accountService, AppEventService eventService) {
+    public MailService(PropertyService propertyService,
+                       @Qualifier("freeMarkerConfiguration") Configuration freemarkerConfiguration,
+                       MessagesService msgSrv,
+                       DataBasePropertySource dataBasePropertySource,
+                       AccountService accountService,
+                       AppEventService eventService,
+                       @Value("${app.newsletter.schedule}") String cron) {
         this.propertyService = propertyService;
         this.freemarkerConfiguration = freemarkerConfiguration;
         this.msgSrv = msgSrv;
@@ -71,7 +82,9 @@ public class MailService {
         this.accountService = accountService;
         this.eventService = eventService;
         avatarBuffer = new HashMap<>();
+        this.cron_scheduler = cron;
         initMailSender();
+        schedulerLookup();
     }
 
     public void initMailSender() {
@@ -90,6 +103,32 @@ public class MailService {
         javaMailProperties.setProperty("mail.smtp.starttls.enable", "true");
         jmsi.setJavaMailProperties(javaMailProperties);
         mailSender = jmsi;
+    }
+
+    private void schedulerLookup() {
+        org.springframework.scheduling.support.CronTrigger trigger =
+                new CronTrigger(cron_scheduler);
+        Calendar todayCal = Calendar.getInstance();
+        final Date today = todayCal.getTime();
+        Date nextExecutionTime = trigger.nextExecutionTime(
+                new TriggerContext() {
+                    @Override
+                    public Date lastScheduledExecutionTime() {
+                        return today;
+                    }
+
+                    @Override
+                    public Date lastActualExecutionTime() {
+                        return today;
+                    }
+
+                    @Override
+                    public Date lastCompletionTime() {
+                        return today;
+                    }
+                });
+        String message = "Next scheduled email sending is : " + Utils.convertDateTimeToString(nextExecutionTime);
+        LOG.info(message);
     }
 
     /**
@@ -266,7 +305,9 @@ public class MailService {
      *
      * @throws MessagingException if there were errors while sending email
      */
+    @Scheduled(cron = "${app.newsletter.schedule}")
     public void sendEvents() throws MessagingException {
+        LOG.info("Begin sending scheduled newsletter");
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         String application = propertyService.getProperty(APP_URL);
         List<Account> allAccounts = accountService.findAllWithNewsletter();//TODO has newsletter checked
@@ -281,16 +322,6 @@ public class MailService {
         }
     }
 
-    @Deprecated
-    //TODO remove after complete
-    public void sendEvent() throws MessagingException {
-        MimeMessage mimeMessage = mailSender.createMimeMessage();
-        String application = propertyService.getProperty(APP_URL);
-        Map<Account, List<AppEvent>> eventMap = eventService.getEventsGroupedByAccount();
-        sendEventForAccount(mimeMessage, application, eventMap, Utils.getCurrentAccount());
-    }
-
-
     /**
      * Form event into email and send it to account recipient
      *
@@ -302,6 +333,7 @@ public class MailService {
      */
     private void sendEventForAccount(MimeMessage mimeMessage, String application, Map<Account, List<AppEvent>> eventMap, Account account) throws MessagingException {
         Mail mail = Utils.createMail(account);
+        mail.setMailFrom(propertyService.getProperty(APP_EMAIL_FROM));
         Locale locale = getMailLocale(mail);
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, propertyService.getProperty(Settings.APP_EMAIL_ENCODING));
         mimeMessageHelper.setSubject(msgSrv.getMessage("schedule.event.summary", null, "", locale));

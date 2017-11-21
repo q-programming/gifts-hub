@@ -19,6 +19,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -37,6 +39,11 @@ import static org.mockito.Mockito.*;
 public class MailServiceTest {
 
     private static final String SUBJECT = "Subject";
+    private static final String MAIL_FROM_COM = "mail@from.com";
+    private static final String UTF_8 = "UTF-8";
+    private static final String URL = "url";
+    private static final String EN = "en";
+    private static final String CRON = "0 0 10-12 * * MON";
     private MailService mailService;
     private Account testAccount;
     @Mock
@@ -60,6 +67,7 @@ public class MailServiceTest {
     @Mock
     private Authentication authMock;
     private Locale locale;
+    private final Logger LOG = LoggerFactory.getLogger(this.getClass());
 
 
     @Before
@@ -69,21 +77,30 @@ public class MailServiceTest {
         locale = new Locale("en");
         MockitoAnnotations.initMocks(this);
         testAccount = TestUtil.createAccount();
-        when(propertyServiceMock.getProperty(APP_URL)).thenReturn("url");
-        when(propertyServiceMock.getProperty(APP_EMAIL_ENCODING)).thenReturn("UTF-8");
-        when(propertyServiceMock.getProperty(APP_DEFAULT_LANG)).thenReturn("en");
+        when(propertyServiceMock.getProperty(APP_URL)).thenReturn(URL);
+        when(propertyServiceMock.getProperty(APP_EMAIL_ENCODING)).thenReturn(UTF_8);
+        when(propertyServiceMock.getProperty(APP_DEFAULT_LANG)).thenReturn(EN);
+        when(propertyServiceMock.getProperty(APP_EMAIL_FROM)).thenReturn(MAIL_FROM_COM);
         when(freemarkerConfigurationMock.getTemplate(anyString())).thenReturn(templateMock);
         when(securityMock.getAuthentication()).thenReturn(authMock);
         when(authMock.getPrincipal()).thenReturn(testAccount);
         when(mailSenderMock.createMimeMessage()).thenReturn(new MimeMessage(Session.getInstance(props)));
-
         SecurityContextHolder.setContext(securityMock);
-        mailService = new MailService(propertyServiceMock, freemarkerConfigurationMock, msgSrvMock, dbSourceMock, accountServiceMock, eventServiceMock) {
+        mailService = new MailService(propertyServiceMock, freemarkerConfigurationMock, msgSrvMock, dbSourceMock, accountServiceMock, eventServiceMock, CRON) {
             @Override
             public void initMailSender() {
                 this.mailSender = mailSenderMock;
             }
         };
+    }
+
+    @Test
+    public void testInitWithBadPort() {
+        when(propertyServiceMock.getProperty(APP_EMAIL_HOST)).thenReturn(URL);
+        when(propertyServiceMock.getProperty(APP_EMAIL_PORT)).thenReturn(UTF_8);
+        when(propertyServiceMock.getProperty(APP_EMAIL_USERNAME)).thenReturn("user");
+        when(propertyServiceMock.getProperty(APP_EMAIL_PASS)).thenReturn("pass");
+        mailService = new MailService(propertyServiceMock, freemarkerConfigurationMock, msgSrvMock, dbSourceMock, accountServiceMock, eventServiceMock, CRON);
     }
 
     @Test
@@ -126,6 +143,7 @@ public class MailServiceTest {
         event.setType(AccountEventType.FAMILY_MEMEBER);
         when(msgSrvMock.getMessage("user.family.invite", new Object[]{family.getName()}, "", locale)).thenReturn(SUBJECT);
         Mail mail = Utils.createMail(testAccount);
+        mail.setMailFrom(MAIL_FROM_COM);
         mailService.sendConfirmMail(mail, event);
         verify(mailSenderMock, times(1)).send(any(MimeMessage.class));
     }
@@ -140,6 +158,7 @@ public class MailServiceTest {
         event.setType(AccountEventType.FAMILY_ADMIN);
         when(msgSrvMock.getMessage("user.family.admin", new Object[]{family.getName()}, "", locale)).thenReturn(SUBJECT);
         Mail mail = Utils.createMail(testAccount);
+        mail.setMailFrom(MAIL_FROM_COM);
         mailService.sendConfirmMail(mail, event);
         verify(mailSenderMock, times(1)).send(any(MimeMessage.class));
     }

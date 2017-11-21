@@ -12,6 +12,7 @@ import com.qprogramming.gifts.account.family.FamilyService;
 import com.qprogramming.gifts.account.family.KidForm;
 import com.qprogramming.gifts.config.mail.Mail;
 import com.qprogramming.gifts.config.mail.MailService;
+import com.qprogramming.gifts.config.property.PropertyService;
 import com.qprogramming.gifts.gift.GiftService;
 import com.qprogramming.gifts.login.token.TokenBasedAuthentication;
 import com.qprogramming.gifts.messages.MessagesService;
@@ -41,6 +42,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static com.qprogramming.gifts.settings.Settings.APP_EMAIL_FROM;
+
 @RestController
 @RequestMapping("/api/user")
 public class UserRestController {
@@ -48,19 +51,24 @@ public class UserRestController {
     public static final String PASSWORD_REGEXP = "^^(?=.*[A-Z])(?=.*[0-9])(?=.*[a-z].*[a-z].*[a-z]).{8,}$";
     public static final String USERNAME_REGEXP = "^[a-zA-Z0-9_]+$";
     private static final Logger LOG = LoggerFactory.getLogger(UserRestController.class);
+    public static final String NEWSLETTER = "newsletter";
+    public static final String PUBLIC_LIST = "publicList";
+    public static final String LANGUAGE = "language";
     private AccountService accountService;
     private MessagesService msgSrv;
     private FamilyService familyService;
     private GiftService giftService;
     private MailService mailService;
+    private PropertyService propertyService;
 
     @Autowired
-    public UserRestController(AccountService accountService, MessagesService msgSrv, FamilyService familyService, GiftService giftService, MailService mailService) {
+    public UserRestController(AccountService accountService, MessagesService msgSrv, FamilyService familyService, GiftService giftService, MailService mailService, PropertyService propertyService) {
         this.accountService = accountService;
         this.msgSrv = msgSrv;
         this.familyService = familyService;
         this.giftService = giftService;
         this.mailService = mailService;
+        this.propertyService = propertyService;
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
@@ -327,7 +335,9 @@ public class UserRestController {
         for (Account account : members) {
             if (!AccountType.KID.equals(account.getType())) {
                 AccountEvent event = familyService.inviteAccount(account, family, type);
-                mailService.sendConfirmMail(Utils.createMail(account), event);
+                Mail mail = Utils.createMail(account, Utils.getCurrentAccount());
+                mail.setMailFrom(propertyService.getProperty(APP_EMAIL_FROM));
+                mailService.sendConfirmMail(mail, event);
             } else {
                 familyService.addAccountToFamily(account, family);
             }
@@ -457,11 +467,14 @@ public class UserRestController {
         if (account == null || !account.equals(currentAccount)) {
             return ResponseEntity.notFound().build();
         }
-        if (object.has("language")) {
-            account.setLanguage(object.getString("language"));
+        if (object.has(LANGUAGE)) {
+            account.setLanguage(object.getString(LANGUAGE));
         }
-        if (object.has("publicList")) {
-            account.setPublicList(object.getBoolean("publicList"));
+        if (object.has(PUBLIC_LIST)) {
+            account.setPublicList(object.getBoolean(PUBLIC_LIST));
+        }
+        if (object.has(NEWSLETTER)) {
+            account.setNewsletter(object.getBoolean(NEWSLETTER));
         }
         accountService.update(account);
         accountService.signin(account);
@@ -553,7 +566,7 @@ public class UserRestController {
             Mail mail = new Mail();
             Account byEmail = accountService.findByEmail(email);
             mail.setMailTo(email);
-            mail.setMailFrom(Utils.getCurrentAccount().getEmail());
+            mail.setMailFrom(propertyService.getProperty(APP_EMAIL_FROM));
             if (byEmail != null) {
                 mail.setLocale(byEmail.getLanguage());
                 mail.addToModel("name", byEmail.getFullname());

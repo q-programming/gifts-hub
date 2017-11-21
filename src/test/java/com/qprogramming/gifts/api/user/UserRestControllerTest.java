@@ -11,6 +11,7 @@ import com.qprogramming.gifts.account.family.FamilyService;
 import com.qprogramming.gifts.account.family.KidForm;
 import com.qprogramming.gifts.config.mail.Mail;
 import com.qprogramming.gifts.config.mail.MailService;
+import com.qprogramming.gifts.config.property.PropertyService;
 import com.qprogramming.gifts.gift.Gift;
 import com.qprogramming.gifts.gift.GiftService;
 import com.qprogramming.gifts.messages.MessagesService;
@@ -81,13 +82,15 @@ public class UserRestControllerTest {
     private GiftService giftServiceMock;
     @Mock
     private MailService mailServiceMock;
+    @Mock
+    private PropertyService propertyServiceMock;
 
     private Account testAccount;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        UserRestController userCtrl = new UserRestController(accSrvMock, msgSrvMock, familyServiceMock, giftServiceMock, mailServiceMock);
+        UserRestController userCtrl = new UserRestController(accSrvMock, msgSrvMock, familyServiceMock, giftServiceMock, mailServiceMock, propertyServiceMock);
         testAccount = createAccount();
         when(securityMock.getAuthentication()).thenReturn(authMock);
         when(authMock.getPrincipal()).thenReturn(testAccount);

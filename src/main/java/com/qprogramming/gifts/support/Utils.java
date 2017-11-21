@@ -208,16 +208,22 @@ public class Utils {
      * Creates mail out of account
      *
      * @param account account for which mail will be created
+     * @param owner   Owner account which triggered mail
      * @return list of {@link Mail}
      */
-    public static Mail createMail(Account account) {
+    public static Mail createMail(Account account, Account owner) {
         Mail mail = new Mail();
         mail.setMailTo(account.getEmail());
-        mail.setMailFrom(getCurrentAccount().getEmail());
         mail.setLocale(account.getLanguage());
         mail.addToModel("name", account.getFullname());
-        mail.addToModel("owner", getCurrentAccount().getFullname());
+        if (owner != null) {
+            mail.addToModel("owner", owner.getFullname());
+        }
         return mail;
+    }
+
+    public static Mail createMail(Account account) {
+        return createMail(account, null);
     }
 
 }

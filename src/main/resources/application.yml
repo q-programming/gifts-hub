@@ -5,6 +5,8 @@ app:
   name: Gifts hub
   gift:
     age: 30
+  newsletter:
+    schedule: 0 00 20 * * TUE
 security:
 #  user:
 #    password: password
@@ -22,6 +24,7 @@ spring:
     host: localhost
     port: 25
     protocol: smtp
+    from: gifts-hub@q-programming.pl
   datasource:
     url: jdbc:h2:./db/h2databaseFile;AUTO_SERVER=TRUE
     username: sa

@@ -43,7 +43,8 @@ app.controller('settings', ['$rootScope', '$scope', '$http', '$location', '$tran
             $http.post('api/user/settings', angular.toJson({
                 id: $rootScope.principal.id,
                 language: $rootScope.principal.language,
-                publicList: $rootScope.principal.publicList
+                publicList: $rootScope.principal.publicList,
+                newsletter: $rootScope.principal.newsletter
             })).then(
                 function () {
                     $translate.use($rootScope.principal.language);
@@ -68,17 +69,6 @@ app.controller('settings', ['$rootScope', '$scope', '$http', '$location', '$tran
             $http.post(url, useremails).then(
                 function (response) {
                     useremails = '';
-                    $log.debug("[DEBUG] shared emails");
-                    AlertService.addSuccessMessage(response.data.message);
-                }).catch(function (response) {
-                AlertService.addError("error.general", response);
-                $log.debug(response);
-            });
-        };
-        $scope.scheduler = function () {
-            var url = 'api/user/scheduler/';
-            $http.post(url).then(
-                function (response) {
                     $log.debug("[DEBUG] shared emails");
                     AlertService.addSuccessMessage(response.data.message);
                 }).catch(function (response) {

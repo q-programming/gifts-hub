@@ -81,6 +81,7 @@ public class AppRestController {
         propertyService.update(APP_EMAIL_USERNAME, settings.getUsername());
         propertyService.update(APP_EMAIL_PASS, settings.getPassword());
         propertyService.update(APP_EMAIL_ENCODING, settings.getEncoding());
+        propertyService.update(APP_EMAIL_FROM, settings.getFrom());
         mailService.initMailSender();
         //TODO remove sample
 //        Mail mail = new Mail();
@@ -117,6 +118,7 @@ public class AppRestController {
         emailSettings.setUsername(propertyService.getProperty(APP_EMAIL_USERNAME));
         emailSettings.setPassword(propertyService.getProperty(APP_EMAIL_PASS));
         emailSettings.setEncoding(propertyService.getProperty(APP_EMAIL_ENCODING));
+        emailSettings.setFrom(propertyService.getProperty(APP_EMAIL_FROM));
         settings.setEmail(emailSettings);
         settings.setAppUrl(propertyService.getProperty(APP_URL));
         return ResponseEntity.ok(settings);
