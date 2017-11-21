@@ -57,6 +57,22 @@
             <hr/>
         </div>
     </div>
+    <!--NEWSLETTER-->
+    <div class="row">
+        <div class="form-group col-sm-offset-2 col-md-offset-4 col-md-6">
+            <h4>
+                <i class="fa fa-envelope" aria-hidden="true"></i>
+                &nbsp;<span translate="user.settings.newsletter"></span>
+            </h4>
+            <label>
+                <input type="checkbox" ng-model="principal.newsletter" name="newsletter" ng-click="update()"/>
+                <span translate="user.settings.newsletter"></span>
+            </label>
+            <span class="help-block" translate="user.settings.newsletter.help"></span>
+            <hr/>
+        </div>
+    </div>
+
     <!--PUBLIC LINK-->
     <div class="row">
         <div class="form-group col-sm-offset-2 col-md-offset-4 col-md-6">

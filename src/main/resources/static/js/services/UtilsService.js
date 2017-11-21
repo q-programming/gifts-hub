@@ -40,5 +40,19 @@ UtilsService.factory('UtilsService', ['$http', '$location', 'AlertService',
             return $location.absUrl().split("#")[0];
         };
 
+        UtilsService.toID = function (string) {
+            if (string) {
+                return string.replace(/[^a-zA-Z0-9]/g, '_');
+            }
+            return Math.floor((Math.random() * 6) + 1);
+        };
+
+        UtilsService.toggleRow = function (target, event) {
+            $(event.target).toggleClass("fa-caret-down");
+            $(event.target).toggleClass("fa-caret-right");
+            angular.element(document.getElementById(target)).toggle();
+        };
+
+
         return UtilsService;
     }]);

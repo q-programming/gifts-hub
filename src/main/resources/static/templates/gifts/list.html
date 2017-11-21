@@ -1,8 +1,8 @@
 <div ng-if="authenticated">
     <div>
         <div class="row header-fixed animate-appear" fixed-top="fix-to-top">
+            <!--ACCOUNT SWITCHER-->
             <div>
-                <!--ACCOUNT SWITCHER-->
                 <div class="row margin-bottom5" ng-cloak>
                     <div class="col-xs-2 col-sm-2 col-md-2 col-lg-1">
                         <img ng-if="userGiftList.avatar && userGiftList.avatar !=='NaN'"
@@ -15,14 +15,14 @@
                            uib-tooltip="{{'user.family.kid'|translate}}">
                         </i>
                     </div>
-                    <div class="col-xs-10 col-sm-6 col-md-4 family-members" ng-if="family.members">
+                    <div class="col-xs-10 col-sm-6 col-md-4 family-members" ng-if="users">
                         <ui-select id="members" ng-model="userGiftList" on-select="goToMemberList($item)">
                             <ui-select-match placeholder="{{'user.family.select.other'|translate}}" allow-clear="false"
                                              ng-cloak>
                                 <span ng-show="userGiftList.fullname">{{userGiftList.fullname}} ({{userGiftList.username}})</span>
                             </ui-select-match>
                             <ui-select-choices
-                                    repeat="user in (family.members | propsFilter: {fullname: $select.search, username: $select.search}) track by user.id">
+                                    repeat="user in (users | propsFilter: {fullname: $select.search, username: $select.search}) track by user.id">
                                 <div class="row">
                                     <div class="col-xs-1">
                                         <img ng-if="user.avatar && user.avatar !=='NaN'" ng-src="{{user.avatar}}"
@@ -40,7 +40,7 @@
                             </ui-select-choices>
                         </ui-select>
                     </div>
-                    <div class="col-xs-10 col-sm-6 col-md-4 family-members" ng-if="!family.members"
+                    <div class="col-xs-10 col-sm-6 col-md-4 family-members" ng-if="!users"
                          ng-show="userGiftList.fullname">
             <span style="display: block; width: 100%; height: 34px; padding: 6px 12px; font-size: 14px;line-height: 1.42857143;color: #555;">
                 {{userGiftList.fullname}} ({{userGiftList.username}})
@@ -74,37 +74,57 @@
                         <strong translate="gift.add.date"></strong>
                     </div>
                     <div class="col-sm-1 hidden-xs">
-                        <strong translate="main.action"></strong>
+                        <i class="fa fa-plus-circle filter-active" ng-show="filteredCategory"></i>
+                        <i id="filter-btn" class="fa fa-lg fa-filter clickable" ng-click="filterShow=!filterShow"
+                           uib-tooltip="{{'gift.category.filter'|translate}}"></i>
+                        <i class="fa fa-cogs clickable" uib-tooltip="{{'main.action'|translate}}"></i>
+                    </div>
+                    <!--FILTER-->
+                    <div ng-show="filterShow" class="filter-div">
+                        <ui-select id="category" on-select="filterCategory($item)" ng-model="categoryFilter">
+                            <ui-select-match placeholder="{{'gift.category.filter.choose'|translate}}"
+                                             allow-clear="true">
+                                <span ng-bind="$select.selected.name"></span>
+                            </ui-select-match>
+                            <ui-select-choices
+                                    repeat="category in (categoriesFilter | filter: $select.search) track by category.id"
+                                    refresh="refreshResults($select)" refresh-delay="0">
+                                <span ng-bind="category.name"></span>
+                            </ui-select-choices>
+                        </ui-select>
                     </div>
                 </div>
             </div>
         </div>
     </div>
     <!--LIST-->
-    <div ng-repeat="(key, value) in giftsList">
-        <h4><strong translate="{{key}}">{{key}}</strong></h4>
-        <div class="row padded-row"
-             ng-class-odd="'row-color'"
-             ng-class="getGiftClass(gift)"
-             ng-repeat="gift in value">
-            <div class="col-xs-12 col-sm-3">
-                <gift-status gift="gift"></gift-status>
-                <strong>{{gift.name}}</strong>
-            </div>
-            <div class="col-xs-12 col-sm-3">{{gift.description}}</div>
-            <div class="col-xs-12 col-sm-3">
-                <a target="_blank" ng-if="gift.link" ng-href="{{gift.link}}" class="gift-link">{{ gift.name }}</a>
-                <span ng-repeat="engine in gift.engines" class="search-engines">
+    <div ng-repeat="(key, value) in giftsList" ng-init="rowID = utils.toID(key);">
+        <h4>
+            <i class="fa toggler fa-caret-down clickable" ng-click="utils.toggleRow(rowID,$event)"></i>
+            <strong translate="{{key}}">{{key}}</strong></h4>
+        <div id="{{rowID}}" class="animate">
+            <div class="row padded-row"
+                 ng-class-odd="'row-color'"
+                 ng-class="getGiftClass(gift)"
+                 ng-repeat="gift in value">
+                <div class="col-xs-12 col-sm-3">
+                    <gift-status gift="gift"></gift-status>
+                    <strong>{{gift.name}}</strong>
+                </div>
+                <div class="col-xs-12 col-sm-3">{{gift.description}}</div>
+                <div class="col-xs-12 col-sm-3">
+                    <a target="_blank" ng-if="gift.link" ng-href="{{gift.link}}" class="gift-link">{{ gift.name }}</a>
+                    <span ng-repeat="engine in gift.engines" class="search-engines">
                 <a class="pull-right" ng-href="{{engine.searchString + gift.name}}" target="_blank">
                 <i ng-class="'fa fa-fw '+ engine.icon"
                    aria-hidden="true" uib-tooltip="{{searchWith + engine.name}}"></i>
                 </a>
             </span>
-            </div>
-            <div class="col-xs-6 col-sm-2" format-date date="gift.created"></div>
-            <div class="col-xs-6 col-sm-1 text-right gift-actions">
-                <!--CLAIM-->
-                <span class="clickable">
+                </div>
+                <div class="col-xs-6 col-sm-2" format-date date="gift.created"></div>
+                <div class="col-xs-6 col-sm-1 text-right gift-actions">
+                    <!--CLAIM-->
+                    <span class="clickable">
                     <span class="fa-stack" ng-if="canBeClaimed(gift)"
                           ng-click="claimGift(gift)" uib-tooltip="{{'gift.claim' | translate}}"
                           tooltip-placement="left">
@@ -117,31 +137,33 @@
                             <i class="fa fa-lg fa-hand-paper-o fa-stack-1x"></i>
                     </span>
                 </span>
-                <!--COMPLETE-->
-                <span class="clickable" ng-if="canBeEdited(gift)" ng-click="realiseGift(gift)"
-                      uib-tooltip="{{'gift.complete' | translate}}" tooltip-placement="left">
+                    <!--COMPLETE-->
+                    <span class="clickable" ng-if="canBeEdited(gift)" ng-click="realiseGift(gift)"
+                          uib-tooltip="{{'gift.complete' | translate}}" tooltip-placement="left">
                         <i class="fa fa-fw fa-lg fa-check-circle-o" aria-hidden="true"></i>
                     </span>
-                <!--UNCOMPLETE-->
-                <span class="clickable" ng-if="canBeUndoRealised(gift)" ng-click="undoRealiseGift(gift)"
-                      uib-tooltip="{{'gift.complete.undo' | translate}}" tooltip-placement="left">
+                    <!--UNCOMPLETE-->
+                    <span class="clickable" ng-if="canBeUndoRealised(gift)" ng-click="undoRealiseGift(gift)"
+                          uib-tooltip="{{'gift.complete.undo' | translate}}" tooltip-placement="left">
                         <i class="fa fa-fw fa-lg fa-circle-o" aria-hidden="true"
                         ></i>
                     </span>
-                <!--EDIT-->
-                <span class="clickable" ng-if="canBeEdited(gift)" ng-click="showEdit(gift)"
-                      uib-tooltip="{{'gift.edit' | translate}}" tooltip-placement="left">
+                    <!--EDIT-->
+                    <span class="clickable" ng-if="canBeEdited(gift)" ng-click="showEdit(gift)"
+                          uib-tooltip="{{'gift.edit' | translate}}" tooltip-placement="left">
                         <i class="fa fa-fw fa-lg fa-pencil" aria-hidden="true"></i>
                 </span>
-                <!--DELETE-->
-                <span class="clickable" ng-if="canBeEdited(gift)"
-                      uib-tooltip="{{'gift.delete' | translate}}" ng-click="deleteGift(gift)" tooltip-placement="left"
-                      confirm="{{'gift.delete.confirm' | translate}}"
-                      confirm-title="{{'gift.delete' | translate}} ?"
-                      confirm-icon="fa-trash"
-                      confirm-ok="{{'main.delete'| translate}}">
+                    <!--DELETE-->
+                    <span class="clickable" ng-if="canBeEdited(gift)"
+                          uib-tooltip="{{'gift.delete' | translate}}" ng-click="deleteGift(gift)"
+                          tooltip-placement="left"
+                          confirm="{{'gift.delete.confirm' | translate}}"
+                          confirm-title="{{'gift.delete' | translate}} ?"
+                          confirm-icon="fa-trash"
+                          confirm-ok="{{'main.delete'| translate}}">
                         <i class="fa fa-fw fa-lg fa-trash" aria-hidden="true"></i>
                     </span>
+                </div>
             </div>
         </div>
     </div>

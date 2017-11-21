@@ -5,6 +5,8 @@ app:
   name: Gifts hub
   gift:
     age: 30
+  newsletter:
+    schedule: 0 0 10-12 * * MON
 security:
 #  user:
 #    password: password
@@ -22,13 +24,14 @@ spring:
     host: localhost
     port: 25
     protocol: smtp
+    from: gifts-hub@q-programming.pl
   datasource:
-#    url: jdbc:h2:./db/h2databaseFile;AUTO_SERVER=TRUE
-#    username: sa
-#    password:
-    url: jdbc:postgresql://localhost:5432/gifts
-    username: giftshub
-    password: h9fj67kmZ9FyU75ndwZU
+    url: jdbc:h2:./db/h2databaseFile;AUTO_SERVER=TRUE
+    username: sa
+    password:
+#    url: jdbc:postgresql://localhost:5432/gifts
+#    username: giftshub
+#    password: h9fj67kmZ9FyU75ndwZU
   mvc:
     favicon:
       enabled: false

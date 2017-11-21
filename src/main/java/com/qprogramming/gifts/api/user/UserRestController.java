@@ -12,6 +12,7 @@ import com.qprogramming.gifts.account.family.FamilyService;
 import com.qprogramming.gifts.account.family.KidForm;
 import com.qprogramming.gifts.config.mail.Mail;
 import com.qprogramming.gifts.config.mail.MailService;
+import com.qprogramming.gifts.config.property.PropertyService;
 import com.qprogramming.gifts.gift.GiftService;
 import com.qprogramming.gifts.login.token.TokenBasedAuthentication;
 import com.qprogramming.gifts.messages.MessagesService;
@@ -41,6 +42,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static com.qprogramming.gifts.settings.Settings.APP_EMAIL_FROM;
+
 @RestController
 @RequestMapping("/api/user")
 public class UserRestController {
@@ -48,19 +51,24 @@ public class UserRestController {
     public static final String PASSWORD_REGEXP = "^^(?=.*[A-Z])(?=.*[0-9])(?=.*[a-z].*[a-z].*[a-z]).{8,}$";
     public static final String USERNAME_REGEXP = "^[a-zA-Z0-9_]+$";
     private static final Logger LOG = LoggerFactory.getLogger(UserRestController.class);
+    public static final String NEWSLETTER = "newsletter";
+    public static final String PUBLIC_LIST = "publicList";
+    public static final String LANGUAGE = "language";
     private AccountService accountService;
     private MessagesService msgSrv;
     private FamilyService familyService;
     private GiftService giftService;
     private MailService mailService;
+    private PropertyService propertyService;
 
     @Autowired
-    public UserRestController(AccountService accountService, MessagesService msgSrv, FamilyService familyService, GiftService giftService, MailService mailService) {
+    public UserRestController(AccountService accountService, MessagesService msgSrv, FamilyService familyService, GiftService giftService, MailService mailService, PropertyService propertyService) {
         this.accountService = accountService;
         this.msgSrv = msgSrv;
         this.familyService = familyService;
         this.giftService = giftService;
         this.mailService = mailService;
+        this.propertyService = propertyService;
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
@@ -118,25 +126,40 @@ public class UserRestController {
     /**
      * Returns user list, if passed param family is true, will return all accounts without family
      *
-     * @param family if true , returned list will contain only accounts without family
+     * @param noFamily if true , returned list will contain only accounts without family
      * @return
      */
     @RequestMapping(value = "/users", method = RequestMethod.GET)
-    public ResponseEntity<?> userList(@RequestParam(required = false) boolean family) {
+    public ResponseEntity<?> userList(@RequestParam(required = false) boolean noFamily) {
         Set<Account> list;
-        if (family) {
-            list = new HashSet<>(accountService.findWithoutFamily());
+        if (noFamily) {
+            list = new LinkedHashSet<>(accountService.findWithoutFamily());
         } else {
-            list = new HashSet<>(accountService.findAll());
+            list = new LinkedHashSet<>(accountService.findAll());
         }
         addGiftCounts(list);
         return ResponseEntity.ok(list);
     }
 
+    @RequestMapping(value = "/userList", method = RequestMethod.GET)
+    public ResponseEntity<?> userSearchList(@RequestParam(required = false) String username) {
+        Account account = Utils.getCurrentAccount();
+        if (StringUtils.isNotBlank(username)) {
+            account = accountService.findByUsername(username);
+            if (account == null) {
+                return ResponseEntity.notFound().build();
+            }
+        }
+        Set<Account> list = accountService.findAllSortByFamily(account);
+        return ResponseEntity.ok(list);
+    }
+
+
     @RequestMapping("/families")
     public ResponseEntity<?> familyList() {
         List<Family> families = familyService.findAll();
         families.forEach(family -> {
+            family.setMembers(new TreeSet<>(family.getMembers()));
             addGiftCounts(family.getMembers());
             markAdmins(family);
         });
@@ -232,7 +255,7 @@ public class UserRestController {
                 form.setName(Utils.getCurrentAccount().getSurname());
             }
             family.setName(form.getName());
-            if(membersToInvite.size()>0 || adminsToInvite.size()>0){
+            if (membersToInvite.size() > 0 || adminsToInvite.size() > 0) {
                 return new ResultData.ResultBuilder().ok().message(msgSrv.getMessage("user.family.edit.success.invites")).build();
             }
             return new ResultData.ResultBuilder().ok().message(msgSrv.getMessage("user.family.edit.success")).build();
@@ -312,7 +335,9 @@ public class UserRestController {
         for (Account account : members) {
             if (!AccountType.KID.equals(account.getType())) {
                 AccountEvent event = familyService.inviteAccount(account, family, type);
-                mailService.sendConfirmMail(createMail(account), event);
+                Mail mail = Utils.createMail(account, Utils.getCurrentAccount());
+                mail.setMailFrom(propertyService.getProperty(APP_EMAIL_FROM));
+                mailService.sendConfirmMail(mail, event);
             } else {
                 familyService.addAccountToFamily(account, family);
             }
@@ -415,7 +440,20 @@ public class UserRestController {
         }
         Utils.getCurrentAccount().setTourComplete(false);
         account.setTourComplete(false);
-        accountService.update(account);
+        account = accountService.update(account);
+        accountService.signin(account);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/changelog", method = RequestMethod.POST)
+    public ResponseEntity changelogRead() {
+        Account account = accountService.findById(Utils.getCurrentAccountId());
+        if (account == null) {
+            return new ResultData.ResultBuilder().notFound().build();
+        }
+        Utils.getCurrentAccount().setSeenChangelog(true);
+        account.setSeenChangelog(true);
+        account = accountService.update(account);
         accountService.signin(account);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -429,11 +467,14 @@ public class UserRestController {
         if (account == null || !account.equals(currentAccount)) {
             return ResponseEntity.notFound().build();
         }
-        if (object.has("language")) {
-            account.setLanguage(object.getString("language"));
+        if (object.has(LANGUAGE)) {
+            account.setLanguage(object.getString(LANGUAGE));
         }
-        if (object.has("publicList")) {
-            account.setPublicList(object.getBoolean("publicList"));
+        if (object.has(PUBLIC_LIST)) {
+            account.setPublicList(object.getBoolean(PUBLIC_LIST));
+        }
+        if (object.has(NEWSLETTER)) {
+            account.setNewsletter(object.getBoolean(NEWSLETTER));
         }
         accountService.update(account);
         accountService.signin(account);
@@ -525,7 +566,7 @@ public class UserRestController {
             Mail mail = new Mail();
             Account byEmail = accountService.findByEmail(email);
             mail.setMailTo(email);
-            mail.setMailFrom(Utils.getCurrentAccount().getEmail());
+            mail.setMailFrom(propertyService.getProperty(APP_EMAIL_FROM));
             if (byEmail != null) {
                 mail.setLocale(byEmail.getLanguage());
                 mail.addToModel("name", byEmail.getFullname());
@@ -543,19 +584,16 @@ public class UserRestController {
         return new ResultData.ResultBuilder().ok().message(message).build();
     }
 
-    /**
-     * Creates mail out of account
-     *
-     * @param account account for which mail will be created
-     * @return list of {@link Mail}
-     */
-    private Mail createMail(Account account) {
-        Mail mail = new Mail();
-        mail.setMailTo(account.getEmail());
-        mail.setMailFrom(Utils.getCurrentAccount().getEmail());
-        mail.setLocale(account.getLanguage());
-        mail.addToModel("name", account.getFullname());
-        mail.addToModel("owner", Utils.getCurrentAccount().getFullname());
-        return mail;
+    //TODO delete afterwards
+    @RequestMapping(value = "/scheduler", method = RequestMethod.POST)
+    public ResponseEntity sendScheduler() {
+        try {
+            mailService.sendEvents();
+        } catch (MessagingException e) {
+            LOG.error("Error while sending emailLists {}", e);
+            return new ResultData.ResultBuilder().badReqest().error().message(e.getMessage()).build();
+        }
+        String message = msgSrv.getMessage("gift.share.success", null, "", Utils.getCurrentLocale());
+        return new ResultData.ResultBuilder().ok().message(message).build();
     }
 }

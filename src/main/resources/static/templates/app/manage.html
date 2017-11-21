@@ -102,6 +102,15 @@
                 &nbsp;<span translate="app.manage.email"></span>
             </h4>
             <div class="row">
+                <div class="col-xs-12 col-sm-10">
+                    <label>
+                        {{'app.manage.email.from' |translate}}
+                    </label>
+                    <input class="form-control" id="emailFrom" name="emailFrom"
+                           ng-model="settings.email.from">
+                </div>
+            </div>
+            <div class="row">
                 <div class="col-xs-8 col-sm-6">
                     <label>{{'app.manage.email.host' |translate}}</label>:
                 </div>

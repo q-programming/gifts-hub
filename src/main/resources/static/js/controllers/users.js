@@ -1,5 +1,6 @@
 app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal', '$filter', '$translate', '$location', '$timeout', 'AlertService', 'AvatarService', 'AppService', 'UtilsService',
     function ($scope, $rootScope, $http, $log, $uibModal, $filter, $translate, $location, $timeout, AlertService, AvatarService, AppService, UtilsService) {
+        $scope.utils = UtilsService;
         //lists
         $scope.users = [];
         $scope.families = [];
@@ -224,7 +225,7 @@ app.controller('userlist', ['$scope', '$rootScope', '$http', '$log', '$uibModal'
          * Get all users that currently are not part of any family
          */
         function getUsersWithoutFamily() {
-            $http.get('api/user/users?family=true').then(
+            $http.get('api/user/users?noFamily=true').then(
                 function (response) {
                     $scope.usersWithoutFamily.length = 0;
                     $log.debug("[DEBUG] Loaded family users");

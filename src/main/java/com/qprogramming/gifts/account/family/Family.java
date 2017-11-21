@@ -6,6 +6,7 @@ import org.springframework.util.CollectionUtils;
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 @Entity
 public class Family {
@@ -37,7 +38,7 @@ public class Family {
 
     public Set<Account> getMembers() {
         if (CollectionUtils.isEmpty(members)) {
-            members = new HashSet<>();
+            members = new TreeSet<>();
         }
         return members;
     }

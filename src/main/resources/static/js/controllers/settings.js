@@ -43,7 +43,8 @@ app.controller('settings', ['$rootScope', '$scope', '$http', '$location', '$tran
             $http.post('api/user/settings', angular.toJson({
                 id: $rootScope.principal.id,
                 language: $rootScope.principal.language,
-                publicList: $rootScope.principal.publicList
+                publicList: $rootScope.principal.publicList,
+                newsletter: $rootScope.principal.newsletter
             })).then(
                 function () {
                     $translate.use($rootScope.principal.language);

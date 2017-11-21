@@ -12,6 +12,8 @@ import com.qprogramming.gifts.gift.GiftStatus;
 import com.qprogramming.gifts.gift.category.Category;
 import com.qprogramming.gifts.gift.category.CategoryRepository;
 import com.qprogramming.gifts.messages.MessagesService;
+import com.qprogramming.gifts.schedule.AppEventService;
+import com.qprogramming.gifts.schedule.AppEventType;
 import com.qprogramming.gifts.settings.SearchEngineService;
 import com.qprogramming.gifts.support.ResultData;
 import com.qprogramming.gifts.support.Utils;
@@ -58,15 +60,17 @@ public class GiftRestController {
     private CategoryRepository categoryRepository;
     private MessagesService msgSrv;
     private FamilyService familyService;
+    private AppEventService eventService;
 
     @Autowired
-    public GiftRestController(AccountService accountService, GiftService giftService, SearchEngineService searchEngineService, CategoryRepository categoryRepository, MessagesService msgSrv, FamilyService familyService) {
+    public GiftRestController(AccountService accountService, GiftService giftService, SearchEngineService searchEngineService, CategoryRepository categoryRepository, MessagesService msgSrv, FamilyService familyService, AppEventService eventService) {
         this.accountService = accountService;
         this.giftService = giftService;
         this.searchEngineService = searchEngineService;
         this.categoryRepository = categoryRepository;
         this.msgSrv = msgSrv;
         this.familyService = familyService;
+        this.eventService = eventService;
         initProhibited();
     }
 
@@ -93,6 +97,7 @@ public class GiftRestController {
         }
         if (canOperateOnUsernameGifts(giftForm.getUsername()) || StringUtils.isBlank(giftForm.getUsername())) {
             Gift gift = updateGiftFromForm(giftForm, newGift);
+            eventService.addEvent(gift, AppEventType.NEW);
             return new ResponseEntity<>(gift, HttpStatus.CREATED);
         }
         return new ResultData.ResultBuilder().badReqest().error().message(msgSrv.getMessage("user.family.admin.error")).build();
@@ -176,7 +181,7 @@ public class GiftRestController {
         }
         gift.setStatus(GiftStatus.REALISED);
         giftService.update(gift);
-        //TODO add complete event newsleter
+        eventService.addEvent(gift, AppEventType.REALISED);
         return new ResultData.ResultBuilder().ok().message(msgSrv.getMessage("gift.complete.success", new Object[]{gift.getName()}, "", Utils.getCurrentLocale()))
                 .build();
     }
@@ -189,7 +194,7 @@ public class GiftRestController {
         }
         gift.setStatus(null);
         giftService.update(gift);
-        //TODO add complete event newsleter
+        eventService.tryToUndoEvent(gift);
         return new ResultData.ResultBuilder().ok().message(msgSrv.getMessage("gift.complete.undo.success")).build();
     }
 
@@ -202,8 +207,8 @@ public class GiftRestController {
         if (!canOperateOnGift(gift)) {
             return new ResultData.ResultBuilder().badReqest().error().message(msgSrv.getMessage("gift.delete.error")).build();
         }
+        eventService.deleteGiftEvents(gift);
         giftService.delete(gift);
-        //TODO add complete event newsleter
         return new ResultData.ResultBuilder().ok().message(msgSrv.getMessage("gift.delete.success", new Object[]{gift.getName()}, "", Utils.getCurrentLocale())).build();
     }
 

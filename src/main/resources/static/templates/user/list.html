@@ -62,10 +62,16 @@
          ng-repeat="user in users track by user.id"
          ng-include="'userRow-template.html'">
     </div>
-    <div ng-if="sortByFamily" ng-cloak="" class="row" ng-repeat="family in families">
-        <h4>{{family.name}}</h4>
-        <div class="row padded-row" ng-class-odd="'row-color'" ng-repeat="user in family.members"
-             ng-include="'userRow-template.html'">
+    <div ng-if="sortByFamily" ng-cloak="" class="row" ng-repeat="family in families"
+         ng-init="rowID = utils.toID(family?family.name:'');">
+        <h4>
+            <i class="fa toggler fa-caret-down clickable" ng-click="utils.toggleRow(rowID,$event)"></i>
+            {{family.name}}
+        </h4>
+        <div id="{{rowID}}">
+            <div class="row padded-row" ng-class-odd="'row-color'" ng-repeat="user in family.members"
+                 ng-include="'userRow-template.html'">
+            </div>
         </div>
     </div>
     <!--<div ng-if="sortByFamily" ng-cloak="" class="row" ng-repeat="family in families">-->
@@ -86,10 +92,15 @@
     <!--ng-include="'userRow-template.html'">-->
     <!--</div>-->
     <!--</div>-->
-    <div class="row" ng-if="sortByFamily">
-        <h4 translate="user.family.other"></h4>
-        <div class="row padded-row" ng-class-odd="'row-color'" ng-repeat="user in usersWithoutFamily"
-             ng-include="'userRow-template.html'">
+    <div class="row" ng-if="sortByFamily" ng-init="rowID = utils.toID('');">
+        <h4>
+            <i class="fa toggler fa-caret-down clickable" ng-click="utils.toggleRow(rowID,$event)"></i>
+            <span translate="user.family.other"></span>
+        </h4>
+        <div id="{{rowID}}">
+            <div class="row padded-row" ng-class-odd="'row-color'" ng-repeat="user in usersWithoutFamily"
+                 ng-include="'userRow-template.html'">
+            </div>
         </div>
     </div>
 </div>

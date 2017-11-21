@@ -16,7 +16,8 @@ public class Settings {
     public static final String APP_EMAIL_USERNAME = "spring.mail.username";
     public static final String APP_EMAIL_PASS = "spring.mail.password";
     public static final String APP_EMAIL_ENCODING = "spring.mail.defaultEncoding";
-
+    public static final String APP_EMAIL_FROM = "spring.mail.from";
+    public static final String APP_NEWSLETTER_SCHEDULE = "app.newsletter.schedule";
 
     private String language;
     private List<SearchEngine> searchEngines;
@@ -24,7 +25,6 @@ public class Settings {
     private SortBy sort;
     private Email email;
     private String appUrl;
-
 
     public String getLanguage() {
         return language;
@@ -102,6 +102,7 @@ public class Settings {
         private String username;
         private String password;
         private String encoding;
+        private String from;
 
         public Email() {
         }
@@ -145,5 +146,14 @@ public class Settings {
         public void setEncoding(String encoding) {
             this.encoding = encoding;
         }
+
+        public String getFrom() {
+            return from;
+        }
+
+        public void setFrom(String from) {
+            this.from = from;
+        }
     }
+
 }

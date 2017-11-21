@@ -1,8 +1,10 @@
 app.controller('gift', [
-    '$rootScope', '$scope', '$http', '$log', '$routeParams', '$route', '$location', '$window', '$translate', '$uibModal', '$sce', 'AlertService', 'AvatarService', 'GIFT_STATUS',
-    function ($rootScope, $scope, $http, $log, $routeParams, $route, $location, $window, $translate, $uibModal, $sce, AlertService, AvatarService, GIFT_STATUS) {
+    '$rootScope', '$scope', '$http', '$log', '$routeParams', '$route', '$location', '$window', '$translate', '$uibModal', '$sce', 'AlertService', 'AvatarService', 'UtilsService', 'GIFT_STATUS',
+    function ($rootScope, $scope, $http, $log, $routeParams, $route, $location, $window, $translate, $uibModal, $sce, AlertService, AvatarService, UtilsService, GIFT_STATUS) {
+        $scope.utils = UtilsService;
         $scope.giftForm = {};
-        $scope.giftsList = [];
+        $scope.giftsList = {};
+        $scope.giftsListAll = {};
         $scope.searchEngines = [];
         $scope.editInProgress = false;
         $scope.userList = false;
@@ -12,6 +14,9 @@ app.controller('gift', [
         $scope.importedFile = null;
 
 
+        $scope.filterShow = false;
+        $scope.categoriesFilter = [];
+        $scope.filteredCategory = null;
         $scope.categoryOther = "";
         $scope.categoryRealised = "";
 
@@ -27,20 +32,41 @@ app.controller('gift', [
         //INIT
         getGiftList();
         if ($rootScope.authenticated) {
+            if (!$rootScope.principal) {
+                $window.location.reload();//in case of loosing session, principal fetch is delayed. Reload location to prevent errors
+            }
+            $scope.userList = !$routeParams.username || $routeParams.username === $rootScope.principal.username;
             $translate("gift.search").then(function (translation) {
                 $scope.searchWith = translation + " ";
             });
             getSearchEngines();
             getCategories();
             getFamily();
-            if (!$rootScope.principal) {
-                $window.location.reload();//in case of loosing session, principal fetch is delayed. Reload location to prevent errors
-            }
-            $scope.userList = !$routeParams.username || $routeParams.username === $rootScope.principal.username;
+            getUsers();
         }
+        //End init
+
         $scope.goToMemberList = function (user) {
             $location.path('/list/' + user.username);
 
+        };
+        /**
+         * Filter all already read gift lists per category
+         * @param filteredCategory passed category from dropdown select
+         */
+        $scope.filterCategory = function (filteredCategory) {
+            $scope.giftsList = $.extend({}, $scope.giftsListAll);//reset any potential filters
+            $scope.filteredCategory = null;
+            if (filteredCategory) {
+                $scope.filteredCategory = filteredCategory;
+                $scope.giftsListAll = $.extend({}, $scope.giftsList);
+                $scope.giftsList = {};
+                angular.forEach($scope.giftsListAll, function (contents, category) {
+                    if (filteredCategory.name === category) {
+                        $scope.giftsList[category] = contents;
+                    }
+                });
+            }
         };
 
 
@@ -313,7 +339,7 @@ app.controller('gift', [
         };
         $scope.checkCategory = function (item, form) {
             var url = 'api/gift/allowed-category';
-            form.categoryError = null
+            form.categoryError = null;
             if (item) {
                 $http.get(url, {params: {category: item.name}}).then(
                     function (response) {
@@ -359,7 +385,6 @@ app.controller('gift', [
             } else {
                 $translate("gift.list.mine").then(function (translation) {
                     $scope.listTitle = translation;
-
                 });
                 url = 'api/gift/mine';
                 $scope.userGiftList = $rootScope.principal;
@@ -377,6 +402,8 @@ app.controller('gift', [
                         }
                         $scope.giftsList[key] = value;
                     });
+                    $scope.giftsListAll = $.extend({}, $scope.giftsList);//clone list for listing purpose
+                    $scope.filterCategory($scope.filteredCategory);
                 }).catch(function (response) {
                 if (response.status === 404) {
                     $location.url('/404');
@@ -421,6 +448,9 @@ app.controller('gift', [
                     angular.forEach(response.data, function (cat) {
                         $scope.categories.push({id: cat.id, name: cat.name})
                     });
+                    angular.copy($scope.categories, $scope.categoriesFilter);
+                    $scope.categoriesFilter.push({id: Math.pow(2, 53) - 2, name: $scope.categoryOther});
+                    $scope.categoriesFilter.push({id: Math.pow(2, 53) - 1, name: $scope.categoryRealised});
                 }).catch(function (response) {
                 AlertService.addError("error.general");
                 $log.debug(response);
@@ -437,12 +467,30 @@ app.controller('gift', [
             });
         }
 
-        function getFamilyAvatars() {
-            angular.forEach($scope.family.members, function (user) {
+        function getUsersAvatars(users) {
+            angular.forEach(users, function (user) {
                 AvatarService.getUserAvatar(user);
             });
         }
 
+
+        function getUsers() {
+            var url;
+            if ($routeParams.username) {
+                url = 'api/user/userList?username=' + $routeParams.username;
+            }
+            else {
+                url = 'api/user/userList';
+            }
+            $http.get(url).then(
+                function (response) {
+                    if (response.data) {
+                        $scope.users = response.data;
+                        getUsersAvatars($scope.users);
+                    }
+                }
+            );
+        }
 
         function getFamily() {
             var url;
@@ -457,7 +505,7 @@ app.controller('gift', [
                     if (response.data) {
                         $scope.family = response.data;
                         isFamilyAdmin();
-                        getFamilyAvatars();
+                        getUsersAvatars($scope.family.members);
                     }
                 }
             );

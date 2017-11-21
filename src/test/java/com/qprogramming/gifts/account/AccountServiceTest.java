@@ -24,12 +24,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static com.qprogramming.gifts.TestUtil.USER_RANDOM_ID;
+import static com.qprogramming.gifts.TestUtil.createAccountList;
 import static org.junit.Assert.*;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.Matchers.any;
@@ -241,7 +239,7 @@ public class AccountServiceTest {
         all.add(account5);
         all.add(account6);
         when(familyServiceMock.findAll()).thenReturn(Arrays.asList(family1, family2));
-        when(accountRepositoryMock.findAll(any(Sort.class))).thenReturn(all);
+        when(accountRepositoryMock.findAll()).thenReturn(all);
         List<Account> withoutFamily = accountService.findWithoutFamily();
         assertTrue(withoutFamily.contains(account5));
         assertTrue(withoutFamily.contains(account6));
@@ -261,4 +259,39 @@ public class AccountServiceTest {
         verify(familyServiceMock, times(1)).removeFromFamily(testAccount, family);
         verify(accountRepositoryMock, times(1)).delete(testAccount);
     }
+
+    @Test
+    public void findAllSortByFamily() throws Exception {
+        List<Account> all = createAccountList();
+        all.add(testAccount);
+        Family family1 = new Family();
+        Account andyAccount = all.get(1);
+        Account bobAccount = all.get(0);
+        family1.getMembers().addAll(Arrays.asList(testAccount, andyAccount, bobAccount));
+        when(accountRepositoryMock.findAll()).thenReturn(all);
+        when(familyServiceMock.getFamily(testAccount)).thenReturn(family1);
+        Set<Account> result = accountService.findAllSortByFamily(testAccount);
+        //convert result to array to test order
+        Object[] ordered = result.toArray();
+        assertEquals(ordered[0], andyAccount);
+        assertEquals(ordered[1], bobAccount);
+        assertEquals(ordered[2], testAccount);
+    }
+    @Test
+    public void findAllSortByFamilyNoFamily() throws Exception {
+        List<Account> all = createAccountList();
+        all.add(testAccount);
+        Account andyAccount = all.get(1);
+        Account bobAccount = all.get(0);
+        when(accountRepositoryMock.findAll()).thenReturn(all);
+        Set<Account> result = accountService.findAllSortByFamily(testAccount);
+        //convert result to array to test order
+        Object[] ordered = result.toArray();
+        assertEquals(ordered[0], andyAccount);
+        assertEquals(ordered[1], bobAccount);
+        assertEquals(ordered[6], testAccount);
+    }
+
+
+
 }

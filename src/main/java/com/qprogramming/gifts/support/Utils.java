@@ -1,6 +1,7 @@
 package com.qprogramming.gifts.support;
 
 import com.qprogramming.gifts.account.Account;
+import com.qprogramming.gifts.config.mail.Mail;
 import com.qprogramming.gifts.gift.Gift;
 import com.qprogramming.gifts.gift.category.Category;
 import org.apache.commons.lang3.StringUtils;
@@ -22,6 +23,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Utils {
+    public static final Comparator<Account> ACCOUNT_COMPARATOR = Comparator.comparing(Account::getName).thenComparing(Account::getSurname).thenComparing(Account::getUsername);
     private static final String DATE_FORMAT = "dd-MM-yyyy";
     private static final String DATE_FORMAT_TIME = "dd-MM-yyyy HH:mm";
     private static final Logger LOG = LoggerFactory.getLogger(Utils.class);
@@ -200,6 +202,28 @@ public class Utils {
     public static boolean validateEmail(String emailStr) {
         Matcher matcher = VALID_EMAIL_ADDRESS_REGEX.matcher(emailStr);
         return matcher.find();
+    }
+
+    /**
+     * Creates mail out of account
+     *
+     * @param account account for which mail will be created
+     * @param owner   Owner account which triggered mail
+     * @return list of {@link Mail}
+     */
+    public static Mail createMail(Account account, Account owner) {
+        Mail mail = new Mail();
+        mail.setMailTo(account.getEmail());
+        mail.setLocale(account.getLanguage());
+        mail.addToModel("name", account.getFullname());
+        if (owner != null) {
+            mail.addToModel("owner", owner.getFullname());
+        }
+        return mail;
+    }
+
+    public static Mail createMail(Account account) {
+        return createMail(account, null);
     }
 
 }

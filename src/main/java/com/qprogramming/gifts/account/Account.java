@@ -11,8 +11,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 
+import static com.qprogramming.gifts.support.Utils.ACCOUNT_COMPARATOR;
+
 @Entity
-public class Account implements Serializable, UserDetails {
+public class Account implements Serializable, UserDetails, Comparable<Account> {
 
     @Id
     private String id;
@@ -45,6 +47,13 @@ public class Account implements Serializable, UserDetails {
 
     @Column
     private Boolean tourComplete = false;
+
+    @Column
+    private Boolean seenChangelog = false;
+
+    @Column
+    private Boolean newsletter = false;
+
 
     private String fullname;
 
@@ -205,6 +214,21 @@ public class Account implements Serializable, UserDetails {
         this.giftsCount = giftsCount;
     }
 
+    public Boolean getSeenChangelog() {
+        return seenChangelog;
+    }
+
+    public void setSeenChangelog(Boolean seenChangelog) {
+        this.seenChangelog = seenChangelog;
+    }
+
+    public Boolean isNewsletter() {
+        return newsletter;
+    }
+
+    public void setNewsletter(Boolean newsletter) {
+        this.newsletter = newsletter;
+    }
 
     @JsonIgnore
     public String getTokenValue() {
@@ -299,5 +323,10 @@ public class Account implements Serializable, UserDetails {
                 ", name='" + name + '\'' +
                 ", surname='" + surname + '\'' +
                 '}';
+    }
+
+    @Override
+    public int compareTo(Account o) {
+        return ACCOUNT_COMPARATOR.compare(this, o);
     }
 }

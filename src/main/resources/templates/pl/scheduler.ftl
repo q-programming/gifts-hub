@@ -3,7 +3,7 @@
 <head>
     <meta name="viewport" content="width=device-width">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Wish list</title>
+    <title>Podsumowanie ostatniego tygodnia</title>
     <style>
         * {
             margin: 0;
@@ -30,6 +30,31 @@
             color: #348eda;
         }
 
+        .btn-primary, .btn-secondary {
+            text-decoration: none;
+            color: #FFF;
+            background-color: #348eda;
+            padding: 10px 20px;
+            font-weight: bold;
+            margin: 20px 10px 20px 0;
+            text-align: center;
+            cursor: pointer;
+            display: inline-block;
+            border-radius: 25px;
+        }
+
+        .btn-secondary {
+            background: #aaa;
+        }
+
+        .last {
+            margin-bottom: 0;
+        }
+
+        .first {
+            margin-top: 0;
+        }
+
         table.body-wrap {
             width: 100%;
             padding: 20px;
@@ -49,6 +74,10 @@
             color: #666;
         }
 
+        .date {
+            font-size: 12px;
+        }
+
         table.footer-wrap a {
             color: #999;
         }
@@ -60,6 +89,11 @@
             font-weight: bold;
             vertical-align: middle;
         }
+
+        .text {
+            vertical-align: middle;
+        }
+
         h1, h2, h3 {
             font-family: "Helvetica Neue", Helvetica, Arial, "Lucida Grande",
             sans-serif;
@@ -116,12 +150,44 @@
             padding: 10px;
         }
 
-        .avatar {
-            height: 50px;
-            padding: 2px;
-            border-radius: 50%
+        table.worklog_table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px lightgray;
+            border-bottom-style: solid;
         }
 
+        table.worklog_table td {
+            width: 50%;
+            padding: 1px 1px 1px 5px;
+            border: 1px solid lightgray;
+        }
+
+        .avatar {
+            height: 50px;
+            padding: 2px 4px 2px 2px;
+            border-radius: 50%;
+            display: inline;
+        }
+
+        .new {
+            color: green;
+        }
+
+        .realised {
+            color: gray;
+            text-decoration: line-through;
+        }
+
+        .filler {
+            height: 1px;
+            background: lightgray;
+            margin-bottom: 5px;
+            margin-top: 5px;
+        }
+        .black {
+            color: #000 !important;
+        }
     </style>
 </head>
 <body bgcolor="#f6f6f6">
@@ -132,22 +198,45 @@
     <table class="main">
         <tbody>
         <tr>
-            <td valign="top" style="vertical-align: top; width:70px">
-                <img class="avatar" src='cid:userAvatar.png'>
-            </td>
-            <td>
-            <#if name??>
-                <p>Hello ${name},</p>
-            </#if>
-                <div>
-                ${owner} wanted to share with you his wish list in Gifts Hub application
-                </div>
-                <p>Click below to view it </p>
-                <p>
-                    <a href="${publicLink}">${publicLink}</a>
-                </p>
+            <td colspan="2">
+                <#if name??>
+                    <p>Witaj ${name},</p>
+                </#if>
+                <p>Poni&#380;ej lista wydarze&#324; w Gifts Hub z ostatniego tygodnia</p>
             </td>
         </tr>
+        <#list events?keys as account>
+        <tr>
+            <td colspan="2">
+                <div class="filler"></div>
+            </td>
+        </tr>
+        <tr>
+            <td valign="top" style="vertical-align: top; width:250px;">
+                <div>
+                    <img src='cid:avatar_${account.id}' class="avatar">&nbsp;
+                    <a class="black" target="_blank" href="${application!'#'}#list/${account.username}">${account.fullname}</a>
+                </div>
+            </td>
+            <td>
+                <#list events?values[account_index] as event>
+                    <#if event.type == 'NEW'>
+                        <div class="new">
+                            <strong>+</strong> ${event.time?string["dd.MM.yyyy"]} ${event.gift.name}
+                        </div>
+                    <#elseif event.type == 'REALISED'>
+                        <div class="realised">
+                            &#10003; ${event.time?string["dd.MM.yyyy"]} ${event.gift.name}
+                        </div>
+                    <#else>
+                        <div>
+                            &nbsp; ${event.time?string["dd.MM.yyyy"]} ${event.gift.name}
+                        </div>
+                    </#if>
+                </#list>
+            </td>
+        </tr>
+        </#list>
         </tbody>
     </table>
 </div>
@@ -164,10 +253,10 @@
                     <tr>
                         <td align="center">
                             <p>
-                                This is automatic message sent from <a
+                                To jest automatyczna wiadomo&#347;&#263; wys&#322;ana z <a
                                     href="${application!'#'}" target="_blank">${application!'#'}</a>.</br>
-                                If you wish to stop receiving e-mail notifications, please deselect newsletter option in
-                                your user settings.
+                                Je&#380;eli nie chcesz otrzymywa&#263; wi&#281;cej powiadomie&#324; poprzez
+                                e-mail, odznacz prosz&#281; opcj&#281; newslettera w paneu sterowania.
                             </p>
                         </td>
                     </tr>

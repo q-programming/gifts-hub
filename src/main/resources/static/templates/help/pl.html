@@ -1,7 +1,7 @@
 <div class="row">
     <div class="col-xs-12 text-center">
         <h2><img src="images/logo.png" width="60px" height="60px"/>&nbsp;Witaj w Gifts Hub</h2>
-        <p>Wersja 0.6</p>
+        <p>Wersja 0.7</p>
     </div>
     <div class="col-xs-12">
         <p>
@@ -174,7 +174,20 @@
             <br><br>Prezenty zarezerwowane są dodatkowo pokazane na dole listy w swojej kategorii.<br>
         </p>
         <p>
-            <strong>Akcje</strong><br>Zależnie od tego czy jesteś na liscie swojej, czyjejś lub liscie innego członka
+            <strong>Filtrowanie</strong><br>Możliwe jest filtrowanie po kategoriach wszystkich prezentów dla obecnie
+            wyświetlanego użytkownika.<br>
+            Aby filtrować należy kliknąć ikonę
+            <i class="fa fa-lg fa-filter clickable" uib-tooltip="{{'gift.category.filter'|translate}}"></i>
+            zlokalizowaną koło ikony akcji w nagłówku listy.<br>Po kliknięciu, dodatkowe pole wyboru zostanie pokazane,
+            gdzie można wybrać jedną z istniejących kategorii
+            <br>Kiedy aktywny jest filtr, ikona zostanie zmieniona na
+            <i class="fa fa-plus-circle filter-active"></i>
+            <i class="fa fa-lg fa-filter clickable" uib-tooltip="{{'gift.category.filter'|translate}}"></i>
+        </p>
+        <p>
+            <strong><i class="fa fa-cogs clickable"
+                       uib-tooltip="{{'main.action'|translate}}"></i>&nbsp;- Akcje</strong><br>Zależnie od tego czy
+            jesteś na liscie swojej, czyjejś lub liscie innego członka
             twojej rodziny, dostepne dla Ciebie będą różne akcje.
             <br><br>
             <i class="fa fa-fw fa-lg fa-check-circle-o"></i> - Oznacz prezent jako zrealizowany<br>
@@ -286,6 +299,11 @@
         <p>
             Na tym ekranie możesz dodać swój niestandardowy awatar, zmienić język w którym wyświetlana jest aplikacja i
             okreslić czy twoja lista będzie publiczna
+        </p>
+        <h4>Newsletter</h4>
+        <p>
+            {{'user.settings.newsletter.help'|translate}}<br>
+            Newsletter będzie wysyłany na email powiązany z kontem ( przy rejestracji , lub podany facebook/google )
         </p>
         <h4>Lista Publiczna</h4>
         <p>
