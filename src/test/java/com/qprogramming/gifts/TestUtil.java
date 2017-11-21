@@ -2,6 +2,8 @@ package com.qprogramming.gifts;
 
 import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.gift.Gift;
+import com.qprogramming.gifts.schedule.AppEvent;
+import com.qprogramming.gifts.schedule.AppEventType;
 import com.qprogramming.gifts.settings.SearchEngine;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.type.TypeFactory;
@@ -107,6 +109,16 @@ public class TestUtil {
         all.add(account6);
         return all;
     }
+
+    public static AppEvent createEvent(Account account) {
+        AppEvent event = new AppEvent();
+        event.setAccount(account);
+        event.setType(AppEventType.NEW);
+        Gift gift = createGift(1L,account);
+        event.setGift(gift);
+        return event;
+    }
+
 
 
 }

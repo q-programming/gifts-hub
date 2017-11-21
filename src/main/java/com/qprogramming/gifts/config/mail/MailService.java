@@ -34,15 +34,26 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.qprogramming.gifts.settings.Settings.*;
 
 @Service
 public class MailService {
 
+    private static final String APPLICATION = "application";
+    private static final String NAME = "name";
+    private static final String EVENTS = "events";
+    private static final String FAMILY_NAME = "familyName";
+    private static final String CONFIRM_LINK = "confirmLink";
+    private static final String LOGO_PNG = "logo.png";
+    private static final String AVATAR = "avatar_";
+    private static final String USER_AVATAR_PNG = "userAvatar.png";
+    private static final String PNG = "png";
+    private static final String PUBLIC_LINK = "publicLink";
     private final Logger LOG = LoggerFactory.getLogger(this.getClass());
     private PropertyService propertyService;
-    private JavaMailSender mailSender;
+    JavaMailSender mailSender;
     private Configuration freemarkerConfiguration;
     private MessagesService msgSrv;
     private DataBasePropertySource dbSource;
@@ -99,11 +110,11 @@ public class MailService {
     /**
      * Test if connection is correct. If there are some errors MessagingException will be thrown which should be catched
      *
-     * @param host
-     * @param port
-     * @param username
-     * @param password
-     * @throws MessagingException
+     * @param host     SMTP host
+     * @param port     SMTP port
+     * @param username SMTP username
+     * @param password SMTP password
+     * @throws MessagingException If connection is not established
      */
     public void testConnection(String host, Integer port, String username, String password) throws MessagingException {
         JavaMailSenderImpl jmsi = new JavaMailSenderImpl();
@@ -118,6 +129,8 @@ public class MailService {
         jmsi.testConnection();
     }
 
+    //TODO to be removed
+    @Deprecated
     public void sendEmail(Mail mail) {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         try {
@@ -133,17 +146,23 @@ public class MailService {
         }
     }
 
-    public String geContentFromTemplate(Map<String, Object> model, String emailTemplate) {
-        StringBuffer content = new StringBuffer();
+    private String geContentFromTemplate(Map<String, Object> model, String emailTemplate) {
+        StringBuilder content = new StringBuilder();
         try {
             content.append(FreeMarkerTemplateUtils
                     .processTemplateIntoString(freemarkerConfiguration.getTemplate(emailTemplate), model));
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("Error while getting template for {}.{}", emailTemplate, e);
         }
         return content.toString();
     }
 
+    /**
+     * Send public gift list to list of emails
+     *
+     * @param emails email list
+     * @throws MessagingException if there were errors while sending email
+     */
     public void shareGiftList(List<Mail> emails) throws MessagingException {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         String application = propertyService.getProperty(APP_URL);
@@ -154,13 +173,13 @@ public class MailService {
             mimeMessageHelper.setSubject(msgSrv.getMessage("gift.share.subject", new Object[]{Utils.getCurrentAccount().getFullname()}, "", locale));
             mimeMessageHelper.setFrom(mail.getMailFrom());
             mimeMessageHelper.setTo(mail.getMailTo());
-            mail.addToModel("publicLink", publicLink);
-            mail.addToModel("application", application);
+            mail.addToModel(PUBLIC_LINK, publicLink);
+            mail.addToModel(APPLICATION, application);
             mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/giftList.ftl"));
             mimeMessageHelper.setText(mail.getMailContent(), true);
             addAppLogo(mimeMessageHelper);
             File avatarTempFile = getUserAvatar(Utils.getCurrentAccount());
-            mimeMessageHelper.addInline("userAvatar.png", avatarTempFile);
+            mimeMessageHelper.addInline(USER_AVATAR_PNG, avatarTempFile);
             mailSender.send(mimeMessageHelper.getMimeMessage());
         }
     }
@@ -188,7 +207,7 @@ public class MailService {
                 BufferedImage scaledImg = Scalr.resize(originalImage, 50);
                 avatarTempFile = File.createTempFile(account.getId(), ".png");
                 avatarTempFile.deleteOnExit();
-                ImageIO.write(scaledImg, "png", avatarTempFile);
+                ImageIO.write(scaledImg, PNG, avatarTempFile);
                 avatarBuffer.put(account, avatarTempFile);
             }
         } catch (IOException e) {
@@ -202,11 +221,18 @@ public class MailService {
     }
 
 
+    /**
+     * Send confirmation email to account
+     *
+     * @param mail  Recipient mail
+     * @param event Event which requires confirmation
+     * @throws MessagingException if there were errors while sending email
+     */
     public void sendConfirmMail(Mail mail, AccountEvent event) throws MessagingException {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         String application = propertyService.getProperty(APP_URL);
         String confirmLink = application + "#/confirm/" + event.getToken();
-        mail.addToModel("confirmLink", confirmLink);
+        mail.addToModel(CONFIRM_LINK, confirmLink);
         Locale locale = getMailLocale(mail);
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
         String familyName = event.getFamily().getName();
@@ -214,17 +240,17 @@ public class MailService {
         mimeMessageHelper.setTo(mail.getMailTo());
         addAppLogo(mimeMessageHelper);
         File avatarTempFile = getUserAvatar(Utils.getCurrentAccount());
-        mimeMessageHelper.addInline("userAvatar.png", avatarTempFile);
-        mail.addToModel("application", application);
+        mimeMessageHelper.addInline(USER_AVATAR_PNG, avatarTempFile);
+        mail.addToModel(APPLICATION, application);
         switch (event.getType()) {
             case FAMILY_MEMEBER:
                 mimeMessageHelper.setSubject(msgSrv.getMessage("user.family.invite", new Object[]{familyName}, "", locale));
-                mail.addToModel("familyName", familyName);
+                mail.addToModel(FAMILY_NAME, familyName);
                 mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/familyInvite.ftl"));
                 break;
             case FAMILY_ADMIN:
                 mimeMessageHelper.setSubject(msgSrv.getMessage("user.family.admin", new Object[]{familyName}, "", locale));
-                mail.addToModel("familyName", familyName);
+                mail.addToModel(FAMILY_NAME, familyName);
                 mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/familyAdmin.ftl"));
                 break;
             case FAMILY_REMOVE:
@@ -234,16 +260,29 @@ public class MailService {
         mailSender.send(mimeMessageHelper.getMimeMessage());
     }
 
+    /**
+     * Send all scheduled events. While sending email to account it's events are omitted
+     * All events are purged afterwards ( marked as processed )
+     *
+     * @throws MessagingException if there were errors while sending email
+     */
     public void sendEvents() throws MessagingException {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         String application = propertyService.getProperty(APP_URL);
         List<Account> allAccounts = accountService.findAllWithNewsletter();//TODO has newsletter checked
         Map<Account, List<AppEvent>> eventMap = eventService.getEventsGroupedByAccount();
         for (Account account : allAccounts) {
-            sendEventForAccount(mimeMessage, application, eventMap, account);//TODO remove my own events?
+            Map<Account, List<AppEvent>> eventsWithoutAccount = eventMap.entrySet().stream()
+                    .filter(entry -> !entry.getKey().equals(account))
+                    .collect(Collectors.toMap(Map.Entry::getKey, entry -> new ArrayList<>(entry.getValue())));
+            if (!eventsWithoutAccount.isEmpty()) {
+                sendEventForAccount(mimeMessage, application, eventsWithoutAccount, account);
+            }
         }
     }
 
+    @Deprecated
+    //TODO remove after complete
     public void sendEvent() throws MessagingException {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         String application = propertyService.getProperty(APP_URL);
@@ -252,6 +291,15 @@ public class MailService {
     }
 
 
+    /**
+     * Form event into email and send it to account recipient
+     *
+     * @param mimeMessage message to be sent
+     * @param application application url
+     * @param eventMap    map with all events
+     * @param account     account which will recieve email
+     * @throws MessagingException if there were errors while sending email
+     */
     private void sendEventForAccount(MimeMessage mimeMessage, String application, Map<Account, List<AppEvent>> eventMap, Account account) throws MessagingException {
         Mail mail = Utils.createMail(account);
         Locale locale = getMailLocale(mail);
@@ -259,9 +307,9 @@ public class MailService {
         mimeMessageHelper.setSubject(msgSrv.getMessage("schedule.event.summary", null, "", locale));
         mimeMessageHelper.setFrom(mail.getMailFrom());
         mimeMessageHelper.setTo(mail.getMailTo());
-        mail.addToModel("application", application);
-        mail.addToModel("name", account.getName());
-        mail.addToModel("events", eventMap);
+        mail.addToModel(APPLICATION, application);
+        mail.addToModel(NAME, account.getName());
+        mail.addToModel(EVENTS, eventMap);
         mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/scheduler.ftl"));
         mimeMessageHelper.setText(mail.getMailContent(), true);
         addAppLogo(mimeMessageHelper);
@@ -272,11 +320,11 @@ public class MailService {
 
     private void addEventAccountsAvatars(Map<Account, List<AppEvent>> eventMap, MimeMessageHelper mimeMessageHelper) throws MessagingException {
         for (Account eventAccount : eventMap.keySet()) {
-            mimeMessageHelper.addInline("avatar_" + eventAccount.getId(), getUserAvatar(eventAccount));
+            mimeMessageHelper.addInline(AVATAR + eventAccount.getId(), getUserAvatar(eventAccount));
         }
     }
 
     private void addAppLogo(MimeMessageHelper mimeMessageHelper) throws MessagingException {
-        mimeMessageHelper.addInline("logo.png", new ClassPathResource("static/images/logo_email.png"));
+        mimeMessageHelper.addInline(LOGO_PNG, new ClassPathResource("static/images/logo_email.png"));
     }
 }

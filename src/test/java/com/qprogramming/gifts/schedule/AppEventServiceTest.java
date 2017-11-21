@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import static com.qprogramming.gifts.TestUtil.createEvent;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
@@ -51,7 +52,7 @@ public class AppEventServiceTest {
 
     @Test
     public void getNotProcessedTest() {
-        when(eventRepoMock.findAll()).thenReturn(Collections.singletonList(createEvent()));
+        when(eventRepoMock.findAll()).thenReturn(Collections.singletonList(createEvent(testAccount)));
         List<AppEvent> result = eventSrv.findAllNotProcessed();
         assertFalse(result.isEmpty());
         assertTrue(testAccount.equals(result.get(0).getAccount()));
@@ -59,8 +60,8 @@ public class AppEventServiceTest {
 
     @Test
     public void markProcessedTest() {
-        AppEvent event = createEvent();
-        AppEvent event2 = createEvent();
+        AppEvent event = createEvent(testAccount);
+        AppEvent event2 = createEvent(testAccount);
         List<AppEvent> appEvents = Arrays.asList(event, event2);
         eventSrv.processEvents(appEvents);
         verify(eventRepoMock, times(1)).delete(anyCollectionOf(AppEvent.class));
@@ -68,8 +69,8 @@ public class AppEventServiceTest {
 
     @Test
     public void getAllNotProcessedMap() {
-        AppEvent event = createEvent();
-        AppEvent event2 = createEvent();
+        AppEvent event = createEvent(testAccount);
+        AppEvent event2 = createEvent(testAccount);
         List<AppEvent> appEvents = Arrays.asList(event, event2);
         when(eventRepoMock.findAll()).thenReturn(appEvents);
         Map<Account, List<AppEvent>> result = eventSrv.getEventsGroupedByAccount();
@@ -90,22 +91,10 @@ public class AppEventServiceTest {
 
     @Test
     public void tryToUndoTest() {
-        AppEvent event = createEvent();
+        AppEvent event = createEvent(testAccount);
         when(eventRepoMock.findByAccountAndGiftAndType(Utils.getCurrentAccount(), event.getGift(), AppEventType.REALISED)).thenReturn(event);
         eventSrv.tryToUndoEvent(event.getGift());
         verify(eventRepoMock, times(1)).findByAccountAndGiftAndType(testAccount, event.getGift(), AppEventType.REALISED);
     }
-
-    private AppEvent createEvent() {
-        AppEvent event = new AppEvent();
-        event.setAccount(testAccount);
-        event.setType(AppEventType.NEW);
-        Gift gift = new Gift();
-        gift.setName("name");
-        gift.setUserId(testAccount.getId());
-        event.setGift(gift);
-        return event;
-    }
-
 
 }
