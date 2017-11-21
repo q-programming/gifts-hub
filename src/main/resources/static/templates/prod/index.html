@@ -3,6 +3,7 @@
 <head>
     <title>Gifts hub</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="icon" type="image/png" href="images/favicon.ico"/>
     <style type="text/css">
         [ng\:cloak], [ng-cloak], .ng-cloak {
             display: none !important;
@@ -10,7 +11,6 @@
     </style>
 </head>
 <!--CSS-->
-<link rel="icon" type="image/png" href="images/favicon.ico"/>
 <link rel="stylesheet" href="css/style.min.css"/>
 <link rel="stylesheet" href="webjars/bootstrap/3.3.7-1/css/bootstrap.css"/>
 <link rel="stylesheet" href="webjars/font-awesome/4.7.0/css/font-awesome.min.css"/>
@@ -163,6 +163,8 @@
 <tour ng-if="principal && !principal.tourComplete" ng-controller="tour" ng-include="'tour/tourSteps.html'"
       step="currentStep" nextLabel="{{'main.next'|translate}}">
 </tour>
+<div ng-if="principal && !principal.seenChangelog" ng-controller="changelog">
+</div>
 <back-to-top></back-to-top>
 <script id="tour/tour.tpl.html" type="text/ng-template">
     <div class="tour-tip">
