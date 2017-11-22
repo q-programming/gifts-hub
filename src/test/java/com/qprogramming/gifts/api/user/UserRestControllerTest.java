@@ -4,6 +4,7 @@ import com.fasterxml.uuid.Generators;
 import com.qprogramming.gifts.MockSecurityContext;
 import com.qprogramming.gifts.account.*;
 import com.qprogramming.gifts.account.event.AccountEvent;
+import com.qprogramming.gifts.account.event.AccountEventRepository;
 import com.qprogramming.gifts.account.event.AccountEventType;
 import com.qprogramming.gifts.account.family.Family;
 import com.qprogramming.gifts.account.family.FamilyForm;
@@ -15,6 +16,7 @@ import com.qprogramming.gifts.config.property.PropertyService;
 import com.qprogramming.gifts.gift.Gift;
 import com.qprogramming.gifts.gift.GiftService;
 import com.qprogramming.gifts.messages.MessagesService;
+import com.qprogramming.gifts.schedule.AppEventService;
 import com.qprogramming.gifts.support.ResultData;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
@@ -69,6 +71,8 @@ public class UserRestControllerTest {
     @Mock
     private AccountService accSrvMock;
     @Mock
+    private AccountEventRepository accountEventRepositoryMock;
+    @Mock
     private MockSecurityContext securityMock;
     @Mock
     private Authentication authMock;
@@ -84,13 +88,15 @@ public class UserRestControllerTest {
     private MailService mailServiceMock;
     @Mock
     private PropertyService propertyServiceMock;
+    @Mock
+    private AppEventService eventServiceMock;
 
     private Account testAccount;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        UserRestController userCtrl = new UserRestController(accSrvMock, msgSrvMock, familyServiceMock, giftServiceMock, mailServiceMock, propertyServiceMock);
+        UserRestController userCtrl = new UserRestController(accSrvMock, accountEventRepositoryMock, msgSrvMock, familyServiceMock, giftServiceMock, mailServiceMock, propertyServiceMock, eventServiceMock);
         testAccount = createAccount();
         when(securityMock.getAuthentication()).thenReturn(authMock);
         when(authMock.getPrincipal()).thenReturn(testAccount);
@@ -604,6 +610,7 @@ public class UserRestControllerTest {
         when(accSrvMock.findById(testAccount.getId())).thenReturn(testAccount);
         when(familyServiceMock.getFamily(testAccount)).thenReturn(family);
         userRestCtrl.perform(delete(API_USER_USER_DELETE + testAccount.getId())).andExpect(status().isOk());
+        verify(eventServiceMock, times(1)).deleteUserEvents(testAccount);
         verify(giftServiceMock, times(1)).deleteUserGifts(testAccount);
         verify(giftServiceMock, times(1)).deleteClaims(testAccount);
         verify(accSrvMock, times(1)).delete(testAccount);

@@ -18,7 +18,7 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
 
     @Id
     private String id;
-    @Column
+    @Column(unique = true)
     private String email;
     @JsonIgnore
     private String password;

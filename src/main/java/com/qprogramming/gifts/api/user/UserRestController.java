@@ -5,6 +5,7 @@ import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.account.AccountType;
 import com.qprogramming.gifts.account.RegisterForm;
 import com.qprogramming.gifts.account.event.AccountEvent;
+import com.qprogramming.gifts.account.event.AccountEventRepository;
 import com.qprogramming.gifts.account.event.AccountEventType;
 import com.qprogramming.gifts.account.family.Family;
 import com.qprogramming.gifts.account.family.FamilyForm;
@@ -16,6 +17,7 @@ import com.qprogramming.gifts.config.property.PropertyService;
 import com.qprogramming.gifts.gift.GiftService;
 import com.qprogramming.gifts.login.token.TokenBasedAuthentication;
 import com.qprogramming.gifts.messages.MessagesService;
+import com.qprogramming.gifts.schedule.AppEventService;
 import com.qprogramming.gifts.support.ResultData;
 import com.qprogramming.gifts.support.Utils;
 import org.apache.commons.codec.binary.Base64;
@@ -55,20 +57,24 @@ public class UserRestController {
     public static final String PUBLIC_LIST = "publicList";
     public static final String LANGUAGE = "language";
     private AccountService accountService;
+    private AccountEventRepository accountEventRepository;
     private MessagesService msgSrv;
     private FamilyService familyService;
     private GiftService giftService;
     private MailService mailService;
     private PropertyService propertyService;
+    private AppEventService eventService;
 
     @Autowired
-    public UserRestController(AccountService accountService, MessagesService msgSrv, FamilyService familyService, GiftService giftService, MailService mailService, PropertyService propertyService) {
+    public UserRestController(AccountService accountService, AccountEventRepository accountEventRepository, MessagesService msgSrv, FamilyService familyService, GiftService giftService, MailService mailService, PropertyService propertyService, AppEventService eventService) {
         this.accountService = accountService;
+        this.accountEventRepository = accountEventRepository;
         this.msgSrv = msgSrv;
         this.familyService = familyService;
         this.giftService = giftService;
         this.mailService = mailService;
         this.propertyService = propertyService;
+        this.eventService = eventService;
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
@@ -502,10 +508,12 @@ public class UserRestController {
         } else {
             message = msgSrv.getMessage("user.delete.success");
         }
+        eventService.deleteUserEvents(account);
         giftService.deleteClaims(account);
         giftService.deleteUserGifts(account);
+        List<AccountEvent> accountEvents = accountEventRepository.findAllByAccount(account);
+        accountEventRepository.delete(accountEvents);
         accountService.delete(account);
-        //TODO add complete event newsleter
         return new ResultData.ResultBuilder().ok().message(message).build();
     }
 

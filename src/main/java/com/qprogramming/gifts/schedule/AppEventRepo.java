@@ -13,4 +13,6 @@ public interface AppEventRepo extends JpaRepository<AppEvent, Long> {
 
     List<AppEvent> findByAccountAndGift(Account account, Gift gift);
 
+    List<AppEvent> findByAccount(Account account);
+
 }
