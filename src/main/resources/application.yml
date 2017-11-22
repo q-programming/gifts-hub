@@ -72,4 +72,6 @@ jwt:
   expires_in: 604800 # week
   secret: f4CKnPY3bt87c68mQFFAZWSGfW8ZUuf7YWqcYqX5t9EedppMEU
   cookie: AUTH-TOKEN
+  xsrf: XSRF-TOKEN
+  jsessionid: JSESSIONID
   user_cookie: c_user

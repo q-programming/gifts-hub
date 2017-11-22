@@ -47,6 +47,10 @@ AuthService.factory('AuthService', ['$http', '$log', 'avatarCache', '$rootScope'
             $http.post('logout', {}).then(
                 function successCallback() {
                     AvatarService.clearCache();
+                    //Nuke cookies to be sure
+                    $cookies.remove("AUTH-TOKEN","/");
+                    $cookies.remove("JSESSIONID");
+                    $cookies.remove("XSRF-TOKEN");
                     $rootScope.authenticated = false;
                     $location.path("/login");
                 },

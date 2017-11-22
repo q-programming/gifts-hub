@@ -1,5 +1,5 @@
-app.controller('changelog', ['$rootScope', '$scope', '$uibModal', '$http',
-    function ($rootScope, $scope, $uibModal, $http) {
+app.controller('changelog', ['$rootScope', '$scope', '$uibModal', '$http', 'AlertService',
+    function ($rootScope, $scope, $uibModal, $http, AlertService) {
         if ($rootScope.principal && !$rootScope.principal.seenChangelog) {
             $uibModal.open({
                 templateUrl: 'changelog/' + $rootScope.principal.language + '.html',
