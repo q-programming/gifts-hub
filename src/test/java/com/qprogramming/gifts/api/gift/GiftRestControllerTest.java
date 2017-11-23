@@ -12,6 +12,8 @@ import com.qprogramming.gifts.gift.GiftService;
 import com.qprogramming.gifts.gift.GiftStatus;
 import com.qprogramming.gifts.gift.category.Category;
 import com.qprogramming.gifts.gift.category.CategoryRepository;
+import com.qprogramming.gifts.gift.link.Link;
+import com.qprogramming.gifts.gift.link.LinkRepository;
 import com.qprogramming.gifts.messages.MessagesService;
 import com.qprogramming.gifts.schedule.AppEventService;
 import com.qprogramming.gifts.settings.SearchEngine;
@@ -61,6 +63,7 @@ public class GiftRestControllerTest {
     private static final String DOE = "Doe";
     private static final String NAME = "name";
     private static final String TEMPLATE_XLS = "template.xls";
+    public static final String NEW_URL = "newUrl";
     private MockMvc giftsRestCtrl;
     @Mock
     private AccountService accSrvMock;
@@ -88,6 +91,8 @@ public class GiftRestControllerTest {
     private MockMultipartFile mockMultipartFile;
     @Mock
     private AppEventService eventServiceMock;
+    @Mock
+    private LinkRepository linkRepositoryMock;
 
     private Account testAccount;
 
@@ -99,7 +104,7 @@ public class GiftRestControllerTest {
         when(securityMock.getAuthentication()).thenReturn(authMock);
         when(authMock.getPrincipal()).thenReturn(testAccount);
         SecurityContextHolder.setContext(securityMock);
-        GiftRestController giftsCtrl = new GiftRestController(accSrvMock, giftServiceMock, searchEngineServiceMock, categoryRepositoryMock, messagesServiceMock, familyServiceMock, eventServiceMock);
+        GiftRestController giftsCtrl = new GiftRestController(accSrvMock, giftServiceMock, searchEngineServiceMock, categoryRepositoryMock, messagesServiceMock, familyServiceMock, eventServiceMock, linkRepositoryMock);
         this.giftsRestCtrl = MockMvcBuilders.standaloneSetup(giftsCtrl).build();
     }
 
@@ -474,5 +479,45 @@ public class GiftRestControllerTest {
         String contentAsString = mvcResult.getResponse().getContentAsString();
         ResultData resultData = TestUtil.convertJsonToObject(contentAsString, ResultData.class);
         assertEquals(resultData.code, ResultData.Code.ERROR);
+    }
+
+    @Test
+    public void testUpdateGiftWithLinks() throws Exception {
+        Gift gift = TestUtil.createGift(1L, testAccount);
+        GiftForm form = new GiftForm();
+        form.setName(gift.getName());
+        form.setId(gift.getId());
+        Link link = createLink(1L);
+        Link link2 = createLink(2L);
+        Link link3 = createLink(3L);
+        Link link4 = createLink(4L);
+        List<Link> linksCollection = new ArrayList<>(Arrays.asList(link, link2, link3, link4));
+        Link emptyLink = new Link();
+        Link newlink = createLink(null);
+        Link updatedLink = createLink(4L);
+        updatedLink.setUrl(NEW_URL);
+        gift.setLinks(linksCollection);
+        form.setLinks(Arrays.asList(link, link2, newlink, updatedLink,emptyLink));
+        when(giftServiceMock.findById(gift.getId())).thenReturn(gift);
+        when(accSrvMock.findById(testAccount.getId())).thenReturn(testAccount);
+        when(giftServiceMock.update(any(Gift.class))).then(returnsFirstArg());
+        MvcResult mvcResult = giftsRestCtrl.perform(post(API_GIFT_EDIT).contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(form)))
+                .andExpect(status().isOk()).andReturn();
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        Gift result = TestUtil.convertJsonToObject(contentAsString, Gift.class);
+        assertEquals(4, result.getLinks().size());
+        Optional<Link> updatedLinkOptional = result.getLinks().stream().filter(link1 -> link1.getId().equals(4L)).findFirst();
+        assertTrue(updatedLinkOptional.isPresent());
+        assertTrue(updatedLinkOptional.get().getUrl().equals(NEW_URL));
+        verify(linkRepositoryMock, times(1)).delete(anyCollectionOf(Link.class));
+        verify(linkRepositoryMock, times(1)).save(any(Link.class));
+    }
+
+    private Link createLink(Long id) {
+        Link link = new Link("url");
+        if (id != null) {
+            link.setId(id);
+        }
+        return link;
     }
 }

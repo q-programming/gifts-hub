@@ -127,4 +127,8 @@ public class GiftService {
         claimedGifts.forEach(gift -> gift.setClaimed(null));
         giftRepository.save(claimedGifts);
     }
+
+    public List<Gift> findAll() {
+        return giftRepository.findAll();
+    }
 }

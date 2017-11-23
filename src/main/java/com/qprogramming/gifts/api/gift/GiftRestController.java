@@ -11,12 +11,15 @@ import com.qprogramming.gifts.gift.GiftService;
 import com.qprogramming.gifts.gift.GiftStatus;
 import com.qprogramming.gifts.gift.category.Category;
 import com.qprogramming.gifts.gift.category.CategoryRepository;
+import com.qprogramming.gifts.gift.link.Link;
+import com.qprogramming.gifts.gift.link.LinkRepository;
 import com.qprogramming.gifts.messages.MessagesService;
 import com.qprogramming.gifts.schedule.AppEventService;
 import com.qprogramming.gifts.schedule.AppEventType;
 import com.qprogramming.gifts.settings.SearchEngineService;
 import com.qprogramming.gifts.support.ResultData;
 import com.qprogramming.gifts.support.Utils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
@@ -38,6 +41,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Created by Khobar on 10.03.2017.
@@ -61,9 +66,10 @@ public class GiftRestController {
     private MessagesService msgSrv;
     private FamilyService familyService;
     private AppEventService eventService;
+    private LinkRepository linkRepository;
 
     @Autowired
-    public GiftRestController(AccountService accountService, GiftService giftService, SearchEngineService searchEngineService, CategoryRepository categoryRepository, MessagesService msgSrv, FamilyService familyService, AppEventService eventService) {
+    public GiftRestController(AccountService accountService, GiftService giftService, SearchEngineService searchEngineService, CategoryRepository categoryRepository, MessagesService msgSrv, FamilyService familyService, AppEventService eventService, LinkRepository linkRepository) {
         this.accountService = accountService;
         this.giftService = giftService;
         this.searchEngineService = searchEngineService;
@@ -71,6 +77,7 @@ public class GiftRestController {
         this.msgSrv = msgSrv;
         this.familyService = familyService;
         this.eventService = eventService;
+        this.linkRepository = linkRepository;
         initProhibited();
     }
 
@@ -111,7 +118,6 @@ public class GiftRestController {
             return ResponseEntity.notFound().build();
         }
         if (canOperateOnGift(gift)) {
-            //TODO add edition to newsletter
             gift = updateGiftFromForm(giftForm, gift);
             return new ResponseEntity<>(gift, HttpStatus.OK);
         }
@@ -207,6 +213,7 @@ public class GiftRestController {
         if (!canOperateOnGift(gift)) {
             return new ResultData.ResultBuilder().badReqest().error().message(msgSrv.getMessage("gift.delete.error")).build();
         }
+        linkRepository.delete(gift.getLinks());
         eventService.deleteGiftEvents(gift);
         giftService.delete(gift);
         return new ResultData.ResultBuilder().ok().message(msgSrv.getMessage("gift.delete.success", new Object[]{gift.getName()}, "", Utils.getCurrentLocale())).build();
@@ -223,7 +230,8 @@ public class GiftRestController {
     private Gift updateGiftFromForm(GiftForm giftForm, Gift gift) {
         gift.setName(giftForm.getName());
         gift.setDescription(giftForm.getDescription());
-        gift.setLink(giftForm.getLink());
+//        gift.setLink(giftForm.getLink());
+        updateLinks(giftForm, gift);
         if (StringUtils.isNotBlank(giftForm.getCategory())) {
             String name = giftForm.getCategory();
             Category category = categoryRepository.findByName(name);
@@ -248,6 +256,41 @@ public class GiftRestController {
         } else {
             return giftService.update(gift);
         }
+    }
+
+    private void updateLinks(GiftForm giftForm, Gift gift) {
+        //find all links that potentially were deleted in form
+        List<Link> newLinks = giftForm.getLinks().stream().filter(link -> link.getId() == null && StringUtils.isNotBlank(link.getUrl())).collect(Collectors.toList());
+        List<Link> linksToDelete = CollectionUtils.disjunction(giftForm.getLinks(), gift.getLinks())
+                .stream()
+                .filter(link -> link.getId() != null)
+                .collect(Collectors.toList());
+        gift.getLinks().removeAll(linksToDelete);
+        linkRepository.delete(linksToDelete);
+        //update urls
+        giftForm.getLinks().removeAll(newLinks);
+        Map<Long, String> updatedLinks = giftForm.getLinks().stream().collect(Collectors.toMap(Link::getId, Link::getUrl));
+        gift.getLinks().forEach(link -> {
+            link.setUrl(updatedLinks.get(link.getId()));
+        });
+        newLinks.forEach(link -> {
+                gift.addLink(linkRepository.save(link));
+        });
+    }
+
+    @RequestMapping("/convertLinks")
+    @Deprecated
+    @Transactional
+    public ResponseEntity convertLinks() {
+        List<Gift> gifts = giftService.findAll();
+        gifts.stream().filter(gift -> StringUtils.isNotBlank(gift.getLink())).forEach(gift -> {
+            Link link = new Link(gift.getLink());
+            gift.addLink(linkRepository.save(link));
+            gift.setLink(null);
+            giftService.update(gift);
+            LOG.info("Link for gift {} converted to entity");
+        });
+        return ResponseEntity.ok("Links converted");
     }
 
     @RequestMapping("/mine")
