@@ -42,16 +42,16 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
     @Enumerated(EnumType.STRING)
     private AccountType type;
 
-    @Column
+    @Column(columnDefinition = "boolean default false")
     private Boolean publicList = false;
 
-    @Column
+    @Column(columnDefinition = "boolean default false")
     private Boolean tourComplete = false;
 
-    @Column
+    @Column(columnDefinition = "boolean default false")
     private Boolean seenChangelog = false;
 
-    @Column
+    @Column(columnDefinition = "boolean default false")
     private Boolean newsletter = false;
 
 
