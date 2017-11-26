@@ -52,10 +52,10 @@ public class UserRestController {
 
     public static final String PASSWORD_REGEXP = "^^(?=.*[A-Z])(?=.*[0-9])(?=.*[a-z].*[a-z].*[a-z]).{8,}$";
     public static final String USERNAME_REGEXP = "^[a-zA-Z0-9_]+$";
-    private static final Logger LOG = LoggerFactory.getLogger(UserRestController.class);
     public static final String NEWSLETTER = "newsletter";
     public static final String PUBLIC_LIST = "publicList";
     public static final String LANGUAGE = "language";
+    private static final Logger LOG = LoggerFactory.getLogger(UserRestController.class);
     private AccountService accountService;
     private AccountEventRepository accountEventRepository;
     private MessagesService msgSrv;
@@ -465,6 +465,7 @@ public class UserRestController {
     }
 
 
+    @Transactional
     @RequestMapping(value = "/settings", method = RequestMethod.POST)
     public ResponseEntity changeSettings(@RequestBody String jsonObj) {
         JSONObject object = new JSONObject(jsonObj);
@@ -477,10 +478,10 @@ public class UserRestController {
             account.setLanguage(object.getString(LANGUAGE));
         }
         if (object.has(PUBLIC_LIST)) {
-            account.setPublicList(object.getBoolean(PUBLIC_LIST));
+            account.setPublicList(object.optBoolean(PUBLIC_LIST));
         }
         if (object.has(NEWSLETTER)) {
-            account.setNewsletter(object.getBoolean(NEWSLETTER));
+            account.setNewsletter(object.optBoolean(NEWSLETTER));
         }
         accountService.update(account);
         accountService.signin(account);
@@ -564,6 +565,7 @@ public class UserRestController {
      * @return
      */
     @RequestMapping(value = "/share", method = RequestMethod.POST)
+    @Transactional
     public ResponseEntity shareGiftList(@RequestBody String emails) {
         if (!Utils.getCurrentAccount().getPublicList()) {
             return new ResultData.ResultBuilder().badReqest().error().build();
