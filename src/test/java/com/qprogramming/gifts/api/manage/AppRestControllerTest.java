@@ -47,6 +47,8 @@ public class AppRestControllerTest {
     private static final String API_APPLICATION_SETTINGS = "/api/app/settings";
     private static final String API_APPLICATION_SETUP = "/api/app/setup";
     private static final String API_APPLICATION_SEARCH_ENGINES = "/api/app/search-engines";
+    public static final String API_APPLICATION_REMOVE_CATEGORY = "/api/app/remove-category";
+    public static final String API_APPLICATION_UPDATE_CATEGORY = "/api/app/update-category";
     private MockMvc manageRestController;
     @Mock
     private PropertyService propertyServiceMock;
@@ -178,6 +180,74 @@ public class AppRestControllerTest {
         ).andExpect(status().isOk());
         verify(categoryServiceMock, times(1)).update(anyListOf(Category.class));
     }
+
+    @Test
+    public void removeCategoryBadAuthTest() throws Exception {
+        testAccount.setRole(Roles.ROLE_USER);
+        Category category1 = createCategory("category1", 1L, Integer.MAX_VALUE);
+        manageRestController.perform(post(API_APPLICATION_REMOVE_CATEGORY)
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(category1))
+        ).andExpect(status().isForbidden());
+    }
+
+
+    @Test
+    public void removeCategoryNotFoundTest() throws Exception {
+        testAccount.setRole(Roles.ROLE_ADMIN);
+        Category category1 = createCategory("category1", 1L, Integer.MAX_VALUE);
+        manageRestController.perform(post(API_APPLICATION_REMOVE_CATEGORY)
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(category1))
+        ).andExpect(status().isNotFound());
+    }
+
+
+    @Test
+    public void removeCategoryTest() throws Exception {
+        testAccount.setRole(Roles.ROLE_ADMIN);
+        Category category1 = createCategory("category1", 1L, Integer.MAX_VALUE);
+        when(categoryServiceMock.findById(category1.getId())).thenReturn(category1);
+        manageRestController.perform(post(API_APPLICATION_REMOVE_CATEGORY)
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(category1))
+        ).andExpect(status().isOk());
+        verify(giftServiceMock, times(1)).removeCategory(category1);
+        verify(categoryServiceMock, times(1)).remove(category1);
+    }
+    @Test
+    public void editCategoryBadAuthTest() throws Exception {
+        testAccount.setRole(Roles.ROLE_USER);
+        Category category1 = createCategory("category1", 1L, Integer.MAX_VALUE);
+        manageRestController.perform(post(API_APPLICATION_UPDATE_CATEGORY)
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(category1))
+        ).andExpect(status().isForbidden());
+    }
+
+
+    @Test
+    public void editCategoryNotFoundTest() throws Exception {
+        testAccount.setRole(Roles.ROLE_ADMIN);
+        Category category1 = createCategory("category1", 1L, Integer.MAX_VALUE);
+        manageRestController.perform(post(API_APPLICATION_UPDATE_CATEGORY)
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(category1))
+        ).andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void editCategoryTest() throws Exception {
+        testAccount.setRole(Roles.ROLE_ADMIN);
+        Category category1 = createCategory("category1", 1L, Integer.MAX_VALUE);
+        when(categoryServiceMock.findById(category1.getId())).thenReturn(category1);
+        manageRestController.perform(post(API_APPLICATION_UPDATE_CATEGORY)
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(category1))
+        ).andExpect(status().isOk());
+        verify(categoryServiceMock, times(1)).save(category1);
+    }
+
 
 
     @Test

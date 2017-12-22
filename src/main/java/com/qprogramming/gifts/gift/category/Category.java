@@ -22,12 +22,12 @@ public class Category implements Comparable<Category> {
 
     public Category(String name) {
         this.name = name;
-        this.priority = Integer.MIN_VALUE;
+        this.priority = 0;
     }
 
     public Category() {
         this.id = (long) Integer.MIN_VALUE;
-        this.priority = Integer.MIN_VALUE;
+        this.priority = 0;
     }
 
     public Long getId() {

@@ -131,4 +131,10 @@ public class GiftService {
     public List<Gift> findAll() {
         return giftRepository.findAll();
     }
+
+    public void removeCategory(Category category) {
+        List<Gift> allByCategory = giftRepository.findAllByCategory(category);
+        allByCategory.forEach(gift -> gift.setCategory(null));
+        giftRepository.save(allByCategory);
+    }
 }

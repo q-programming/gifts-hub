@@ -36,4 +36,12 @@ public class CategoryService {
     public void update(List<Category> categories) {
         categoryRepository.save(categories);
     }
+
+    public Category findById(Long id) {
+        return categoryRepository.findById(id);
+    }
+
+    public void remove(Category category) {
+        categoryRepository.delete(category);
+    }
 }

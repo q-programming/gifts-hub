@@ -95,6 +95,40 @@ public class AppRestController {
     }
 
     @RolesAllowed("ROLE_ADMIN")
+    @RequestMapping(value = "/remove-category", method = RequestMethod.POST)
+    public ResponseEntity removeCategory(@RequestBody Category category) {
+        Account currentAccount = Utils.getCurrentAccount();
+        if (currentAccount == null || !currentAccount.getIsAdmin()) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+        Category dbCategory = categoryService.findById(category.getId());
+        if (dbCategory == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        //find all gifts with this category and remove it from there
+        giftService.removeCategory(category);
+        categoryService.remove(dbCategory);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @RolesAllowed("ROLE_ADMIN")
+    @RequestMapping(value = "/update-category", method = RequestMethod.POST)
+    public ResponseEntity updateCategory(@RequestBody Category category) {
+        Account currentAccount = Utils.getCurrentAccount();
+        if (currentAccount == null || !currentAccount.getIsAdmin()) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+        Category dbCategory = categoryService.findById(category.getId());
+        if (dbCategory == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        dbCategory.setName(category.getName());
+        categoryService.save(category);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+
+    @RolesAllowed("ROLE_ADMIN")
     @RequestMapping(value = "/settings/email", method = RequestMethod.POST)
     public ResponseEntity changeEmailSettings(@RequestBody Email settings) {
         Account currentAccount = Utils.getCurrentAccount();

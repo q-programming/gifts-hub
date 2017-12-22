@@ -1,6 +1,7 @@
 package com.qprogramming.gifts.gift;
 
 import com.qprogramming.gifts.account.Account;
+import com.qprogramming.gifts.gift.category.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -14,4 +15,6 @@ public interface GiftRepository extends JpaRepository<Gift, Long> {
     List<Gift> findByUserIdAndStatusNotOrStatusIsNull(String id, GiftStatus status);
 
     List<Gift> findByClaimed(Account account);
+
+    List<Gift> findAllByCategory(Category category);
 }

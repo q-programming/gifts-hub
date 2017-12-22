@@ -20,6 +20,7 @@ app.controller('manage', ['$rootScope', '$scope', '$http', '$log', '$uibModal', 
                     $http.post('api/app/settings', $scope.settings).then(
                         function () {
                             AlertService.addSuccess('app.manage.saved');
+                            $scope.reset();
                         }).catch(function (response) {
                         AlertService.addError('error.general', response)
                     });
@@ -40,7 +41,7 @@ app.controller('manage', ['$rootScope', '$scope', '$http', '$log', '$uibModal', 
                     $scope.settings.appUrl = UtilsService.getAppUrl();
                     $scope.update();
                 };
-                $scope.openModalForm = function () {
+                $scope.openSearchModalForm = function () {
                     $uibModal.open({
                         templateUrl: 'modals/search.html',
                         scope: $scope,
@@ -60,10 +61,36 @@ app.controller('manage', ['$rootScope', '$scope', '$http', '$log', '$uibModal', 
                         }]
                     });
                 };
+                $scope.openCategoryModalForm = function () {
+                    $uibModal.open({
+                        templateUrl: 'modals/category.html',
+                        scope: $scope,
+                        controller: ['$uibModalInstance', '$scope', function ($uibModalInstance, $scope) {
+                            $scope.cancel = function () {
+                                $scope.reset();
+                                $uibModalInstance.dismiss('cancel');
+                            };
+                            $scope.action = function () {
+                                if ($scope.categoryForm.$valid) {
+                                    $log.debug("[DEBUG] sending category data");
+                                    $http.post('api/app/update-category', $scope.categoryEdit).then(
+                                        function () {
+                                            AlertService.addSuccess('app.manage.categories.updated');
+                                            getAppSettings();
+                                        }).catch(function (response) {
+                                        AlertService.addError('error.general', response)
+                                    });
+                                    $uibModalInstance.close()
+                                }
+                            };
+                        }]
+                    });
+                };
 
                 $scope.reset = function () {
                     $scope.searchEngine = {};
                     $scope.editSearch = false;
+                    $scope.priorityChanged = false;
                 };
 
                 $scope.updateSearchEngine = function () {
@@ -92,11 +119,11 @@ app.controller('manage', ['$rootScope', '$scope', '$http', '$log', '$uibModal', 
                 $scope.editSearchEngine = function (engine) {
                     $scope.searchEngine = $.extend({}, engine);
                     $scope.editSearch = true;
-                    $scope.openModalForm()
+                    $scope.openSearchModalForm()
                 };
 
                 $scope.moveUp = function (index) {
-                    $log.debug("Increasing category priority " + index);
+                    $log.debug("[DEBUG] Increasing category priority " + index);
                     if (index > 0) {
                         var tmp = $scope.settings.categories[index - 1];
                         $scope.settings.categories[index - 1] = $scope.settings.categories[index];
@@ -105,7 +132,7 @@ app.controller('manage', ['$rootScope', '$scope', '$http', '$log', '$uibModal', 
                     }
                 };
                 $scope.moveDown = function (index) {
-                    $log.debug("Decreasing category priority " + index);
+                    $log.debug("[DEBUG] Decreasing category priority " + index);
                     if (index < $scope.settings.categories.length) {
                         var tmp = $scope.settings.categories[index + 1];
                         $scope.settings.categories[index + 1] = $scope.settings.categories[index];
@@ -113,6 +140,25 @@ app.controller('manage', ['$rootScope', '$scope', '$http', '$log', '$uibModal', 
                         $scope.priorityChanged = true;
                     }
                 };
+
+                $scope.deleteCategory = function (category, index) {
+                    $log.debug("[DEBUG] Remove category " + category);
+                    $http.post('api/app/remove-category', category).then(
+                        function () {
+                            $scope.settings.categories.splice(index, 1);
+                            AlertService.addSuccess('app.manage.categories.removed');
+                        }).catch(function (response) {
+                        AlertService.addError('error.general', response)
+                    });
+                }
+
+                $scope.editCategory = function (category, index) {
+                    $log.debug("[DEBUG] Edit category " + category);
+                    $scope.categoryEdit = $.extend({}, category);
+                    $scope.openCategoryModalForm()
+
+                }
+
             }
         } else {
             $location.path("/login");

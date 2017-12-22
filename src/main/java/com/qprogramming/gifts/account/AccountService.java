@@ -221,7 +221,13 @@ public class AccountService implements UserDetailsService {
         avatar.setType(type);
     }
 
-    private byte[] downloadFromUrl(URL url) {
+    /**
+     * !Visible for testing
+     *
+     * @param url - url from which bytes will be transfered
+     * @return byte array of image
+     */
+    protected byte[] downloadFromUrl(URL url) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try (InputStream stream = url.openStream()) {
             byte[] chunk = new byte[4096];
@@ -257,10 +263,10 @@ public class AccountService implements UserDetailsService {
     public List<Account> findAll() {
         return sortedAccounts(accountRepository.findAll());
     }
+
     public List<Account> findAllWithNewsletter() {
         return accountRepository.findByNewsletterIsTrueAndEmailNotNullAndTypeIsNot(AccountType.KID);
     }
-
 
 
     /**

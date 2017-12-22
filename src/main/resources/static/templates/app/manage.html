@@ -177,7 +177,7 @@
                 &nbsp;<span translate="app.manage.search.engine"></span>
             </h4>
             <div class="row">
-                <button class="btn btn-success pull-right" ng-click="openModalForm()">
+                <button class="btn btn-success pull-right" ng-click="openSearchModalForm()">
                     <i class="fa fa-plus" aria-hidden="true"></i>
                     <span translate="gift.new.add"></span>
                 </button>
@@ -209,6 +209,7 @@
                               confirm="{{'main.delete.confirm' | translate}}"
                               confirm-title="{{'main.confirm.sure' | translate}}"
                               confirm-icon="fa-trash"
+                              confirm-cancel="{{'main.confirm.no'| translate}}"
                               confirm-ok="{{'main.delete'| translate}}">
                             <i class="fa fa-trash" aria-hidden="true" uib-tooltip="{{'main.delete' | translate}}"></i>
                         </span>
@@ -262,14 +263,15 @@
                     </span>
                 </div>
                 <div class="col-md-1 text-center">
-                        <span class="clickable"
+                        <span class="clickable" ng-click="deleteCategory(row.category,$index)"
                               confirm="{{'main.delete.confirm' | translate}}"
                               confirm-title="{{'main.confirm.sure' | translate}}"
                               confirm-icon="fa-trash"
+                              confirm-cancel="{{'main.confirm.no'| translate}}"
                               confirm-ok="{{'main.delete'| translate}}">
                             <i class="fa fa-trash" aria-hidden="true" uib-tooltip="{{'main.delete' | translate}}"></i>
                         </span>
-                    <span class="clickable">
+                    <span class="clickable" ng-click="editCategory(row.category,$index)">
                             <i class="fa fa-pencil" aria-hidden="true" uib-tooltip="{{'main.edit'| translate}}"></i>
                     </span>
                 </div>
