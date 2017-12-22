@@ -14,9 +14,7 @@ app.controller('manage', ['$rootScope', '$scope', '$http', '$log', '$uibModal', 
                     AlertService.addError("error.general");
                     $log.debug(response);
                 });
-
                 getAppSettings();
-
                 $scope.update = function () {
                     $scope.editSearch = false;
                     $http.post('api/app/settings', $scope.settings).then(
@@ -46,7 +44,7 @@ app.controller('manage', ['$rootScope', '$scope', '$http', '$log', '$uibModal', 
                     $uibModal.open({
                         templateUrl: 'modals/search.html',
                         scope: $scope,
-                        controller: ['$uibModalInstance', '$scope',function ($uibModalInstance, $scope) {
+                        controller: ['$uibModalInstance', '$scope', function ($uibModalInstance, $scope) {
                             $scope.cancel = function () {
                                 $scope.reset();
                                 $uibModalInstance.dismiss('cancel');
@@ -95,7 +93,26 @@ app.controller('manage', ['$rootScope', '$scope', '$http', '$log', '$uibModal', 
                     $scope.searchEngine = $.extend({}, engine);
                     $scope.editSearch = true;
                     $scope.openModalForm()
-                }
+                };
+
+                $scope.moveUp = function (index) {
+                    $log.debug("Increasing category priority " + index);
+                    if (index > 0) {
+                        var tmp = $scope.settings.categories[index - 1];
+                        $scope.settings.categories[index - 1] = $scope.settings.categories[index];
+                        $scope.settings.categories[index] = tmp;
+                        $scope.priorityChanged = true;
+                    }
+                };
+                $scope.moveDown = function (index) {
+                    $log.debug("Decreasing category priority " + index);
+                    if (index < $scope.settings.categories.length) {
+                        var tmp = $scope.settings.categories[index + 1];
+                        $scope.settings.categories[index + 1] = $scope.settings.categories[index];
+                        $scope.settings.categories[index] = tmp;
+                        $scope.priorityChanged = true;
+                    }
+                };
             }
         } else {
             $location.path("/login");

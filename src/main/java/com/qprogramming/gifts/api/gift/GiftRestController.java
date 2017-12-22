@@ -10,7 +10,7 @@ import com.qprogramming.gifts.gift.GiftForm;
 import com.qprogramming.gifts.gift.GiftService;
 import com.qprogramming.gifts.gift.GiftStatus;
 import com.qprogramming.gifts.gift.category.Category;
-import com.qprogramming.gifts.gift.category.CategoryRepository;
+import com.qprogramming.gifts.gift.category.CategoryService;
 import com.qprogramming.gifts.gift.link.Link;
 import com.qprogramming.gifts.gift.link.LinkRepository;
 import com.qprogramming.gifts.messages.MessagesService;
@@ -42,7 +42,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Created by Khobar on 10.03.2017.
@@ -62,18 +61,18 @@ public class GiftRestController {
     private AccountService accountService;
     private GiftService giftService;
     private SearchEngineService searchEngineService;
-    private CategoryRepository categoryRepository;
+    private CategoryService categoryService;
     private MessagesService msgSrv;
     private FamilyService familyService;
     private AppEventService eventService;
     private LinkRepository linkRepository;
 
     @Autowired
-    public GiftRestController(AccountService accountService, GiftService giftService, SearchEngineService searchEngineService, CategoryRepository categoryRepository, MessagesService msgSrv, FamilyService familyService, AppEventService eventService, LinkRepository linkRepository) {
+    public GiftRestController(AccountService accountService, GiftService giftService, SearchEngineService searchEngineService, CategoryService categoryService, MessagesService msgSrv, FamilyService familyService, AppEventService eventService, LinkRepository linkRepository) {
         this.accountService = accountService;
         this.giftService = giftService;
         this.searchEngineService = searchEngineService;
-        this.categoryRepository = categoryRepository;
+        this.categoryService = categoryService;
         this.msgSrv = msgSrv;
         this.familyService = familyService;
         this.eventService = eventService;
@@ -234,9 +233,9 @@ public class GiftRestController {
         updateLinks(giftForm, gift);
         if (StringUtils.isNotBlank(giftForm.getCategory())) {
             String name = giftForm.getCategory();
-            Category category = categoryRepository.findByName(name);
+            Category category = categoryService.findByName(name);
             if (category == null) {
-                category = categoryRepository.save(new Category(name));
+                category = categoryService.save(new Category(name));
             }
             gift.setCategory(category);
         } else {
@@ -323,9 +322,9 @@ public class GiftRestController {
     @RequestMapping("/categories")
     public ResponseEntity getCategories(@RequestParam(required = false) String term) {
         if (StringUtils.isBlank(term)) {
-            return ResponseEntity.ok(categoryRepository.findAll());
+            return ResponseEntity.ok(categoryService.findAll());
         } else {
-            return ResponseEntity.ok(categoryRepository.findByNameContainingIgnoreCase(term));
+            return ResponseEntity.ok(categoryService.findByNameContainingIgnoreCase(term));
         }
     }
 

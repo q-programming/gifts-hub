@@ -22,7 +22,7 @@ public class Category implements Comparable<Category> {
 
     public Category(String name) {
         this.name = name;
-        this.priority = Integer.MAX_VALUE;
+        this.priority = Integer.MIN_VALUE;
     }
 
     public Category() {

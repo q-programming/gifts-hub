@@ -12,6 +12,7 @@ import com.qprogramming.gifts.gift.GiftService;
 import com.qprogramming.gifts.gift.GiftStatus;
 import com.qprogramming.gifts.gift.category.Category;
 import com.qprogramming.gifts.gift.category.CategoryRepository;
+import com.qprogramming.gifts.gift.category.CategoryService;
 import com.qprogramming.gifts.gift.link.Link;
 import com.qprogramming.gifts.gift.link.LinkRepository;
 import com.qprogramming.gifts.messages.MessagesService;
@@ -76,7 +77,7 @@ public class GiftRestControllerTest {
     @Mock
     private SearchEngineService searchEngineServiceMock;
     @Mock
-    private CategoryRepository categoryRepositoryMock;
+    private CategoryService categoryServiceMock;
     @Mock
     private MessagesService messagesServiceMock;
     @Mock
@@ -104,7 +105,7 @@ public class GiftRestControllerTest {
         when(securityMock.getAuthentication()).thenReturn(authMock);
         when(authMock.getPrincipal()).thenReturn(testAccount);
         SecurityContextHolder.setContext(securityMock);
-        GiftRestController giftsCtrl = new GiftRestController(accSrvMock, giftServiceMock, searchEngineServiceMock, categoryRepositoryMock, messagesServiceMock, familyServiceMock, eventServiceMock, linkRepositoryMock);
+        GiftRestController giftsCtrl = new GiftRestController(accSrvMock, giftServiceMock, searchEngineServiceMock, categoryServiceMock, messagesServiceMock, familyServiceMock, eventServiceMock, linkRepositoryMock);
         this.giftsRestCtrl = MockMvcBuilders.standaloneSetup(giftsCtrl).build();
     }
 
@@ -120,7 +121,7 @@ public class GiftRestControllerTest {
         giftsRestCtrl.perform(post(API_GIFT_CREATE).contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(form)))
                 .andExpect(status().isCreated());
         verify(giftServiceMock, times(1)).create(any(Gift.class));
-        verify(categoryRepositoryMock, times(1)).save(any(Category.class));
+        verify(categoryServiceMock, times(1)).save(any(Category.class));
     }
 
     @Test
@@ -151,14 +152,14 @@ public class GiftRestControllerTest {
         when(giftServiceMock.update(any(Gift.class))).then(returnsFirstArg());
         when(searchEngineServiceMock.getSearchEngines(form.getSearchEngines()))
                 .thenReturn(engines);
-        when(categoryRepositoryMock.save(any(Category.class))).then(returnsFirstArg());
+        when(categoryServiceMock.save(any(Category.class))).then(returnsFirstArg());
         when(accSrvMock.findById(testAccount.getId())).thenReturn(testAccount);
         MvcResult mvcResult = giftsRestCtrl.perform(post(API_GIFT_EDIT).contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(form)))
                 .andExpect(status().isOk()).andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
         Gift result = TestUtil.convertJsonToObject(contentAsString, Gift.class);
         verify(giftServiceMock, times(1)).update(any(Gift.class));
-        verify(categoryRepositoryMock, times(1)).save(any(Category.class));
+        verify(categoryServiceMock, times(1)).save(any(Category.class));
         assertEquals(form.getName(), result.getName());
         assertEquals(form.getDescription(), result.getDescription());
         assertTrue(result.getEngines().size() == 1);
@@ -419,13 +420,13 @@ public class GiftRestControllerTest {
         Category category = new Category();
         category.setName("category");
         category.setId(1L);
-        when(categoryRepositoryMock.findByName("category")).thenReturn(category);
+        when(categoryServiceMock.findByName("category")).thenReturn(category);
         when(giftServiceMock.create(any(Gift.class))).then(returnsFirstArg());
         URL fileURL = getClass().getResource("sampleImport.xls");
         mockMultipartFile = new MockMultipartFile("file", fileURL.getFile(), "text/plain",
                 getClass().getResourceAsStream("sampleImport.xls"));
         giftsRestCtrl.perform(MockMvcRequestBuilders.fileUpload(API_GIFT_IMPORT).file(mockMultipartFile)).andExpect(status().isOk());
-        verify(categoryRepositoryMock, times(2)).save(any(Category.class));
+        verify(categoryServiceMock, times(2)).save(any(Category.class));
         verify(giftServiceMock, times(5)).create(any(Gift.class));
     }
 
