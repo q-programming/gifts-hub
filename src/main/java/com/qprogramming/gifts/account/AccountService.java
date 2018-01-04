@@ -340,4 +340,14 @@ public class AccountService implements UserDetailsService {
     public void eventConfirmed(AccountEvent event) {
         accountEventRepository.delete(event);
     }
+
+    /**
+     * Find All Accounts that are not type KID
+     *
+     * @return sorted list of all accounts other than KID type
+     */
+    public List<Account> findUsers() {
+        return sortedAccounts(accountRepository.findByTypeNot(AccountType.KID));
+
+    }
 }

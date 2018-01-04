@@ -133,18 +133,24 @@ public class UserRestController {
      * Returns user list, if passed param family is true, will return all accounts without family
      *
      * @param noFamily if true , returned list will contain only accounts without family
-     * @return
+     * @param users    if true, only users will be retured ( no KID accounts ) and gifts count's won't be added to response
+     * @return list of application accounts
      */
     @RequestMapping(value = "/users", method = RequestMethod.GET)
-    public ResponseEntity<?> userList(@RequestParam(required = false) boolean noFamily) {
+    public ResponseEntity<?> userList(@RequestParam(required = false) boolean noFamily, @RequestParam(required = false) boolean users) {
         Set<Account> list;
         if (noFamily) {
             list = new LinkedHashSet<>(accountService.findWithoutFamily());
         } else {
-            list = new LinkedHashSet<>(accountService.findAll());
+            if (users) {
+                list = new LinkedHashSet<>(accountService.findUsers());
+            } else {
+                list = new LinkedHashSet<>(accountService.findAll());
+                addGiftCounts(list);
+            }
         }
-        addGiftCounts(list);
         return ResponseEntity.ok(list);
+
     }
 
     @RequestMapping(value = "/userList", method = RequestMethod.GET)

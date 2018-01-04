@@ -256,10 +256,12 @@
                 </div>
                 <div class="col-md-2 text-center">
                         <span class="clickable" ng-click="moveUp($index)">
-                            <i class="fa fa-arrow-up" aria-hidden="true" uib-tooltip="{{'app.manage.categories.priority.up' | translate}}"></i>
+                            <i class="fa fa-arrow-up" aria-hidden="true"
+                               uib-tooltip="{{'app.manage.categories.priority.up' | translate}}"></i>
                         </span>
                     <span class="clickable" ng-click="moveDown($index)">
-                            <i class="fa fa-arrow-down" aria-hidden="true" uib-tooltip="{{'app.manage.categories.priority.down'| translate}}"></i>
+                            <i class="fa fa-arrow-down" aria-hidden="true"
+                               uib-tooltip="{{'app.manage.categories.priority.down'| translate}}"></i>
                     </span>
                 </div>
                 <div class="col-md-1 text-center">
@@ -278,4 +280,62 @@
             </div>
         </div>
     </div>
+    <hr/>
+    <div class="row">
+        <div class="form-group col-md-offset-2 col-md-8">
+            <h4 id="admins">
+                <i class="fa fa-folder-open" aria-hidden="true"></i>
+                &nbsp;<span translate="app.manage.admins"></span>
+            </h4>
+            <div class="row header hidden-xs">
+                <div class="col-sm-1">
+                </div>
+                <div class="col-sm-5">
+                    <strong translate="user.fullname"></strong>
+                </div>
+                <div class="col-sm-3">
+                    <strong translate="user.email"></strong>
+                </div>
+                <div class="col-sm-3">
+                    <strong translate="main.action" class="pull-right margin-right20"></strong>
+                </div>
+            </div>
+            <div ng-cloak="" class="row padded-row" ng-class-odd="'row-color'"
+                 ng-repeat="user in users track by user.id"
+                 ng-include="'userRow-template.html'">
+            </div>
+        </div>
+    </div>
 </div>
+<script type="text/ng-template" id="userRow-template.html">
+    <div class="col-xs-1 col-sm-1">
+        <img ng-if="user.avatar && user.avatar !=='NaN'" ng-src="{{user.avatar}}" class="avatar"/>
+        <img ng-if="!user.avatar || user.avatar ==='NaN'" src='images/avatar-placeholder.png' class="avatar"/>
+    </div>
+    <div class="col-xs-11 col-sm-5">
+        <i class="fa fa-wrench" ng-if="user.role === 'ROLE_ADMIN'"
+           uib-tooltip="{{'user.administrator'|translate}}">
+        </i>
+        <a class="black" ng-href="#/list/{{user.username}}">{{user.name}}&nbsp;{{user.surname}} ({{user.username}})</a>
+    </div>
+    <div class="col-xs-6 col-sm-3">
+        <a ng-if="user.email" ng-href="mailto:{{user.email}}"><i class="fa fa-envelope">&nbsp;{{user.email}}</i></a>
+    </div>
+    <div class="col-xs-6 col-sm-3">
+            <span class="pull-right">
+                <button ng-if="user.role !== 'ROLE_ADMIN'" class="btn btn-sm btn-default"
+                   uib-tooltip="{{'app.manage.admin.add'|translate}}" ng-click="addAdmin(user.id)">
+                   <span class="fa-stack fa-lg">
+                        <i class="fa fa-flip-horizontal fa-wrench fa-stack-1x"></i>
+                    </span>
+                </button>
+                <button ng-if="user.role === 'ROLE_ADMIN' && user.id !== principal.id" class="btn btn-sm btn-default"
+                   uib-tooltip="{{'app.manage.admin.remove'|translate}}" ng-click="removeAdmin(user.id)">
+                    <span class="fa-stack fa-lg">
+                        <i class="fa fa-flip-horizontal fa-wrench fa-stack-1x"></i>
+                        <i class="fa fa-ban fa-stack-2x"></i>
+                    </span>
+                </button>
+            </span>
+    </div>
+</script>

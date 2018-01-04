@@ -1,11 +1,12 @@
-app.controller('manage', ['$rootScope', '$scope', '$http', '$log', '$uibModal', 'AlertService', 'AppService', 'UtilsService',
-    function ($rootScope, $scope, $http, $log, $uibModal, AlertService, AppService, UtilsService) {
+app.controller('manage', ['$rootScope', '$scope', '$http', '$log', '$uibModal', 'AlertService', 'AppService', 'UtilsService', 'AvatarService',
+    function ($rootScope, $scope, $http, $log, $uibModal, AlertService, AppService, UtilsService, AvatarService) {
         $scope.settings = {};
         $scope.searchEngine = {};
         $scope.searchEngineList = [];
         $scope.showSearchForm = null;
         $scope.editSearch = false;
         $scope.languages = {};
+        $scope.users = [];
         if ($rootScope.authenticated) {
             if ($rootScope.principal.role === 'ROLE_ADMIN') {
                 AppService.getLanguageList().then(function (response) {
@@ -15,6 +16,7 @@ app.controller('manage', ['$rootScope', '$scope', '$http', '$log', '$uibModal', 
                     $log.debug(response);
                 });
                 getAppSettings();
+                getUsers();
                 $scope.update = function () {
                     $scope.editSearch = false;
                     $http.post('api/app/settings', $scope.settings).then(
@@ -150,15 +152,34 @@ app.controller('manage', ['$rootScope', '$scope', '$http', '$log', '$uibModal', 
                         }).catch(function (response) {
                         AlertService.addError('error.general', response)
                     });
-                }
+                };
 
                 $scope.editCategory = function (category, index) {
                     $log.debug("[DEBUG] Edit category " + category);
                     $scope.categoryEdit = $.extend({}, category);
                     $scope.openCategoryModalForm()
 
-                }
+                };
 
+                $scope.addAdmin = function (id) {
+                    $http.put('api/app/add-admin', id).then(
+                        function () {
+                            getUsers();
+                            AlertService.addSuccess('app.manage.admin.added');
+                        }).catch(function (response) {
+                        AlertService.addError('error.general', response)
+                    });
+                };
+
+                $scope.removeAdmin = function (id) {
+                    $http.put('api/app/remove-admin', id).then(
+                        function () {
+                            getUsers();
+                            AlertService.addSuccess('app.manage.admin.removed');
+                        }).catch(function (response) {
+                        AlertService.addError('error.general', response)
+                    });
+                };
             }
         } else {
             $location.path("/login");
@@ -170,6 +191,25 @@ app.controller('manage', ['$rootScope', '$scope', '$http', '$log', '$uibModal', 
                     $scope.settings = result.data;
                 }).catch(function (response) {
                 AlertService.addError('error.general', response)
+            });
+        }
+
+        /**
+         * Get all users , sorted by names
+         * Read theirs avatar in the process
+         */
+        function getUsers() {
+            $http.get('api/user/users?users=true').then(
+                function (response) {
+                    $scope.users.length = 0;
+                    $log.debug("[DEBUG] Loaded users");
+                    angular.forEach(response.data, function (user) {
+                        AvatarService.getUserAvatar(user);
+                        $scope.users.push(user);
+                    });
+                }).catch(function (response) {
+                AlertService.addError("error.general", response);
+                $log.debug(response);
             });
         }
 

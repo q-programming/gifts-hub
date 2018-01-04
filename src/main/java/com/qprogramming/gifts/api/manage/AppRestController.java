@@ -1,6 +1,8 @@
 package com.qprogramming.gifts.api.manage;
 
 import com.qprogramming.gifts.account.Account;
+import com.qprogramming.gifts.account.AccountService;
+import com.qprogramming.gifts.account.Roles;
 import com.qprogramming.gifts.config.mail.MailService;
 import com.qprogramming.gifts.config.property.PropertyService;
 import com.qprogramming.gifts.gift.Gift;
@@ -8,6 +10,7 @@ import com.qprogramming.gifts.gift.GiftService;
 import com.qprogramming.gifts.gift.category.Category;
 import com.qprogramming.gifts.gift.category.CategoryDTO;
 import com.qprogramming.gifts.gift.category.CategoryService;
+import com.qprogramming.gifts.messages.MessagesService;
 import com.qprogramming.gifts.settings.SearchEngineService;
 import com.qprogramming.gifts.settings.Settings;
 import com.qprogramming.gifts.support.ResultData;
@@ -46,14 +49,18 @@ public class AppRestController {
     private MailService mailService;
     private CategoryService categoryService;
     private GiftService giftService;
+    private AccountService accountService;
+    private MessagesService msgSrv;
 
     @Autowired
-    public AppRestController(PropertyService propertyService, SearchEngineService searchEngineService, MailService mailService, CategoryService categoryService, GiftService giftService) {
+    public AppRestController(PropertyService propertyService, SearchEngineService searchEngineService, MailService mailService, CategoryService categoryService, GiftService giftService, AccountService accountService, MessagesService messagesService) {
         this.propertyService = propertyService;
         this.searchEngineService = searchEngineService;
         this.mailService = mailService;
         this.categoryService = categoryService;
         this.giftService = giftService;
+        this.accountService = accountService;
+        this.msgSrv = messagesService;
     }
 
     @RolesAllowed("ROLE_ADMIN")
@@ -218,6 +225,41 @@ public class AppRestController {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
         return ResponseEntity.ok(StringUtils.isBlank(propertyService.getProperty(APP_URL)) || searchEngineService.getAllSearchEngines().isEmpty());
+    }
+
+    @RolesAllowed("ROLE_ADMIN")
+    @RequestMapping(value = "/add-admin", method = RequestMethod.PUT)
+    public ResponseEntity addAdmin(@RequestBody String id) {
+        Account currentAccount = Utils.getCurrentAccount();
+        if (currentAccount == null || !currentAccount.getIsAdmin()) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+        Account account = accountService.findById(id);
+        if (account == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        account.setRole(Roles.ROLE_ADMIN);
+        accountService.update(account);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @RolesAllowed("ROLE_ADMIN")
+    @RequestMapping(value = "/remove-admin", method = RequestMethod.PUT)
+    public ResponseEntity removeAdmin(@RequestBody String id) {
+        Account currentAccount = Utils.getCurrentAccount();
+        if (currentAccount == null || !currentAccount.getIsAdmin()) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+        Account account = accountService.findById(id);
+        if (account == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        if (accountService.findUsers().stream().filter(Account::getIsAdmin).count() == 1) {
+            return new ResultData.ResultBuilder().error().message(msgSrv.getMessage("error.lastAdmin")).build();
+        }
+        account.setRole(Roles.ROLE_USER);
+        accountService.update(account);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @RequestMapping(value = "/search-engines", method = RequestMethod.GET)

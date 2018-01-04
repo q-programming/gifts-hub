@@ -21,6 +21,8 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
     List<Account> findByRole(Roles role);
 
+    List<Account> findByTypeNot(AccountType type);
+
     List<Account> findByNewsletterIsTrueAndEmailNotNullAndTypeIsNot(AccountType type);
 
 }

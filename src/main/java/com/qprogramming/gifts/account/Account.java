@@ -266,7 +266,7 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
 
     @JsonIgnore
     public boolean getIsUser() {
-        return getIsPowerUser() || role.equals(Roles.ROLE_USER);
+        return getIsPowerUser() || Roles.ROLE_USER.equals(role);
     }
 
     /**
@@ -276,7 +276,7 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
      */
     @JsonIgnore
     public boolean getIsPowerUser() {
-        return getIsAdmin() || role.equals(Roles.ROLE_POWERUSER);
+        return getIsAdmin() || Roles.ROLE_POWERUSER.equals(role);
     }
 
     /**
@@ -286,7 +286,7 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
      */
     @JsonIgnore
     public boolean getIsAdmin() {
-        return role.equals(Roles.ROLE_ADMIN);
+        return Roles.ROLE_ADMIN.equals(role);
     }
 
 

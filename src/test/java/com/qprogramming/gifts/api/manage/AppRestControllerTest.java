@@ -3,6 +3,7 @@ package com.qprogramming.gifts.api.manage;
 import com.qprogramming.gifts.MockSecurityContext;
 import com.qprogramming.gifts.TestUtil;
 import com.qprogramming.gifts.account.Account;
+import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.account.Roles;
 import com.qprogramming.gifts.config.mail.MailService;
 import com.qprogramming.gifts.config.property.PropertyService;
@@ -11,9 +12,11 @@ import com.qprogramming.gifts.gift.GiftService;
 import com.qprogramming.gifts.gift.category.Category;
 import com.qprogramming.gifts.gift.category.CategoryDTO;
 import com.qprogramming.gifts.gift.category.CategoryService;
+import com.qprogramming.gifts.messages.MessagesService;
 import com.qprogramming.gifts.settings.SearchEngine;
 import com.qprogramming.gifts.settings.SearchEngineService;
 import com.qprogramming.gifts.settings.Settings;
+import com.qprogramming.gifts.support.ResultData;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -34,8 +37,7 @@ import java.util.stream.Stream;
 import static com.qprogramming.gifts.settings.Settings.APP_URL;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -45,6 +47,8 @@ public class AppRestControllerTest {
 
     public static final String EN = "en";
     private static final String API_APPLICATION_SETTINGS = "/api/app/settings";
+    private static final String API_APPLICATION_ADD_ADMIN = "/api/app/add-admin";
+    private static final String API_APPLICATION_REMOVE_ADMIN = "/api/app/remove-admin";
     private static final String API_APPLICATION_SETUP = "/api/app/setup";
     private static final String API_APPLICATION_SEARCH_ENGINES = "/api/app/search-engines";
     public static final String API_APPLICATION_REMOVE_CATEGORY = "/api/app/remove-category";
@@ -64,6 +68,10 @@ public class AppRestControllerTest {
     private CategoryService categoryServiceMock;
     @Mock
     private GiftService giftServiceMock;
+    @Mock
+    private AccountService accountServiceMock;
+    @Mock
+    private MessagesService msgSrvMock;
 
     private Account testAccount;
 
@@ -71,16 +79,17 @@ public class AppRestControllerTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        AppRestController mngCtrl = new AppRestController(propertyServiceMock, searchEngineServiceMock, mailServiceMock, categoryServiceMock, giftServiceMock);
         testAccount = TestUtil.createAccount();
         when(securityMock.getAuthentication()).thenReturn(authMock);
         when(authMock.getPrincipal()).thenReturn(testAccount);
+        when(msgSrvMock.getMessage(anyString())).thenReturn("MESSAGE");
         SecurityContextHolder.setContext(securityMock);
+        AppRestController mngCtrl = new AppRestController(propertyServiceMock, searchEngineServiceMock, mailServiceMock, categoryServiceMock, giftServiceMock, accountServiceMock, msgSrvMock);
         this.manageRestController = MockMvcBuilders.standaloneSetup(mngCtrl).build();
     }
 
     @Test
-    public void changeSettingsLanguage() throws Exception {
+    public void changeSettingsLanguageTest() throws Exception {
         testAccount.setRole(Roles.ROLE_ADMIN);
         Settings settings = new Settings();
         settings.setLanguage(EN);
@@ -93,7 +102,7 @@ public class AppRestControllerTest {
     }
 
     @Test
-    public void changeSettingsAddSearchEngine() throws Exception {
+    public void changeSettingsAddSearchEngineTest() throws Exception {
         testAccount.setRole(Roles.ROLE_ADMIN);
         SearchEngine engine = new SearchEngine();
         engine.setName("google");
@@ -110,7 +119,7 @@ public class AppRestControllerTest {
     }
 
     @Test
-    public void setApplicationSettingsBadAuth() throws Exception {
+    public void setApplicationSettingsBadAuthTest() throws Exception {
         testAccount.setRole(Roles.ROLE_USER);
         Settings settings = new Settings();
         manageRestController.perform(
@@ -121,13 +130,13 @@ public class AppRestControllerTest {
     }
 
     @Test
-    public void applicationSettingsBadAuth() throws Exception {
+    public void applicationSettingsBadAuthTest() throws Exception {
         testAccount.setRole(Roles.ROLE_USER);
         manageRestController.perform(get(API_APPLICATION_SETTINGS)).andExpect(status().isForbidden());
     }
 
     @Test
-    public void applicationSettingsDataRecived() throws Exception {
+    public void applicationSettingsDataRecivedTest() throws Exception {
         testAccount.setRole(Roles.ROLE_ADMIN);
         when(propertyServiceMock.getDefaultLang()).thenReturn(EN);
         MvcResult mvcResult = manageRestController.perform(get(API_APPLICATION_SETTINGS)).andReturn();
@@ -137,7 +146,7 @@ public class AppRestControllerTest {
     }
 
     @Test
-    public void applicationSettingsCategories() throws Exception {
+    public void applicationSettingsCategoriesTest() throws Exception {
         testAccount.setRole(Roles.ROLE_ADMIN);
         when(propertyServiceMock.getDefaultLang()).thenReturn(EN);
         Category category1 = createCategory("category1", 1L, Integer.MAX_VALUE);
@@ -164,7 +173,7 @@ public class AppRestControllerTest {
     }
 
     @Test
-    public void applicationSettingsUpdateCategoryPriorities() throws Exception {
+    public void applicationSettingsUpdateCategoryPrioritiesTest() throws Exception {
         testAccount.setRole(Roles.ROLE_ADMIN);
         Settings settings = new Settings();
         Category category1 = createCategory("category1", 1L, Integer.MAX_VALUE);
@@ -215,6 +224,7 @@ public class AppRestControllerTest {
         verify(giftServiceMock, times(1)).removeCategory(category1);
         verify(categoryServiceMock, times(1)).remove(category1);
     }
+
     @Test
     public void editCategoryBadAuthTest() throws Exception {
         testAccount.setRole(Roles.ROLE_USER);
@@ -249,9 +259,8 @@ public class AppRestControllerTest {
     }
 
 
-
     @Test
-    public void getAllSearchEngines() throws Exception {
+    public void getAllSearchEnginesTest() throws Exception {
         List<SearchEngine> expected = new ArrayList<>();
         expected.add(TestUtil.createSearchEngine("google", "link", "icon"));
         expected.add(TestUtil.createSearchEngine("bing", "link", "icon"));
@@ -263,7 +272,7 @@ public class AppRestControllerTest {
     }
 
     @Test
-    public void setupNeededEmptyURL() throws Exception {
+    public void setupNeededEmptyURLTest() throws Exception {
         testAccount.setRole(Roles.ROLE_ADMIN);
         when(propertyServiceMock.getProperty(APP_URL)).thenReturn(null);
         MvcResult mvcResult = manageRestController.perform(get(API_APPLICATION_SETUP)).andReturn();
@@ -274,7 +283,7 @@ public class AppRestControllerTest {
     }
 
     @Test
-    public void setupNeededEmptySearchEngines() throws Exception {
+    public void setupNeededEmptySearchEnginesTest() throws Exception {
         testAccount.setRole(Roles.ROLE_ADMIN);
         when(propertyServiceMock.getProperty(APP_URL)).thenReturn("link");
         when(searchEngineServiceMock.getAllSearchEngines()).thenReturn(Collections.emptyList());
@@ -285,7 +294,7 @@ public class AppRestControllerTest {
     }
 
     @Test
-    public void setupNotNeeded() throws Exception {
+    public void setupNotNeededTest() throws Exception {
         testAccount.setRole(Roles.ROLE_ADMIN);
         when(propertyServiceMock.getProperty(APP_URL)).thenReturn("link");
         SearchEngine engine = new SearchEngine();
@@ -295,6 +304,96 @@ public class AppRestControllerTest {
         String contentAsString = mvcResult.getResponse().getContentAsString();
         Boolean result = TestUtil.convertJsonToObject(contentAsString, Boolean.class);
         assertFalse(result);
+    }
+
+    @Test
+    public void addAdminBadAuthTest() throws Exception {
+        testAccount.setRole(Roles.ROLE_USER);
+        manageRestController.perform(
+                put(API_APPLICATION_ADD_ADMIN)
+                        .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                        .content(testAccount.getId()))
+                .andExpect(status().isForbidden());
+    }
+
+
+    @Test
+    public void addAdminUserNotFoundTest() throws Exception {
+        testAccount.setRole(Roles.ROLE_ADMIN);
+        manageRestController.perform(
+                put(API_APPLICATION_ADD_ADMIN)
+                        .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                        .content(testAccount.getId()))
+                .andExpect(status().isNotFound());
+
+    }
+
+    @Test
+    public void addAdminTest() throws Exception {
+        Account account = TestUtil.createAccount();
+        testAccount.setRole(Roles.ROLE_ADMIN);
+        when(accountServiceMock.findById(account.getId())).thenReturn(account);
+        manageRestController.perform(
+                put(API_APPLICATION_ADD_ADMIN)
+                        .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                        .content(account.getId()))
+                .andExpect(status().isOk());
+        verify(accountServiceMock, times(1)).update(account);
+        assertTrue(account.getIsAdmin());
+    }
+
+
+    @Test
+    public void removeAdminBadAuthTest() throws Exception {
+        testAccount.setRole(Roles.ROLE_USER);
+        manageRestController.perform(
+                put(API_APPLICATION_REMOVE_ADMIN)
+                        .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                        .content(testAccount.getId()))
+                .andExpect(status().isForbidden());
+    }
+
+
+    @Test
+    public void removedminUserNotFoundTest() throws Exception {
+        testAccount.setRole(Roles.ROLE_ADMIN);
+        manageRestController.perform(
+                put(API_APPLICATION_REMOVE_ADMIN)
+                        .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                        .content(testAccount.getId()))
+                .andExpect(status().isNotFound());
+
+    }
+
+    @Test
+    public void removeAdminTest() throws Exception {
+        Account account = TestUtil.createAccount();
+        account.setRole(Roles.ROLE_ADMIN);
+        testAccount.setRole(Roles.ROLE_ADMIN);
+        when(accountServiceMock.findById(account.getId())).thenReturn(account);
+        when(accountServiceMock.findUsers()).thenReturn(Arrays.asList(account, testAccount));
+        manageRestController.perform(
+                put(API_APPLICATION_REMOVE_ADMIN)
+                        .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                        .content(account.getId()))
+                .andExpect(status().isOk());
+        verify(accountServiceMock, times(1)).update(account);
+        assertFalse(account.getIsAdmin());
+    }
+
+    @Test
+    public void removeLastAdminTest() throws Exception {
+        testAccount.setRole(Roles.ROLE_ADMIN);
+        when(accountServiceMock.findById(testAccount.getId())).thenReturn(testAccount);
+        when(accountServiceMock.findUsers()).thenReturn(Collections.singletonList(testAccount));
+        MvcResult mvcResult = manageRestController.perform(
+                put(API_APPLICATION_REMOVE_ADMIN)
+                        .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                        .content(testAccount.getId()))
+                .andReturn();
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        assertTrue(testAccount.getIsAdmin());
+        assertTrue(contentAsString.contains(ResultData.Code.ERROR.toString()));
     }
 
     private Category createCategory(String name, Long id, Integer priority) {
