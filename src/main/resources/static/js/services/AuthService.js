@@ -53,6 +53,7 @@ AuthService.factory('AuthService', ['$http', '$log', 'avatarCache', '$rootScope'
                     $cookies.remove("XSRF-TOKEN");
                     $rootScope.authenticated = false;
                     $location.path("/login");
+                    $rootScope.principal = {};
                 },
                 function errorCallback() {
                     $rootScope.authenticated = false;

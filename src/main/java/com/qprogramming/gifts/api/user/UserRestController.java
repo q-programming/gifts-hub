@@ -546,8 +546,8 @@ public class UserRestController {
     @RequestMapping(value = "admins", method = RequestMethod.GET)
     public ResponseEntity admins() {
         Account currentAccount = Utils.getCurrentAccount();
-        if (currentAccount == null || !currentAccount.getIsAdmin()) {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        if (currentAccount == null) {
+            return ResponseEntity.ok().build();
         }
         return ResponseEntity.ok(accountService.findAdmins());
     }

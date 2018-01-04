@@ -17,12 +17,36 @@
             W przypadku błędów lub pomysłów , skontaktuj się ze mną przez mój email: <br><a
                 href="mailto:jakub.romaniszyn@gmail.com">jakub.romaniszyn@gmail.com</a>
         </p>
-        <p class="text-center">
+        <p class="text-center" ng-if="principal && principal.tourComplete">
             <span class="btn btn-default" ng-click="tourReset ()" id="tour-starter">
                 <i class="fa fa-graduation-cap"></i>&nbsp;
                 <span>Rozpocznij przewodnik od nowa!</span>
             </span>
         </p>
+        <hr>
+    </div>
+    <!--ADMINS-->
+    <div class="col-xs-12" ng-if="principal">
+        <h3 id="admins">Administratorzy aplikacji</h3>
+        <p>
+            W przypadku pytań lub problemów, poniżej znajduje się lista administratorów aplikacji
+        </p>
+        <div class="row" ng-repeat="user in admins track by user.id">
+            <div class="col-xs-1 col-sm-1">
+                <img ng-if="user.avatar && user.avatar !=='NaN'" ng-src="{{user.avatar}}" class="avatar"/>
+                <img ng-if="!user.avatar || user.avatar ==='NaN'" src='images/avatar-placeholder.png' class="avatar"/>
+            </div>
+            <div class="col-xs-11 col-sm-8">
+                <i class="fa fa-wrench" ng-if="user.role === 'ROLE_ADMIN'"
+                   uib-tooltip="{{'user.administrator'|translate}}">
+                </i>
+                <a class="black" ng-href="#/list/{{user.username}}">{{user.name}}&nbsp;{{user.surname}}
+                    ({{user.username}})</a>
+            </div>
+            <div class="col-xs-6 col-sm-3">
+                <a ng-if="user.email" ng-href="mailto:{{user.email}}"><i class="fa fa-envelope">&nbsp;{{user.email}}</i></a>
+            </div>
+        </div>
         <hr>
     </div>
     <div class="col-xs-12">
@@ -84,7 +108,9 @@
             <div class="col-sm-4 col-lg-2 clickable menu-item-help" ng-click="anchor('settings')"
                  style="padding: 12px;">
                 <span>
-                    {{principal.fullname}}<span class="caret"></span>
+                    <span ng-if="principal">{{principal.fullname}}</span>
+                    <span ng-if="!principal">{{'user.firstname'|translate}}&nbsp;{{'user.surname'|translate}}</span>
+                    <span class="caret"></span>
                     <img ng-if="principal.avatar && principal.avatar !== 'NaN'" ng-src="{{principal.avatar}}"
                          class="avatar nav-avatar"/>
                     <img ng-if="!principal.avatar || principal.avatar ==='NaN'" src='images/avatar-placeholder.png'
@@ -155,6 +181,7 @@
                     <i class="fa fa-pencil"></i>
             </span> w wierszu konta dziecka na ekranie listy użytkowników.
         </p>
+        <hr>
     </div>
     <!--END USERS-->
     <!--GIFTS-->
@@ -240,6 +267,7 @@
             Importuj<br><br>Wszystkie poprawne zdefiniowane przenty zostaną zaimportowane dla danego uzytkownika<br>(lub
             członka rodziny , którego prezenty w danej chwili wyświetlaliśmy)
         </p>
+        <hr>
     </div>
     <!--END GIFTS-->
     <!--MANAGE-->
@@ -287,6 +315,7 @@
             <code>http://google.com/search?q=</code><br>
             <strong>{{'app.manage.search.icon'|translate}}</strong> - {{'app.manage.search.icon.help'|translate}}
         </p>
+        <hr>
     </div>
 
     <!--SETTINGS-->
@@ -317,5 +346,6 @@
             rezerwacje zostaną usunięte wraz z twoim kontem<br>
             <strong>Pamiętaj, żę tej operacji nie da się cofnąć , dlatego proszę używać jej z rozwagą!</strong>
         </p>
+        <hr>
     </div>
 </div>

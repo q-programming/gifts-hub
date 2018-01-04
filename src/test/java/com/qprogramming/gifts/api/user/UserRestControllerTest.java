@@ -631,12 +631,6 @@ public class UserRestControllerTest {
     }
 
     @Test
-    public void getAdminsNotAdminTest() throws Exception {
-        testAccount.setRole(Roles.ROLE_USER);
-        userRestCtrl.perform(get(API_USER_ADMINS)).andExpect(status().isForbidden());
-    }
-
-    @Test
     public void getAdminsTest() throws Exception {
         testAccount.setRole(Roles.ROLE_ADMIN);
         when(accSrvMock.findAdmins()).thenReturn(Collections.singletonList(testAccount));
@@ -646,12 +640,11 @@ public class UserRestControllerTest {
         assertTrue(result.contains(testAccount));
     }
 
-    //TODO uncomment after 10.06.2017 :)
-//    @Test
-//    public void confirmFamilymemberTokenExpired() throws Exception {
-//        String token = "09011a27-478c-11e7-bcf7-930b1424157e";
-//        userRestCtrl.perform(post(API_USER_CONFIRM).content(token)).andExpect(status().isBadRequest());
-//    }
+    @Test
+    public void confirmFamilymemberTokenExpired() throws Exception {
+        String token = "09011a27-478c-11e7-bcf7-930b1424157e";
+        userRestCtrl.perform(post(API_USER_CONFIRM).content(token)).andExpect(status().isBadRequest());
+    }
 
     @Test
     public void confirmFamilymemberAlreadyMemberTest() throws Exception {
