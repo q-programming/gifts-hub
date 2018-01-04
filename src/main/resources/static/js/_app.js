@@ -137,7 +137,10 @@ app.run(['$rootScope', '$confirmModalDefaults', '$translate', '$log', '$location
     $rootScope.alerts = [];
     $rootScope.$on('$routeChangeStart', function (event, current, pre) {
         var path = $location.path();
-        if (!$rootScope.authenticated && path.indexOf("help") === -1 && path.indexOf("login") === -1) {
+        if (!$rootScope.authenticated
+            && path.indexOf("help") === -1
+            && path.indexOf("login") === -1
+            && path.indexOf("public") === -1) {
             $log.debug('[DEBUG] Redirecting to Login');
             $location.path('/login');
         }
