@@ -17,12 +17,36 @@
             In case of any bugs or ideas, You can always try to contact me under my email: <br><a
                 href="mailto:jakub.romaniszyn@gmail.com">jakub.romaniszyn@gmail.com</a>
         </p>
-        <p class="text-center">
+        <p class="text-center" ng-if="principal && principal.tourComplete">
             <span class="btn btn-default" ng-click="tourReset ()" id="tour-starter">
                 <i class="fa fa-graduation-cap"></i>&nbsp;
-                <span ng-if="principal.tourComplete">Start tour from beginning!</span>
+                <span>Start tour from beginning!</span>
             </span>
         </p>
+        <hr>
+    </div>
+    <!--ADMINS-->
+    <div class="col-xs-12" ng-if="principal">
+        <h3 id="admins">Application administrators</h3>
+        <p>
+            In case of questions or problems, below you can find list of all application administrators.
+        </p>
+        <div class="row" ng-repeat="user in admins track by user.id">
+            <div class="col-xs-1 col-sm-1">
+                <img ng-if="user.avatar && user.avatar !=='NaN'" ng-src="{{user.avatar}}" class="avatar"/>
+                <img ng-if="!user.avatar || user.avatar ==='NaN'" src='images/avatar-placeholder.png' class="avatar"/>
+            </div>
+            <div class="col-xs-11 col-sm-8">
+                <i class="fa fa-wrench" ng-if="user.role === 'ROLE_ADMIN'"
+                   uib-tooltip="{{'user.administrator'|translate}}">
+                </i>
+                <a class="black" ng-href="#/list/{{user.username}}">{{user.name}}&nbsp;{{user.surname}}
+                    ({{user.username}})</a>
+            </div>
+            <div class="col-xs-6 col-sm-3">
+                <a ng-if="user.email" ng-href="mailto:{{user.email}}"><i class="fa fa-envelope">&nbsp;{{user.email}}</i></a>
+            </div>
+        </div>
         <hr>
     </div>
     <div class="col-xs-12">
@@ -161,6 +185,7 @@
                     <i class="fa fa-pencil"></i>
             </span> button in kid accounts row on users screen
         </p>
+        <hr>
     </div>
     <!--END USERS-->
     <!--GIFTS-->
@@ -237,6 +262,7 @@
             gifts
             were currently browsed)
         </p>
+        <hr>
     </div>
     <!--END GIFTS-->
     <!--MANAGE-->
@@ -280,6 +306,7 @@
             <code>http://google.com/search?q=</code><br>
             <strong>{{'app.manage.search.icon'|translate}}</strong> - {{'app.manage.search.icon.help'|translate}}
         </p>
+        <hr>
     </div>
 
     <!--SETTINGS-->
@@ -309,7 +336,6 @@
         <p>Here you can also {{'user.delete.help'|translate}}<br>
             <strong>This operation cannot be undone , so please handle with care</strong>
         </p>
+        <hr>
     </div>
-
-
 </div>

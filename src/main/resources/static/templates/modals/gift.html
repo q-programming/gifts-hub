@@ -8,6 +8,7 @@
     <div class="modal-body" id="modal-body">
         <div class="row">
             <div class="col-md-offset-1 col-md-10" id="gift-details">
+                <input type="hidden" name="validForm">
                 <input type="hidden" ng-model="giftForm.username">
                 <input type="hidden" ng-model="giftForm.id">
                 <div class="form-group" show-errors="">
@@ -20,11 +21,21 @@
                     <textarea class="form-control" id="description" name="description" ng-model="giftForm.description">
                 </textarea>
                 </div>
-                <div class="form-group" show-errors="">
-                    <label for="link" translate="gift.link"></label>
-                    <input type="url" class="form-control" id="link" name="link" ng-model="giftForm.link"/>
-                    <span class="validation-error" ng-show="mainGiftForm.link.$error.url" translate="gift.link.error">
-                </span>
+                <label translate="gift.link"></label>
+                <div ng-repeat="link in giftForm.links track by $index" class="row">
+                    <div class="col-xs-10">
+                        <div class="form-group" show-errors="">
+                            <input type="hidden" ng-model="link.id">
+                            <input type="url" class="form-control" name="link" ng-model="link.url"/>
+                            <span class="validation-error" ng-show="link.invalid"
+                                  translate="gift.link.error"></span>
+                        </div>
+                    </div>
+                    <div class="col-xs-2 margin-top5">
+                        <i class="clickable fa fa-plus" ng-click="addNewLinkField()" uib-tooltip="{{'gift.link.add' | translate}}"></i>&nbsp;
+                        <i ng-if="$index > 0" class="clickable fa fa-minus" ng-click="removeLinkField($index)" uib-tooltip="{{'gift.link.remove' | translate}}"></i>
+                    </div>
+
                 </div>
                 <div class="form-group">
                     <label for="category" translate="gift.category"></label>
@@ -39,7 +50,8 @@
                         </ui-select-choices>
                     </ui-select>
                 </div>
-                <div class="alert alert-warning" ng-show="giftForm.categoryError" ng-bind-html="giftForm.categoryError"></div>
+                <div class="alert alert-warning" ng-show="giftForm.categoryError"
+                     ng-bind-html="giftForm.categoryError"></div>
                 <label translate="app.manage.search.engine"></label>
                 <div class="form-group">
                 <span ng-repeat="engine in searchEngines">

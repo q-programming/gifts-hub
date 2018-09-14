@@ -1,6 +1,6 @@
 var AuthService = angular.module('AuthService', []);
-AuthService.factory('AuthService', ['$http', '$log', 'avatarCache', '$rootScope', '$translate', '$cookies', '$location', 'AvatarService', 'AlertService',
-    function ($http, $log, avatarCache, $rootScope, $translate, $cookies, $location, AvatarService, AlertService) {
+AuthService.factory('AuthService', ['$http', '$log', 'avatarCache', '$rootScope', '$translate', '$cookies', '$location','$window', 'AvatarService', 'AlertService',
+    function ($http, $log, avatarCache, $rootScope, $translate, $cookies, $location, $window,AvatarService, AlertService) {
         var AuthService = {};
 
         AuthService.isAuthenticated = function () {
@@ -47,8 +47,14 @@ AuthService.factory('AuthService', ['$http', '$log', 'avatarCache', '$rootScope'
             $http.post('logout', {}).then(
                 function successCallback() {
                     AvatarService.clearCache();
+                    //Nuke cookies to be sure
+                    var context = $window.location.pathname.substring(0, window.location.pathname.indexOf("/",2));
+                    $cookies.remove("AUTH-TOKEN",context);
+                    $cookies.remove("JSESSIONID");
+                    $cookies.remove("XSRF-TOKEN");
                     $rootScope.authenticated = false;
                     $location.path("/login");
+                    $rootScope.principal = undefined;
                 },
                 function errorCallback() {
                     $rootScope.authenticated = false;

@@ -8,6 +8,7 @@ import com.qprogramming.gifts.login.token.TokenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
@@ -51,17 +52,21 @@ public class OAuthLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
         Map<String, String> details = (Map) ((OAuth2Authentication) authentication).getUserAuthentication().getDetails();
         Account account;
         if (details.containsKey(G.SUB)) {//google+
-            String userId = details.get(G.SUB);
-            account = accountService.findById(userId);
+            account = accountService.findByEmail(details.get(EMAIL));
             if (account == null) {//no profile yet, create
-                account = createGoogleAccount(details, userId);
+                account = createGoogleAccount(details);
             }
-        } else {//facebook , need to fetch data
-            String userId = details.get(FB.ID);
-            account = accountService.findById(userId);
+        } else if (details.containsKey(FB.ID)) {//facebook , need to fetch data
+            String token = ((OAuth2AuthenticationDetails) authentication.getDetails()).getTokenValue();
+            Facebook facebook = getFacebookTemplate(token);
+            String[] fields = {FB.ID, EMAIL, FB.FIRST_NAME, FB.LAST_NAME, LOCALE};
+            User facebookUser = facebook.fetchObject(FB.ME, User.class, fields);
+            account = accountService.findByEmail(facebookUser.getEmail());
             if (account == null) {
-                account = createFacebookAccount(authentication, userId);
+                account = createFacebookAccount(facebook, facebookUser);
             }
+        } else {
+            throw new BadCredentialsException("Unable to login using OAuth. Response map was neither facebook , nor google");
         }
         accountService.signin(account);
         //token cookie creation
@@ -71,15 +76,11 @@ public class OAuthLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
     }
 
 
-    private Account createFacebookAccount(Authentication authentication, String userId) {
+    private Account createFacebookAccount(Facebook facebook, User facebookUser) {
         Account account;
-        String token = ((OAuth2AuthenticationDetails) authentication.getDetails()).getTokenValue();
-        Facebook facebook = getFacebookTemplate(token);
-        String[] fields = {FB.ID, EMAIL, FB.FIRST_NAME, FB.LAST_NAME, LOCALE};
-        User facebookUser = facebook.fetchObject(FB.ME, User.class, fields);
         account = new Account();
         account.setType(AccountType.FACEBOOK);
-        account.setId(userId);
+        account.setId(accountService.generateID());
         account.setName(facebookUser.getFirstName());
         account.setSurname(facebookUser.getLastName());
         account.setEmail(facebookUser.getEmail());
@@ -98,10 +99,10 @@ public class OAuthLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
         return new FacebookTemplate(token);
     }
 
-    private Account createGoogleAccount(Map<String, String> details, String userId) throws MalformedURLException {
+    private Account createGoogleAccount(Map<String, String> details) throws MalformedURLException {
         Account account;
         account = new Account();
-        account.setId(userId);
+        account.setId(accountService.generateID());
         account.setType(AccountType.GOOGLE);
         account.setName(details.get(G.GIVEN_NAME));
         account.setSurname(details.get(G.FAMILY_NAME));

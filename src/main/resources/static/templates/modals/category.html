@@ -1,0 +1,17 @@
+<div class="modal-header theme">
+    <h4 class="modal-title"><i class="fa fa-search"></i>&nbsp;{{'app.manage.categories'|translate}}</h4>
+</div>
+<div class="modal-body">
+    <form role="form" name="categoryForm">
+        <input type="hidden" id="id" name="id" ng-model="categoryEdit.id"/>
+        <div class="form-group" show-errors="">
+            <label for="name" translate="gift.category"></label>
+            <input type="text" class="form-control" id="name" name="name" required="required"
+                   ng-model="categoryEdit.name"/>
+        </div>
+    </form>
+</div>
+<div class="modal-footer theme">
+    <button class="btn btn-default" ng-click="cancel()">{{'main.cancel'|translate}}</button>
+    <button class="btn btn-primary" ng-click="action()">{{'main.edit'|translate}}</button>
+</div>

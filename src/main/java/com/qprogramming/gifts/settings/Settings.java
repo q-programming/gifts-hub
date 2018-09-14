@@ -1,5 +1,7 @@
 package com.qprogramming.gifts.settings;
 
+import com.qprogramming.gifts.gift.category.CategoryDTO;
+import io.jsonwebtoken.lang.Collections;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
@@ -25,6 +27,7 @@ public class Settings {
     private SortBy sort;
     private Email email;
     private String appUrl;
+    private List<CategoryDTO> categories;
 
     public String getLanguage() {
         return language;
@@ -82,6 +85,17 @@ public class Settings {
 
     public void setAppUrl(String appUrl) {
         this.appUrl = appUrl;
+    }
+
+    public List<CategoryDTO> getCategories() {
+        if (Collections.isEmpty(categories)) {
+            categories = new ArrayList<>();
+        }
+        return categories;
+    }
+
+    public void setCategories(List<CategoryDTO> categories) {
+        this.categories = categories;
     }
 
     public enum SortBy {

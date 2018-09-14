@@ -69,6 +69,16 @@ app.controller('gift', [
             }
         };
 
+        $scope.addNewLinkField = function () {
+            var link = {};
+            link.id = '';
+            link.url = '';
+            $scope.giftForm.links.push(link);
+        };
+
+        $scope.removeLinkField = function (index) {
+            $scope.giftForm.links.splice(index, 1);
+        };
 
         /**
          * Show gift form, pre-filled with search engines selected
@@ -76,6 +86,7 @@ app.controller('gift', [
         $scope.showCreate = function () {
             $scope.editInProgress = false;
             $scope.giftForm.searchEngines = {};
+            $scope.giftForm.links = [];
             angular.forEach($scope.searchEngines, function (engine) {
                 $scope.giftForm.searchEngines[engine.id] = true;
             });
@@ -101,10 +112,18 @@ app.controller('gift', [
                 templateUrl: 'modals/gift.html',
                 scope: $scope,
                 controller: ['$uibModalInstance', '$scope', function ($uibModalInstance, $scope) {
+                    if ($scope.giftForm.links.length === 0) {
+                        $scope.addNewLinkField();
+                    }
                     $scope.cancel = function () {
+                        $scope.reloadGiftsAndCategories();
                         $uibModalInstance.dismiss('cancel');
+
                     };
                     $scope.action = function () {
+                        angular.forEach($scope.giftForm.links, function (link) {
+                            link.invalid = !validUrl(link.url);
+                        });
                         if ($scope.mainGiftForm.$valid) {
                             $log.debug("[DEBUG] sending gift data");
                             $scope.sendGiftData();
@@ -168,9 +187,17 @@ app.controller('gift', [
         /**
          * Reset gift form
          */
-        $scope.reset = function () {
+        $scope.resetForm = function () {
             $scope.giftForm = {};
             $scope.editInProgress = false;
+        };
+        /**
+         * Reloads all gifts and categories. Additionally resets form
+         */
+        $scope.reloadGiftsAndCategories = function () {
+            getGiftList();
+            getCategories();
+            $scope.resetForm();
         };
 
         /**
@@ -203,14 +230,12 @@ app.controller('gift', [
             }
             $http.post(url, angular.toJson($scope.apiSendGift)).then(
                 function () {
-                    getGiftList();
-                    getCategories();
+                    $scope.reloadGiftsAndCategories();
                     if ($scope.editInProgress) {
                         AlertService.addSuccess("gift.edit.success");
                     } else {
                         AlertService.addSuccess("gift.new.added");
                     }
-                    $scope.reset();
                 }).catch(function (response) {
                 AlertService.addError("error.general", response);
                 $log.debug(response);
@@ -223,7 +248,7 @@ app.controller('gift', [
          * @returns {boolean|*|null}
          */
         $scope.canBeEdited = function (gift) {
-            return gift.status !== GIFT_STATUS.REALISED && (gift.userId === $rootScope.principal.id || ($scope.family && $scope.family.familyAdmin ));
+            return gift.status !== GIFT_STATUS.REALISED && (gift.userId === $rootScope.principal.id || ($scope.family && $scope.family.familyAdmin));
         };
 
         /**
@@ -509,5 +534,10 @@ app.controller('gift', [
                     }
                 }
             );
+        }
+
+        function validUrl(url) {
+            var pattern = /^(http[s]?:\/\/){0,1}(www\.){0,1}[a-zA-Z0-9\.\-]+\.[a-zA-Z]{2,5}[\.]{0,1}/;
+            return pattern.test(url);
         }
     }]);

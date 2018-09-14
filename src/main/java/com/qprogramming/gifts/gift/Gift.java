@@ -2,16 +2,20 @@ package com.qprogramming.gifts.gift;
 
 import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.gift.category.Category;
+import com.qprogramming.gifts.gift.link.Link;
 import com.qprogramming.gifts.settings.SearchEngine;
+import io.jsonwebtoken.lang.Collections;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 @Entity
-public class Gift implements Serializable,Comparable<Gift> {
+public class Gift implements Serializable, Comparable<Gift> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "gift_seq_gen")
@@ -26,6 +30,9 @@ public class Gift implements Serializable,Comparable<Gift> {
 
     @Column(columnDefinition = "text")
     private String link;
+
+    @OneToMany
+    private List<Link> links;
 
     @Column
     private String userId;
@@ -135,6 +142,17 @@ public class Gift implements Serializable,Comparable<Gift> {
         this.claimed = claimed;
     }
 
+    public List<Link> getLinks() {
+        if (Collections.isEmpty(links)) {
+            links = new ArrayList<>();
+        }
+        return links;
+    }
+
+    public void setLinks(List<Link> links) {
+        this.links = links;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -170,5 +188,9 @@ public class Gift implements Serializable,Comparable<Gift> {
     public int compareTo(Gift gift) {
 
         return 0;
+    }
+
+    public void addLink(Link link) {
+        this.getLinks().add(link);
     }
 }

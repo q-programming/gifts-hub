@@ -49,6 +49,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private String TOKEN_COOKIE;
     @Value("${jwt.user_cookie}")
     private String USER_COOKIE;
+    @Value("${jwt.xsrf}")
+    private String XSRF_TOKEN;
+    @Value("${jwt.jsessionid}")
+    private String JSESSIONID;
+
     @Autowired
     private RestAuthenticationEntryPoint restAuthenticationEntryPoint;
     @Qualifier("oauth2ClientContext")
@@ -82,11 +87,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         //@formatter:off
-        http
-                .csrf()
+        http    .csrf()
                     .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                 .and().exceptionHandling()
-                    .authenticationEntryPoint( restAuthenticationEntryPoint )
+                    .authenticationEntryPoint(restAuthenticationEntryPoint)
                 .and().addFilterBefore(jwtAuthenticationTokenFilter(), BasicAuthenticationFilter.class)
                     .authorizeRequests()
                     .anyRequest().authenticated()
@@ -97,9 +101,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .successHandler(authenticationSuccessHandler)
                     .failureHandler(authenticationFailureHandler)
                 .and().logout()
-                    .deleteCookies(TOKEN_COOKIE, USER_COOKIE)
+                    .invalidateHttpSession(true)
+                    .deleteCookies(TOKEN_COOKIE, USER_COOKIE,XSRF_TOKEN,JSESSIONID)
                     .logoutSuccessUrl("/#/login");
-         //@formatter:on
+        //@formatter:on
     }
 
     @Bean

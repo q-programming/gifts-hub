@@ -74,4 +74,14 @@ public class AppEventService {
         List<AppEvent> events = eventRepo.findByAccountAndGift(accountService.findById(gift.getUserId()), gift);
         eventRepo.delete(events);
     }
+
+    /**
+     * Deletes all events produced by passed account. Used while deleting account
+     *
+     * @param account account for which all events will be deleted
+     */
+    public void deleteUserEvents(Account account) {
+        List<AppEvent> accountEvents = eventRepo.findByAccount(account);
+        eventRepo.delete(accountEvents);
+    }
 }
