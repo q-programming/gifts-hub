@@ -6,7 +6,6 @@ import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.config.property.PropertyService;
 import com.qprogramming.gifts.gift.category.Category;
-import com.qprogramming.gifts.schedule.AppEventService;
 import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
@@ -108,7 +107,27 @@ public class GiftServiceTest {
         giftService.deleteClaims(testAccount);
         verify(giftRepositoryMock, times(1)).save(anyCollectionOf(Gift.class));
         assertNull(gift1.getClaimed());
+    }
 
+    @Test
+    public void deleteCategory() {
+        Category category = new Category("category");
+        category.setId(1L);
+        Gift gift1 = createGift(1L, testAccount);
+        gift1.setCategory(category);
+        Gift gift2 = createGift(2L, testAccount);
+        gift2.setCategory(category);
+        Gift gift3 = createGift(3L, testAccount);
+        gift3.setCategory(category);
+        Gift gift4 = createGift(4L, testAccount);
+        gift4.setCategory(category);
+        when(giftRepositoryMock.findAllByCategory(category)).thenReturn(Arrays.asList(gift1, gift2, gift3, gift4));
+        giftService.removeCategory(category);
+        verify(giftRepositoryMock, times(1)).save(anyListOf(Gift.class));
+        assertNull(gift1.getCategory().getId());
+        assertNull(gift2.getCategory().getId());
+        assertNull(gift3.getCategory().getId());
+        assertNull(gift4.getCategory().getId());
     }
 
 

@@ -5,6 +5,7 @@ import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.account.AccountType;
 import com.qprogramming.gifts.account.RegisterForm;
 import com.qprogramming.gifts.account.event.AccountEvent;
+import com.qprogramming.gifts.account.event.AccountEventRepository;
 import com.qprogramming.gifts.account.event.AccountEventType;
 import com.qprogramming.gifts.account.family.Family;
 import com.qprogramming.gifts.account.family.FamilyForm;
@@ -16,6 +17,7 @@ import com.qprogramming.gifts.config.property.PropertyService;
 import com.qprogramming.gifts.gift.GiftService;
 import com.qprogramming.gifts.login.token.TokenBasedAuthentication;
 import com.qprogramming.gifts.messages.MessagesService;
+import com.qprogramming.gifts.schedule.AppEventService;
 import com.qprogramming.gifts.support.ResultData;
 import com.qprogramming.gifts.support.Utils;
 import org.apache.commons.codec.binary.Base64;
@@ -55,20 +57,24 @@ public class UserRestController {
     public static final String LANGUAGE = "language";
     private static final Logger LOG = LoggerFactory.getLogger(UserRestController.class);
     private AccountService accountService;
+    private AccountEventRepository accountEventRepository;
     private MessagesService msgSrv;
     private FamilyService familyService;
     private GiftService giftService;
     private MailService mailService;
     private PropertyService propertyService;
+    private AppEventService eventService;
 
     @Autowired
-    public UserRestController(AccountService accountService, MessagesService msgSrv, FamilyService familyService, GiftService giftService, MailService mailService, PropertyService propertyService) {
+    public UserRestController(AccountService accountService, AccountEventRepository accountEventRepository, MessagesService msgSrv, FamilyService familyService, GiftService giftService, MailService mailService, PropertyService propertyService, AppEventService eventService) {
         this.accountService = accountService;
+        this.accountEventRepository = accountEventRepository;
         this.msgSrv = msgSrv;
         this.familyService = familyService;
         this.giftService = giftService;
         this.mailService = mailService;
         this.propertyService = propertyService;
+        this.eventService = eventService;
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
@@ -127,18 +133,24 @@ public class UserRestController {
      * Returns user list, if passed param family is true, will return all accounts without family
      *
      * @param noFamily if true , returned list will contain only accounts without family
-     * @return
+     * @param users    if true, only users will be retured ( no KID accounts ) and gifts count's won't be added to response
+     * @return list of application accounts
      */
     @RequestMapping(value = "/users", method = RequestMethod.GET)
-    public ResponseEntity<?> userList(@RequestParam(required = false) boolean noFamily) {
+    public ResponseEntity<?> userList(@RequestParam(required = false) boolean noFamily, @RequestParam(required = false) boolean users) {
         Set<Account> list;
         if (noFamily) {
             list = new LinkedHashSet<>(accountService.findWithoutFamily());
         } else {
-            list = new LinkedHashSet<>(accountService.findAll());
+            if (users) {
+                list = new LinkedHashSet<>(accountService.findUsers());
+            } else {
+                list = new LinkedHashSet<>(accountService.findAll());
+                addGiftCounts(list);
+            }
         }
-        addGiftCounts(list);
         return ResponseEntity.ok(list);
+
     }
 
     @RequestMapping(value = "/userList", method = RequestMethod.GET)
@@ -503,10 +515,12 @@ public class UserRestController {
         } else {
             message = msgSrv.getMessage("user.delete.success");
         }
+        eventService.deleteUserEvents(account);
         giftService.deleteClaims(account);
         giftService.deleteUserGifts(account);
+        List<AccountEvent> accountEvents = accountEventRepository.findAllByAccount(account);
+        accountEventRepository.delete(accountEvents);
         accountService.delete(account);
-        //TODO add complete event newsleter
         return new ResultData.ResultBuilder().ok().message(message).build();
     }
 
@@ -532,8 +546,8 @@ public class UserRestController {
     @RequestMapping(value = "admins", method = RequestMethod.GET)
     public ResponseEntity admins() {
         Account currentAccount = Utils.getCurrentAccount();
-        if (currentAccount == null || !currentAccount.getIsAdmin()) {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        if (currentAccount == null) {
+            return ResponseEntity.ok().build();
         }
         return ResponseEntity.ok(accountService.findAdmins());
     }

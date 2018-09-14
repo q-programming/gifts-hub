@@ -5,6 +5,7 @@ import com.qprogramming.gifts.account.Account;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -42,12 +44,14 @@ public class TokenService {
     private String AUTH_COOKIE;
 
     private ObjectMapper objectMapper;
+    private ServletContext servletContext;
 
     private SignatureAlgorithm SIGNATURE_ALGORITHM = SignatureAlgorithm.HS512;
 
     @Autowired
-    public TokenService(ObjectMapper objectMapper) {
+    public TokenService(ObjectMapper objectMapper, ServletContext servletContext) {
         this.objectMapper = objectMapper;
+        this.servletContext = servletContext;
     }
 
     public String getUsernameFromToken(String token) {
@@ -64,11 +68,11 @@ public class TokenService {
     public void createTokenCookies(HttpServletResponse response, Account account) throws IOException {
         String tokenValue = generateToken(account.getUsername());
         Cookie authCookie = new Cookie(TOKEN_COOKIE, (tokenValue));
-        authCookie.setPath("/");
+        authCookie.setPath(getPath());
         authCookie.setHttpOnly(true);
         authCookie.setMaxAge(EXPIRES_IN);
         Cookie userCookie = new Cookie(USER_COOKIE, (account.getId()));
-        userCookie.setPath("/");
+        userCookie.setPath(getPath());
         userCookie.setMaxAge(EXPIRES_IN);
         response.addCookie(authCookie);
         response.addCookie(userCookie);
@@ -143,6 +147,11 @@ public class TokenService {
 
     private Date generateExpirationDate() {
         return new Date(getCurrentTimeMillis() + this.EXPIRES_IN * 1000);
+    }
+
+    private String getPath() {
+        String contextPath = servletContext.getContextPath();
+        return StringUtils.isEmpty(contextPath) ? "/" : contextPath;
     }
 
 }

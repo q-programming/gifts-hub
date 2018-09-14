@@ -1,19 +1,27 @@
 package com.qprogramming.gifts.api.manage;
 
 import com.qprogramming.gifts.account.Account;
+import com.qprogramming.gifts.account.AccountService;
+import com.qprogramming.gifts.account.Roles;
 import com.qprogramming.gifts.config.mail.MailService;
 import com.qprogramming.gifts.config.property.PropertyService;
+import com.qprogramming.gifts.gift.Gift;
+import com.qprogramming.gifts.gift.GiftService;
+import com.qprogramming.gifts.gift.category.Category;
+import com.qprogramming.gifts.gift.category.CategoryDTO;
+import com.qprogramming.gifts.gift.category.CategoryService;
+import com.qprogramming.gifts.messages.MessagesService;
 import com.qprogramming.gifts.settings.SearchEngineService;
 import com.qprogramming.gifts.settings.Settings;
 import com.qprogramming.gifts.support.ResultData;
 import com.qprogramming.gifts.support.Utils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -21,8 +29,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.security.RolesAllowed;
 import javax.mail.MessagingException;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static com.qprogramming.gifts.settings.Settings.*;
+import static java.util.stream.Collectors.counting;
+import static java.util.stream.Collectors.groupingBy;
 
 @RestController
 @RequestMapping("/api/app")
@@ -32,12 +47,20 @@ public class AppRestController {
     private PropertyService propertyService;
     private SearchEngineService searchEngineService;
     private MailService mailService;
+    private CategoryService categoryService;
+    private GiftService giftService;
+    private AccountService accountService;
+    private MessagesService msgSrv;
 
     @Autowired
-    public AppRestController(PropertyService propertyService, SearchEngineService searchEngineService, MailService mailService) {
+    public AppRestController(PropertyService propertyService, SearchEngineService searchEngineService, MailService mailService, CategoryService categoryService, GiftService giftService, AccountService accountService, MessagesService messagesService) {
         this.propertyService = propertyService;
         this.searchEngineService = searchEngineService;
         this.mailService = mailService;
+        this.categoryService = categoryService;
+        this.giftService = giftService;
+        this.accountService = accountService;
+        this.msgSrv = messagesService;
     }
 
     @RolesAllowed("ROLE_ADMIN")
@@ -60,8 +83,57 @@ public class AppRestController {
             propertyService.update(APP_URL, settings.getAppUrl());
         }
         propertyService.update(APP_DEFAULT_SORT, String.valueOf(settings.getSort()));
+        updateCategoriesPriorities(settings.getCategories().stream().map(CategoryDTO::getCategory).collect(Collectors.toList()));
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    /**
+     * Update all passed categories with new priorities based on order in collection
+     *
+     * @param categories list of categories
+     */
+    private void updateCategoriesPriorities(List<Category> categories) {
+        int counter = 0;
+        for (Category category : categories) {
+            category.setPriority(Integer.MAX_VALUE - counter);
+            counter++;
+        }
+        categoryService.update(categories);
+    }
+
+    @RolesAllowed("ROLE_ADMIN")
+    @RequestMapping(value = "/remove-category", method = RequestMethod.POST)
+    public ResponseEntity removeCategory(@RequestBody Category category) {
+        Account currentAccount = Utils.getCurrentAccount();
+        if (currentAccount == null || !currentAccount.getIsAdmin()) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+        Category dbCategory = categoryService.findById(category.getId());
+        if (dbCategory == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        //find all gifts with this category and remove it from there
+        giftService.removeCategory(category);
+        categoryService.remove(dbCategory);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @RolesAllowed("ROLE_ADMIN")
+    @RequestMapping(value = "/update-category", method = RequestMethod.POST)
+    public ResponseEntity updateCategory(@RequestBody Category category) {
+        Account currentAccount = Utils.getCurrentAccount();
+        if (currentAccount == null || !currentAccount.getIsAdmin()) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+        Category dbCategory = categoryService.findById(category.getId());
+        if (dbCategory == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        dbCategory.setName(category.getName());
+        categoryService.save(category);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 
     @RolesAllowed("ROLE_ADMIN")
     @RequestMapping(value = "/settings/email", method = RequestMethod.POST)
@@ -121,8 +193,29 @@ public class AppRestController {
         emailSettings.setFrom(propertyService.getProperty(APP_EMAIL_FROM));
         settings.setEmail(emailSettings);
         settings.setAppUrl(propertyService.getProperty(APP_URL));
+        settings.setCategories(getCategories());
         return ResponseEntity.ok(settings);
     }
+
+
+    private List<CategoryDTO> getCategories() {
+        Map<Category, Long> giftsCategories = giftService
+                .findAll()
+                .stream()
+                .map(Gift::getCategory)
+                .filter(category -> category.getId() != null)
+                .collect(groupingBy(Function.identity(), counting()));
+        Map<Category, Long> sortedMap = new TreeMap<>(giftsCategories);
+        List<Category> allCategories = categoryService.findAll();
+        CollectionUtils.disjunction(allCategories, giftsCategories.keySet())
+                .forEach(category -> sortedMap.put(category, 0L));
+        return sortedMap
+                .entrySet()
+                .stream()
+                .map(entry -> new CategoryDTO(entry.getKey(), entry.getValue()))
+                .collect(Collectors.toList());
+    }
+
 
     @RolesAllowed("ROLE_ADMIN")
     @RequestMapping(value = "/setup", method = RequestMethod.GET)
@@ -132,6 +225,41 @@ public class AppRestController {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
         return ResponseEntity.ok(StringUtils.isBlank(propertyService.getProperty(APP_URL)) || searchEngineService.getAllSearchEngines().isEmpty());
+    }
+
+    @RolesAllowed("ROLE_ADMIN")
+    @RequestMapping(value = "/add-admin", method = RequestMethod.PUT)
+    public ResponseEntity addAdmin(@RequestBody String id) {
+        Account currentAccount = Utils.getCurrentAccount();
+        if (currentAccount == null || !currentAccount.getIsAdmin()) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+        Account account = accountService.findById(id);
+        if (account == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        account.setRole(Roles.ROLE_ADMIN);
+        accountService.update(account);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @RolesAllowed("ROLE_ADMIN")
+    @RequestMapping(value = "/remove-admin", method = RequestMethod.PUT)
+    public ResponseEntity removeAdmin(@RequestBody String id) {
+        Account currentAccount = Utils.getCurrentAccount();
+        if (currentAccount == null || !currentAccount.getIsAdmin()) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+        Account account = accountService.findById(id);
+        if (account == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        if (accountService.findUsers().stream().filter(Account::getIsAdmin).count() == 1) {
+            return new ResultData.ResultBuilder().error().message(msgSrv.getMessage("error.lastAdmin")).build();
+        }
+        account.setRole(Roles.ROLE_USER);
+        accountService.update(account);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @RequestMapping(value = "/search-engines", method = RequestMethod.GET)

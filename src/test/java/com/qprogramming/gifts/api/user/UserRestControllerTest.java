@@ -4,6 +4,7 @@ import com.fasterxml.uuid.Generators;
 import com.qprogramming.gifts.MockSecurityContext;
 import com.qprogramming.gifts.account.*;
 import com.qprogramming.gifts.account.event.AccountEvent;
+import com.qprogramming.gifts.account.event.AccountEventRepository;
 import com.qprogramming.gifts.account.event.AccountEventType;
 import com.qprogramming.gifts.account.family.Family;
 import com.qprogramming.gifts.account.family.FamilyForm;
@@ -15,6 +16,7 @@ import com.qprogramming.gifts.config.property.PropertyService;
 import com.qprogramming.gifts.gift.Gift;
 import com.qprogramming.gifts.gift.GiftService;
 import com.qprogramming.gifts.messages.MessagesService;
+import com.qprogramming.gifts.schedule.AppEventService;
 import com.qprogramming.gifts.support.ResultData;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
@@ -69,6 +71,8 @@ public class UserRestControllerTest {
     @Mock
     private AccountService accSrvMock;
     @Mock
+    private AccountEventRepository accountEventRepositoryMock;
+    @Mock
     private MockSecurityContext securityMock;
     @Mock
     private Authentication authMock;
@@ -84,13 +88,15 @@ public class UserRestControllerTest {
     private MailService mailServiceMock;
     @Mock
     private PropertyService propertyServiceMock;
+    @Mock
+    private AppEventService eventServiceMock;
 
     private Account testAccount;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        UserRestController userCtrl = new UserRestController(accSrvMock, msgSrvMock, familyServiceMock, giftServiceMock, mailServiceMock, propertyServiceMock);
+        UserRestController userCtrl = new UserRestController(accSrvMock, accountEventRepositoryMock, msgSrvMock, familyServiceMock, giftServiceMock, mailServiceMock, propertyServiceMock, eventServiceMock);
         testAccount = createAccount();
         when(securityMock.getAuthentication()).thenReturn(authMock);
         when(authMock.getPrincipal()).thenReturn(testAccount);
@@ -604,13 +610,14 @@ public class UserRestControllerTest {
         when(accSrvMock.findById(testAccount.getId())).thenReturn(testAccount);
         when(familyServiceMock.getFamily(testAccount)).thenReturn(family);
         userRestCtrl.perform(delete(API_USER_USER_DELETE + testAccount.getId())).andExpect(status().isOk());
+        verify(eventServiceMock, times(1)).deleteUserEvents(testAccount);
         verify(giftServiceMock, times(1)).deleteUserGifts(testAccount);
         verify(giftServiceMock, times(1)).deleteClaims(testAccount);
         verify(accSrvMock, times(1)).delete(testAccount);
     }
 
     @Test
-    public void shareGiftList() throws Exception {
+    public void shareGiftListTest() throws Exception {
         testAccount.setPublicList(true);
         userRestCtrl.perform(post(API_USER_SHARE).content("valid@email.com;invalid@;alsovalid@email.pl")).andExpect(status().isOk());
         verify(mailServiceMock, times(1)).shareGiftList((List<Mail>) argThat(IsCollectionWithSize.<Mail>hasSize(2)));
@@ -618,19 +625,13 @@ public class UserRestControllerTest {
     }
 
     @Test
-    public void shareGiftListNotPublic() throws Exception {
+    public void shareGiftListNotPublicTest() throws Exception {
         testAccount.setPublicList(false);
         userRestCtrl.perform(post(API_USER_SHARE).content("valid@email.com;invalid@;alsovalid@email.pl")).andExpect(status().isBadRequest());
     }
 
     @Test
-    public void getAdminsNotAdmin() throws Exception {
-        testAccount.setRole(Roles.ROLE_USER);
-        userRestCtrl.perform(get(API_USER_ADMINS)).andExpect(status().isForbidden());
-    }
-
-    @Test
-    public void getAdmins() throws Exception {
+    public void getAdminsTest() throws Exception {
         testAccount.setRole(Roles.ROLE_ADMIN);
         when(accSrvMock.findAdmins()).thenReturn(Collections.singletonList(testAccount));
         MvcResult mvcResult = userRestCtrl.perform(get(API_USER_ADMINS)).andExpect(status().isOk()).andReturn();
@@ -639,15 +640,14 @@ public class UserRestControllerTest {
         assertTrue(result.contains(testAccount));
     }
 
-    //TODO uncomment after 10.06.2017 :)
-//    @Test
-//    public void confirmFamilymemberTokenExpired() throws Exception {
-//        String token = "09011a27-478c-11e7-bcf7-930b1424157e";
-//        userRestCtrl.perform(post(API_USER_CONFIRM).content(token)).andExpect(status().isBadRequest());
-//    }
+    @Test
+    public void confirmFamilymemberTokenExpired() throws Exception {
+        String token = "09011a27-478c-11e7-bcf7-930b1424157e";
+        userRestCtrl.perform(post(API_USER_CONFIRM).content(token)).andExpect(status().isBadRequest());
+    }
 
     @Test
-    public void confirmFamilymemberAlreadyMember() throws Exception {
+    public void confirmFamilymemberAlreadyMemberTest() throws Exception {
         String token = Generators.timeBasedGenerator().generate().toString();
         Family family = new Family();
         family.getMembers().add(testAccount);
@@ -662,7 +662,7 @@ public class UserRestControllerTest {
     }
 
     @Test
-    public void confirmFamilymemberSuccess() throws Exception {
+    public void confirmFamilymemberSuccessTest() throws Exception {
         String token = Generators.timeBasedGenerator().generate().toString();
         Family family = new Family();
         AccountEvent event = new AccountEvent();
@@ -677,18 +677,18 @@ public class UserRestControllerTest {
     }
 
     @Test
-    public void confirmFamilymemberEventNotFound() throws Exception {
+    public void confirmFamilymemberEventNotFoundTest() throws Exception {
         String token = Generators.timeBasedGenerator().generate().toString();
         userRestCtrl.perform(post(API_USER_CONFIRM).content(token)).andExpect(status().isNotFound());
     }
 
     @Test
-    public void userSearchListAccountNotFound() throws Exception {
+    public void userSearchListAccountNotFoundTest() throws Exception {
         userRestCtrl.perform(get(API_USER_FETCH).param("username", "test")).andExpect(status().isNotFound());
     }
 
     @Test
-    public void userSearchListForCurrentUser() throws Exception {
+    public void userSearchListForCurrentUserTest() throws Exception {
         List<Account> accountList = createAccountList();
         accountList.add(testAccount);
         when(accSrvMock.findAllSortByFamily(testAccount)).thenReturn(new HashSet<>(accountList));
@@ -699,7 +699,7 @@ public class UserRestControllerTest {
     }
 
     @Test
-    public void userSearchListForOtherUser() throws Exception {
+    public void userSearchListForOtherUserTest() throws Exception {
         List<Account> accountList = createAccountList();
         accountList.add(testAccount);
         when(accSrvMock.findAllSortByFamily(testAccount)).thenReturn(new HashSet<>(accountList));

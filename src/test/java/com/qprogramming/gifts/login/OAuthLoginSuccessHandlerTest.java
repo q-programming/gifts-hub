@@ -69,8 +69,9 @@ public class OAuthLoginSuccessHandlerTest {
     @Test
     public void onAuthenticationSuccessGoogleUserExists() throws Exception {
         Account testAccount = TestUtil.createAccount();
-        when(accSrvMock.findById(TestUtil.USER_RANDOM_ID)).thenReturn(testAccount);
+        when(accSrvMock.findByEmail(TestUtil.EMAIL)).thenReturn(testAccount);
         details.put(OAuthLoginSuccessHandler.G.SUB, TestUtil.USER_RANDOM_ID);
+        details.put(OAuthLoginSuccessHandler.EMAIL, TestUtil.EMAIL);
         handler.onAuthenticationSuccess(requestMock, responseMock, authMock);
         verify(accSrvMock, times(1)).signin(testAccount);
     }
@@ -94,7 +95,17 @@ public class OAuthLoginSuccessHandlerTest {
     @Test
     public void onAuthenticationSuccessFacebookUserExists() throws Exception {
         Account testAccount = TestUtil.createAccount();
-        when(accSrvMock.findById(TestUtil.USER_RANDOM_ID)).thenReturn(testAccount);
+        when(accSrvMock.findByEmail(TestUtil.EMAIL)).thenReturn(testAccount);
+        doReturn(facebookTemplateMock).when(handler).getFacebookTemplate(anyString());
+        String[] fields = {OAuthLoginSuccessHandler.FB.ID, OAuthLoginSuccessHandler.EMAIL
+                , OAuthLoginSuccessHandler.FB.FIRST_NAME, OAuthLoginSuccessHandler.FB.LAST_NAME
+                , OAuthLoginSuccessHandler.LOCALE};
+        User fbUser = spy(new User(testAccount.getId(), testAccount.getFullname()
+                , testAccount.getName(), testAccount.getSurname()
+                , "Male", new Locale("fr")));
+        when(fbUser.getEmail()).thenReturn(testAccount.getEmail());
+        when(facebookTemplateMock.fetchObject(OAuthLoginSuccessHandler.FB.ME, User.class, fields)).thenReturn(fbUser);
+        when(facebookTemplateMock.userOperations()).thenReturn(userOperationsMock);
         details.put(OAuthLoginSuccessHandler.FB.ID, TestUtil.USER_RANDOM_ID);
         handler.onAuthenticationSuccess(requestMock, responseMock, authMock);
         verify(accSrvMock, times(1)).signin(testAccount);

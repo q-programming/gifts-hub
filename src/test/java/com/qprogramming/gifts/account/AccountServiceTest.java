@@ -24,6 +24,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.*;
 
 import static com.qprogramming.gifts.TestUtil.USER_RANDOM_ID;
@@ -37,6 +38,7 @@ public class AccountServiceTest {
 
     public static final String PASSWORD = "Password";
     public static final String STATIC_IMAGES_LOGO_WHITE_PNG = "static/images/logo-white.png";
+    public static final String STATIC_AVATAR_PLACEHOLDER = "static/images/avatar-placeholder.png";
     @Mock
     private FamilyService familyServiceMock;
     @Mock
@@ -70,7 +72,18 @@ public class AccountServiceTest {
         when(authMock.getPrincipal()).thenReturn(testAccount);
         when(giftServiceMock.countAllByUser(anyString())).thenReturn(1);
         SecurityContextHolder.setContext(securityMock);
-        accountService = new AccountService(accountRepositoryMock, passwordEncoderMock, avatarRepositoryMock, familyServiceMock, propertyServiceMock, accountEventRepositoryMock, giftServiceMock);
+        accountService = new AccountService(accountRepositoryMock, passwordEncoderMock, avatarRepositoryMock, familyServiceMock, propertyServiceMock, accountEventRepositoryMock, giftServiceMock) {
+            @Override
+            protected byte[] downloadFromUrl(URL url) {
+                ClassLoader loader = getClass().getClassLoader();
+                try (InputStream avatarFile = loader.getResourceAsStream(STATIC_AVATAR_PLACEHOLDER)) {
+                    return IOUtils.toByteArray(avatarFile);
+                } catch (IOException e) {
+                    fail();
+                }
+                return new byte[0];
+            }
+        };
     }
 
 
@@ -277,6 +290,7 @@ public class AccountServiceTest {
         assertEquals(ordered[1], bobAccount);
         assertEquals(ordered[2], testAccount);
     }
+
     @Test
     public void findAllSortByFamilyNoFamily() throws Exception {
         List<Account> all = createAccountList();
@@ -291,7 +305,6 @@ public class AccountServiceTest {
         assertEquals(ordered[1], bobAccount);
         assertEquals(ordered[6], testAccount);
     }
-
 
 
 }

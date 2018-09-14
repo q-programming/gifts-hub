@@ -113,13 +113,21 @@
                 </div>
                 <div class="col-xs-12 col-sm-3">{{gift.description}}</div>
                 <div class="col-xs-12 col-sm-3">
-                    <a target="_blank" ng-if="gift.link" ng-href="{{gift.link}}" class="gift-link">{{ gift.name }}</a>
-                    <span ng-repeat="engine in gift.engines" class="search-engines">
-                <a class="pull-right" ng-href="{{engine.searchString + gift.name}}" target="_blank">
-                <i ng-class="'fa fa-fw '+ engine.icon"
-                   aria-hidden="true" uib-tooltip="{{searchWith + engine.name}}"></i>
-                </a>
-            </span>
+                    <div class="pull-right">
+                        <span ng-repeat="engine in gift.engines" class="search-engines">
+                            <a class="pull-right" ng-href="{{engine.searchString + gift.name}}" target="_blank">
+                                <i ng-class="'fa fa-fw '+ engine.icon" aria-hidden="true"
+                                   uib-tooltip="{{searchWith + engine.name}}"></i>
+                            </a>
+                        </span>
+                    </div>
+                    <div class="row" ng-repeat="link in gift.links">
+                        <div class="col-xs-12">
+                            <a target="_blank" ng-href="{{link.url}}" class="gift-link"><i class="fa fa-fw fa-link"></i>Link
+                                {{$index +1}}</a>
+                        </div>
+                    </div>
+                    <!--<a target="_blank" ng-if="gift.link" ng-href="{{gift.link}}" class="gift-link">{{ gift.name }}</a>-->
                 </div>
                 <div class="col-xs-6 col-sm-2" format-date date="gift.created"></div>
                 <div class="col-xs-6 col-sm-1 text-right gift-actions">

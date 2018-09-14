@@ -1,7 +1,10 @@
 package com.qprogramming.gifts.gift;
 
+import com.qprogramming.gifts.gift.link.Link;
+import io.jsonwebtoken.lang.Collections;
 import org.hibernate.validator.constraints.NotBlank;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -13,6 +16,7 @@ public class GiftForm {
     private String name;
     private String description;
     private String link;
+    private List<Link> links;
     private List<Long> searchEngines;
     private String category;
     private String username;
@@ -71,5 +75,16 @@ public class GiftForm {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public List<Link> getLinks() {
+        if (Collections.isEmpty(links)) {
+            links = new ArrayList<>();
+        }
+        return links;
+    }
+
+    public void setLinks(List<Link> links) {
+        this.links = links;
     }
 }
