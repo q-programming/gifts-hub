@@ -28,7 +28,7 @@ app.constant("GIFT_STATUS", {
 });
 app.config(['$routeProvider', '$httpProvider', '$locationProvider', '$logProvider', 'localStorageServiceProvider', '$translateProvider', 'httpMethodInterceptorProvider',
     function ($routeProvider, $httpProvider, $locationProvider, $logProvider, localStorageServiceProvider, $translateProvider, httpMethodInterceptorProvider) {
-        const DEFAULT_LANGUAGE = 'pl';
+        var DEFAULT_LANGUAGE = 'pl';
         $routeProvider
             .when('/', {
                 templateUrl: 'home.html',

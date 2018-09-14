@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -37,6 +38,8 @@ public class TokenServiceTest {
     private HttpServletRequest requestMock;
     @Mock
     private PrintWriter printWriterMock;
+    @Mock
+    private ServletContext servletContextMock;
 
     private TokenService tokenService;
     private Account testAccount;
@@ -46,7 +49,7 @@ public class TokenServiceTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         ObjectMapper mapper = new ObjectMapper();
-        tokenService = new TokenService(mapper);
+        tokenService = new TokenService(mapper, servletContextMock);
         ReflectionTestUtils.setField(tokenService, "APP_NAME", APP);
         ReflectionTestUtils.setField(tokenService, "SECRET", MY_SECRET);
         ReflectionTestUtils.setField(tokenService, "EXPIRES_IN", EXPIRES_IN);
