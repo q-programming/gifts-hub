@@ -31,7 +31,7 @@ public class Gift implements Serializable, Comparable<Gift> {
     @Column(columnDefinition = "text")
     private String link;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Link> links;
 
     @Column

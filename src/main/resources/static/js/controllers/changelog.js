@@ -1,5 +1,5 @@
-app.controller('changelog', ['$rootScope', '$scope', '$uibModal', '$http', 'AlertService',
-    function ($rootScope, $scope, $uibModal, $http, AlertService) {
+app.controller('changelog', ['$rootScope', '$scope', '$uibModal', '$http', '$log', 'AlertService',
+    function ($rootScope, $scope, $uibModal, $http, $log, AlertService) {
         if ($rootScope.principal && !$rootScope.principal.seenChangelog) {
             $uibModal.open({
                 templateUrl: 'changelog/' + $rootScope.principal.language + '.html',
@@ -20,7 +20,7 @@ app.controller('changelog', ['$rootScope', '$scope', '$uibModal', '$http', 'Aler
                     $rootScope.principal.seenChangelog = true;
                 }).catch(function (response) {
                 AlertService.addError("error.general", response);
-                $log.debug(response);
+                $log.error(response);
             });
         };
     }]);
