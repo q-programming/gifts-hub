@@ -1,0 +1,59 @@
+<mat-card class="text-center">
+  <mat-card-title>
+    <h4>
+      <img src="assets/images/logo.svg" height="50px" class="ml-2 v-middle">
+      {{'app.login.welcome'|translate}}
+    </h4>
+  </mat-card-title>
+  <mat-card-subtitle>
+    <span>{{'app.login.welcome.sub'|translate}}</span>
+  </mat-card-subtitle>
+  <div fxLayout="row wrap" fxLayoutAlign="center start">
+    <div fxFlex.xs="100%" fxFlex.gt-xs class="social-form pr-5">
+      <h4 class="mb-5">{{'app.login.social'|translate}}</h4>
+      <div>
+        <a mat-raised-button class="btn-social facebook" href="{{login_url}}/facebook">
+          <i class="fa fa-facebook mr-2"></i>
+          Facebook
+        </a>
+      </div>
+      <div class="mt-1">
+        <a mat-raised-button class="btn-social google" href="{{login_url}}/google">
+          <i class="fa fa-google-plus mr-2"></i>
+          Google +
+        </a>
+      </div>
+      <div class="mt-5" [innerHTML]="'app.login.social.register'|translate">
+      </div>
+    </div>
+    <div fxFlex.xs="100%" fxFlex.gt-xs class="username-form ml-5">
+      <h4>{{'app.login.logpass'|translate}}</h4>
+      <form>
+        <div>
+          <mat-form-field>
+            <input matInput placeholder="{{'app.login.logpass.username'|translate}}" name="username"
+                   [formControl]="usernameCtrl">
+            <mat-icon matPrefix="">person</mat-icon>
+          </mat-form-field>
+        </div>
+        <div>
+          <mat-form-field>
+            <input matInput type="password" placeholder="{{'app.login.logpass.password'|translate}}"
+                   name="password"
+                   [formControl]="passwordCtrl">
+            <mat-icon matPrefix>vpn_key</mat-icon>
+          </mat-form-field>
+        </div>
+        <div>
+          <button mat-flat-button (click)="login()" color="primary">{{'app.login.logpass.login'|translate}}
+          </button>
+        </div>
+      </form>
+      <div class="mt-2">
+        {{'app.login.logpass.noaccount'|translate}}<a
+        routerLink="/register">{{'app.login.register.here'|translate}}</a>
+      </div>
+    </div>
+
+  </div>
+</mat-card>

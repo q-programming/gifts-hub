@@ -1,0 +1,47 @@
+{
+  "/gifts/api": {
+    "target": "http://localhost:8080/gifts/api",
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/shopper/api": ""
+    }
+  },
+  "/gifts/login": {
+    "target": "http://localhost:8080/gifts/login",
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/shopper/login": ""
+    }
+  },
+  "/gifts/auth": {
+    "target": "http://localhost:8080/gifts/auth",
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/shopper/auth": ""
+    }
+  },
+  "/gifts/logout": {
+    "target": "http://localhost:8080/gifts/logout",
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/shopper/logout": ""
+    }
+  },
+  "/gifts/ws": {
+    "target": "http://localhost:8080/gifts/ws",
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/shopper/ws": ""
+    }
+  }
+}
