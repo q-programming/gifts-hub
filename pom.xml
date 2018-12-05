@@ -7,8 +7,8 @@
     <artifactId>gifts</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <modules>
-        <module>gifts-app</module>
         <module>gifts-web</module>
+        <module>gifts-app</module>
     </modules>
     <packaging>pom</packaging>
     <name>gifts</name>

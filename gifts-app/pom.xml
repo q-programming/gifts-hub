@@ -128,11 +128,11 @@
             <artifactId>jackson-datatype-jsr310</artifactId>
         </dependency>
         <!--depent on web-->
-        <!--<dependency>-->
-            <!--<groupId>com.qprogramming.shopper</groupId>-->
-            <!--<artifactId>shopper-web</artifactId>-->
-            <!--<version>${project.version}</version>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>com.qprogramming</groupId>
+            <artifactId>gifts-web</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <!--mail-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -173,5 +173,54 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>unpack angular distribution</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>com.qprogramming</groupId>
+                                    <artifactId>gifts-web</artifactId>
+                                    <overWrite>true</overWrite>
+                                    <includes>**/*</includes>
+                                </artifactItem>
+                            </artifactItems>
+                            <outputDirectory>${project.build.directory}/classes/static
+                            </outputDirectory>
+                            <overWriteReleases>true</overWriteReleases>
+                            <overWriteSnapshots>true</overWriteSnapshots>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

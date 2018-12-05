@@ -3,7 +3,7 @@
 <head>
     <title>Gifts hub</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <link rel="icon" type="image/png" href="favicon.ico"/>
+    <link rel="icon" type="image/png" href="../favicon.ico"/>
     <style type="text/css">
         [ng\:cloak], [ng-cloak], .ng-cloak {
             display: none !important;
@@ -27,7 +27,7 @@
     <div class="container-fluid">
         <!--MOBILE MENU-->
         <div class="navbar-header">
-            <a class="navbar-brand" href="#/"><img src="images/logo-white.png" width="40px" height="40px"/></a>
+            <a class="navbar-brand" href="#/"><img src="../images/logo-white.png" width="40px" height="40px"/></a>
             <span class="stylish brand pull-left" style="font-size: xx-large">Gifts hub</span>
             <div id="navbar-mobile" ng-if="isMobile()">
                 <ul class="nav navbar-nav navbar-right nav-stacked">
@@ -112,7 +112,7 @@
                         {{principal.fullname}}<span class="caret"></span>
                         <img ng-if="principal.avatar && principal.avatar !== 'NaN'" ng-src="{{principal.avatar}}"
                              class="avatar nav-avatar"/>
-                        <img ng-if="!principal.avatar || principal.avatar ==='NaN'" src='images/avatar-placeholder.png'
+                        <img ng-if="!principal.avatar || principal.avatar ==='NaN'" src='../images/avatar-placeholder.png'
                              class="avatar nav-avatar"/>
                     </a>
                     <ul class="dropdown-menu" uib-dropdown-menu="" role="menu" aria-labelledby="single-button">
