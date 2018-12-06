@@ -139,13 +139,13 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
     }
 
     public void addAuthority(Authority authority) {
-        List<Authority> authorities = (List<Authority>) getAuthorities();
-        authorities.add(authority);
-        this.setAuthorities(authorities);
+        List<Authority> auths = new ArrayList<>(getAuthorities());
+        auths.add(authority);
+        this.setAuthorities(auths);
     }
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
+    public Collection<Authority> getAuthorities() {
         if (Collections.isEmpty(this.authorities)) {
             this.authorities = new ArrayList<>();
         }

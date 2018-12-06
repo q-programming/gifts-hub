@@ -49,23 +49,23 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class UserRestControllerTest {
 
-    private static final String API_USER_REGISTER = "/api/user/register";
-    private static final String API_USER_SETTINGS = "/api/user/settings";
-    private static final String API_USER_VALIDATE_EMAIL = "/api/user/validate-email";
-    private static final String API_USER_VALIDATE_USERNAME = "/api/user/validate-username";
-    private static final String API_USER_UPDATE_AVATAR = "/api/user/avatar-upload";
-    private static final String API_USER_FAMILY_CREATE = "/api/user/family-create";
-    private static final String API_USER_FAMILY_UPDATE = "/api/user/family-update";
-    private static final String API_USER_FAMILY_LEAVE = "/api/user/family-leave";
-    private static final String API_USER_KID_ADD = "/api/user/kid-add";
-    private static final String API_USER_KID_UPDATE = "/api/user/kid-update";
-    private static final String API_USER_USER_DELETE = "/api/user/delete/";
-    private static final String API_USER_SHARE = "/api/user/share";
-    private static final String API_USER_ADMINS = "/api/user/admins";
+    private static final String API_USER_REGISTER = "/api/account/register";
+    private static final String API_USER_SETTINGS = "/api/account/settings";
+    private static final String API_USER_VALIDATE_EMAIL = "/api/account/validate-email";
+    private static final String API_USER_VALIDATE_USERNAME = "/api/account/validate-username";
+    private static final String API_USER_UPDATE_AVATAR = "/api/account/avatar-upload";
+    private static final String API_USER_FAMILY_CREATE = "/api/account/family-create";
+    private static final String API_USER_FAMILY_UPDATE = "/api/account/family-update";
+    private static final String API_USER_FAMILY_LEAVE = "/api/account/family-leave";
+    private static final String API_USER_KID_ADD = "/api/account/kid-add";
+    private static final String API_USER_KID_UPDATE = "/api/account/kid-update";
+    private static final String API_USER_USER_DELETE = "/api/account/delete/";
+    private static final String API_USER_SHARE = "/api/account/share";
+    private static final String API_USER_ADMINS = "/api/account/admins";
     private static final String KID_ID = "KID-ID";
-    private static final String API_USER_CONFIRM = "/api/user/confirm";
-    private static final String API_USER_FETCH = "/api/user/userList";
-    private static final String API_USER = "/api/user";
+    private static final String API_USER_CONFIRM = "/api/account/confirm";
+    private static final String API_USER_FETCH = "/api/account/userList";
+    private static final String API_USER = "/api/account";
     private MockMvc userRestCtrl;
     @Mock
     private AccountService accSrvMock;
