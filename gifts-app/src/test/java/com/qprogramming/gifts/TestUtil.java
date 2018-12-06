@@ -1,20 +1,20 @@
 package com.qprogramming.gifts;
 
 import com.qprogramming.gifts.account.Account;
+import com.qprogramming.gifts.account.authority.Authority;
+import com.qprogramming.gifts.account.authority.Role;
 import com.qprogramming.gifts.gift.Gift;
 import com.qprogramming.gifts.schedule.AppEvent;
 import com.qprogramming.gifts.schedule.AppEventType;
 import com.qprogramming.gifts.settings.SearchEngine;
+import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.type.TypeFactory;
 import org.springframework.http.MediaType;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 //import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -32,31 +32,45 @@ public class TestUtil {
     public static final String EMAIL = "user@test.com";
     public static final String USERNAME = "username";
     public static final String USER_RANDOM_ID = "USER-RANDOM-ID";
+    public static final String ADMIN_EMAIL = "admin@test.com";
+    public static final String ADMIN_USERNAME = "username_admin";
+    public static final String ADMIN_RANDOM_ID = "ADMIN-USER-RANDOM-ID";
 
     public static byte[] convertObjectToJsonBytes(Object object)
             throws IOException {
         ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         return mapper.writeValueAsBytes(object);
     }
 
     public static <T> T convertJsonToObject(String json, Class<T> object) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         return mapper.readValue(json, object);
     }
 
-    public static <T> List<T> convertJsonToList(String json, Class<List> listClass, Class<T> elementClass) throws java.io.IOException {
-        ObjectMapper mapper = new org.codehaus.jackson.map.ObjectMapper();
-        return mapper.readValue(json, TypeFactory.defaultInstance().constructCollectionType(listClass, elementClass));
+    public static <T> List<T> convertJsonToList(String json, Class<? extends List> collectionClass, Class<T> elementClass) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        return mapper.readValue(json, TypeFactory.defaultInstance().constructCollectionType(collectionClass, elementClass));
     }
 
-    public static <T, V> Map<T, V> convertJsonToTreeMap(String json, Class<T> keyClass, Class<V> valueClass) throws java.io.IOException {
-        ObjectMapper mapper = new org.codehaus.jackson.map.ObjectMapper();
+    public static <T> Set<T> convertJsonToSet(String json, Class<? extends Set> collectionClass, Class<T> elementClass) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        return mapper.readValue(json, TypeFactory.defaultInstance().constructCollectionType(collectionClass, elementClass));
+    }
+
+    public static <T, V> Map<T, V> convertJsonToTreeMap(String json, Class<T> keyClass, Class<V> valueClass) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         return mapper.readValue(json, TypeFactory.defaultInstance().constructMapType(TreeMap.class, keyClass, valueClass));
     }
 
 
     public static Account createAccount() {
         Account testAccount = new Account(USERNAME, EMAIL, "password");
+        testAccount.setAuthorities(Collections.singletonList(createUserAuthority()));
         return createAccount("name", "surname");
     }
 
@@ -66,6 +80,17 @@ public class TestUtil {
         account.setSurname(surname);
         account.setLanguage("en");
         account.setId(USER_RANDOM_ID);
+        account.setAuthorities(Collections.singletonList(createUserAuthority()));
+        return account;
+    }
+
+    public static Account createAdminAccount() {
+        Account account = createAccount("name", "surname");
+        account.setAuthorities(Collections.singletonList(createAdminAuthority()));
+        account.setUsername(ADMIN_USERNAME);
+        account.setEmail(ADMIN_EMAIL);
+        account.setId(ADMIN_RANDOM_ID);
+
         return account;
     }
 
@@ -114,11 +139,23 @@ public class TestUtil {
         AppEvent event = new AppEvent();
         event.setAccount(account);
         event.setType(AppEventType.NEW);
-        Gift gift = createGift(1L,account);
+        Gift gift = createGift(1L, account);
         event.setGift(gift);
         return event;
     }
 
+
+    public static Authority createUserAuthority() {
+        Authority authority = new Authority();
+        authority.setName(Role.ROLE_USER);
+        return authority;
+    }
+
+    public static Authority createAdminAuthority() {
+        Authority authority = new Authority();
+        authority.setName(Role.ROLE_ADMIN);
+        return authority;
+    }
 
 
 }

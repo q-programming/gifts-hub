@@ -2,6 +2,7 @@ package com.qprogramming.gifts.schedule;
 
 import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.AccountService;
+import com.qprogramming.gifts.exceptions.AccountNotFoundException;
 import com.qprogramming.gifts.gift.Gift;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,7 +46,7 @@ public class AppEventService {
         eventRepo.deleteAll(appEvents);
     }
 
-    public void addEvent(Gift gift, AppEventType type) {
+    public void addEvent(Gift gift, AppEventType type) throws AccountNotFoundException {
         AppEvent event = new AppEvent();
         event.setAccount(accountService.findById(gift.getUserId()));
         event.setGift(gift);
@@ -58,7 +59,7 @@ public class AppEventService {
      *
      * @param gift
      */
-    public void tryToUndoEvent(Gift gift) {
+    public void tryToUndoEvent(Gift gift) throws AccountNotFoundException {
         AppEvent event = eventRepo.findByAccountAndGiftAndType(accountService.findById(gift.getUserId()), gift, AppEventType.REALISED);
         if (event != null) {
             eventRepo.delete(event);
@@ -70,7 +71,7 @@ public class AppEventService {
      *
      * @param gift gift for which all events will be deleted
      */
-    public void deleteGiftEvents(Gift gift) {
+    public void deleteGiftEvents(Gift gift) throws AccountNotFoundException {
         List<AppEvent> events = eventRepo.findByAccountAndGift(accountService.findById(gift.getUserId()), gift);
         eventRepo.deleteAll(events);
     }

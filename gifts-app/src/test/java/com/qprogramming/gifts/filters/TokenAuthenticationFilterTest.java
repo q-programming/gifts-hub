@@ -18,7 +18,6 @@ import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 /**
@@ -76,6 +75,7 @@ public class TokenAuthenticationFilterTest {
         when(securityMock.getAuthentication()).thenReturn(null);
         when(tokenServiceMock.getToken(requestMock)).thenReturn(TOKEN);
         when(tokenServiceMock.getUsernameFromToken(TOKEN)).thenReturn(testAccount.getUsername());
+        when(requestMock.getServletPath()).thenReturn("/");
         tokenAuthenticationFilter.doFilterInternal(requestMock, responseMock, chainMock);
         verify(securityMock, times(1)).setAuthentication(any(AnonAuthentication.class));
     }
@@ -85,7 +85,9 @@ public class TokenAuthenticationFilterTest {
         when(securityMock.getAuthentication()).thenReturn(null);
         when(tokenServiceMock.getToken(requestMock)).thenReturn(TOKEN);
         when(tokenServiceMock.getUsernameFromToken(TOKEN)).thenReturn(testAccount.getUsername());
-        when(accountServiceMock.findByUsername(testAccount.getUsername())).thenReturn(testAccount);
+        when(accountServiceMock.loadUserByUsername(testAccount.getUsername())).thenReturn(testAccount);
+        when(requestMock.getServletPath()).thenReturn("/");
+        when(requestMock.getPathInfo()).thenReturn("accounts");
         tokenAuthenticationFilter.doFilterInternal(requestMock, responseMock, chainMock);
         verify(securityMock, times(1)).setAuthentication(any(TokenBasedAuthentication.class));
     }

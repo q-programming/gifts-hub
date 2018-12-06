@@ -1,15 +1,15 @@
 package com.qprogramming.gifts.account;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.qprogramming.gifts.account.authority.Authority;
+import com.qprogramming.gifts.account.authority.Role;
+import io.jsonwebtoken.lang.Collections;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
+import java.util.*;
 
 import static com.qprogramming.gifts.support.Utils.ACCOUNT_COMPARATOR;
 
@@ -30,11 +30,6 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
     private String surname;
     @Column(unique = true)
     private String username;
-    @Transient
-    private Collection<GrantedAuthority> authorities = new ArrayList<>();
-
-    @Enumerated(EnumType.STRING)
-    private Roles role;
 
     @Column
     private Date created;
@@ -54,6 +49,17 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
     @Column(columnDefinition = "boolean default false")
     private Boolean newsletter = false;
 
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinTable(name = "user_authority",
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "authority_id", referencedColumnName = "id"))
+    private List<Authority> authorities = new ArrayList<>();
+
+    @Column
+    private String uuid;
+
+    @Column(columnDefinition = "boolean default false")
+    private boolean enabled = false;
 
     private String fullname;
 
@@ -72,7 +78,6 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
         this.username = username;
         this.email = email;
         this.password = password;
-        setAuthority(Roles.ROLE_USER);
         this.created = new Date();
 
     }
@@ -91,14 +96,6 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
 
     public void setCreated(Date created) {
         this.created = created;
-    }
-
-    public Roles getRole() {
-        return role;
-    }
-
-    public void setRole(Roles role) {
-        this.role = role;
     }
 
     public String getEmail() {
@@ -133,14 +130,6 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
         this.surname = surname;
     }
 
-    public void setAuthority(Roles role) {
-        this.authorities.add(createAuthority(role));
-    }
-
-    private GrantedAuthority createAuthority(Roles role) {
-        return new SimpleGrantedAuthority(role.toString());
-    }
-
     public Boolean getTourComplete() {
         return tourComplete;
     }
@@ -149,15 +138,24 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
         this.tourComplete = tourComplete;
     }
 
-    @Override
-    @JsonIgnore
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authorities;
+    public void addAuthority(Authority authority) {
+        List<Authority> authorities = (List<Authority>) getAuthorities();
+        authorities.add(authority);
+        this.setAuthorities(authorities);
     }
 
-    public void setAuthorities(Collection<GrantedAuthority> authorities) {
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        if (Collections.isEmpty(this.authorities)) {
+            this.authorities = new ArrayList<>();
+        }
+        return this.authorities;
+    }
+
+    public void setAuthorities(List<Authority> authorities) {
         this.authorities = authorities;
     }
+
 
     @JsonIgnore
     public String getPassword() {
@@ -261,32 +259,22 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
     @Override
     @JsonIgnore
     public boolean isEnabled() {
-        return true;
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     @JsonIgnore
     public boolean getIsUser() {
-        return getIsPowerUser() || Roles.ROLE_USER.equals(role);
+        return this.authorities.stream().map(Authority::getName).anyMatch(role -> Arrays.asList(Role.ROLE_ADMIN, Role.ROLE_USER).contains(role));
     }
 
-    /**
-     * Checks if currently logged user have ROLE_USER authority
-     *
-     * @return
-     */
-    @JsonIgnore
-    public boolean getIsPowerUser() {
-        return getIsAdmin() || Roles.ROLE_POWERUSER.equals(role);
-    }
 
-    /**
-     * Checks if currently logged user have ROLE_ADMIN authority
-     *
-     * @return
-     */
     @JsonIgnore
     public boolean getIsAdmin() {
-        return Roles.ROLE_ADMIN.equals(role);
+        return this.authorities.stream().map(Authority::getName).anyMatch(Role.ROLE_ADMIN::equals);
     }
 
 
@@ -298,11 +286,10 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
         Account account = (Account) o;
 
         if (!id.equals(account.id)) return false;
-        if (email != null ? !email.equals(account.email) : account.email != null) return false;
+        if (!Objects.equals(email, account.email)) return false;
         if (!name.equals(account.name)) return false;
         if (!surname.equals(account.surname)) return false;
-        if (!username.equals(account.username)) return false;
-        return created != null ? created.equals(account.created) : account.created == null;
+        return Objects.equals(created, account.created);
     }
 
     @Override
@@ -311,7 +298,6 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
         result = 31 * result + (email != null ? email.hashCode() : 0);
         result = 31 * result + name.hashCode();
         result = 31 * result + surname.hashCode();
-        result = 31 * result + username.hashCode();
         result = 31 * result + (created != null ? created.hashCode() : 0);
         return result;
     }
@@ -328,5 +314,13 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
     @Override
     public int compareTo(Account o) {
         return ACCOUNT_COMPARATOR.compare(this, o);
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 }

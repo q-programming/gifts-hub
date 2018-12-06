@@ -5,21 +5,19 @@ import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.account.family.Family;
 import com.qprogramming.gifts.account.family.FamilyService;
+import com.qprogramming.gifts.exceptions.AccountNotFoundException;
 import com.qprogramming.gifts.gift.Gift;
 import com.qprogramming.gifts.gift.GiftForm;
 import com.qprogramming.gifts.gift.GiftService;
 import com.qprogramming.gifts.gift.GiftStatus;
 import com.qprogramming.gifts.gift.category.Category;
 import com.qprogramming.gifts.gift.category.CategoryService;
-import com.qprogramming.gifts.gift.link.Link;
-import com.qprogramming.gifts.gift.link.LinkRepository;
 import com.qprogramming.gifts.messages.MessagesService;
 import com.qprogramming.gifts.schedule.AppEventService;
 import com.qprogramming.gifts.schedule.AppEventType;
 import com.qprogramming.gifts.settings.SearchEngineService;
 import com.qprogramming.gifts.support.ResultData;
 import com.qprogramming.gifts.support.Utils;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
@@ -41,7 +39,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Created by Khobar on 10.03.2017.
@@ -65,10 +62,9 @@ public class GiftRestController {
     private MessagesService msgSrv;
     private FamilyService familyService;
     private AppEventService eventService;
-    private LinkRepository linkRepository;
 
     @Autowired
-    public GiftRestController(AccountService accountService, GiftService giftService, SearchEngineService searchEngineService, CategoryService categoryService, MessagesService msgSrv, FamilyService familyService, AppEventService eventService, LinkRepository linkRepository) {
+    public GiftRestController(AccountService accountService, GiftService giftService, SearchEngineService searchEngineService, CategoryService categoryService, MessagesService msgSrv, FamilyService familyService, AppEventService eventService) {
         this.accountService = accountService;
         this.giftService = giftService;
         this.searchEngineService = searchEngineService;
@@ -76,7 +72,6 @@ public class GiftRestController {
         this.msgSrv = msgSrv;
         this.familyService = familyService;
         this.eventService = eventService;
-        this.linkRepository = linkRepository;
         initProhibited();
     }
 
@@ -102,8 +97,19 @@ public class GiftRestController {
             return new ResponseEntity<>("Name field is required", HttpStatus.BAD_REQUEST);
         }
         if (canOperateOnUsernameGifts(giftForm.getUsername()) || StringUtils.isBlank(giftForm.getUsername())) {
-            Gift gift = updateGiftFromForm(giftForm, newGift);
-            eventService.addEvent(gift, AppEventType.NEW);
+            Gift gift;
+            try {
+                gift = updateGiftFromForm(giftForm, newGift);
+            } catch (AccountNotFoundException e) {
+                LOG.debug("Current account not found");
+                return ResponseEntity.notFound().build();
+            }
+            try {
+                eventService.addEvent(gift, AppEventType.NEW);
+            } catch (AccountNotFoundException e) {
+                LOG.debug("Current account not found");
+                return ResponseEntity.notFound().build();
+            }
             return new ResponseEntity<>(gift, HttpStatus.CREATED);
         }
         return new ResultData.ResultBuilder().badReqest().error().message(msgSrv.getMessage("user.family.admin.error")).build();
@@ -117,7 +123,12 @@ public class GiftRestController {
             return ResponseEntity.notFound().build();
         }
         if (canOperateOnGift(gift)) {
-            gift = updateGiftFromForm(giftForm, gift);
+            try {
+                gift = updateGiftFromForm(giftForm, gift);
+            } catch (AccountNotFoundException e) {
+                LOG.debug("Current account not found");
+                return ResponseEntity.notFound().build();
+            }
             return new ResponseEntity<>(gift, HttpStatus.OK);
         }
         return new ResultData.ResultBuilder().badReqest().error().message(msgSrv.getMessage("user.family.admin.error")).build();
@@ -125,51 +136,59 @@ public class GiftRestController {
 
     private boolean canOperateOnUsernameGifts(String username) {
         if (StringUtils.isNotBlank(username)) {
-            Account giftOwner = accountService.findByUsername(username);
-            if (giftOwner == null) {
+            Optional<Account> giftOwner;
+            giftOwner = accountService.findByUsername(username);
+            if (!giftOwner.isPresent()) {
                 return false;
+
             }
-            Family family = familyService.getFamily(giftOwner);
+            Family family = familyService.getFamily(giftOwner.get());
             return family != null && (family.getAdmins().contains(Utils.getCurrentAccount()));
         }
         return false;
     }
 
     private boolean canOperateOnGift(Gift gift) {
-        Account giftOwner = accountService.findById(gift.getUserId());
-        if (giftOwner == null) {
+        Account giftOwner;
+        try {
+            giftOwner = accountService.findById(gift.getUserId());
+        } catch (AccountNotFoundException e) {
+            LOG.debug("Account with id {} not found", gift.getUserId());
             return false;
         }
         Family family = familyService.getFamily(giftOwner);
-        return family == null
-                || (family.getAdmins().contains(Utils.getCurrentAccount()))
-                || giftOwner.equals(Utils.getCurrentAccount());
+        if (family == null) {
+            return giftOwner.equals(Utils.getCurrentAccount());
+        } else {
+            return giftOwner.equals(Utils.getCurrentAccount()) || (family.getAdmins().contains(Utils.getCurrentAccount()));
+        }
     }
 
 
     @RequestMapping(value = "/claim/{giftID}", method = RequestMethod.PUT)
     public ResponseEntity clameGift(@PathVariable(value = "giftID") String id) {
-        Account account = accountService.findByUsername(Utils.getCurrentAccount().getUsername());
-        if (account == null) {
+        Optional<Account> optionalAccount = accountService.findByUsername(Utils.getCurrentAccount().getUsername());
+        if (!optionalAccount.isPresent()) {
             return ResponseEntity.notFound().build();
         }
         Gift gift = giftService.findById(Long.valueOf(id));
-        if (Objects.equals(gift.getUserId(), account.getId())) {
+        if (Objects.equals(gift.getUserId(), optionalAccount.get().getId())) {
             return ResponseEntity.badRequest().body(msgSrv.getMessage("gift.claim.same"));
         }
-        gift.setClaimed(account);
+        gift.setClaimed(optionalAccount.get());
         giftService.update(gift);
         return new ResultData.ResultBuilder().ok().message(msgSrv.getMessage("gift.claim.success", new Object[]{gift.getName()}, "", Utils.getCurrentLocale())).build();
     }
 
     @RequestMapping(value = "/unclaim/{giftID}", method = RequestMethod.PUT)
     public ResponseEntity unClameGift(@PathVariable(value = "giftID") String id) {
-        Account account = accountService.findByUsername(Utils.getCurrentAccount().getUsername());
-        if (account == null) {
+        Optional<Account> optionalAccount = accountService.findByUsername(Utils.getCurrentAccount().getUsername());
+        if (!optionalAccount.isPresent()) {
             return ResponseEntity.notFound().build();
+
         }
         Gift gift = giftService.findById(Long.valueOf(id));
-        if (!Objects.equals(gift.getClaimed(), account)) {
+        if (!Objects.equals(gift.getClaimed(), optionalAccount.get())) {
             return new ResultData.ResultBuilder().badReqest().error().message(msgSrv.getMessage("gift.unclaim.error")).build();
         }
         gift.setClaimed(null);
@@ -186,7 +205,12 @@ public class GiftRestController {
         }
         gift.setStatus(GiftStatus.REALISED);
         giftService.update(gift);
-        eventService.addEvent(gift, AppEventType.REALISED);
+        try {
+            eventService.addEvent(gift, AppEventType.REALISED);
+        } catch (AccountNotFoundException e) {
+            LOG.debug("Current account not found");
+            return ResponseEntity.notFound().build();
+        }
         return new ResultData.ResultBuilder().ok().message(msgSrv.getMessage("gift.complete.success", new Object[]{gift.getName()}, "", Utils.getCurrentLocale()))
                 .build();
     }
@@ -199,7 +223,12 @@ public class GiftRestController {
         }
         gift.setStatus(null);
         giftService.update(gift);
-        eventService.tryToUndoEvent(gift);
+        try {
+            eventService.tryToUndoEvent(gift);
+        } catch (AccountNotFoundException e) {
+            LOG.debug("Current account not found");
+            return ResponseEntity.notFound().build();
+        }
         return new ResultData.ResultBuilder().ok().message(msgSrv.getMessage("gift.complete.undo.success")).build();
     }
 
@@ -212,8 +241,12 @@ public class GiftRestController {
         if (!canOperateOnGift(gift)) {
             return new ResultData.ResultBuilder().badReqest().error().message(msgSrv.getMessage("gift.delete.error")).build();
         }
-        linkRepository.deleteAll(gift.getLinks());
-        eventService.deleteGiftEvents(gift);
+        try {
+            eventService.deleteGiftEvents(gift);
+        } catch (AccountNotFoundException e) {
+            LOG.debug("Current account not found");
+            return ResponseEntity.notFound().build();
+        }
         giftService.delete(gift);
         return new ResultData.ResultBuilder().ok().message(msgSrv.getMessage("gift.delete.success", new Object[]{gift.getName()}, "", Utils.getCurrentLocale())).build();
     }
@@ -226,11 +259,10 @@ public class GiftRestController {
      * @param gift     updated  created gift
      * @return updated {@link Gift}
      */
-    private Gift updateGiftFromForm(GiftForm giftForm, Gift gift) {
+    private Gift updateGiftFromForm(GiftForm giftForm, Gift gift) throws AccountNotFoundException {
         gift.setName(giftForm.getName());
         gift.setDescription(giftForm.getDescription());
-//        gift.setLink(giftForm.getLink());
-        updateLinks(giftForm, gift);
+        gift.setLinks(giftForm.getLinks());
         if (StringUtils.isNotBlank(giftForm.getCategory())) {
             String name = giftForm.getCategory();
             Category category = categoryService.findByName(name);
@@ -245,7 +277,11 @@ public class GiftRestController {
         //update or create
         if (gift.getId() == null) {
             if (StringUtils.isNotBlank(giftForm.getUsername())) {
-                Account account = accountService.findByUsername(giftForm.getUsername());
+                Optional<Account> optionalAccount = accountService.findByUsername(giftForm.getUsername());
+                if (!optionalAccount.isPresent()) {
+                    throw new AccountNotFoundException();
+                }
+                Account account = optionalAccount.get();
                 gift.setUserId(account.getId());
             } else {
                 Account currentAccount = Utils.getCurrentAccount();
@@ -255,41 +291,6 @@ public class GiftRestController {
         } else {
             return giftService.update(gift);
         }
-    }
-
-    private void updateLinks(GiftForm giftForm, Gift gift) {
-        //find all links that potentially were deleted in form
-        List<Link> newLinks = giftForm.getLinks().stream().filter(link -> link.getId() == null && StringUtils.isNotBlank(link.getUrl())).collect(Collectors.toList());
-        List<Link> linksToDelete = CollectionUtils.disjunction(giftForm.getLinks(), gift.getLinks())
-                .stream()
-                .filter(link -> link.getId() != null)
-                .collect(Collectors.toList());
-        gift.getLinks().removeAll(linksToDelete);
-        linkRepository.deleteAll(linksToDelete);
-        //update urls
-        giftForm.getLinks().removeAll(newLinks);
-        Map<Long, String> updatedLinks = giftForm.getLinks().stream().collect(Collectors.toMap(Link::getId, Link::getUrl));
-        gift.getLinks().forEach(link -> {
-            link.setUrl(updatedLinks.get(link.getId()));
-        });
-        newLinks.forEach(link -> {
-                gift.addLink(linkRepository.save(link));
-        });
-    }
-
-    @RequestMapping("/convertLinks")
-    @Deprecated
-    @Transactional
-    public ResponseEntity convertLinks() {
-        List<Gift> gifts = giftService.findAll();
-        gifts.stream().filter(gift -> StringUtils.isNotBlank(gift.getLink())).forEach(gift -> {
-            Link link = new Link(gift.getLink());
-            gift.addLink(linkRepository.save(link));
-            gift.setLink(null);
-            giftService.update(gift);
-            LOG.info("Link for gift {} converted to entity");
-        });
-        return ResponseEntity.ok("Links converted");
     }
 
     @RequestMapping("/mine")
@@ -302,10 +303,14 @@ public class GiftRestController {
 
     @RequestMapping("/user/{usernameOrId}")
     public ResponseEntity getUserGifts(@PathVariable String usernameOrId) {
-        Account account = accountService.findByUsername(usernameOrId);
-        if (account == null) {
-            account = accountService.findById(usernameOrId);
-            if (account == null) {
+        Account account = null;
+        Optional<Account> optionalAccount = accountService.findByUsername(usernameOrId);
+        if (optionalAccount.isPresent()) {
+            account = optionalAccount.get();
+        } else {
+            try {
+                account = accountService.findById(usernameOrId);
+            } catch (AccountNotFoundException e1) {
                 return ResponseEntity.notFound().build();
             }
         }
@@ -359,6 +364,9 @@ public class GiftRestController {
         } catch (IOException e) {
             LOG.error("IOException: {}", e);
             return new ResultData.ResultBuilder().badReqest().error().message(msgSrv.getMessage("error.fileIO")).build();
+        } catch (AccountNotFoundException e) {
+            LOG.error("Errors while trying to find account {}", e);
+            return new ResultData.ResultBuilder().badReqest().error().message("Errors while trying to find account").build();
         }
         return new ResultData.ResultBuilder().ok().message(logger.toString()).build();
     }
@@ -384,7 +392,7 @@ public class GiftRestController {
         }
     }
 
-    private void processImportSheet(Sheet sheet, StringBuilder logger, String username) {
+    private void processImportSheet(Sheet sheet, StringBuilder logger, String username) throws AccountNotFoundException {
         int rowNo = 1;//start from row
         while (sheet.getRow(rowNo) != null) {
             Row row = sheet.getRow(rowNo);

@@ -30,23 +30,24 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
-        if (SecurityContextHolder.getContext().getAuthentication() == null || SecurityContextHolder.getContext().getAuthentication() instanceof AnonAuthentication) {
+        if (!AuthUtils.isAuthenticated()) {
             String authToken = tokenService.getToken(request);
-            if (authToken != null) {
+            if (authToken != null && !AuthUtils.skipPathRequest(request)) {
                 // get username from token
-                String username = tokenService.getUsernameFromToken(authToken);
-                if (username != null) {
-                    Account account = accountService.findByUsername(username);
-                    if (account != null) {
-                        TokenBasedAuthentication authentication = new TokenBasedAuthentication(account);
-                        authentication.setToken(authToken);
-                        SecurityContextHolder.getContext().setAuthentication(authentication);
-                        chain.doFilter(request, response);
-                        return;
-                    }
+                try {
+                    String username = tokenService.getUsernameFromToken(authToken);
+                    // get user
+                    Account userDetails = accountService.loadUserByUsername(username);
+                    // create authentication
+                    TokenBasedAuthentication authentication = new TokenBasedAuthentication(userDetails);
+                    authentication.setToken(authToken);
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                } catch (Exception e) {
+                    SecurityContextHolder.getContext().setAuthentication(new AnonAuthentication());
                 }
+            } else {
+                SecurityContextHolder.getContext().setAuthentication(new AnonAuthentication());
             }
-            SecurityContextHolder.getContext().setAuthentication(new AnonAuthentication());
         }
         chain.doFilter(request, response);
     }

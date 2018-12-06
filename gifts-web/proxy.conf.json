@@ -5,7 +5,7 @@
     "logLevel": "debug",
     "changeOrigin": true,
     "pathRewrite": {
-      "^/shopper/api": ""
+      "^/gifts/api": ""
     }
   },
   "/gifts/login": {
@@ -14,7 +14,7 @@
     "logLevel": "debug",
     "changeOrigin": true,
     "pathRewrite": {
-      "^/shopper/login": ""
+      "^/gifts/login": ""
     }
   },
   "/gifts/auth": {
@@ -23,7 +23,7 @@
     "logLevel": "debug",
     "changeOrigin": true,
     "pathRewrite": {
-      "^/shopper/auth": ""
+      "^/gifts/auth": ""
     }
   },
   "/gifts/logout": {
@@ -32,7 +32,7 @@
     "logLevel": "debug",
     "changeOrigin": true,
     "pathRewrite": {
-      "^/shopper/logout": ""
+      "^/gifts/logout": ""
     }
   },
   "/gifts/ws": {
@@ -41,7 +41,7 @@
     "logLevel": "debug",
     "changeOrigin": true,
     "pathRewrite": {
-      "^/shopper/ws": ""
+      "^/gifts/ws": ""
     }
   }
 }

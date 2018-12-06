@@ -34,7 +34,7 @@ spring:
       enabled: false
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
   social:
     facebook:
       app-id: 1750703375258695

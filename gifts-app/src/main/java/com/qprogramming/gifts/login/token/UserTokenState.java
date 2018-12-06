@@ -6,7 +6,12 @@ package com.qprogramming.gifts.login.token;
  */
 public class UserTokenState {
     private String access_token;
-    private long expires_in;
+    private Long expires_in;
+
+    public UserTokenState() {
+        this.access_token = null;
+        this.expires_in = -1L;
+    }
 
     public UserTokenState(String access_token, long expires_in) {
         this.access_token = access_token;

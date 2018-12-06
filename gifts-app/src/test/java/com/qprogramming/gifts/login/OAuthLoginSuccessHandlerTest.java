@@ -4,6 +4,7 @@ import com.qprogramming.gifts.TestUtil;
 import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.account.AccountType;
+import com.qprogramming.gifts.account.authority.AuthorityService;
 import com.qprogramming.gifts.config.property.PropertyService;
 import com.qprogramming.gifts.login.token.TokenService;
 import org.junit.Before;
@@ -22,6 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.mockito.Mockito.*;
 
@@ -51,6 +53,8 @@ public class OAuthLoginSuccessHandlerTest {
     private TokenService tokenServiceMock;
     @Mock
     private PropertyService propertyServiceMock;
+    @Mock
+    private AuthorityService authorityServiceMock;
 
     private OAuthLoginSuccessHandler handler;
 
@@ -62,13 +66,13 @@ public class OAuthLoginSuccessHandlerTest {
         when((OAuth2AuthenticationDetails) authMock.getDetails()).thenReturn(oauthDetailsMock);
         when(authenticationMock.getDetails()).thenReturn(details);
         when(propertyServiceMock.getLanguages()).thenReturn(languageList());
-        handler = spy(new OAuthLoginSuccessHandler(accSrvMock, tokenServiceMock, propertyServiceMock));
+        handler = spy(new OAuthLoginSuccessHandler(accSrvMock, tokenServiceMock, propertyServiceMock, authorityServiceMock));
     }
 
     @Test
     public void onAuthenticationSuccessGoogleUserExists() throws Exception {
         Account testAccount = TestUtil.createAccount();
-        when(accSrvMock.findByEmail(TestUtil.EMAIL)).thenReturn(testAccount);
+        when(accSrvMock.findByEmail(TestUtil.EMAIL)).thenReturn(Optional.of(testAccount));
         details.put(OAuthLoginSuccessHandler.G.SUB, TestUtil.USER_RANDOM_ID);
         details.put(OAuthLoginSuccessHandler.EMAIL, TestUtil.EMAIL);
         handler.onAuthenticationSuccess(requestMock, responseMock, authMock);
@@ -85,16 +89,17 @@ public class OAuthLoginSuccessHandlerTest {
         details.put(OAuthLoginSuccessHandler.EMAIL, TestUtil.EMAIL);
         details.put(OAuthLoginSuccessHandler.LOCALE, "en");
         details.put(OAuthLoginSuccessHandler.G.PICTURE, "link");
-        when(accSrvMock.createOAuthAcount(any(Account.class))).thenReturn(testAccount);
+        when(accSrvMock.createAcount(any(Account.class))).thenReturn(testAccount);
+        when(accSrvMock.generateID()).thenReturn(TestUtil.USER_RANDOM_ID);
         handler.onAuthenticationSuccess(requestMock, responseMock, authMock);
-        verify(accSrvMock, times(1)).createOAuthAcount(any(Account.class));
+        verify(accSrvMock, times(1)).createAcount(any(Account.class));
         verify(accSrvMock, times(1)).signin(testAccount);
     }
 
     @Test
     public void onAuthenticationSuccessFacebookUserExists() throws Exception {
         Account testAccount = TestUtil.createAccount();
-        when(accSrvMock.findByEmail(TestUtil.EMAIL)).thenReturn(testAccount);
+        when(accSrvMock.findByEmail(TestUtil.EMAIL)).thenReturn(Optional.of(testAccount));
         doReturn(facebookTemplateMock).when(handler).getFacebookTemplate(anyString());
         String[] fields = {OAuthLoginSuccessHandler.FB.ID, OAuthLoginSuccessHandler.EMAIL
                 , OAuthLoginSuccessHandler.FB.FIRST_NAME, OAuthLoginSuccessHandler.FB.LAST_NAME
@@ -124,16 +129,17 @@ public class OAuthLoginSuccessHandlerTest {
                 , testAccount.getName(), testAccount.getSurname()
                 , "Male", new Locale("fr")));
         when(oauthDetailsMock.getTokenValue()).thenReturn("RANDOM_TOKEN");
-        when(accSrvMock.createOAuthAcount(any(Account.class))).thenReturn(testAccount);
+        when(accSrvMock.createAcount(any(Account.class))).thenReturn(testAccount);
         when(fbUser.getEmail()).thenReturn(testAccount.getEmail());
 //        doReturn(testAccount.getEmail()).when(fbUser.getEmail());
         when(facebookTemplateMock.fetchObject(OAuthLoginSuccessHandler.FB.ME, User.class, fields)).thenReturn(fbUser);
         when(facebookTemplateMock.userOperations()).thenReturn(userOperationsMock);
         when(userOperationsMock.getUserProfileImage()).thenReturn(new byte[2]);
-        when(accSrvMock.update(any(Account.class))).thenReturn(testAccount);
+        when(accSrvMock.createAcount(any(Account.class))).thenReturn(testAccount);
+        when(accSrvMock.generateID()).thenReturn(TestUtil.USER_RANDOM_ID);
         when(propertyServiceMock.getDefaultLang()).thenReturn("en");
         handler.onAuthenticationSuccess(requestMock, responseMock, authMock);
-        verify(accSrvMock, times(1)).createOAuthAcount(any(Account.class));
+        verify(accSrvMock, times(1)).createAcount(any(Account.class));
         verify(accSrvMock, times(1)).signin(testAccount);
 
     }

@@ -8,7 +8,7 @@ export const environment = {
   production: false,
   logging: NgxLoggerLevel.DEBUG,
   default_lang: 'en',
-  context: '/shopper',
+  context: '/gifts',
   api_url: '/api',
   refresh_token_url: '/api/refresh',
   whoami_url: '/api/account/whoami',

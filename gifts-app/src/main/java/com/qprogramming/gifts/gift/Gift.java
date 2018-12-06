@@ -2,7 +2,6 @@ package com.qprogramming.gifts.gift;
 
 import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.gift.category.Category;
-import com.qprogramming.gifts.gift.link.Link;
 import com.qprogramming.gifts.settings.SearchEngine;
 import io.jsonwebtoken.lang.Collections;
 import org.apache.commons.lang3.StringUtils;
@@ -31,8 +30,8 @@ public class Gift implements Serializable, Comparable<Gift> {
     @Column(columnDefinition = "text")
     private String link;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private List<Link> links;
+    @ElementCollection
+    private List<String> links;
 
     @Column
     private String userId;
@@ -142,14 +141,14 @@ public class Gift implements Serializable, Comparable<Gift> {
         this.claimed = claimed;
     }
 
-    public List<Link> getLinks() {
+    public List<String> getLinks() {
         if (Collections.isEmpty(links)) {
             links = new ArrayList<>();
         }
         return links;
     }
 
-    public void setLinks(List<Link> links) {
+    public void setLinks(List<String> links) {
         this.links = links;
     }
 
@@ -190,7 +189,7 @@ public class Gift implements Serializable, Comparable<Gift> {
         return 0;
     }
 
-    public void addLink(Link link) {
+    public void addLink(String link) {
         this.getLinks().add(link);
     }
 }

@@ -1,7 +1,11 @@
 package com.qprogramming.gifts.account;
 
-import com.qprogramming.gifts.MockSecurityContext;
+import com.qprogramming.gifts.MockedAccountTestBase;
 import com.qprogramming.gifts.TestUtil;
+import com.qprogramming.gifts.account.authority.Authority;
+import com.qprogramming.gifts.account.authority.AuthorityRepository;
+import com.qprogramming.gifts.account.authority.AuthorityService;
+import com.qprogramming.gifts.account.authority.Role;
 import com.qprogramming.gifts.account.avatar.Avatar;
 import com.qprogramming.gifts.account.avatar.AvatarRepository;
 import com.qprogramming.gifts.account.event.AccountEventRepository;
@@ -13,12 +17,8 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -28,11 +28,12 @@ import java.util.*;
 
 import static com.qprogramming.gifts.TestUtil.USER_RANDOM_ID;
 import static com.qprogramming.gifts.TestUtil.createAccountList;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.*;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.Mockito.*;
 
-public class AccountServiceTest {
+public class AccountServiceTest extends MockedAccountTestBase {
 
     public static final String PASSWORD = "Password";
     public static final String STATIC_IMAGES_LOGO_WHITE_PNG = "static/images/logo-white.png";
@@ -40,13 +41,9 @@ public class AccountServiceTest {
     @Mock
     private FamilyService familyServiceMock;
     @Mock
-    private MockSecurityContext securityMock;
-    @Mock
-    private Authentication authMock;
-    @Mock
     private AccountRepository accountRepositoryMock;
     @Mock
-    private PasswordEncoder passwordEncoderMock;
+    private AccountPasswordEncoder passwordEncoderMock;
     @Mock
     private AvatarRepository avatarRepositoryMock;
     @Mock
@@ -57,20 +54,18 @@ public class AccountServiceTest {
     private AccountEventRepository accountEventRepositoryMock;
     @Mock
     private GiftService giftServiceMock;
+    @Mock
+    private AuthorityRepository authorityRepositoryMock;
 
 
-    private Account testAccount;
     private AccountService accountService;
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-        testAccount = TestUtil.createAccount();
-        when(securityMock.getAuthentication()).thenReturn(authMock);
-        when(authMock.getPrincipal()).thenReturn(testAccount);
+        super.setup();
         when(giftServiceMock.countAllByUser(anyString())).thenReturn(1);
-        SecurityContextHolder.setContext(securityMock);
-        accountService = new AccountService(accountRepositoryMock, passwordEncoderMock, avatarRepositoryMock, familyServiceMock, propertyServiceMock, accountEventRepositoryMock, giftServiceMock) {
+        AuthorityService authorityService = new AuthorityService(authorityRepositoryMock);
+        accountService = new AccountService(accountRepositoryMock, passwordEncoderMock, avatarRepositoryMock, familyServiceMock, propertyServiceMock, accountEventRepositoryMock, giftServiceMock, authorityService) {
             @Override
             protected byte[] downloadFromUrl(URL url) {
                 ClassLoader loader = getClass().getClassLoader();
@@ -84,16 +79,30 @@ public class AccountServiceTest {
         };
     }
 
+    @Test
+    public void generateIDFails2TimesTest() throws Exception {
+        Optional<Account> account1 = Optional.of(TestUtil.createAccount());
+        Optional<Account> account2 = Optional.of(TestUtil.createAccount());
+        when(accountRepositoryMock.findOneById(anyString()))
+                .thenReturn(account1)
+                .thenReturn(account2)
+                .thenReturn(Optional.empty());
+        accountService.generateID();
+        verify(accountRepositoryMock, times(3)).findOneById(anyString());
+    }
+
 
     @Test
     public void createLocalUserAccount() throws Exception {
         Account account = TestUtil.createAccount();
         account.setPassword(PASSWORD);
         when(accountRepositoryMock.findAll()).thenReturn(Collections.singletonList(testAccount));
+        when(accountRepositoryMock.findOneById(anyString())).thenReturn(Optional.empty());
         when(accountRepositoryMock.save(any(Account.class))).then(returnsFirstArg());
         when(passwordEncoderMock.encode(any())).thenReturn("ENCODED PASS");
+        when(authorityRepositoryMock.save(any(Authority.class))).then(returnsFirstArg());
         Account result = accountService.createLocalAccount(account);
-        assertEquals(result.getRole(), Roles.ROLE_USER);
+        assertThat(result.getAuthorities().stream().anyMatch(o -> ((Authority) o).getName().equals(Role.ROLE_USER))).isTrue();
         verify(accountRepositoryMock, times(1)).save(any(Account.class));
     }
 
@@ -104,10 +113,11 @@ public class AccountServiceTest {
         when(accountRepositoryMock.findAll()).thenReturn(Collections.emptyList());
         when(accountRepositoryMock.save(any(Account.class))).then(returnsFirstArg());
         when(passwordEncoderMock.encode(any())).thenReturn("ENCODED PASS");
+        when(authorityRepositoryMock.save(any(Authority.class))).then(returnsFirstArg());
         Account result = accountService.createLocalAccount(account);
         assertNotEquals(PASSWORD, result.getPassword());
         assertEquals(result.getType(), AccountType.LOCAL);
-        assertEquals(result.getRole(), Roles.ROLE_ADMIN);
+        assertThat(result.getAuthorities().stream().anyMatch(o -> ((Authority) o).getName().equals(Role.ROLE_ADMIN))).isTrue();
         verify(accountRepositoryMock, times(1)).save(any(Account.class));
     }
 
@@ -118,8 +128,9 @@ public class AccountServiceTest {
         account.setLanguage("");
         when(accountRepositoryMock.findAll()).thenReturn(Collections.emptyList());
         when(accountRepositoryMock.save(any(Account.class))).then(returnsFirstArg());
-        Account result = accountService.createOAuthAcount(account);
-        assertEquals(result.getRole(), Roles.ROLE_ADMIN);
+        when(authorityRepositoryMock.save(any(Authority.class))).then(returnsFirstArg());
+        Account result = accountService.createAcount(account);
+        assertThat(result.getIsAdmin()).isTrue();
         verify(accountRepositoryMock, times(1)).save(any(Account.class));
     }
 
@@ -128,8 +139,10 @@ public class AccountServiceTest {
         Account account = TestUtil.createAccount();
         when(accountRepositoryMock.findAll()).thenReturn(Collections.singletonList(testAccount));
         when(accountRepositoryMock.save(any(Account.class))).then(returnsFirstArg());
-        Account result = accountService.createOAuthAcount(account);
-        assertEquals(result.getRole(), Roles.ROLE_USER);
+        when(authorityRepositoryMock.save(any(Authority.class))).then(returnsFirstArg());
+        Account result = accountService.createAcount(account);
+        assertThat(result.getIsUser()).isTrue();
+        assertThat(result.getIsAdmin()).isFalse();
         verify(accountRepositoryMock, times(1)).save(any(Account.class));
     }
 
@@ -147,17 +160,16 @@ public class AccountServiceTest {
         Account account1 = TestUtil.createAccount();
         Account account2 = TestUtil.createAccount();
         when(accountRepositoryMock.findOneById(anyString()))
-                .thenReturn(account1)
-                .thenReturn(account2)
-                .thenReturn(null);
+                .thenReturn(Optional.of(account1))
+                .thenReturn(Optional.of(account2))
+                .thenReturn(Optional.empty());
         accountService.generateID();
         verify(accountRepositoryMock, times(3)).findOneById(anyString());
     }
 
     @Test
     public void loadUserByUsername() throws Exception {
-        testAccount.setRole(Roles.ROLE_USER);
-        when(accountRepositoryMock.findOneByUsername(testAccount.getUsername())).thenReturn(testAccount);
+        when(accountRepositoryMock.findOneByUsername(testAccount.getUsername())).thenReturn(Optional.of(testAccount));
         Account userDetails = (Account) accountService.loadUserByUsername(testAccount.getUsername());
         assertEquals(userDetails, testAccount);
     }
@@ -169,7 +181,6 @@ public class AccountServiceTest {
 
     @Test
     public void signIn() throws Exception {
-        testAccount.setRole(Roles.ROLE_USER);
         accountService.signin(testAccount);
         verify(securityMock, times(1)).setAuthentication(any(UsernamePasswordAuthenticationToken.class));
     }

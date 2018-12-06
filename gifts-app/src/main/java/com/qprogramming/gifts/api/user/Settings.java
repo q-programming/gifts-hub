@@ -1,18 +1,9 @@
 package com.qprogramming.gifts.api.user;
 
 public class Settings {
-    private String id;
     private boolean newsletter;
     private boolean publicList;
     private String language;
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public boolean getNewsletter() {
         return newsletter;

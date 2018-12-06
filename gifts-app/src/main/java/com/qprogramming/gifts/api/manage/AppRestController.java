@@ -2,9 +2,9 @@ package com.qprogramming.gifts.api.manage;
 
 import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.AccountService;
-import com.qprogramming.gifts.account.Roles;
 import com.qprogramming.gifts.config.mail.MailService;
 import com.qprogramming.gifts.config.property.PropertyService;
+import com.qprogramming.gifts.exceptions.AccountNotFoundException;
 import com.qprogramming.gifts.gift.Gift;
 import com.qprogramming.gifts.gift.GiftService;
 import com.qprogramming.gifts.gift.category.Category;
@@ -234,12 +234,14 @@ public class AppRestController {
         if (currentAccount == null || !currentAccount.getIsAdmin()) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
-        Account account = accountService.findById(id);
-        if (account == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        Account account;
+        try {
+            account = accountService.findById(id);
+        } catch (AccountNotFoundException e) {
+            LOG.debug("Current account not found");
+            return ResponseEntity.notFound().build();
         }
-        account.setRole(Roles.ROLE_ADMIN);
-        accountService.update(account);
+        accountService.addAsAdministrator(account);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -250,15 +252,17 @@ public class AppRestController {
         if (currentAccount == null || !currentAccount.getIsAdmin()) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
-        Account account = accountService.findById(id);
-        if (account == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        Account account;
+        try {
+            account = accountService.findById(id);
+        } catch (AccountNotFoundException e) {
+            LOG.debug("Current account not found");
+            return ResponseEntity.notFound().build();
         }
         if (accountService.findUsers().stream().filter(Account::getIsAdmin).count() == 1) {
             return new ResultData.ResultBuilder().error().message(msgSrv.getMessage("error.lastAdmin")).build();
         }
-        account.setRole(Roles.ROLE_USER);
-        accountService.update(account);
+        accountService.removeAdministrator(account);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

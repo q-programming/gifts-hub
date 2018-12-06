@@ -1,5 +1,9 @@
 package com.qprogramming.gifts.account;
 
+import com.fasterxml.uuid.Generators;
+import com.qprogramming.gifts.account.authority.Authority;
+import com.qprogramming.gifts.account.authority.AuthorityService;
+import com.qprogramming.gifts.account.authority.Role;
 import com.qprogramming.gifts.account.avatar.Avatar;
 import com.qprogramming.gifts.account.avatar.AvatarRepository;
 import com.qprogramming.gifts.account.event.AccountEvent;
@@ -7,6 +11,7 @@ import com.qprogramming.gifts.account.event.AccountEventRepository;
 import com.qprogramming.gifts.account.family.Family;
 import com.qprogramming.gifts.account.family.FamilyService;
 import com.qprogramming.gifts.config.property.PropertyService;
+import com.qprogramming.gifts.exceptions.AccountNotFoundException;
 import com.qprogramming.gifts.gift.GiftService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -17,13 +22,9 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,24 +47,26 @@ public class AccountService implements UserDetailsService {
     private final Logger LOG = LoggerFactory.getLogger(this.getClass());
 
 
-    private AccountRepository accountRepository;
-    private PasswordEncoder passwordEncoder;
-    private AvatarRepository avatarRepository;
-    private FamilyService familyService;
-    private PropertyService propertyService;
-    private AccountEventRepository accountEventRepository;
+    private AccountRepository _accountRepository;
+    private AccountPasswordEncoder _accountPasswordEncoder;
+    private AvatarRepository _avatarRepository;
+    private FamilyService _familyService;
+    private PropertyService _propertyService;
+    private AccountEventRepository _accountEventRepository;
     private GiftService giftService;
+    private AuthorityService _authorityService;
 
 
     @Autowired
-    public AccountService(AccountRepository accountRepository, PasswordEncoder passwordEncoder, AvatarRepository avatarRepository, FamilyService familyService, PropertyService propertyService, AccountEventRepository accountEventRepository, GiftService giftService) {
-        this.accountRepository = accountRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.avatarRepository = avatarRepository;
-        this.familyService = familyService;
-        this.propertyService = propertyService;
-        this.accountEventRepository = accountEventRepository;
+    public AccountService(AccountRepository accountRepository, AccountPasswordEncoder accountPasswordEncoder, AvatarRepository avatarRepository, FamilyService familyService, PropertyService propertyService, AccountEventRepository accountEventRepository, GiftService giftService, AuthorityService authorityService) {
+        this._accountRepository = accountRepository;
+        this._accountPasswordEncoder = accountPasswordEncoder;
+        this._avatarRepository = avatarRepository;
+        this._familyService = familyService;
+        this._propertyService = propertyService;
+        this._accountEventRepository = accountEventRepository;
         this.giftService = giftService;
+        this._authorityService = authorityService;
     }
 
     @PostConstruct
@@ -75,61 +78,68 @@ public class AccountService implements UserDetailsService {
     @Transactional
     public Account createLocalAccount(Account account) {
         account.setId(generateID());
-        account.setPassword(passwordEncoder.encode(account.getPassword()));
-        if (accountRepository.findAll().size() == 0) {
-            account.setRole(Roles.ROLE_ADMIN);
-        } else {
-            account.setRole(Roles.ROLE_USER);
-        }
+        account.setPassword(_accountPasswordEncoder.encode(account.getPassword()));
+        account.setUuid(Generators.timeBasedGenerator().generate().toString());
         account.setType(AccountType.LOCAL);
-        if (StringUtils.isEmpty(account.getLanguage())) {
-            setDefaultLocale(account);
-        }
-        return accountRepository.save(account);
+        return createAcount(account);
     }
 
-    public Account createOAuthAcount(Account account) {
-        if (accountRepository.findAll().size() == 0) {
-            account.setRole(Roles.ROLE_ADMIN);
-        } else {
-            account.setRole(Roles.ROLE_USER);
+    public Account createAcount(Account account) {
+        List<Authority> auths = new ArrayList<>();
+        Authority role = _authorityService.findByRole(Role.ROLE_USER);
+        auths.add(role);
+        if (_accountRepository.findAll().size() == 0) {
+            Authority admin = _authorityService.findByRole(Role.ROLE_ADMIN);
+            auths.add(admin);
         }
+        account.setAuthorities(auths);
         if (StringUtils.isEmpty(account.getLanguage())) {
             setDefaultLocale(account);
         }
-        return accountRepository.save(account);
+        //generate password if needed
+        return _accountRepository.save(account);
     }
+
+    public Account addAsAdministrator(Account account) {
+        account.addAuthority(_authorityService.findByRole(Role.ROLE_ADMIN));
+        return _accountRepository.save(account);
+    }
+
+    public Account removeAdministrator(Account account) {
+        account.setAuthorities(Collections.singletonList(_authorityService.findByRole(Role.ROLE_USER)));
+        return _accountRepository.save(account);
+    }
+
 
     public Account createKidAccount(Account account) {
         account.setId(generateID());
         account.setType(AccountType.KID);
-        return accountRepository.save(account);
+        return _accountRepository.save(account);
     }
 
     private void setDefaultLocale(Account account) {
-        String defaultLanguage = propertyService.getDefaultLang();
+        String defaultLanguage = _propertyService.getDefaultLang();
         account.setLanguage(defaultLanguage);
     }
 
     public String generateID() {
         String uuid = UUID.randomUUID().toString();
-        while (accountRepository.findOneById(uuid) != null) {
+        while (_accountRepository.findOneById(uuid).isPresent()) {
             uuid = UUID.randomUUID().toString();
         }
         return uuid;
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Account account = accountRepository.findOneByEmail(username);
-        if (account == null) {
-            account = accountRepository.findOneByUsername(username);
-            if (account == null || AccountType.KID.equals(account.getType())) {
+    public Account loadUserByUsername(String username) throws UsernameNotFoundException {
+        Optional<Account> optionalAccount = _accountRepository.findOneByEmail(username);
+        if (!optionalAccount.isPresent()) {
+            optionalAccount = _accountRepository.findOneByUsername(username);
+            if (!optionalAccount.isPresent() || AccountType.KID.equals(optionalAccount.get().getType())) {
                 throw new UsernameNotFoundException("user not found");
             }
         }
-        account.setAuthority(account.getRole());
-        return account;
+        return optionalAccount.get();
     }
 
     public void signin(Account account) {
@@ -137,25 +147,20 @@ public class AccountService implements UserDetailsService {
     }
 
     private Authentication authenticate(Account account) {
-        return new UsernamePasswordAuthenticationToken(account, null, Collections.singleton(createAuthority(account)));
+        return new UsernamePasswordAuthenticationToken(account, null, account.getAuthorities());
     }
 
-//    private Account createUser(Account account) {
-//        return new User(account.getEmail(), account.getPassword(), Collections.singleton(createAuthority(account)));
-//    }
-
-    private GrantedAuthority createAuthority(Account account) {
-        return new SimpleGrantedAuthority(account.getRole().toString());
-    }
-
-    public Account findById(String id) {
-        return accountRepository.findOneById(id);
+    public Account findById(String id) throws AccountNotFoundException {
+        Optional<Account> optionalAccount = _accountRepository.findOneById(id);
+        if (!optionalAccount.isPresent()) {
+            throw new AccountNotFoundException();
+        }
+        return optionalAccount.get();
     }
 
     //User avatar handling
-
     public Avatar getAccountAvatar(Account account) {
-        return avatarRepository.findOneById(account.getId());
+        return _avatarRepository.findOneById(account.getId());
     }
 
     /**
@@ -167,12 +172,12 @@ public class AccountService implements UserDetailsService {
      * @param bytes   image bytes
      */
     public void updateAvatar(Account account, byte[] bytes) {
-        Avatar avatar = avatarRepository.findOneById(account.getId());
+        Avatar avatar = _avatarRepository.findOneById(account.getId());
         if (avatar == null) {
             createAvatar(account, bytes);
         } else {
             setAvatarTypeAndBytes(bytes, avatar);
-            avatarRepository.save(avatar);
+            _avatarRepository.save(avatar);
         }
     }
 
@@ -204,7 +209,7 @@ public class AccountService implements UserDetailsService {
         Avatar avatar = new Avatar();
         avatar.setId(account.getId());
         setAvatarTypeAndBytes(bytes, avatar);
-        return avatarRepository.save(avatar);
+        return _avatarRepository.save(avatar);
     }
 
     private void setAvatarTypeAndBytes(byte[] bytes, Avatar avatar) {
@@ -249,23 +254,23 @@ public class AccountService implements UserDetailsService {
      * @return updated account
      */
     public Account update(Account account) {
-        return accountRepository.save(account);
+        return _accountRepository.save(account);
     }
 
-    public Account findByUsername(String username) {
-        return accountRepository.findOneByUsername(username);
+    public Optional<Account> findByUsername(String username) {
+        return _accountRepository.findOneByUsername(username);
     }
 
-    public Account findByEmail(String email) {
-        return accountRepository.findOneByEmail(email);
+    public Optional<Account> findByEmail(String email) {
+        return _accountRepository.findOneByEmail(email);
     }
 
     public List<Account> findAll() {
-        return sortedAccounts(accountRepository.findAll());
+        return sortedAccounts(_accountRepository.findAll());
     }
 
     public List<Account> findAllWithNewsletter() {
-        return accountRepository.findByNewsletterIsTrueAndEmailNotNullAndTypeIsNot(AccountType.KID);
+        return _accountRepository.findByNewsletterIsTrueAndEmailNotNullAndTypeIsNot(AccountType.KID);
     }
 
 
@@ -277,7 +282,7 @@ public class AccountService implements UserDetailsService {
      * @return list of all sorted users
      */
     public Set<Account> findAllSortByFamily(Account account) {
-        Family family = familyService.getFamily(account);
+        Family family = _familyService.getFamily(account);
         List<Account> list = findAll();
         Set<Account> result = new LinkedHashSet<>();
         if (family != null) {
@@ -306,39 +311,40 @@ public class AccountService implements UserDetailsService {
      */
     public List<Account> findWithoutFamily() {
         List<Account> all = findAll();
-        List<Account> accountsWithFamily = familyService.findAll().stream().map(Family::getMembers).flatMap(Collection::stream).distinct().collect(Collectors.toList());
+        List<Account> accountsWithFamily = _familyService.findAll().stream().map(Family::getMembers).flatMap(Collection::stream).distinct().collect(Collectors.toList());
         all.removeAll(accountsWithFamily);
         return all;
     }
 
     public List<Account> findByIds(List<String> members) {
-        return accountRepository.findByIdIn(members);
+        return _accountRepository.findByIdIn(members);
     }
 
     public void delete(Account account) {
-        Family family = familyService.getFamily(account);
+        Family family = _familyService.getFamily(account);
         if (family != null) {
-            familyService.removeFromFamily(account, family);
+            _familyService.removeFromFamily(account, family);
         }
-        Avatar avatar = avatarRepository.findOneById(account.getId());
+        Avatar avatar = _avatarRepository.findOneById(account.getId());
         if (avatar != null) {
-            avatarRepository.delete(avatar);
+            _avatarRepository.delete(avatar);
         }
-        accountRepository.delete(account);
+        _accountRepository.delete(account);
     }
 
     public List<Account> findAdmins() {
-        return sortedAccounts(accountRepository.findByRole(Roles.ROLE_ADMIN));
+        Authority adminRole = _authorityService.findByRole(Role.ROLE_ADMIN);
+        return sortedAccounts(_accountRepository.findByAuthoritiesIn(Collections.singletonList(adminRole)));
 
     }
 
     public AccountEvent findEvent(String token) {
-        return accountEventRepository.findByToken(token);
+        return _accountEventRepository.findByToken(token);
     }
 
 
     public void eventConfirmed(AccountEvent event) {
-        accountEventRepository.delete(event);
+        _accountEventRepository.delete(event);
     }
 
     /**
@@ -347,7 +353,7 @@ public class AccountService implements UserDetailsService {
      * @return sorted list of all accounts other than KID type
      */
     public List<Account> findUsers() {
-        return sortedAccounts(accountRepository.findByTypeNot(AccountType.KID));
+        return sortedAccounts(_accountRepository.findByTypeNot(AccountType.KID));
 
     }
 }

@@ -14,6 +14,7 @@ import com.qprogramming.gifts.account.family.KidForm;
 import com.qprogramming.gifts.config.mail.Mail;
 import com.qprogramming.gifts.config.mail.MailService;
 import com.qprogramming.gifts.config.property.PropertyService;
+import com.qprogramming.gifts.exceptions.AccountNotFoundException;
 import com.qprogramming.gifts.gift.GiftService;
 import com.qprogramming.gifts.login.token.TokenBasedAuthentication;
 import com.qprogramming.gifts.messages.MessagesService;
@@ -28,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -46,7 +48,7 @@ import java.util.stream.Collectors;
 import static com.qprogramming.gifts.settings.Settings.APP_EMAIL_FROM;
 
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api/account")
 public class UserRestController {
 
     public static final String PASSWORD_REGEXP = "^^(?=.*[A-Z])(?=.*[0-9])(?=.*[a-z].*[a-z].*[a-z]).{8,}$";
@@ -76,9 +78,22 @@ public class UserRestController {
         this.eventService = eventService;
     }
 
+    /**
+     * Returns currently logged in user as {@link Account}
+     *
+     * @return currently logged in user
+     */
+    @RequestMapping("/whoami")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public Account user() {
+        return (Account) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
+
+
+
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     public ResponseEntity register(@Valid @RequestBody RegisterForm userform) {
-        if (accountService.findByEmail(userform.getEmail()) != null) {
+        if (accountService.findByEmail(userform.getEmail()).isPresent()) {
             String message = msgSrv.getMessage("user.register.email.exists") + " " + msgSrv.getMessage("user.register.alreadyexists");
             return new ResultData.ResultBuilder().error().message(message).build();
         }
@@ -88,7 +103,7 @@ public class UserRestController {
             return new ResultData.ResultBuilder().error().message(msgSrv.getMessage("user.register.username.chars")).build();
         }
 
-        if (accountService.findByUsername(userform.getUsername()) != null) {
+        if (accountService.findByUsername(userform.getUsername()).isPresent()) {
             String message = msgSrv.getMessage("user.register.username.exists") + " " + msgSrv.getMessage("user.register.alreadyexists");
             return new ResultData.ResultBuilder().error().message(message).build();
         }
@@ -108,16 +123,23 @@ public class UserRestController {
 
     @Transactional
     @RequestMapping("/{id}/avatar")
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<?> userAvatar(@PathVariable(value = "id") String id) {
-        Account account = accountService.findById(id);
-        if (account == null) {
+        Account account;
+        try {
+            account = accountService.findById(id);
+        } catch (AccountNotFoundException e) {
+            LOG.error("Unable to find account with id {}", id);
             return ResponseEntity.notFound().build();
+        }
+        if (account == null) {
         }
         return ResponseEntity.ok(accountService.getAccountAvatar(account));
     }
 
     @Transactional
     @RequestMapping("/avatar-upload")
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<?> uploadNewAvatar(@RequestBody String avatarStream) {
         Account account = Utils.getCurrentAccount();
         if (account == null) {
@@ -153,13 +175,15 @@ public class UserRestController {
     }
 
     @RequestMapping(value = "/userList", method = RequestMethod.GET)
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<?> userSearchList(@RequestParam(required = false) String username) {
         Account account = Utils.getCurrentAccount();
         if (StringUtils.isNotBlank(username)) {
-            account = accountService.findByUsername(username);
-            if (account == null) {
+            Optional<Account> optionalAccount = accountService.findByUsername(username);
+            if (!optionalAccount.isPresent()) {
                 return ResponseEntity.notFound().build();
             }
+            account = optionalAccount.get();
         }
         Set<Account> list = accountService.findAllSortByFamily(account);
         return ResponseEntity.ok(list);
@@ -167,6 +191,7 @@ public class UserRestController {
 
 
     @RequestMapping("/families")
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<?> familyList() {
         List<Family> families = familyService.findAll();
         families.forEach(family -> {
@@ -197,18 +222,20 @@ public class UserRestController {
      * @return {@link com.qprogramming.gifts.account.family.Family}
      */
     @RequestMapping(value = "/family", method = RequestMethod.GET)
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<?> getUserFamily(@RequestParam(required = false) String username) {
         if (StringUtils.isNotBlank(username)) {
-            Account account = accountService.findByUsername(username);
-            if (account == null) {
+            Optional<Account> account = accountService.findByUsername(username);
+            if (!account.isPresent()) {
                 return ResponseEntity.notFound().build();
             }
-            return ResponseEntity.ok(familyService.getFamily(account));
+            return ResponseEntity.ok(familyService.getFamily(account.get()));
         }
         return ResponseEntity.ok(familyService.getFamily(Utils.getCurrentAccount()));
     }
 
     @RequestMapping(value = "/family-create", method = RequestMethod.PUT)
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<?> createFamily(@RequestBody FamilyForm form) {
         Family family = familyService.getFamily(Utils.getCurrentAccount());
         if (family != null) {
@@ -234,6 +261,7 @@ public class UserRestController {
     }
 
     @Transactional
+    @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/family-update", method = RequestMethod.PUT)
     public ResponseEntity<?> updateFamily(@RequestBody FamilyForm form) {
         Account currentAccount = Utils.getCurrentAccount();
@@ -274,6 +302,7 @@ public class UserRestController {
         return new ResultData.ResultBuilder().badReqest().message(msgSrv.getMessage("user.family.admin.error")).build();
     }
 
+    @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/family-leave", method = RequestMethod.PUT)
     public ResponseEntity<?> leaveFamily() {
         Account currentAccount = Utils.getCurrentAccount();
@@ -287,6 +316,7 @@ public class UserRestController {
 
 
     @Transactional
+    @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping("/confirm")
     public ResponseEntity confirmOperation(@RequestBody String token) {
         UUID uuid = UUID.fromString(token);
@@ -356,9 +386,11 @@ public class UserRestController {
     }
 
     @Transactional
+    @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping("/kid-add")
     public ResponseEntity<?> addKid(@RequestBody @Valid KidForm form) {
-        if (accountService.findByUsername(form.getUsername()) != null) {
+        Optional<Account> optionalAccount = accountService.findByUsername(form.getUsername());
+        if (optionalAccount.isPresent()) {
             String message = msgSrv.getMessage("user.register.username.exists") + " " + msgSrv.getMessage("user.register.alreadyexists");
             return new ResultData.ResultBuilder().badReqest().error().message(msgSrv.getMessage(message)).build();
         }
@@ -382,6 +414,7 @@ public class UserRestController {
     }
 
     @Transactional
+    @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping("/kid-update")
     public ResponseEntity<?> updateKid(@RequestBody @Valid KidForm form) {
         Account currentAccount = Utils.getCurrentAccount();
@@ -392,8 +425,11 @@ public class UserRestController {
         if (!family.getAdmins().contains(currentAccount)) {
             return new ResultData.ResultBuilder().badReqest().message(msgSrv.getMessage("user.family.admin.error")).build();
         }
-        Account kidAccount = accountService.findById(form.getId());
-        if (kidAccount == null) {
+        Account kidAccount;
+        try {
+            kidAccount = accountService.findById(form.getId());
+        } catch (AccountNotFoundException e) {
+            LOG.error("Unable to find KID account with id {}", form.getId());
             return ResponseEntity.notFound().build();
         }
         if (StringUtils.isNotBlank(form.getName())) {
@@ -413,28 +449,36 @@ public class UserRestController {
 
 
     @RequestMapping(value = "/validate-email", method = RequestMethod.POST)
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity validateEmail(@RequestBody String email) {
-        Account acc = accountService.findByEmail(email);
-        if (acc == null) {
+        Optional<Account> acc = accountService.findByEmail(email);
+        if (!acc.isPresent()) {
             return ResponseEntity.ok(new ResultData.ResultBuilder().ok().build());
         }
         return ResponseEntity.ok(new ResultData.ResultBuilder().error().message("User exists").build());
     }
 
     @RequestMapping(value = "/validate-username", method = RequestMethod.POST)
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity validateUsername(@RequestBody String username) {
-        Account acc = accountService.findByUsername(username);
-        if (acc == null) {
+        Optional<Account> optionalAccount = accountService.findByUsername(username);
+        if (!optionalAccount.isPresent()) {
             return ResponseEntity.ok(new ResultData.ResultBuilder().ok().build());
         }
         return ResponseEntity.ok(new ResultData.ResultBuilder().error().message("User exists").build());
     }
 
+    @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/tour-complete", method = RequestMethod.POST)
     public ResponseEntity completeTour() {
-        Account account = accountService.findById(Utils.getCurrentAccountId());
-        if (account == null) {
+        Account account;
+        try {
+            account = accountService.findById(Utils.getCurrentAccountId());
+        } catch (AccountNotFoundException e) {
+            LOG.error("Account with id {} not found", Utils.getCurrentAccountId());
             return new ResultData.ResultBuilder().notFound().build();
+        }
+        if (account == null) {
         }
         Utils.getCurrentAccount().setTourComplete(true);
         account.setTourComplete(true);
@@ -443,10 +487,14 @@ public class UserRestController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/tour-reset", method = RequestMethod.POST)
     public ResponseEntity resetTour() {
-        Account account = accountService.findById(Utils.getCurrentAccountId());
-        if (account == null) {
+        Account account = null;
+        try {
+            account = accountService.findById(Utils.getCurrentAccountId());
+        } catch (AccountNotFoundException e) {
+            LOG.error("Account with id {} not found", Utils.getCurrentAccountId());
             return new ResultData.ResultBuilder().notFound().build();
         }
         Utils.getCurrentAccount().setTourComplete(false);
@@ -458,8 +506,11 @@ public class UserRestController {
 
     @RequestMapping(value = "/changelog", method = RequestMethod.POST)
     public ResponseEntity changelogRead() {
-        Account account = accountService.findById(Utils.getCurrentAccountId());
-        if (account == null) {
+        Account account;
+        try {
+            account = accountService.findById(Utils.getCurrentAccountId());
+        } catch (AccountNotFoundException e) {
+            LOG.error("Account with id {} not found", Utils.getCurrentAccountId());
             return new ResultData.ResultBuilder().notFound().build();
         }
         Utils.getCurrentAccount().setSeenChangelog(true);
@@ -471,13 +522,16 @@ public class UserRestController {
 
 
     @Transactional
+    @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/settings", method = RequestMethod.POST)
     public ResponseEntity changeSettings(@RequestBody Settings settings) {
         //TODO rewrite ?
-        Account currentAccount = Utils.getCurrentAccount();
-        Account account = accountService.findById(settings.getId());
-        if (account == null || !account.equals(currentAccount)) {
-            return ResponseEntity.notFound().build();
+        Account account;
+        try {
+            account = accountService.findById(Utils.getCurrentAccountId());
+        } catch (AccountNotFoundException e) {
+            LOG.error("Account with id {} not found", Utils.getCurrentAccountId());
+            return new ResultData.ResultBuilder().notFound().build();
         }
         if (StringUtils.isNotBlank(settings.getLanguage())) {
             account.setLanguage(settings.getLanguage());
@@ -490,10 +544,14 @@ public class UserRestController {
     }
 
     @Transactional
+    @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/delete/{userID}", method = RequestMethod.DELETE)
     public ResponseEntity deleteAccount(@PathVariable(value = "userID") String id) {
-        Account account = accountService.findById(id);
-        if (account == null) {
+        Account account;
+        try {
+            account = accountService.findById(id);
+        } catch (AccountNotFoundException e) {
+            LOG.error("Account with id {} not found", Utils.getCurrentAccountId());
             return new ResultData.ResultBuilder().notFound().build();
         }
         String message;
@@ -520,6 +578,7 @@ public class UserRestController {
     }
 
 
+    @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping
     public Account user(@RequestParam(required = false) String identification, Principal user) {
         if (StringUtils.isNotBlank(identification)) {
@@ -538,6 +597,7 @@ public class UserRestController {
      *
      * @return {@link List}<{@link Account}>admins or forbidden if current account is empty or is not admin
      */
+    @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "admins", method = RequestMethod.GET)
     public ResponseEntity admins() {
         Account currentAccount = Utils.getCurrentAccount();
@@ -548,9 +608,16 @@ public class UserRestController {
     }
 
     private Account getAccountByUsernameOrId(@RequestParam(required = false) String identification) {
-        Account account = accountService.findByUsername(identification);
-        if (account == null) {
-            account = accountService.findById(identification);
+        Account account = null;
+        Optional<Account> optionalAccount = accountService.findByUsername(identification);
+        if (optionalAccount.isPresent()) {
+            account = optionalAccount.get();
+        } else {
+            try {
+                account = accountService.findById(identification);
+            } catch (AccountNotFoundException e1) {
+                LOG.error("Unable to find Account with id  or username. Identification used : {}", identification);
+            }
         }
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if ((authentication instanceof AnonymousAuthenticationToken)) {
@@ -565,6 +632,7 @@ public class UserRestController {
      * @param emails ; delimited email address
      * @return
      */
+    @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/share", method = RequestMethod.POST)
     @Transactional
     public ResponseEntity shareGiftList(@RequestBody String emails) {
@@ -575,10 +643,11 @@ public class UserRestController {
         List<String> emailLists = Arrays.stream(emails.split(";")).filter(Utils::validateEmail).collect(Collectors.toList());
         for (String email : emailLists) {
             Mail mail = new Mail();
-            Account byEmail = accountService.findByEmail(email);
+            Optional<Account> opotionalAccount = accountService.findByEmail(email);
             mail.setMailTo(email);
             mail.setMailFrom(propertyService.getProperty(APP_EMAIL_FROM));
-            if (byEmail != null) {
+            if (opotionalAccount.isPresent()) {
+                Account byEmail = opotionalAccount.get();
                 mail.setLocale(byEmail.getLanguage());
                 mail.addToModel("name", byEmail.getFullname());
             }
@@ -596,6 +665,7 @@ public class UserRestController {
     }
 
     //TODO delete afterwards
+    @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/scheduler", method = RequestMethod.POST)
     public ResponseEntity sendScheduler() {
         try {

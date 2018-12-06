@@ -4,7 +4,7 @@ export const environment = {
   production: true,
   logging: NgxLoggerLevel.OFF,
   default_lang: 'en',
-  context: '/shopper',
+  context: '/gifts',
   api_url: '/api',
   refresh_token_url: '/api/refresh',
   whoami_url: '/api/account/whoami',

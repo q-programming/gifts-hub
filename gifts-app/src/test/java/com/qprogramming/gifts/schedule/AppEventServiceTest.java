@@ -4,6 +4,7 @@ import com.qprogramming.gifts.MockSecurityContext;
 import com.qprogramming.gifts.TestUtil;
 import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.AccountService;
+import com.qprogramming.gifts.exceptions.AccountNotFoundException;
 import com.qprogramming.gifts.gift.Gift;
 import com.qprogramming.gifts.support.Utils;
 import org.junit.Before;
@@ -76,7 +77,7 @@ public class AppEventServiceTest {
     }
 
     @Test
-    public void addEventTest() {
+    public void addEventTest() throws AccountNotFoundException {
         Gift gift = new Gift();
         gift.setName("name");
         gift.setUserId(testAccount.getId());
@@ -88,7 +89,7 @@ public class AppEventServiceTest {
     }
 
     @Test
-    public void tryToUndoTest() {
+    public void tryToUndoTest() throws AccountNotFoundException {
         AppEvent event = createEvent(testAccount);
         when(eventRepoMock.findByAccountAndGiftAndType(Utils.getCurrentAccount(), event.getGift(), AppEventType.REALISED)).thenReturn(event);
         eventSrv.tryToUndoEvent(event.getGift());

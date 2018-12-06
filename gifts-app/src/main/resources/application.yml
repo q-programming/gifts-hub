@@ -21,7 +21,7 @@ security:
 logging:
   level:
     org.hibernate.engine.jdbc.env.internal.LobCreatorBuilderImpl: ERROR
-    org.springframework.security: ERROR
+    org.springframework.security: DEBUG
     org.springframework.web.filter.CommonsRequestLoggingFilter: ERROR
     org.springframework.web.socket.config.WebSocketMessageBrokerStats: ERROR
 spring:
@@ -76,7 +76,7 @@ jwt:
   header: Authorization
   expires_in: 604800 # week
   secret: f4CKnPY3bt87c68mQFFAZWSGfW8ZUuf7YWqcYqX5t9EedppMEU
-  cookie: AUTH-TOKEN
+  cookie: COOKIE-AUTH-TOKEN
   xsrf: XSRF-TOKEN
   jsessionid: JSESSIONID
   user_cookie: c_user

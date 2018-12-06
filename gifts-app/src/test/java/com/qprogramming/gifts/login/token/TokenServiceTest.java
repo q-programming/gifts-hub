@@ -3,6 +3,9 @@ package com.qprogramming.gifts.login.token;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.qprogramming.gifts.TestUtil;
 import com.qprogramming.gifts.account.Account;
+import com.qprogramming.gifts.account.AccountService;
+import com.qprogramming.gifts.support.TimeProvider;
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -15,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.*;
@@ -39,6 +43,11 @@ public class TokenServiceTest {
     private PrintWriter printWriterMock;
     @Mock
     private ServletContext servletContextMock;
+    @Mock
+    private AccountService accountServiceMock;
+    @Mock
+    private TimeProvider timeProviderMock;
+
 
     private TokenService tokenService;
     private Account testAccount;
@@ -48,7 +57,7 @@ public class TokenServiceTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         ObjectMapper mapper = new ObjectMapper();
-        tokenService = new TokenService(mapper, servletContextMock);
+        tokenService = new TokenService(mapper, servletContextMock,accountServiceMock,timeProviderMock);
         ReflectionTestUtils.setField(tokenService, "APP_NAME", APP);
         ReflectionTestUtils.setField(tokenService, "SECRET", MY_SECRET);
         ReflectionTestUtils.setField(tokenService, "EXPIRES_IN", EXPIRES_IN);
@@ -61,10 +70,11 @@ public class TokenServiceTest {
     }
 
     @Test
-    public void getUsernameFromToken() throws Exception {
-        String token = tokenService.generateToken(testAccount.getUsername());
-        String result = tokenService.getUsernameFromToken(token);
-        assertEquals(testAccount.getUsername(), result);
+    public void getUsernameFromToken() {
+        when(timeProviderMock.getCurrentTimeMillis())
+                .thenReturn(new DateTime().getMillis());
+        String token = createToken();
+        assertThat(tokenService.getUsernameFromToken(token)).isEqualTo(TestUtil.EMAIL);
     }
 
     @Test
@@ -117,5 +127,8 @@ public class TokenServiceTest {
         assertNull(result);
     }
 
+    private String createToken() {
+        return tokenService.generateToken(TestUtil.EMAIL);
+    }
 
 }
