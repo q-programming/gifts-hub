@@ -1,4 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
+import {Account} from "@model/Account";
+import {AuthenticationService} from "@services/authentication.service";
+import {AlertService} from "@services/alert.service";
 
 @Component({
   selector: 'app-home',
@@ -7,9 +10,13 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HomeComponent implements OnInit {
 
-  constructor() { }
+  account: Account;
+
+  constructor(private authSrv: AuthenticationService, private alertSrv: AlertService) {
+  }
 
   ngOnInit() {
+    this.account = this.authSrv.currentAccount;
   }
 
 }

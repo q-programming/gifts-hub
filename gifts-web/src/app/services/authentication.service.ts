@@ -31,7 +31,7 @@ export class AuthenticationService {
                 }
             })
             .catch((err) => {
-                this.alertSrv.error('app.login.error');
+                this.alertSrv.error('user.login.failed');
                 this.logger.error(err);
                 return null
             });
@@ -96,7 +96,7 @@ export class AuthenticationService {
                     })
                 }
             }, err => {
-                this.alertSrv.error('app.login.error');
+                this.alertSrv.error('user.login.failed');
                 this.logger.error(err);
                 observable.next();
                 observable.complete();

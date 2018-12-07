@@ -1,0 +1,45 @@
+<div id="message-container" [@alertsAnimation]="messages.length">
+    <div *ngFor="let message of messages "
+         [ngClass]="{
+            'message': message,
+            'message-success': message.type === MessageType.SUCCESS || message.type === MessageType.UNDOABLE,
+            'message-error': message.type === MessageType.ERROR,
+            'message-info ': message.type === MessageType.INFO,
+            'message-warning ': message.type === MessageType.WARNING}" [ngSwitch]="message.type">
+        <div class="message-text" *ngIf="message.type!==MessageType.UNDOABLE">
+            <mat-icon *ngSwitchCase="MessageType.SUCCESS" class="mr-2">check_circle</mat-icon>
+            <mat-icon *ngSwitchCase="MessageType.ERROR" class="mr-2">error</mat-icon>
+            <mat-icon *ngSwitchCase="MessageType.INFO" class="mr-2">info</mat-icon>
+            <mat-icon *ngSwitchCase="MessageType.WARNING" class="mr-2">warning</mat-icon>
+            {{message.text}}
+            <div class="pull-right ml-4">
+                <mat-icon class="clickable pull-right" (click)="dismiss(message)">close</mat-icon>
+            </div>
+        </div>
+        <!--UNDOABLE-->
+        <div class="message-text" *ngIf="message.type===MessageType.UNDOABLE">
+            <div fxHide.lt-sm="true">
+                <mat-icon class="mr-2">check_circle</mat-icon>
+                {{message.text}}
+                <div class="pull-right ml-4">
+                    <mat-icon class="clickable pull-right" (click)="dismiss(message)">close</mat-icon>
+                    <button mat-button (click)="undo(message)" class="message-undo mt-1">
+                        {{'app.general.undo'|translate}}
+                    </button>
+                </div>
+            </div>
+            <div fxHide.gt-xs="true" fxLayout="row" fxLayoutGap="20px">
+                <div fxFlex="60">
+                    <mat-icon class="mr-2">check_circle</mat-icon>
+                    {{message.text}}
+                </div>
+                <div fxFlex="40">
+                    <mat-icon class="clickable pull-right" (click)="dismiss(message)">close</mat-icon>
+                    <button mat-button (click)="undo(message)" class="message-undo mt-1">
+                        {{'app.general.undo'|translate}}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

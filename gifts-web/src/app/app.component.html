@@ -1,2 +1,15 @@
-Gifts hub
-<router-outlet></router-outlet>
+<ng-progress [color]="'white'"
+             [trickleSpeed]="500"
+             [thick]="true"
+             [ease]="'easeInSine'">
+</ng-progress>
+<alert></alert>
+<navigation></navigation>
+<!-- Add Content Here -->
+<main class="container" fxLayout="row wrap" fxLayout.xs="column" fxLayoutGap="0.5%"
+      fxLayoutAlign="center">
+  <div fxFlex="80%">
+    <!--CONTENT-->
+    <router-outlet></router-outlet>
+  </div>
+</main>

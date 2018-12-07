@@ -53,7 +53,10 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.scss"
+              "node_modules/font-awesome/css/font-awesome.css",
+              "src/assets/styles/styles.scss",
+              "src/assets/styles/general.css",
+              "src/assets/styles/material-theme.scss"
             ],
             "scripts": []
           },

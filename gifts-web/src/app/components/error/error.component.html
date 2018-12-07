@@ -1,0 +1,22 @@
+<mat-card class="text-center">
+    <mat-card-title>
+        <h2>
+            <img src="assets/images/error.svg" height="150px" class="ml-2 v-middle">
+            {{'app.error'|translate}}
+        </h2>
+    </mat-card-title>
+    <mat-card-subtitle class="mt-5">
+        <h2>{{message|translate}}</h2>
+    </mat-card-subtitle>
+    <div class="mt-5">
+        <button mat-raised-button routerLink="/">
+            <mat-icon>
+                arrow_back_ios
+            </mat-icon>
+            <mat-icon>
+                home
+            </mat-icon>
+            {{'app.general.return'|translate}}
+        </button>
+    </div>
+</mat-card>

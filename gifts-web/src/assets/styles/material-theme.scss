@@ -1,0 +1,78 @@
+@import '~@angular/material/theming';
+@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Kalam');
+
+@include mat-core();
+$primary: mat-palette($mat-indigo, 500);
+$accent: mat-palette($mat-blue, 900);
+$theme: mat-light-theme($primary, $accent);
+@include angular-material-theme($theme);
+
+$general-typography: mat-typography-config(
+        $font-family: '"Roboto", sans-serif',
+        $body-2: mat-typography-level(14px, 24px, 600)
+);
+
+@include mat-core($general-typography);
+
+body {
+  font-family: 'Roboto', cursive;
+  font-weight: 300;
+  min-height: 100vh;
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #212529;
+  text-align: left;
+  background-color: #fff;
+}
+.mat-form-field-full-width {
+  width: 100%;
+}
+
+.modal-header > mat-icon {
+  float: left;
+  font-size: 30px;
+}
+
+.success-button {
+  background: #43b05c;
+  color: white;
+}
+
+.underlined {
+  border-bottom: 1px solid;
+}
+
+.mat-card {
+  border-radius: 0 !important;
+}
+
+@media (max-width: 768px) {
+  .gifts-modal-normal {
+    max-width: 100% !important;
+  }
+
+  .gifts-modal {
+    max-width: 100% !important;
+  }
+
+  .mat-card {
+    margin: 0 5px;
+  }
+
+  .m-plr-5 {
+    padding: 0 5px;
+  }
+}
+
+.mat-progress-spinner circle, .mat-spinner circle {
+  stroke: #ffffff;
+}
+
+.cdk-overlay-container {
+  z-index: 2000 !important;
+}
+
+.mat-tooltip {
+  font-size: 17px; // current default is 10px :-/
+}

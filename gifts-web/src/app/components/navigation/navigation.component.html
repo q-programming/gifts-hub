@@ -1,0 +1,78 @@
+<mat-toolbar color="primary" class="fixed-top">
+  <span class="clickable" routerLink="/">
+    <img src="assets/images/logo_white.svg" height="50px" class="mr-2 v-middle">
+    <span class="stylish" fxShow.lt-sm="false">Gifts Hub</span>
+  </span>
+  <span class="fill-remaining-space"></span>
+  <span *ngIf="account" fxLayout="row" fxLayoutAlign="end center" fxLayoutGap.gt-xs="30px" fxLayoutGap.lt-sm="10px">
+    <span fxFlex>
+      <button mat-icon-button routerLink="/users" routerLinkActive="active-link">
+        <div class="v-sub">
+          <i class="fa fa-gift ml-1"></i>
+          <i class="fa fa-2x fa-user"></i>
+        </div>
+        <div class="nav-caption" fxShow.lt-sm="false">
+          {{'menu.users'|translate}}
+        </div>
+      </button>
+    </span>
+    <span fxFlex>
+      <button mat-icon-button routerLink="/gifts" routerLinkActive="active-link">
+        <div class="v-sub">
+          <i class="fa fa-list ml-1"></i>
+          <i class="fa fa-2x fa-gift"></i>
+        </div>
+        <div class="nav-caption" fxShow.lt-sm="false">
+          {{'menu.wishlist'|translate}}
+        </div>
+      </button>
+    </span>
+    <span fxFlex *ngIf="isAdmin" fxShow.lt-sm="false">
+      <button mat-icon-button routerLink="/manage" routerLinkActive="active-link">
+        <div class="v-sub">
+          <i class="fa fa-columns"></i>
+          <i class="fa fa-2x fa-wrench"></i>
+        </div>
+        <div class="nav-caption" fxShow.lt-sm="false">
+          {{'menu.manage'|translate}}
+        </div>
+      </button>
+    </span>
+    <span fxFlex>
+      <button mat-icon-button routerLink="/help" routerLinkActive="active-link">
+        <div class="v-sub">
+          <i class="fa fa-2x fa-question-circle"></i>
+        </div>
+        <div class="nav-caption" fxShow.lt-sm="false">
+          {{'menu.help'|translate}}
+        </div>
+      </button>
+    </span>
+    <span fxFlex>
+      <button mat-button fxShow.lt-md="false" [matMenuTriggerFor]="appMenu">
+        <span class="nav-smaller">
+          {{account.name}}&nbsp;{{account.surname}}
+        </span>
+        <img *ngIf="account.avatar" [src]="account.avatar" class="avatar nav-avatar"/>
+        <mat-icon>more_vert</mat-icon>
+      </button>
+      <button mat-icon-button fxShow.gt-sm="false" [matMenuTriggerFor]="appMenu">
+        <mat-icon>menu</mat-icon>
+      </button>
+    </span>
+    <mat-menu #appMenu="matMenu">
+      <button mat-menu-item routerLink="/settings">
+        <mat-icon>settings</mat-icon>
+        {{'menu.settings'|translate}}
+      </button>
+      <button mat-menu-item fxShow.gt-sm="false" routerLink="/manage">
+        <mat-icon>build</mat-icon>
+        {{'menu.manage'|translate}}
+      </button>
+      <button mat-menu-item (click)="logout()">
+        <mat-icon>exit_to_app</mat-icon>
+        {{'menu.logout'|translate}}
+      </button>
+    </mat-menu>
+  </span>
+</mat-toolbar>

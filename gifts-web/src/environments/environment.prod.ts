@@ -14,4 +14,5 @@ export const environment = {
   avatar_url: '/avatar',
   avatar_upload_url: '/avatar-upload',
   auth_url: '/auth',
+  default_lang_url: '/api/config/default-language',
 };

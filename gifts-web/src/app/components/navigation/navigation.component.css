@@ -1,0 +1,54 @@
+.app-title {
+  font-size: 1.5rem;
+}
+
+.fixed-top {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 1030;
+}
+
+.navbar {
+  background-color: #2c5aa0 !important;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .16), 0 2px 10px 0 rgba(0, 0, 0, .12);
+  font-weight: 300;
+}
+
+.nav-modal {
+  background-color: #2c5aa0 !important;
+  color: white;
+  box-shadow: none !important;
+}
+
+.nav-avatar {
+  margin-bottom: -10px;
+  margin-top: -10px;
+}
+
+.nav-menu {
+  padding: 19px;
+}
+
+.mat-toolbar.mat-primary {
+  background: #2c5aa0cc;
+}
+
+.mat-toolbar-button {
+  padding: 12px 16px !important;
+}
+
+.nav-smaller {
+  font-size: 0.8rem;
+}
+
+.nav-caption {
+  margin-top: -20px;
+  text-align: center;
+  font-size: x-small;
+}
+
+.active-link {
+  color: #113d80;
+}

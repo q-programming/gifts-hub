@@ -1,32 +1,44 @@
 import {BrowserModule} from '@angular/platform-browser';
 import {APP_INITIALIZER, NgModule, NO_ERRORS_SCHEMA} from '@angular/core';
-
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
 import {LoggerModule, NgxLoggerLevel} from "ngx-logger";
-import {environment} from "../environments/environment";
-import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule} from "@angular/common/http";
+import {environment} from "@env/environment";
 import {TranslateLoader, TranslateModule} from "@ngx-translate/core";
 import {TranslateHttpLoader} from "@ngx-translate/http-loader";
-import {AuthenticationService} from "./services/authentication.service";
-import {ApiService} from "./services/api.service";
+import {AuthenticationService} from "@services/authentication.service";
+import {ApiService} from "@services/api.service";
 import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {AuthGuard} from "./guards/auth.guard";
 import {AuthInterceptor} from "./guards/auth.interceptor";
-import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
-import {NgProgressModule} from "ngx-progressbar";
 import {FlexLayoutModule} from "@angular/flex-layout";
 import {AppMaterialModules} from "./material.module";
 import {HomeComponent} from './components/home/home.component';
-import { LoginComponent } from './components/login/login.component';
+import {LoginComponent} from './components/login/login.component';
 import {AvatarService} from "@services/avatar.service";
 import {AlertService} from "@services/alert.service";
+import {AlertComponent} from "./components/alert/alert.component";
+import {NgProgressModule} from "@ngx-progressbar/core";
+import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule} from "@angular/common/http";
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {NavigationComponent} from './components/navigation/navigation.component';
+import {LayoutModule} from '@angular/cdk/layout';
+import {MatButtonModule, MatIconModule, MatListModule, MatSidenavModule, MatToolbarModule} from '@angular/material';
+import {UserListComponent} from './components/user-list/user-list.component';
+import {GiftsComponent} from './components/gifts/gifts.component';
+import {ErrorComponent} from "./components/error/error.component";
+
 
 @NgModule({
   declarations: [
     AppComponent,
+    AlertComponent,
+    ErrorComponent,
     HomeComponent,
-    LoginComponent
+    LoginComponent,
+    NavigationComponent,
+    UserListComponent,
+    GiftsComponent
   ],
   imports: [
     FormsModule,
@@ -36,7 +48,7 @@ import {AlertService} from "@services/alert.service";
     HttpClientModule,
     AppRoutingModule,
     AppMaterialModules,
-    NgProgressModule,
+    NgProgressModule.forRoot(),
     FlexLayoutModule,
     LoggerModule.forRoot({
       level: environment.logging,
@@ -49,6 +61,12 @@ import {AlertService} from "@services/alert.service";
         deps: [HttpClient]
       }
     }),
+    LayoutModule,
+    MatToolbarModule,
+    MatButtonModule,
+    MatSidenavModule,
+    MatIconModule,
+    MatListModule,
   ],
   schemas: [NO_ERRORS_SCHEMA],
   providers: [
@@ -76,7 +94,7 @@ export class AppModule {
 }
 
 export function createTranslateLoader(http: HttpClient) {
-  return new TranslateHttpLoader(http, './assets/i18n/', '.json');
+  return new TranslateHttpLoader(http, './assets/i18n/', '/translations.json');
 }
 
 export function initUserFactory(authService: AuthenticationService) {

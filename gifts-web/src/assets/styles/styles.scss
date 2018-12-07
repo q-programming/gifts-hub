@@ -1,0 +1,25 @@
+main {
+  margin-top: 60px;
+}
+
+img.avatar {
+  border-radius: 50%;
+  height: 45px;
+  width: 45px;
+  padding: 0;
+}
+
+img.avatar.small {
+  height: 30px;
+  width: 30px;
+}
+
+img.avatar.large {
+  height: 100px;
+  width: 100px;
+  margin: 0 auto;
+}
+
+.stylish {
+  font-family: 'Pacifico', cursive;
+}
