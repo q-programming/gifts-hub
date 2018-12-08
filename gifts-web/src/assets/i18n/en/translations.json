@@ -333,21 +333,24 @@
         "other": "Select other family members"
       }
     },
-    "firstname": "Name",
+    "firstname": {
+      "hint": "Enter your name",
+      "text": "Name"
+    },
     "fullname": "Name and surname",
     "list": "User lists",
     "login": {
-      "existing": "Already have account? Click here to login",
+      "existing": "Already have account?",
       "facebook": "Sign in with Facebook",
       "failed": "There was a problem logging in. Please try again.",
       "google": "Sign in with Google+",
       "here": "here",
-      "login": "Login",
       "register": {
         "newhere": "New user? Register",
         "social": "If you don't have account,<br>it will be automatically created for you"
       },
       "remember": "Remember me",
+      "text": "Login",
       "using": {
         "logpass": "Login using username and password",
         "social": "Login using:"
@@ -355,20 +358,26 @@
     },
     "password": "Password",
     "register": {
-      "0": "Register",
       "alreadyexists": "already exists. Please use another",
       "email": {
-        "exists": "User with email",
-        "invalid": "Not valid email"
+        "exists": "User with that email already exists",
+        "hint": "Enter e-mail address",
+        "invalid": "Not valid email",
+        "required": "E-mail address is required"
       },
       "errors": "There were errors while trying to register:",
       "failed": "There was a problem registering. Please try again.",
       "password": {
         "confirm": "Confirm password",
+        "hint": "Password should be secure ( observe password strenght meter below) and should be at least 8 chars long",
         "nomatch": "Passwords do not match",
-        "tooweak": "Password is too weak. It should be at least 8 chars long, be a combination of small and big letters and contains at least one number"
+        "required": "Password is required",
+        "strength": "Password strenght",
+        "tooweak": "Password is too weak. It should be at least 8 chars long"
       },
+      "progress": "Registration of new user",
       "success": "<strong>Successfully registered.</strong> Please check your email for confirmation.",
+      "text": "Register",
       "username": {
         "chars": "Please use only small/large letters numbers and/or underscore",
         "exists": "User with username"
@@ -405,7 +414,10 @@
       "family": "Show grouped in families",
       "name": "Show sorted by surnames and names"
     },
-    "surname": "Surname",
+    "surname": {
+      "hint": "Enter surname",
+      "text": "Surname"
+    },
     "username": "Username"
   }
 }

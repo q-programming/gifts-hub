@@ -27,6 +27,9 @@ import {MatButtonModule, MatIconModule, MatListModule, MatSidenavModule, MatTool
 import {UserListComponent} from './components/user-list/user-list.component';
 import {GiftsComponent} from './components/gifts/gifts.component';
 import {ErrorComponent} from "./components/error/error.component";
+import {RegisterComponent} from "./components/register/register.component";
+import {PasswordStrengthBarModule} from "ng2-password-strength-bar";
+import { AvatarComponent } from './components/avatar/avatar.component';
 
 
 @NgModule({
@@ -38,7 +41,9 @@ import {ErrorComponent} from "./components/error/error.component";
     LoginComponent,
     NavigationComponent,
     UserListComponent,
-    GiftsComponent
+    RegisterComponent,
+    GiftsComponent,
+    AvatarComponent
   ],
   imports: [
     FormsModule,
@@ -67,6 +72,7 @@ import {ErrorComponent} from "./components/error/error.component";
     MatSidenavModule,
     MatIconModule,
     MatListModule,
+    PasswordStrengthBarModule
   ],
   schemas: [NO_ERRORS_SCHEMA],
   providers: [

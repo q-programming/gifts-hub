@@ -78,11 +78,11 @@ export class AuthenticationService {
     }
 
     login(username: string, password: string): Observable<any> {
+        let body = new URLSearchParams();
+        body.set('username', username);
+        body.set('password', password);
         return new Observable((observable) => {
-            this.apiService.post(environment.auth_url, {
-                username: username,
-                password: password
-            }).subscribe((res) => {
+            this.apiService.login(environment.login_url, body).subscribe((res) => {
                 if (res.access_token !== null) {
                     this.getMyInfo().subscribe(user => {
                         this.currentAccount = user as Account;

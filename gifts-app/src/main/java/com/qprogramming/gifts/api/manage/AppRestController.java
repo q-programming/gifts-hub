@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.security.RolesAllowed;
 import javax.mail.MessagingException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -278,7 +279,9 @@ public class AppRestController {
 
     @RequestMapping(value = "/default-language", method = RequestMethod.GET)
     public ResponseEntity getDefaultLanguage() {
-        return ResponseEntity.ok(propertyService.getDefaultLang());
+        Map<String, Object> model = new HashMap<>();
+        model.put("language", propertyService.getDefaultLang());
+        return ResponseEntity.ok(model);
     }
 
     @RequestMapping(value = "/sort", method = RequestMethod.GET)

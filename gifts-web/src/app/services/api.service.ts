@@ -20,7 +20,7 @@ export enum RequestMethod {
 }
 
 @Injectable()
-export class ApiService{
+export class ApiService {
 
   headers = new HttpHeaders({
     'Accept': 'application/json',
@@ -62,6 +62,14 @@ export class ApiService{
     return this.requestObject<R>(path, body, RequestMethod.Post, customHeaders);
   }
 
+  login(path: string, body: any): Observable<any> {
+    this.progress.start();
+    path = environment.context + path;
+    let header = {
+      headers: new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded')
+    };
+    return this.http.post(path, body.toString(), header)
+  }
 
   post(path: string, body: any, customHeaders?: HttpHeaders): Observable<any> {
     return this.request(path, body, RequestMethod.Post, customHeaders);

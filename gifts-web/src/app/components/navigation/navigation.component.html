@@ -6,9 +6,9 @@
   <span class="fill-remaining-space"></span>
   <span *ngIf="account" fxLayout="row" fxLayoutAlign="end center" fxLayoutGap.gt-xs="30px" fxLayoutGap.lt-sm="10px">
     <span fxFlex>
-      <button mat-icon-button routerLink="/users" routerLinkActive="active-link">
+      <button mat-icon-button routerLink="/users" routerLinkActive="active-link" class="nav-button">
         <div class="v-sub">
-          <i class="fa fa-gift ml-1"></i>
+          <i class="fa fa-gift ml-1" fxShow.lt-sm="false"></i>
           <i class="fa fa-2x fa-user"></i>
         </div>
         <div class="nav-caption" fxShow.lt-sm="false">
@@ -17,9 +17,9 @@
       </button>
     </span>
     <span fxFlex>
-      <button mat-icon-button routerLink="/gifts" routerLinkActive="active-link">
+      <button mat-icon-button routerLink="/gifts" routerLinkActive="active-link" class="nav-button">
         <div class="v-sub">
-          <i class="fa fa-list ml-1"></i>
+          <i class="fa fa-list ml-1" fxShow.lt-sm="false"></i>
           <i class="fa fa-2x fa-gift"></i>
         </div>
         <div class="nav-caption" fxShow.lt-sm="false">
@@ -28,9 +28,9 @@
       </button>
     </span>
     <span fxFlex *ngIf="isAdmin" fxShow.lt-sm="false">
-      <button mat-icon-button routerLink="/manage" routerLinkActive="active-link">
+      <button mat-icon-button routerLink="/manage" routerLinkActive="active-link" class="nav-button">
         <div class="v-sub">
-          <i class="fa fa-columns"></i>
+          <i class="fa fa-columns" fxShow.lt-sm="false"></i>
           <i class="fa fa-2x fa-wrench"></i>
         </div>
         <div class="nav-caption" fxShow.lt-sm="false">
@@ -39,7 +39,7 @@
       </button>
     </span>
     <span fxFlex>
-      <button mat-icon-button routerLink="/help" routerLinkActive="active-link">
+      <button mat-icon-button routerLink="/help" routerLinkActive="active-link" class="nav-button">
         <div class="v-sub">
           <i class="fa fa-2x fa-question-circle"></i>
         </div>
@@ -53,7 +53,8 @@
         <span class="nav-smaller">
           {{account.name}}&nbsp;{{account.surname}}
         </span>
-        <img *ngIf="account.avatar" [src]="account.avatar" class="avatar nav-avatar"/>
+        <avatar [account]="account" classes="avatar nav-avatar"></avatar>
+        <!--<img *ngIf="account.avatar" [src]="account.avatar" class="avatar nav-avatar"/>-->
         <mat-icon>more_vert</mat-icon>
       </button>
       <button mat-icon-button fxShow.gt-sm="false" [matMenuTriggerFor]="appMenu">

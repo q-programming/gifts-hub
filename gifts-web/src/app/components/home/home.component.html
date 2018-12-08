@@ -5,7 +5,7 @@
   Welcome {{account.name}} {{account.surname}}
 </h4>
 <div>
-  <img *ngIf="account.avatar" [src]="account.avatar" class="avatar nav-avatar"/>
+  <avatar [account]="account" classes="avatar large"></avatar>
 </div>
 <div>
   Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec finibus placerat felis et tempor. Duis ornare et libero

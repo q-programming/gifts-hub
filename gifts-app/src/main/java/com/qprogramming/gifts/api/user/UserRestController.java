@@ -90,7 +90,6 @@ public class UserRestController {
     }
 
 
-
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     public ResponseEntity register(@Valid @RequestBody RegisterForm userform) {
         if (accountService.findByEmail(userform.getEmail()).isPresent()) {
@@ -110,9 +109,7 @@ public class UserRestController {
         if (!userform.getPassword().equals(userform.getConfirmpassword())) {
             return new ResultData.ResultBuilder().error().message(msgSrv.getMessage("user.register.password.nomatch")).build();
         }
-        pattern = Pattern.compile(PASSWORD_REGEXP);
-        matcher = pattern.matcher(userform.getPassword());
-        if (!matcher.matches()) {
+        if (userform.getPassword().length() < 8) {
             return new ResultData.ResultBuilder().error().message(msgSrv.getMessage("user.register.password.tooweak")).build();
         }
         Account newAccount = userform.createAccount();

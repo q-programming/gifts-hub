@@ -333,21 +333,24 @@
         "other": "Wybierz innego członka rodziny"
       }
     },
-    "firstname": "Imię",
+    "firstname": {
+      "hint": "Wprowdz imię",
+      "text": "Imię"
+    },
     "fullname": "Imię i nazwisko",
     "list": "Lista użytkowników",
     "login": {
-      "existing": "Już posiadasz konto? Kliknij Tutaj aby się zalogować",
+      "existing": "Już posiadasz konto?",
       "facebook": "Zaloguj się z Facebook'iem",
       "failed": "Wystąpił błąd podczas logowania. Proszę sprobować ponownie",
       "google": "Zaloguj się z Google+",
       "here": "tutaj",
-      "login": "Zaloguj się",
       "register": {
         "newhere": "Nowy użytkownik? Zarejestruj się",
         "social": "Jeżeli nie posiadasz jeszcze konta,<br>zostanie ono dla Ciebie automatycznie stworzone"
       },
       "remember": "Zapamiętaj mnie",
+      "text": "Zaloguj się",
       "using": {
         "logpass": "Zaloguj się używająć loginu i hasła",
         "social": "Zaloguj się używająć:"
@@ -355,20 +358,26 @@
     },
     "password": "Hasło",
     "register": {
-      "0": "Zarejestruj",
       "alreadyexists": "już istnieje. Proszę użyć innego",
       "email": {
-        "exists": "Użytkownik z emailem",
-        "invalid": "Niepoprawny adres e-mail"
+        "exists": "Użytkownik z tym emailem już istnieje",
+        "hint": "Wprowadz adres email",
+        "invalid": "Niepoprawny adres e-mail",
+        "required": "Adres e-mail jest wymagany"
       },
       "errors": "Wystąpiły błędy podczas próby rejestracji:",
       "failed": "Wystąpił bład poczas rejestracji. Proszę sprobować ponownie",
       "password": {
         "confirm": "Potwierdź hasło",
+        "hint": "Hasło powinno być bezpiecznę ( obserwuj miernik silnego hasła poniżej ) i powinno być długie na conajmniej 8 znaków",
         "nomatch": "Hasła się nie zgadzają",
-        "tooweak": "Zbyt słabe hasło. Powinno być długie na 8 znaków i składać się z kombinacji małych i dużych liter oraz cyfr"
+        "required": "Wymagane hasło",
+        "strength": "Siła hasła",
+        "tooweak": "Zbyt słabe hasło. Powinno być długie conajmniej na 8 znaków"
       },
+      "progress": "Rejestracja nowego użytkownika",
       "success": "<strong>Zarejestrowana się pomyślnie</strong> Prozę sprawdzć e-mail aby potwierdzić Twoje konto",
+      "text": "Zarejestruj",
       "username": {
         "chars": "Proszę używać tylko małych dużych liter, cyfr i lub podkreślenia",
         "exists": "Użytkownik z loginem"
@@ -405,7 +414,10 @@
       "family": "Pokazuj zgrupowane po rodzinach",
       "name": "Pokazuj sortowane po nazwiskach i imionach"
     },
-    "surname": "Nazwisko",
+    "surname": {
+      "hint": "Wprowadz nazwisko",
+      "text": "Nazwisko"
+    },
     "username": "Login"
   }
 }
