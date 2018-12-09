@@ -1,3 +1,32 @@
-<p>
-  gifts works!
-</p>
+<mat-expansion-panel *ngFor="let gifts of categorizedGifts| keyvalue" expanded="true">
+  <mat-expansion-panel-header>
+    <mat-panel-title>
+      <h3>{{gifts.key}}</h3>
+    </mat-panel-title>
+  </mat-expansion-panel-header>
+  <div *ngFor="let gift of gifts.value;let odd=odd">
+    <gift [gift]="gift" [odd]="odd"></gift>
+  </div>
+</mat-expansion-panel>
+<!--OTHER-->
+<mat-expansion-panel expanded="true" *ngIf="unCategorizedGifts && unCategorizedGifts.length > 0 ">
+  <mat-expansion-panel-header>
+    <mat-panel-title>
+      <h3>{{'gift.category.other'|translate}}</h3>
+    </mat-panel-title>
+  </mat-expansion-panel-header>
+  <div *ngFor="let gift of unCategorizedGifts;let odd=odd">
+    <gift [gift]="gift" [odd]="odd"></gift>
+  </div>
+</mat-expansion-panel>
+<!--REALISED-->
+<mat-expansion-panel expanded="true" *ngIf="realizedGifts && realizedGifts.length > 0">
+  <mat-expansion-panel-header>
+    <mat-panel-title>
+      <h3>{{'gift.category.realised'|translate}}</h3>
+    </mat-panel-title>
+  </mat-expansion-panel-header>
+  <div *ngFor="let gift of realizedGifts;let odd=odd">
+    <gift [gift]="gift" [odd]="odd"></gift>
+  </div>
+</mat-expansion-panel>

@@ -36,7 +36,7 @@ public class Gift implements Serializable, Comparable<Gift> {
     @Column
     private String userId;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "search_engines")
     private Set<SearchEngine> engines;
 

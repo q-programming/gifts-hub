@@ -11,7 +11,8 @@
             <mat-icon *ngSwitchCase="MessageType.ERROR" class="mr-2">error</mat-icon>
             <mat-icon *ngSwitchCase="MessageType.INFO" class="mr-2">info</mat-icon>
             <mat-icon *ngSwitchCase="MessageType.WARNING" class="mr-2">warning</mat-icon>
-            {{message.text}}
+            <span [innerHTML]="message.text">
+            </span>
             <div class="pull-right ml-4">
                 <mat-icon class="clickable pull-right" (click)="dismiss(message)">close</mat-icon>
             </div>

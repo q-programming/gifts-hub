@@ -13,6 +13,7 @@ const routes: Routes = [
   {path: 'login', component: LoginComponent},
   {path: 'users', component: UserListComponent, canActivate: [AuthGuard]},
   {path: 'gifts', component: GiftsComponent, canActivate: [AuthGuard]},
+  {path: 'gifts/:user', component: GiftsComponent, canActivate: [AuthGuard]},
   {path: 'register', component: RegisterComponent},
   {path: 'error', component: ErrorComponent},
   // otherwise redirect to home

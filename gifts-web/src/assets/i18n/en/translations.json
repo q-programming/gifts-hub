@@ -117,7 +117,7 @@
       "0": "Edit gift",
       "success": "Gift successfully updated"
     },
-    "gift": "gift",
+    "gift": "Gift",
     "gifts": "gifts",
     "import": {
       "0": "Import gifts",
@@ -153,8 +153,8 @@
       "added": "New gift added to wish list"
     },
     "search": {
-      "0": "Search with",
-      "help": "Select which search engines should be shown next to this gift. Everyone will be able to quickly search using them by just clicking that icon"
+      "help": "Select which search engines should be shown next to this gift. Everyone will be able to quickly search using them by just clicking that icon",
+      "with": "Search with"
     },
     "share": {
       "0": "Share your gifts list",
@@ -163,7 +163,7 @@
       "success": "Message with public link was sent to valid senders {0}"
     },
     "status": {
-      "claimed": "Claimed gift",
+      "claimed": "Claimed gift by",
       "new": "New gift",
       "realised": "Realised gift"
     },

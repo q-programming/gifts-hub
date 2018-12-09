@@ -91,26 +91,25 @@ public class UserRestController {
 
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
-    public ResponseEntity register(@Valid @RequestBody RegisterForm userform) {
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterForm userform) {
         if (accountService.findByEmail(userform.getEmail()).isPresent()) {
             String message = msgSrv.getMessage("user.register.email.exists") + " " + msgSrv.getMessage("user.register.alreadyexists");
-            return new ResultData.ResultBuilder().error().message(message).build();
+            return new ResponseEntity<>("email", HttpStatus.CONFLICT);
         }
         Pattern pattern = Pattern.compile(USERNAME_REGEXP);
         Matcher matcher = pattern.matcher(userform.getUsername());
         if (!matcher.matches()) {
-            return new ResultData.ResultBuilder().error().message(msgSrv.getMessage("user.register.username.chars")).build();
+            return new ResponseEntity<>("bad_username", HttpStatus.CONFLICT);
         }
 
         if (accountService.findByUsername(userform.getUsername()).isPresent()) {
-            String message = msgSrv.getMessage("user.register.username.exists") + " " + msgSrv.getMessage("user.register.alreadyexists");
-            return new ResultData.ResultBuilder().error().message(message).build();
+            return new ResponseEntity<>("username", HttpStatus.CONFLICT);
         }
         if (!userform.getPassword().equals(userform.getConfirmpassword())) {
-            return new ResultData.ResultBuilder().error().message(msgSrv.getMessage("user.register.password.nomatch")).build();
+            return new ResponseEntity<>("passwords", HttpStatus.CONFLICT);
         }
         if (userform.getPassword().length() < 8) {
-            return new ResultData.ResultBuilder().error().message(msgSrv.getMessage("user.register.password.tooweak")).build();
+            return new ResponseEntity<>("weak", HttpStatus.CONFLICT);
         }
         Account newAccount = userform.createAccount();
         newAccount = accountService.createLocalAccount(newAccount);

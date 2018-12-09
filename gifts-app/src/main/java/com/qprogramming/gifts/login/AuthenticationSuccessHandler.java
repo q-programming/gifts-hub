@@ -33,5 +33,5 @@ public class AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccess
         clearAuthenticationAttributes(request);
         Account user = (Account) authentication.getPrincipal();
         tokenService.createTokenCookies(response, user);
-    }
+}
 }

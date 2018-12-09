@@ -166,8 +166,8 @@ public class UserRestControllerTest {
         form.setSurname(testAccount.getSurname());
         form.setUsername(testAccount.getUsername());
         form.setEmail(testAccount.getEmail());
-        form.setPassword("password");
-        form.setConfirmpassword("password");
+        form.setPassword("admin");
+        form.setConfirmpassword("admin");
         MvcResult mvcResult = userRestCtrl.perform(post(API_USER_REGISTER).contentType(APPLICATION_JSON_UTF8).content(convertObjectToJsonBytes(form)))
                 .andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();

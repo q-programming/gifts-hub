@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -88,7 +89,7 @@ public class GiftRestController {
         }
 
     }
-
+    @PreAuthorize("hasRole('ROLE_USER')")
     @Transactional
     @RequestMapping("/create")
     public ResponseEntity createGift(@RequestBody GiftForm giftForm) {
@@ -164,7 +165,7 @@ public class GiftRestController {
         }
     }
 
-
+    @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/claim/{giftID}", method = RequestMethod.PUT)
     public ResponseEntity clameGift(@PathVariable(value = "giftID") String id) {
         Optional<Account> optionalAccount = accountService.findByUsername(Utils.getCurrentAccount().getUsername());
@@ -180,6 +181,7 @@ public class GiftRestController {
         return new ResultData.ResultBuilder().ok().message(msgSrv.getMessage("gift.claim.success", new Object[]{gift.getName()}, "", Utils.getCurrentLocale())).build();
     }
 
+    @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/unclaim/{giftID}", method = RequestMethod.PUT)
     public ResponseEntity unClameGift(@PathVariable(value = "giftID") String id) {
         Optional<Account> optionalAccount = accountService.findByUsername(Utils.getCurrentAccount().getUsername());
@@ -197,6 +199,7 @@ public class GiftRestController {
                 .build();
     }
 
+    @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/complete/{giftID}", method = RequestMethod.PUT)
     public ResponseEntity completeGift(@PathVariable(value = "giftID") String id) {
         Gift gift = giftService.findById(Long.valueOf(id));
@@ -215,6 +218,7 @@ public class GiftRestController {
                 .build();
     }
 
+    @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/undo-complete/{giftID}", method = RequestMethod.PUT)
     public ResponseEntity undoCompleteGift(@PathVariable(value = "giftID") String id) {
         Gift gift = giftService.findById(Long.valueOf(id));
@@ -232,6 +236,7 @@ public class GiftRestController {
         return new ResultData.ResultBuilder().ok().message(msgSrv.getMessage("gift.complete.undo.success")).build();
     }
 
+    @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/delete/{giftID}", method = RequestMethod.DELETE)
     public ResponseEntity deleteGift(@PathVariable(value = "giftID") String id) {
         Gift gift = giftService.findById(Long.valueOf(id));
@@ -293,6 +298,7 @@ public class GiftRestController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping("/mine")
     public ResponseEntity getUserGifts() {
         if (Utils.getCurrentAccount() != null) {
@@ -301,6 +307,7 @@ public class GiftRestController {
             return ResponseEntity.ok(Collections.EMPTY_LIST);
     }
 
+    @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping("/user/{usernameOrId}")
     public ResponseEntity getUserGifts(@PathVariable String usernameOrId) {
         Account account = null;
@@ -324,6 +331,7 @@ public class GiftRestController {
         return new ResponseEntity<>(giftService.findAllByUser(account.getId()), HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping("/categories")
     public ResponseEntity getCategories(@RequestParam(required = false) String term) {
         if (StringUtils.isBlank(term)) {
@@ -333,6 +341,7 @@ public class GiftRestController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/allowed-category")
     public ResponseEntity checkProhibited(@RequestParam String category) {
         if (!allowedCategoryName(category)) {
@@ -345,7 +354,7 @@ public class GiftRestController {
         return prohibitedCategories.stream().noneMatch(s -> s.equalsIgnoreCase(category));
     }
 
-
+    @PreAuthorize("hasRole('ROLE_USER')")
     @Transactional
     @RequestMapping(value = "/import", method = RequestMethod.POST)
     public ResponseEntity importGifts(@RequestParam(value = "file") MultipartFile importFile, @RequestParam(value = "user", required = false) String username) {
@@ -371,6 +380,7 @@ public class GiftRestController {
         return new ResultData.ResultBuilder().ok().message(logger.toString()).build();
     }
 
+    @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/get-template", method = RequestMethod.GET)
     public void getTemplate(HttpServletResponse response) {
         try {

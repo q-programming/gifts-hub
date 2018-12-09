@@ -88,16 +88,25 @@ export class RegisterComponent implements OnInit {
                 password: this.passwordForm.controls.password.value,
                 confirmpassword: this.passwordForm.controls.confirmPassword.value,
             }).subscribe(result => {
-                this.alertSrv.success('app.register.success', {email: this.baseForm.controls.email.value});
+                this.alertSrv.success('user.register.success', {email: this.baseForm.controls.email.value});
                 this.router.navigate(['/login'])
             }, error => {
                 switch (error.error) {
                     case 'email':
                         this.baseForm.controls.email.setErrors({duplicated: true});
                         break;
-                    case 'passwords':
+                    case 'bad_username':
+                        this.baseForm.controls.username.setErrors({badusername: true});
+                        break;
+                  case 'username':
+                    this.baseForm.controls.username.setErrors({username: true});
+                    break;
+                  case 'passwords':
                         this.passwordForm.setErrors({notSame: true});
                         break;
+                  case 'weak':
+                    this.passwordForm.setErrors({weak: true});
+                    break;
                     case 'mailing':
                         this.alertSrv.error('app.register.email.sending.error');
                         break;

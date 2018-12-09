@@ -117,7 +117,7 @@
       "0": "Edytuj prezent",
       "success": "Prezent został zaktualizowany"
     },
-    "gift": "prezent",
+    "gift": "Prezent",
     "gifts": "prez.",
     "import": {
       "0": "Importuj prezenty",
@@ -153,8 +153,8 @@
       "added": "Nowy prezent został dodany do listy życzeń"
     },
     "search": {
-      "0": "Szukaj z",
-      "help": "Wybierz które wyszukiwarki mają być wyświetlone obok tego prezętu. Wszyscy będą mogli szybko wyszukać ten prezent, klikając na ikonę"
+      "help": "Wybierz które wyszukiwarki mają być wyświetlone obok tego prezętu. Wszyscy będą mogli szybko wyszukać ten prezent, klikając na ikonę",
+      "with": "Szukaj z"
     },
     "share": {
       "0": "Podziel się listą prezentów",
@@ -163,7 +163,7 @@
       "success": "Wiadomość z publicznym linkiem została wysłana do poprawnych odbiorców: {0}"
     },
     "status": {
-      "claimed": "Prezent zarezerwowany",
+      "claimed": "Prezent zarezerwowany przez",
       "new": "Nowy prezent",
       "realised": "Prezent zrealizowany"
     },

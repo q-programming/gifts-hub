@@ -1,5 +1,5 @@
 import {BrowserModule} from '@angular/platform-browser';
-import {APP_INITIALIZER, NgModule, NO_ERRORS_SCHEMA} from '@angular/core';
+import {APP_INITIALIZER, LOCALE_ID, NgModule, NO_ERRORS_SCHEMA} from '@angular/core';
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
 import {LoggerModule, NgxLoggerLevel} from "ngx-logger";
@@ -29,7 +29,8 @@ import {GiftsComponent} from './components/gifts/gifts.component';
 import {ErrorComponent} from "./components/error/error.component";
 import {RegisterComponent} from "./components/register/register.component";
 import {PasswordStrengthBarModule} from "ng2-password-strength-bar";
-import { AvatarComponent } from './components/avatar/avatar.component';
+import {AvatarComponent} from './components/avatar/avatar.component';
+import {GiftComponent} from './components/gifts/gift/gift.component';
 
 
 @NgModule({
@@ -43,7 +44,8 @@ import { AvatarComponent } from './components/avatar/avatar.component';
     UserListComponent,
     RegisterComponent,
     GiftsComponent,
-    AvatarComponent
+    AvatarComponent,
+    GiftComponent
   ],
   imports: [
     FormsModule,
@@ -92,7 +94,8 @@ import { AvatarComponent } from './components/avatar/avatar.component';
       'useFactory': initUserFactory,
       'deps': [AuthenticationService],
       'multi': true
-    }
+    },
+    { provide: LOCALE_ID, useValue: 'en_EN' }
   ],
   bootstrap: [AppComponent]
 })

@@ -109,7 +109,10 @@ export class ApiService {
         this.progress.complete();
         return response.body
       })
-      .catch(error => this.checkError(error));
+      .catch(error => {
+        this.progress.complete();
+        return this.checkError(error)
+      });
   }
 
   // Display error if logged in, otherwise redirect to IDP

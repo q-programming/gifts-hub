@@ -28,6 +28,12 @@
           <input matInput placeholder="{{'user.username'|translate}}" formControlName="username" autocomplete="off"
                  required>
           <mat-hint>{{'user.register.username.chars'|translate}}</mat-hint>
+          <mat-error *ngIf="baseForm.controls.username.hasError('badusername')">
+            {{'user.register.username.chars'|translate}}
+          </mat-error>
+          <mat-error *ngIf="baseForm.controls.username.hasError('username')">
+            {{'user.register.username.exists'|translate}}
+          </mat-error>
         </mat-form-field>
       </div>
 
@@ -56,7 +62,7 @@
           <mat-error *ngIf="passwordForm.hasError('required', ['password'])">
             {{'user.register.password.required'|translate}}
           </mat-error>
-          <mat-error *ngIf="passwordForm.hasError('minlength', ['password'])">
+          <mat-error *ngIf="passwordForm.hasError('weak', ['password'])">
             {{'user.register.password.tooweak'|translate}}
           </mat-error>
         </mat-form-field>

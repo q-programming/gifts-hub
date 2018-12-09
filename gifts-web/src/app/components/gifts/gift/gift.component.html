@@ -1,0 +1,52 @@
+<div fxlayout="row" class="p-1"
+     [ngClass]="{
+      'gift-realised':gift.status === GiftStatus.REALISED,
+      'gift-claimed':gift.claimed && gift.status !== GiftStatus.REALISED,
+      'odd':odd
+     }">
+  <div fxFlex="50px" class="gift-status">
+    <span *ngIf="gift.status === GiftStatus.NEW && !gift.claimed" matTooltip="{{'gift.status.new'|translate}}"
+          class="new-gift ">
+      <i class="fa fa-fw fa-certificate"></i>
+      <i class="fa fa-fw fa-2x fa-gift" aria-hidden="true"></i>
+    </span>
+    <span *ngIf="gift.status === GiftStatus.REALISED" matTooltip="{{'gift.status.realised'|translate}}">
+      <i class="fa fa-fw fa-check"></i>
+      <i class="fa fa-fw fa-2x fa-gift" aria-hidden="true"></i>
+    </span>
+    <span *ngIf="gift.claimed && gift.status !== GiftStatus.REALISED"
+          matTooltip="
+                {{'gift.status.claimed'|translate}}
+                {{gift.claimed.fullname}}"
+    >
+      <i class="fa fa-fw fa-hand-paper-o"></i>
+      <i class="fa fa-fw fa-2x fa-gift" aria-hidden="true"></i>
+    </span>
+    <span *ngIf="!gift.status && !gift.claimed" matTooltip="{{'gift.gift'|translate}}">
+      <i class="fa fa-fw fa-minus fa-spacer"></i>
+      <i class="fa fa-fw fa-2x fa-gift" aria-hidden="true"></i>
+    </span>
+  </div>
+  <div fxFlex>
+    <strong>{{gift.name}}</strong>
+  </div>
+  <div fxFlex>
+    {{gift.description}}
+  </div>
+  <div fxFlex>
+    <span *ngFor="let engine of gift.engines" class="search-engines">
+      <a class="pull-right" href="{{engine.searchString + gift.name}}" target="_blank"
+         matTooltip="{{'gift.search.with'|translate}} {{engine.name}}">
+        <i [class]="'fa fa-fw '+engine.icon"></i>
+      </a>
+  </span>
+  </div>
+  <div fxFlex>
+    {{gift.created|date:'dd.MM.yyyy'}}
+  </div>
+  <div>
+    actions
+  </div>
+
+</div>
+
