@@ -1,5 +1,8 @@
 {
   "app": {
+    "general": {
+      "undo": "Cofnij"
+    },
     "manage": {
       "0": "Zarządzanie aplikacją",
       "admin": {
@@ -101,25 +104,25 @@
       "text": "Zarezerwuj prezent"
     },
     "complete": {
-      "0": "Oznacz prezent jako zrealizowany",
       "error": "Nie można oznaczyć jako zrealizowanego nie swojego prezentu",
       "success": "Prezent {0} został oznaczony jako zrealizowany",
+      "text": "Oznacz prezent jako zrealizowany",
       "undo": {
-        "0": "Cofnij oznaczenie zrealizowanego prezentu",
-        "success": "Cofnięto oznaczenie zrealizowanego prezentu"
+        "success": "Cofnięto oznaczenie zrealizowanego prezentu",
+        "text": "Cofnij oznaczenie zrealizowanego prezentu"
       }
     },
     "create": "Stwórz prezent",
     "delete": {
-      "0": "Usuń prezent",
       "confirm": "Jesteś pewień, że chcesz usunąć ten prezent?",
       "error": "Nie można usunąc nie swojego prezentu, lub nie masz wystarczająco uprawnień aby to zrobić",
-      "success": "Usunięto prezent {0}"
+      "success": "Usunięto prezent {{name}}",
+      "text": "Usuń prezent"
     },
     "description": "Opis",
     "edit": {
-      "0": "Edytuj prezent",
-      "success": "Prezent został zaktualizowany"
+      "success": "Prezent został zaktualizowany",
+      "text": "Edytuj prezent"
     },
     "gift": "Prezent",
     "gifts": "prez.",

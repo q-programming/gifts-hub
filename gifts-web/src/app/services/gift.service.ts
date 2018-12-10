@@ -22,9 +22,14 @@ export class GiftService {
   }
 
   claim(gift: Gift): Observable<Gift> {
-    return this.apiSrv.put(`${environment.gift_url}/claim/${gift.id}`,undefined)
+    return this.apiSrv.put(`${environment.gift_url}/claim/${gift.id}`)
   }
+
   unclaim(gift: Gift): Observable<Gift> {
-    return this.apiSrv.put(`${environment.gift_url}/unclaim/${gift.id}`, undefined)
+    return this.apiSrv.put(`${environment.gift_url}/unclaim/${gift.id}`)
+  }
+
+  delete(gift: Gift) {
+    return this.apiSrv.delete(`${environment.gift_url}/delete/${gift.id}`)
   }
 }

@@ -1,5 +1,8 @@
 {
   "app": {
+    "general": {
+      "undo": "Undo"
+    },
     "manage": {
       "0": "Application management",
       "admin": {
@@ -101,25 +104,25 @@
       "text": "Claim gift"
     },
     "complete": {
-      "0": "Mark gift as realised",
       "error": "Unable to complete not yours gift, or you don't have enough privileges to do so",
       "success": "Gift {0} has been marked as realised",
+      "text": "Mark gift as realised",
       "undo": {
-        "0": "Undo marking of realised gift",
-        "success": "Gift is no longer marked as realised"
+        "success": "Gift is no longer marked as realised",
+        "text": "Undo marking of realised gift"
       }
     },
     "create": "Create gift",
     "delete": {
-      "0": "Delete gift",
       "confirm": "Are you sure you want to delete this gift?",
       "error": "Unable to delete not yours gift, or you don't have enough privileges to do so .",
-      "success": "Gift {0} was deleted"
+      "success": "Gift {{name}} was deleted",
+      "text": "Delete gift"
     },
     "description": "Description",
     "edit": {
-      "0": "Edit gift",
-      "success": "Gift successfully updated"
+      "success": "Gift successfully updated",
+      "text": "Edit gift"
     },
     "gift": "Gift",
     "gifts": "gifts",

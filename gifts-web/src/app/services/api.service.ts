@@ -69,13 +69,18 @@ export class ApiService {
       headers: new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded')
     };
     return this.http.post(path, body.toString(), header)
+      .filter(response => response instanceof HttpResponse)
+      .map((response: HttpResponse<any>) => {
+        this.progress.complete();
+        return response.body
+      })
   }
 
-  post(path: string, body: any, customHeaders?: HttpHeaders): Observable<any> {
+  post(path: string, body?: any, customHeaders?: HttpHeaders): Observable<any> {
     return this.request(path, body, RequestMethod.Post, customHeaders);
   }
 
-  put(path: string, body: any): Observable<any> {
+  put(path: string, body?: any): Observable<any> {
     return this.request(path, body, RequestMethod.Put);
   }
 

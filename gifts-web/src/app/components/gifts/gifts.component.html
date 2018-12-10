@@ -6,7 +6,7 @@
     </div>
     <!--Accounts search bar-->
     <div fxFlex>
-      <account-list [identification]="identification"></account-list>
+      <account-list></account-list>
     </div>
     <div fxFlex="22%" fxFlex.lt-lg="30%">
       <ng-container *ngIf="isUserList || isFamilyAdmin">
@@ -23,7 +23,7 @@
     </div>
   </div>
   <!--Names header-->
-  <div fxLayout="row">
+  <div fxLayout="row" fxShow.lt-sm="false">
     <div fxFlex>
       Nazwa
     </div>
@@ -49,8 +49,13 @@
         <h3>{{gifts.key}}</h3>
       </mat-panel-title>
     </mat-expansion-panel-header>
-    <div *ngFor="let gift of gifts.value;let odd=odd">
-      <gift [gift]="gift" [odd]="odd"></gift>
+    <div *ngFor="let gift of gifts.value;let even=even;trackBy: trackByFn">
+      <gift [gift]="gift"
+            [even]="even"
+            [canEdit]="isUserList || isFamilyAdmin"
+            (refresh)="refresh($event)"
+            (delete)="delete($event)"
+      ></gift>
     </div>
   </mat-expansion-panel>
   <!--OTHER-->
@@ -60,8 +65,13 @@
         <h3>{{'gift.category.other'|translate}}</h3>
       </mat-panel-title>
     </mat-expansion-panel-header>
-    <div *ngFor="let gift of unCategorizedGifts;let odd=odd">
-      <gift [gift]="gift" [odd]="odd"></gift>
+    <div *ngFor="let gift of unCategorizedGifts;let even=even;trackBy: trackByFn">
+      <gift [gift]="gift"
+            [even]="even"
+            [canEdit]="isUserList || isFamilyAdmin"
+            (refresh)="refresh($event)"
+            (delete)="delete($event)"
+      ></gift>
     </div>
   </mat-expansion-panel>
   <!--REALISED-->
@@ -71,8 +81,13 @@
         <h3>{{'gift.category.realised'|translate}}</h3>
       </mat-panel-title>
     </mat-expansion-panel-header>
-    <div *ngFor="let gift of realizedGifts;let odd=odd">
-      <gift [gift]="gift" [odd]="odd"></gift>
+    <div *ngFor="let gift of realizedGifts;let even=even;trackBy: trackByFn">
+      <gift [gift]="gift"
+            [even]="even"
+            [canEdit]="isUserList || isFamilyAdmin"
+            (refresh)="refresh($event)"
+            (delete)="delete($event)"
+      ></gift>
     </div>
   </mat-expansion-panel>
 </div>

@@ -1,8 +1,8 @@
-<div fxlayout="row" fxLayoutGap="5px" class="p-1"
+<div fxlayout="row wrap" fxLayoutGap="5px" class="p-1"
      [ngClass]="{
       'gift-realised':gift.status === GiftStatus.REALISED,
       'gift-claimed':gift.claimed && gift.status !== GiftStatus.REALISED,
-      'odd':odd
+      'even':even
      }">
   <div fxFlex="50px" class="gift-status">
     <span *ngIf="gift.status === GiftStatus.NEW && !gift.claimed" matTooltip="{{'gift.status.new'|translate}}"
@@ -45,16 +45,38 @@
     {{gift.created|date:'dd.MM.yyyy'}}
   </div>
   <!--ACTIONS-->
-  <div fxFlex="5%">
-    <button *ngIf="canBeClaimed()" mat-icon-button (click)="claim()" matTooltip="{{'gift.claim.text'|translate}}">
-      <i class="fa fa-fw fa-lg fa-hand-paper-o"></i>
-    </button>
-    <button *ngIf="canBeUnClaimed()" mat-icon-button (click)="unClaim()" matTooltip="{{'gift.unclaim.text'|translate}}">
-      <span class="fa-stack">
-        <i class="fa fa-times fa-stack-1x"></i>
-        <i class="fa fa-lg fa-hand-paper-o fa-stack-1x"></i>
-      </span>
-    </button>
+  <div fxFlex="5%" fxFlex.lt-md="10%" fxFlex.lt-sm="15%">
+    <div fxLayout="row wrap" fxLayoutAlign="end center">
+      <button *ngIf="canBeClaimed()" mat-icon-button (click)="claim()" matTooltip="{{'gift.claim.text'|translate}}"
+              fxFlex="50%">
+        <i class="fa fa-fw fa-lg fa-hand-paper-o"></i>
+      </button>
+      <button *ngIf="canBeUnClaimed()" mat-icon-button (click)="unClaim()"
+              matTooltip="{{'gift.unclaim.text'|translate}}" fxFlex="50%">
+        <span class="fa-stack">
+          <i class="fa fa-times fa-stack-1x"></i>
+          <i class="fa fa-lg fa-hand-paper-o fa-stack-1x"></i>
+        </span>
+      </button>
+      <ng-container *ngIf="canEdit">
+        <button mat-icon-button matTooltip="{{'gift.edit.text'|translate}}" fxFlex="50%"
+                *ngIf="gift.status !== GiftStatus.REALISED">
+          <i class="fa fa-fw fa-lg fa-pencil"></i>
+        </button>
+        <button mat-icon-button matTooltip="{{'gift.complete.text'|translate}}" fxFlex="50%"
+                *ngIf="gift.status !== GiftStatus.REALISED">
+          <i class="fa fa-fw fa-lg fa-check-circle-o"></i>
+        </button>
+        <button mat-icon-button matTooltip="{{'gift.complete.undo.text'|translate}}" fxFlex="50%"
+                *ngIf="gift.status === GiftStatus.REALISED">
+          <i class="fa fa-fw fa-lg fa-circle-o"></i>
+        </button>
+        <button mat-icon-button matTooltip="{{'gift.delete.text'|translate}}" fxFlex="50%"
+                (click)="deleteGift()">
+          <i class="fa fa-fw fa-lg fa-trash"></i>
+        </button>
+      </ng-container>
+    </div>
   </div>
 
 </div>

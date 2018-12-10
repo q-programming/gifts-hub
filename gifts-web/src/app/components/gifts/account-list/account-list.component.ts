@@ -5,7 +5,7 @@ import {MatSelect} from "@angular/material";
 import {ReplaySubject, Subject} from "rxjs";
 import {AuthenticationService} from "@services/authentication.service";
 import {UserService} from "@services/user.service";
-import {Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import * as _ from "lodash";
 import {take, takeUntil} from "rxjs/operators";
 
@@ -18,7 +18,7 @@ export class AccountListComponent implements OnInit, AfterViewInit, OnDestroy {
 
   currentAccount: Account;
   viewedAccount: Account;
-  @Input() identification: string;
+  identification: string;
   usersControl: FormControl = new FormControl();
   usersFilterControl: FormControl = new FormControl();
   accounts: Account[];
@@ -30,16 +30,22 @@ export class AccountListComponent implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(private authSrv: AuthenticationService,
               private userSrv: UserService,
-              private router: Router) {
+              private router: Router,
+              private activatedRoute: ActivatedRoute) {
   }
 
   ngOnInit() {
     this.currentAccount = this.authSrv.currentAccount;
-    this.getUsers();
+    this.activatedRoute.params.subscribe(params => {
+      this.identification = params['user'];
+      this.getUsers();
+    });
     this.usersControl
       .valueChanges.subscribe(value => {
       if (value && value !== this.viewedAccount) {
+        this.viewedAccount = undefined;
         this.router.navigate(['/list', value.username])
+
       }
     });
     this.usersFilterControl.valueChanges

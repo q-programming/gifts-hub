@@ -34,6 +34,7 @@ import {GiftComponent} from './components/gifts/gift/gift.component';
 import {NgxMatSelectSearchModule} from "ngx-mat-select-search";
 import {HighlightPipe} from "./pipes/highlight.directive";
 import {AccountListComponent} from './components/gifts/account-list/account-list.component';
+import {NgProgressRouterModule} from "@ngx-progressbar/router";
 
 
 @NgModule({
@@ -61,6 +62,7 @@ import {AccountListComponent} from './components/gifts/account-list/account-list
     AppRoutingModule,
     AppMaterialModules,
     NgProgressModule.forRoot(),
+    NgProgressRouterModule.forRoot(),
     FlexLayoutModule,
     LoggerModule.forRoot({
       level: environment.logging,

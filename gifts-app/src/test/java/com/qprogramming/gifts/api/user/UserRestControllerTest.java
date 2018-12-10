@@ -138,10 +138,10 @@ public class UserRestControllerTest {
         form.setPassword("password");
         form.setConfirmpassword("password");
         when(accSrvMock.findByEmail(testAccount.getEmail())).thenReturn(Optional.of(testAccount));
-        MvcResult mvcResult = userRestCtrl.perform(post(API_USER_REGISTER).contentType(APPLICATION_JSON_UTF8).content(convertObjectToJsonBytes(form)))
+        MvcResult mvcResult = userRestCtrl.perform(post(API_USER_REGISTER).contentType(APPLICATION_JSON_UTF8).content(convertObjectToJsonBytes(form))).andExpect(status().is4xxClientError())
                 .andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
-        assertTrue(contentAsString.contains(ResultData.Code.ERROR.toString()));
+        assertTrue(contentAsString.contains("email"));
     }
 
     @Test
@@ -153,10 +153,10 @@ public class UserRestControllerTest {
         form.setEmail(testAccount.getEmail());
         form.setPassword("password");
         form.setConfirmpassword("password2");
-        MvcResult mvcResult = userRestCtrl.perform(post(API_USER_REGISTER).contentType(APPLICATION_JSON_UTF8).content(convertObjectToJsonBytes(form)))
+        MvcResult mvcResult = userRestCtrl.perform(post(API_USER_REGISTER).contentType(APPLICATION_JSON_UTF8).content(convertObjectToJsonBytes(form))).andExpect(status().is4xxClientError())
                 .andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
-        assertTrue(contentAsString.contains(ResultData.Code.ERROR.toString()));
+        assertTrue(contentAsString.contains("passwords"));
     }
 
     @Test
@@ -168,10 +168,10 @@ public class UserRestControllerTest {
         form.setEmail(testAccount.getEmail());
         form.setPassword("admin");
         form.setConfirmpassword("admin");
-        MvcResult mvcResult = userRestCtrl.perform(post(API_USER_REGISTER).contentType(APPLICATION_JSON_UTF8).content(convertObjectToJsonBytes(form)))
+        MvcResult mvcResult = userRestCtrl.perform(post(API_USER_REGISTER).contentType(APPLICATION_JSON_UTF8).content(convertObjectToJsonBytes(form))).andExpect(status().is4xxClientError())
                 .andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
-        assertTrue(contentAsString.contains(ResultData.Code.ERROR.toString()));
+        assertTrue(contentAsString.contains("weak"));
     }
 
     @Test

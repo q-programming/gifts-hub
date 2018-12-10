@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Gift, GiftStatus} from "@model/Gift";
 import {AuthenticationService} from "@services/authentication.service";
 import {Account} from "@model/Account";
@@ -15,8 +15,12 @@ export class GiftComponent implements OnInit {
 
   GiftStatus = GiftStatus;
   @Input() gift: Gift;
-  @Input() odd: boolean;
+  @Input() even: boolean;
+  @Input() canEdit: boolean;
+  @Output() refresh = new EventEmitter<boolean>();
+  @Output() delete = new EventEmitter<Gift>();
   currentAccount: Account;
+
 
   constructor(private authSrv: AuthenticationService, private giftSrv: GiftService, private alertSrv: AlertService, private logger: NGXLogger) {
   }
@@ -55,6 +59,13 @@ export class GiftComponent implements OnInit {
     }, error => {
       this.logger.error(error);
     })
+  }
+
+  /**
+   * Notify parent component about gift deletion and show undoable message which will trigger actual deletion after timeout
+   */
+  deleteGift() {
+    this.delete.emit(this.gift);
   }
 
 
