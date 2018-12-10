@@ -118,12 +118,12 @@ export class ApiService {
   // Display error if logged in, otherwise redirect to IDP
   private checkError(error: any): any {
     if (error && error.status === 401) {
-      this.alertSrv.error('app.api.error.unauthorized');
+      this.alertSrv.error('error.api.unauthorized');
       // this.redirectIfUnauth(error);
     } else if (error && error.status === 404) {
-      this.alertSrv.error('app.api.error.notfound');
+      this.alertSrv.error('error.api.notfound');
     } else if (error && error.status === 403) {
-      this.alertSrv.error('app.api.error.unauthorized');
+      this.alertSrv.error('error.api.unauthorized');
       //TODO redirect to login?
     } else if (error && error.status === 503) {
     }

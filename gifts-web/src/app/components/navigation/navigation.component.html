@@ -17,7 +17,7 @@
       </button>
     </span>
     <span fxFlex>
-      <button mat-icon-button routerLink="/gifts" routerLinkActive="active-link" class="nav-button">
+      <button mat-icon-button routerLink="/list" routerLinkActive="active-link" class="nav-button">
         <div class="v-sub">
           <i class="fa fa-list ml-1" fxShow.lt-sm="false"></i>
           <i class="fa fa-2x fa-gift"></i>
@@ -53,7 +53,7 @@
         <span class="nav-smaller">
           {{account.name}}&nbsp;{{account.surname}}
         </span>
-        <avatar [account]="account" classes="avatar nav-avatar"></avatar>
+        <avatar *ngIf="account" [avatar]="account.avatar" classes="avatar nav-avatar v-middle"></avatar>
         <!--<img *ngIf="account.avatar" [src]="account.avatar" class="avatar nav-avatar"/>-->
         <mat-icon>more_vert</mat-icon>
       </button>

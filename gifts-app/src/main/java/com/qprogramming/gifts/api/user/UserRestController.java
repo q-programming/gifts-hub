@@ -118,19 +118,15 @@ public class UserRestController {
     }
 
     @Transactional
-    @RequestMapping("/{id}/avatar")
+    @RequestMapping("/{username}/avatar")
     @PreAuthorize("hasRole('ROLE_USER')")
-    public ResponseEntity<?> userAvatar(@PathVariable(value = "id") String id) {
-        Account account;
-        try {
-            account = accountService.findById(id);
-        } catch (AccountNotFoundException e) {
-            LOG.error("Unable to find account with id {}", id);
+    public ResponseEntity<?> userAvatar(@PathVariable(value = "username") String username) {
+        Optional<Account> optionalAccount = accountService.findByUsername(username);
+        if (!optionalAccount.isPresent()) {
+            LOG.error("Unable to find account with username {}", username);
             return ResponseEntity.notFound().build();
         }
-        if (account == null) {
-        }
-        return ResponseEntity.ok(accountService.getAccountAvatar(account));
+        return ResponseEntity.ok(accountService.getAccountAvatar(optionalAccount.get()));
     }
 
     @Transactional

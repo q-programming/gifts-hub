@@ -65,6 +65,10 @@
     }
   },
   "error": {
+    "api": {
+      "notfound": "Wykonano zapytanie API do nie istniejącego zasobu",
+      "unauthorized": "Brak wymagających uprawnień do wykonania akcji"
+    },
     "edit": {
       "gift": "Nie możesz edytować nie swojego prezentu"
     },
@@ -92,9 +96,9 @@
       "realised": "Zrealizowane"
     },
     "claim": {
-      "0": "Zarezerwuj prezent",
-      "same": "Nie możesz zarezerwować własnego prezentu",
-      "success": "Zarezerwowano prezent {0}"
+      "error": "Nie możesz zarezerwować własnego prezentu",
+      "success": "Zarezerwowano prezent {{name}}",
+      "text": "Zarezerwuj prezent"
     },
     "complete": {
       "0": "Oznacz prezent jako zrealizowany",
@@ -168,9 +172,9 @@
       "realised": "Prezent zrealizowany"
     },
     "unclaim": {
-      "0": "Usuń rezerwację",
       "error": "Nie można usunąć rezerwacji z prezentu, który nie był wcześniej zarezerwowany.",
-      "success": "Usunięto rezerwację z prezentu {0}"
+      "success": "Usunięto rezerwację z prezentu {{name}}",
+      "text": "Usuń rezerwację"
     }
   },
   "main": {
@@ -266,7 +270,6 @@
     },
     "email": "E-mail",
     "family": {
-      "0": "Rodzina",
       "add": {
         "kid": {
           "0": "Dodaj dziecko",
@@ -329,9 +332,10 @@
       "name": "Nazwa rodziny",
       "other": "Inni",
       "select": {
-        "0": "Wybierz użytkowników",
-        "other": "Wybierz innego członka rodziny"
-      }
+        "notfound": "Nie znaleziono poszukiwanego użytkownika",
+        "text": "Wyszukaj innych użytkowników"
+      },
+      "text": "Rodzina"
     },
     "firstname": {
       "hint": "Wprowdz imię",

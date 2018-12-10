@@ -1,0 +1,15 @@
+<mat-form-field class="pr-2 mat-form-field-full-width" appearance="standard">
+  <mat-select required [formControl]="usersControl" #accountSelect disableOptionCentering="true">
+    <ngx-mat-select-search [formControl]="usersFilterControl"
+                           [placeholderLabel]="'user.family.select.text' | translate"
+                           [noEntriesFoundLabel]="'user.family.select.notfound'|translate">
+    </ngx-mat-select-search>
+    <!--<input matInput (keyup)="_filter($event.target.value)" placeholder="Filter">-->
+    <mat-option *ngFor="let account of filteredAccounts |async" [value]="account">
+                        <span matSuffix>
+                            <avatar [avatar]="account.avatar" classes="avatar small v-middle mr-1"></avatar>
+                        </span>
+      <span [innerHTML]="account.fullname + '(' + account.username + ')'| highlight: filterTerm"></span>
+    </mat-option>
+  </mat-select>
+</mat-form-field>

@@ -16,27 +16,27 @@ export class AvatarService {
      * Firstly local storage is checked if image was not already wrote there.
      * If nothing is found in local storage, read avatar from database and persist it on local storage
      *
-     * @param id user id for which avatar should be read
+     * @param username user id for which avatar should be read
      */
-    getUserAvatarById(id: string): Observable<string> {
+    getUserAvatarByUsername(username: string): Observable<string> {
         return new Observable((observable) => {
-            let image = localStorage.getItem("avatar:" + id);
+            let image = localStorage.getItem("avatar:" + username);
             if (!image) {
-                this.logger.debug(`Getting avatar from DB for user ${id}`);
-                this.api.getObject(environment.account_url + `/${id}${environment.avatar_url}`).subscribe(result => {
+                this.logger.debug(`Getting avatar from DB for user ${username}`);
+                this.api.getObject(environment.account_url + `/${username}${environment.avatar_url}`).subscribe(result => {
                     if (result) {
                         const dataType = "data:" + result.type + ";base64,";
                         image = dataType + result.image;
-                        localStorage.setItem("avatar:" + id, image);
+                        localStorage.setItem("avatar:" + username, image);
                     } else {
                         image = 'assets/images/avatar-placeholder.png';
-                        localStorage.setItem("avatar:" + id, image);
+                        localStorage.setItem("avatar:" + username, image);
                     }
                     observable.next(image);
                     observable.complete();
                 });
             } else {
-                this.logger.debug(`Fetching avatar from localStorage for account : ${id}`);
+                this.logger.debug(`Fetching avatar from localStorage for account : ${username}`);
                 observable.next(image);
                 observable.complete();
             }
@@ -46,11 +46,11 @@ export class AvatarService {
     /**
      * Get avatar for account
      *
-     * @see AvatarService.getUserAvatarById
+     * @see AvatarService.getUserAvatarByUsername
      * @param account
      */
     getUserAvatar(account: Account): Observable<string> {
-        return this.getUserAvatarById(account.id);
+        return this.getUserAvatarByUsername(account.username);
 
     }
 
@@ -64,7 +64,7 @@ export class AvatarService {
      */
     updateAvatar(base64Image: String, account: Account) {
         return this.api.post(`${environment.account_url}${environment.avatar_upload_url}`, base64Image).subscribe(() => {
-            localStorage.removeItem("avatar:" + account.id);
+            localStorage.removeItem("avatar:" + account.username);
             this.getUserAvatar(account).subscribe(avatar => {
                 account.avatar = avatar;
             });

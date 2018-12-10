@@ -31,6 +31,9 @@ import {RegisterComponent} from "./components/register/register.component";
 import {PasswordStrengthBarModule} from "ng2-password-strength-bar";
 import {AvatarComponent} from './components/avatar/avatar.component';
 import {GiftComponent} from './components/gifts/gift/gift.component';
+import {NgxMatSelectSearchModule} from "ngx-mat-select-search";
+import {HighlightPipe} from "./pipes/highlight.directive";
+import {AccountListComponent} from './components/gifts/account-list/account-list.component';
 
 
 @NgModule({
@@ -45,7 +48,9 @@ import {GiftComponent} from './components/gifts/gift/gift.component';
     RegisterComponent,
     GiftsComponent,
     AvatarComponent,
-    GiftComponent
+    GiftComponent,
+    HighlightPipe,
+    AccountListComponent,
   ],
   imports: [
     FormsModule,
@@ -69,6 +74,7 @@ import {GiftComponent} from './components/gifts/gift/gift.component';
       }
     }),
     LayoutModule,
+    NgxMatSelectSearchModule,
     MatToolbarModule,
     MatButtonModule,
     MatSidenavModule,
@@ -95,7 +101,7 @@ import {GiftComponent} from './components/gifts/gift/gift.component';
       'deps': [AuthenticationService],
       'multi': true
     },
-    { provide: LOCALE_ID, useValue: 'en_EN' }
+    {provide: LOCALE_ID, useValue: 'en_EN'}
   ],
   bootstrap: [AppComponent]
 })

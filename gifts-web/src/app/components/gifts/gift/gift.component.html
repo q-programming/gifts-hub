@@ -1,4 +1,4 @@
-<div fxlayout="row" class="p-1"
+<div fxlayout="row" fxLayoutGap="5px" class="p-1"
      [ngClass]="{
       'gift-realised':gift.status === GiftStatus.REALISED,
       'gift-claimed':gift.claimed && gift.status !== GiftStatus.REALISED,
@@ -41,11 +41,20 @@
       </a>
   </span>
   </div>
-  <div fxFlex>
+  <div fxFlex="10%">
     {{gift.created|date:'dd.MM.yyyy'}}
   </div>
-  <div>
-    actions
+  <!--ACTIONS-->
+  <div fxFlex="5%">
+    <button *ngIf="canBeClaimed()" mat-icon-button (click)="claim()" matTooltip="{{'gift.claim.text'|translate}}">
+      <i class="fa fa-fw fa-lg fa-hand-paper-o"></i>
+    </button>
+    <button *ngIf="canBeUnClaimed()" mat-icon-button (click)="unClaim()" matTooltip="{{'gift.unclaim.text'|translate}}">
+      <span class="fa-stack">
+        <i class="fa fa-times fa-stack-1x"></i>
+        <i class="fa fa-lg fa-hand-paper-o fa-stack-1x"></i>
+      </span>
+    </button>
   </div>
 
 </div>

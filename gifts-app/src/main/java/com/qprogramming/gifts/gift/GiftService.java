@@ -71,7 +71,13 @@ public class GiftService {
     public Map<Category, List<Gift>> findAllByUser(String id) {
         int giftAge = Integer.valueOf(propertyService.getProperty(APP_GIFT_AGE));
         List<Gift> giftList = giftRepository.findByUserIdOrderByCreatedDesc(id);
-        giftList.forEach(gift -> setGiftStatus(gift, giftAge));
+        giftList.forEach(gift -> {
+            setGiftStatus(gift, giftAge);
+            if (id.equals(Utils.getCurrentAccountId())) {//if current user is browsing his own list
+                gift.setClaimed(null);
+            }
+
+        });
         boolean sort = !id.equals(Utils.getCurrentAccountId());
         return toGiftTreeMap(giftList, sort);
     }

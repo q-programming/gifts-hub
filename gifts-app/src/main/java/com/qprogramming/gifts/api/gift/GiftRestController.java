@@ -89,6 +89,7 @@ public class GiftRestController {
         }
 
     }
+
     @PreAuthorize("hasRole('ROLE_USER')")
     @Transactional
     @RequestMapping("/create")
@@ -177,8 +178,7 @@ public class GiftRestController {
             return ResponseEntity.badRequest().body(msgSrv.getMessage("gift.claim.same"));
         }
         gift.setClaimed(optionalAccount.get());
-        giftService.update(gift);
-        return new ResultData.ResultBuilder().ok().message(msgSrv.getMessage("gift.claim.success", new Object[]{gift.getName()}, "", Utils.getCurrentLocale())).build();
+        return ResponseEntity.ok(giftService.update(gift));
     }
 
     @PreAuthorize("hasRole('ROLE_USER')")
@@ -194,9 +194,7 @@ public class GiftRestController {
             return new ResultData.ResultBuilder().badReqest().error().message(msgSrv.getMessage("gift.unclaim.error")).build();
         }
         gift.setClaimed(null);
-        giftService.update(gift);
-        return new ResultData.ResultBuilder().ok().message(msgSrv.getMessage("gift.unclaim.success", new Object[]{gift.getName()}, "", Utils.getCurrentLocale()))
-                .build();
+        return ResponseEntity.ok(giftService.update(gift));
     }
 
     @PreAuthorize("hasRole('ROLE_USER')")

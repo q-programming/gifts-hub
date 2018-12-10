@@ -65,6 +65,10 @@
     }
   },
   "error": {
+    "api": {
+      "notfound": "Api call was made to not existing resource",
+      "unauthorized": "You are not authorised to execute that action"
+    },
     "edit": {
       "gift": "You cannot edit not your gift"
     },
@@ -92,9 +96,9 @@
       "realised": "Realised"
     },
     "claim": {
-      "0": "Claim gift",
-      "same": "You cannot claim your gift",
-      "success": "Gift {0} has been clamed"
+      "error": "You cannot claim your gift",
+      "success": "Gift {{name}} has been clamed",
+      "text": "Claim gift"
     },
     "complete": {
       "0": "Mark gift as realised",
@@ -168,9 +172,9 @@
       "realised": "Realised gift"
     },
     "unclaim": {
-      "0": "Remove claim",
       "error": "You cannot remove claim on gift you have not previously claimed",
-      "success": "Claim on gift {0} was removed"
+      "success": "Claim on gift {{name}} was removed",
+      "text": "Remove claim"
     }
   },
   "main": {
@@ -266,7 +270,6 @@
     },
     "email": "Email",
     "family": {
-      "0": "Family",
       "add": {
         "kid": {
           "0": "Add kid",
@@ -329,9 +332,10 @@
       "name": "Family name",
       "other": "Other",
       "select": {
-        "0": "Select users",
-        "other": "Select other family members"
-      }
+        "notfound": "Searched user was not found",
+        "text": "Find other users"
+      },
+      "text": "Family"
     },
     "firstname": {
       "hint": "Enter your name",

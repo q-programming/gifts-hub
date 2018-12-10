@@ -30,6 +30,10 @@ body {
   width: 100%;
 }
 
+.mat-toolbar-row, .mat-toolbar-single-row {
+  height: 55px !important;
+}
+
 .modal-header > mat-icon {
   float: left;
   font-size: 30px;
@@ -45,6 +49,10 @@ body {
 }
 
 .mat-card {
+  border-radius: 0 !important;
+}
+
+.mat-button, .mat-flat-button {
   border-radius: 0 !important;
 }
 
@@ -70,6 +78,15 @@ body {
   stroke: #ffffff;
 }
 
+.mat-select-search-input {
+  width: 100%;
+  margin-bottom: 1px;
+}
+
+.mat-form-field-full-width {
+  width: 100%;
+}
+
 .cdk-overlay-container {
   z-index: 2000 !important;
 }
@@ -78,6 +95,7 @@ body {
   font-size: 17px; // current default is 10px :-/
   word-wrap: break-word !important;
 }
+
 a {
   color: #337ab7;
   text-decoration: none;

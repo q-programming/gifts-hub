@@ -1,0 +1,23 @@
+.fixed-container {
+  background-color: #ffffff;
+  position: fixed;
+  padding: 2em;
+  left: 50%;
+  top: 56px;
+  flex: 1 1 80%;
+  box-sizing: border-box;
+  max-width: 80%;
+  width: 100%;
+  transform: translateX(-50%);
+  z-index: 1;
+}
+
+@media (max-width: 598px) {
+  .fixed-container {
+    max-width: 100%;
+  }
+}
+
+.header {
+  font-size: smaller;
+}
