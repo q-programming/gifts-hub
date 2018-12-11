@@ -154,6 +154,7 @@ public class UserRestController {
         Set<Account> list;
         if (noFamily) {
             list = new LinkedHashSet<>(accountService.findWithoutFamily());
+            addGiftCounts(list);
         } else {
             if (users) {
                 list = new LinkedHashSet<>(accountService.findUsers());

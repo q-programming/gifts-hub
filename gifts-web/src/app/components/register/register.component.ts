@@ -35,7 +35,7 @@ export class RegisterComponent implements OnInit {
                 private apiService: ApiService,
                 private alertSrv: AlertService,
                 private authSrv: AuthenticationService) {
-        this.apiService.get(environment.default_lang_url).subscribe(defaults => {
+        this.apiService.get(`${environment.app_url}/default-language`).subscribe(defaults => {
             if (defaults) {
                 let lang = defaults.language;
                 this.translate.setDefaultLang(lang);

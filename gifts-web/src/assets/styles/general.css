@@ -1717,7 +1717,11 @@
 }
 
 .font-larger {
-  font-size: larger;
+  font-size: larger !important;
+}
+
+.font-smaller {
+  font-size: smaller !important;
 }
 
 .text-white {

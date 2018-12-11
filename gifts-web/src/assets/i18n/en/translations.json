@@ -275,10 +275,10 @@
     "family": {
       "add": {
         "kid": {
-          "0": "Add kid",
           "error": "Please create family first",
           "help": "Add new account of type kid. It is a special type of account, on which you cannot login. Only family administrator is able to edit and add gifts for that account",
-          "success": "New kid was added to your family"
+          "success": "New kid was added to your family",
+          "text": "Add kid"
         }
       },
       "admin": {
@@ -307,7 +307,6 @@
         }
       },
       "edit": {
-        "0": "Edit family",
         "help": "Edit your family members. Add or remove existing application users.",
         "kid": {
           "0": "Edit kid",
@@ -316,7 +315,8 @@
         "success": {
           "0": "Family has been updated",
           "invites": "Family has been updated. Emails with confirmation links were sent to invited application users"
-        }
+        },
+        "text": "Edit family"
       },
       "exists": {
         "error": "You are already member of other family, and cannot create new one."
@@ -404,12 +404,12 @@
         "help": "Select to receive email newsletter with information what was added or marked as completed in application. Newsletter will be sent every monday if there actually will be some events"
       },
       "public": {
-        "0": "Public wish list",
         "copy": {
           "0": "Copy public link",
           "success": "Link has been copied to clipboard"
         },
-        "help": "When selected, anyone accessing your public url will be able to see gifts, without need of creating account. Anonymous users however cannot see claimed status or claim gifts."
+        "help": "When selected, anyone accessing your public url will be able to see gifts, without need of creating account. Anonymous users however cannot see claimed status or claim gifts.",
+        "text": "Public wish list"
       },
       "updated": {
         "0": "Settings successfully updated",

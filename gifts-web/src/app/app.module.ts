@@ -35,6 +35,8 @@ import {NgxMatSelectSearchModule} from "ngx-mat-select-search";
 import {HighlightPipe} from "./pipes/highlight.directive";
 import {AccountListComponent} from './components/gifts/account-list/account-list.component';
 import {NgProgressRouterModule} from "@ngx-progressbar/router";
+import {UserComponent} from './components/user-list/user/user.component';
+import { GiftsPublicComponent } from './components/gifts/gifts-public.component';
 
 
 @NgModule({
@@ -52,6 +54,8 @@ import {NgProgressRouterModule} from "@ngx-progressbar/router";
     GiftComponent,
     HighlightPipe,
     AccountListComponent,
+    UserComponent,
+    GiftsPublicComponent,
   ],
   imports: [
     FormsModule,

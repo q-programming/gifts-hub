@@ -34,6 +34,7 @@ export class ApiService {
   }
 
   get(path: string, args?: any): Observable<any> {
+    this.progress.start();
     path = environment.context + path;
     const options = {
       headers: this.headers,
@@ -43,6 +44,10 @@ export class ApiService {
       options['params'] = serialize(args);
     }
     return this.http.get(path, options)
+      .map((response) => {
+        this.progress.complete();
+        return response
+      })
       .catch(this.checkError.bind(this));
   }
 

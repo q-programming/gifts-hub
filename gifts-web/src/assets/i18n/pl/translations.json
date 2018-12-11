@@ -275,10 +275,10 @@
     "family": {
       "add": {
         "kid": {
-          "0": "Dodaj dziecko",
           "error": "Proszę najpierw stworzyć rodzinę",
           "help": "Dodaj konto typu dziecko. To specjalny rodzaj konta, na które nie można się zalogować. Tylko administrator rodziny może edytować i dodawać prezenty dla tego konta",
-          "success": "Nowe dziecko zostało dodane do twojej rodziny"
+          "success": "Nowe dziecko zostało dodane do twojej rodziny",
+          "text": "Dodaj dziecko"
         }
       },
       "admin": {
@@ -307,7 +307,6 @@
         }
       },
       "edit": {
-        "0": "Edytuj rodzinę",
         "help": "Edytuj członków rodziny. Dodaj lub usuń użytkowników, którzy mają już konto w aplikacji.",
         "kid": {
           "0": "Edytuj dziecko",
@@ -316,7 +315,8 @@
         "success": {
           "0": "Rodzina została zaktualizowana",
           "invites": "Rodzina została zaktualizowana. Wiadomości e-mail z linkiem potwierdzającym zostały wysłane do zaproszonych użytkowników"
-        }
+        },
+        "text": "Edytuj rodzinę"
       },
       "exists": {
         "error": "Należysz już do jednej rodziny i nie możesz stworzyć nowej."
@@ -404,12 +404,12 @@
         "help": "Zaznacz aby otrzymywać powiadomienia email z informacjami o nowych lub zrealizowanych prezentach w aplikacji. Newsletter będzie wysyłany w każdy poniedziałek o ile wystąpiły jakieś wydarzenia"
       },
       "public": {
-        "0": "Publiczna lista życzeń",
         "copy": {
           "0": "Kopiuj link publiczny",
           "success": "Link został skopiowany do schowka"
         },
-        "help": "Jeżeli lista życzeń zostanie oznaczona jako publiczna, osoba posiadająca link do twojej listy, będzie mogła ją ogladać bez potrzeby logowania się. Anonimowi użytkownicy nie będą jednak widzieć rezerwacji, ani móc zarezerwować prezent"
+        "help": "Jeżeli lista życzeń zostanie oznaczona jako publiczna, osoba posiadająca link do twojej listy, będzie mogła ją ogladać bez potrzeby logowania się. Anonimowi użytkownicy nie będą jednak widzieć rezerwacji, ani móc zarezerwować prezent",
+        "text": "Publiczna lista życzeń"
       },
       "updated": {
         "0": "Ustawienia zostały pomyślnie zmienione",

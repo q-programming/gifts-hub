@@ -20,7 +20,7 @@ export class ErrorComponent implements OnInit {
                 private apiService: ApiService,
                 private authSrv:AuthenticationService) {
         if(!this.authSrv.currentAccount){
-            this.apiService.get(environment.default_lang_url).subscribe(defaults => {
+            this.apiService.get(`${environment.app_url}/default-language`).subscribe(defaults => {
                 if (defaults) {
                     let lang = defaults.language;
                     this.translate.setDefaultLang(lang);

@@ -15,5 +15,6 @@ export const environment = {
   avatar_upload_url: '/avatar-upload',
   auth_url: '/auth',
   default_lang_url: '/api/app/default-language',
+  app_url: '/api/app/',
   gift_url: '/api/gift',
 };

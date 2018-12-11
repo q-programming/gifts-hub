@@ -7,6 +7,7 @@ import {UserListComponent} from "./components/user-list/user-list.component";
 import {GiftsComponent} from "./components/gifts/gifts.component";
 import {ErrorComponent} from "./components/error/error.component";
 import {RegisterComponent} from "./components/register/register.component";
+import {GiftsPublicComponent} from "./components/gifts/gifts-public.component";
 
 const routes: Routes = [
   {path: '', component: HomeComponent, canActivate: [AuthGuard]},
@@ -14,6 +15,7 @@ const routes: Routes = [
   {path: 'users', component: UserListComponent, canActivate: [AuthGuard]},
   {path: 'list', component: GiftsComponent, canActivate: [AuthGuard]},
   {path: 'list/:user', component: GiftsComponent, canActivate: [AuthGuard]},
+  {path: 'public/:user', component: GiftsPublicComponent},
   {path: 'register', component: RegisterComponent},
   {path: 'error', component: ErrorComponent},
   // otherwise redirect to home

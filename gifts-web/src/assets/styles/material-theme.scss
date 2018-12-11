@@ -44,6 +44,10 @@ body {
   color: white;
 }
 
+.white-button {
+  background: #ffffff;
+}
+
 .underlined {
   border-bottom: 1px solid;
 }
@@ -54,6 +58,10 @@ body {
 
 .mat-button, .mat-flat-button {
   border-radius: 0 !important;
+}
+
+.mat-button-toggle-appearance-standard .mat-button-toggle-label-content {
+  line-height: initial !important;
 }
 
 @media (max-width: 768px) {
@@ -96,7 +104,37 @@ body {
   word-wrap: break-word !important;
 }
 
+.mat-expansion-panel-body {
+  padding: 0 24px 0 !important;
+}
+
 a {
   color: #337ab7;
   text-decoration: none;
 }
+
+a.black {
+  color: black;
+}
+
+.fixed-container {
+  background-color: #ffffff;
+  position: fixed !important;
+  padding: 0.1em 2em !important;
+  left: 50%;
+  top: 56px;
+  flex: 1 1 80%;
+  box-sizing: border-box;
+  max-width: 80%;
+  width: 100%;
+  transform: translateX(-50%);
+  z-index: 1;
+  margin: 0;
+}
+
+@media (max-width: 598px) {
+  .fixed-container {
+    max-width: 100%;
+  }
+}
+

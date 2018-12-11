@@ -17,6 +17,7 @@ export class GiftComponent implements OnInit {
   @Input() gift: Gift;
   @Input() even: boolean;
   @Input() canEdit: boolean;
+  @Input() public: boolean;
   @Output() refresh = new EventEmitter<boolean>();
   @Output() delete = new EventEmitter<Gift>();
   currentAccount: Account;

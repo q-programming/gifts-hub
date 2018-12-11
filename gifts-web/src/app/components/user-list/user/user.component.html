@@ -1,0 +1,38 @@
+<div [ngClass]="{even:even}" fxlayout="row wrap" fxLayoutAlign="center center">
+  <div fxFlex="10%" fxFlex.lt-sm="15%">
+    <img matCardAvatar [src]="user.avatar" class="avatar">
+  </div>
+  <div fxFlex="40%">
+    <span *ngIf="user.type === AccountType.KID" matTooltip="{{'user.family.kid'|translate}}">
+      <i class="fa fa-child"></i>
+    </span>
+    <span *ngIf="user.familyAdmin" matTooltip="{{'user.family.administrator'|translate}}">
+      <i class="fa fa-address-card-o"></i>
+    </span>
+    {{user.fullname}}
+  </div>
+  <div fxFlex="25%">
+    <a href="mailto:{{user.email}}" *ngIf="user.email">
+      <mat-icon class="v-middle">email</mat-icon>
+      <span fxShow.lt-md="false">
+        {{user.email}}
+      </span>
+    </a>
+  </div>
+  <div fxFlex="20%" fxFlex.lt-sm="25%" class="text-right">
+    <a mat-icon-button routerLink="/public/{{user.username}}" *ngIf="user.publicList"
+       matTooltip="{{'user.settings.public.text'|translate}}" class="mr-1 black">
+      <i class="fa fa-link"></i>
+    </a>
+    <button mat-stroked-button *ngIf="user.type === AccountType.KID && isUserFamily" class="white-button">
+      <i class="fa fa-pencil"></i>
+    </button>
+    <button mat-stroked-button  routerLink="/list/{{user.username}}" class="white-button">
+      <span *ngIf="user.giftsCount>0" class="mr-1">{{user.giftsCount}}</span>
+      <i class="fa fa-fw fa-gift"></i>
+      <span fxShow.lt-md="false">{{'gift.list.short'|translate}}</span>
+    </button>
+  </div>
+</div>
+<p>
+</p>

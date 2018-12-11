@@ -66,7 +66,7 @@ export class AccountListComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private getUsers() {
-    this.userSrv.getUsers(this.identification)
+    this.userSrv.getRelatedUsers(this.identification)
       .subscribe(accounts => {
         if (this.identification) {
           this.viewedAccount = _.find(accounts, (account) => account.username === this.identification);

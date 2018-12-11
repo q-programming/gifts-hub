@@ -1,3 +1,73 @@
-<p>
-  user-list works!
-</p>
+<mat-card class="pb-1 pt-1 fixed-container header">
+  <div fxLayout="row" fxLayoutAlign="end center" class="mt-2">
+    <div fxFlex="10%">
+      <mat-button-toggle-group #sortBy="matButtonToggleGroup">
+        <mat-button-toggle [value]="SortBy.FAMILY" matTooltip="{{'user.sort.family'|translate}}">
+          <i class="fa fa-users"></i>
+        </mat-button-toggle>
+        <mat-button-toggle [value]="SortBy.NAME" matTooltip="{{'user.sort.name'|translate}}">
+          <i class="fa fa-sort-alpha-asc"></i>
+        </mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
+    <div fxFlex>
+      <button mat-flat-button class="success-button pull-right mr-1 font-smaller">
+        <i class="fa fa-plus"></i><i class="fa fa-child" aria-hidden="true"></i>
+        <span fxShow.lt-md="false">
+        {{'user.family.add.kid.text'|translate}}
+        </span>
+      </button>
+      <button mat-flat-button class="success-button pull-right mr-1 font-smaller">
+        <mat-icon>edit</mat-icon>
+        <span fxShow.lt-md="false">
+        {{'user.family.edit.text'|translate}}
+        </span>
+      </button>
+    </div>
+  </div>
+  <!--Names header-->
+  <div fxLayout="row" fxShow.lt-sm="false" class="mt-2">
+    <div fxFlex>
+      Imię nazwisko
+    </div>
+    <div fxFlex>
+      E-mail
+    </div>
+    <div fxFlex="10%">
+      Akcje
+    </div>
+  </div>
+</mat-card>
+<div style="margin-top: 85px">
+  <h4>{{'user.list'|translate}}</h4>
+  <ng-container *ngIf="sortBy.value === SortBy.FAMILY">
+    <mat-expansion-panel *ngFor="let family of families" expanded="true">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <h3>{{family.name}}</h3>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div *ngFor="let user of family.members;let even=even;trackBy: trackByFn">
+        <user [user]="user" [even]="even" [isUserFamily]="isUserFamily(family)"></user>
+      </div>
+    </mat-expansion-panel>
+    <mat-expansion-panel expanded="true">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <h3>{{'user.family.other'|translate}}</h3>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div *ngFor="let user of withoutFamily;let even=even;trackBy: trackByFn">
+        <user [user]="user" [even]="even"></user>
+      </div>
+    </mat-expansion-panel>
+  </ng-container>
+  <ng-container *ngIf="sortBy.value === SortBy.NAME">
+    <mat-card>
+      <div *ngFor="let user of usersByName;let even=even;trackBy: trackByFn">
+        <user [user]="user" [even]="even"></user>
+      </div>
+    </mat-card>
+  </ng-container>
+</div>
+
