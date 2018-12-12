@@ -1,6 +1,7 @@
 {
   "app": {
     "general": {
+      "cancel": "Cancel",
       "undo": "Undo"
     },
     "manage": {
@@ -164,10 +165,10 @@
       "with": "Search with"
     },
     "share": {
-      "0": "Share your gifts list",
       "help": "Share your gift lists via email message. Input all emails recipients delimited with semicolon (;), which should receive your gift list public link.",
       "subject": "{0} has shared his gift list with you",
-      "success": "Message with public link was sent to valid senders {0}"
+      "success": "Message with public link was sent to valid senders {{emails}}",
+      "text": "Share your gifts list"
     },
     "status": {
       "claimed": "Claimed gift by",
@@ -265,11 +266,11 @@
       }
     },
     "delete": {
-      "0": "Delete your account",
       "confirm": "Are you sure you want to delete your account? This operation cannot be undone. All your gifts, claims will be deleted together with your account.",
       "error": "You cannot delete other accounts that are not kids from your family",
       "help": "Permanently remove your account from application. Please note that this operation cannot be undone, and all your gifts, claims will be deleted together with your account.",
-      "success": "Your account was removed. Sorry to see you go :("
+      "success": "Your account was removed. Sorry to see you go :(",
+      "text": "Delete your account"
     },
     "email": "Email",
     "family": {
@@ -392,28 +393,30 @@
     },
     "settings": {
       "avatar": {
-        "0": "Avatar",
+        "change": "Change avatar",
         "save": "Save avatar",
         "success": "Avatar was successfully updated",
+        "text": "Avatar",
         "upload": "Choose file",
         "wronguser": "Error while uploading avatar. Wrong request"
       },
       "language": "Language",
       "newsletter": {
-        "0": "Receive email newsletter",
-        "help": "Select to receive email newsletter with information what was added or marked as completed in application. Newsletter will be sent every monday if there actually will be some events"
+        "help": "Select to receive email newsletter with information what was added or marked as completed in application.<br>Newsletter will be sent every monday if there actually will be some events",
+        "recieve": "Receive email newsletter",
+        "text": "Newsletter"
       },
       "public": {
         "copy": {
-          "0": "Copy public link",
-          "success": "Link has been copied to clipboard"
+          "success": "Link has been copied to clipboard",
+          "text": "Copy public link"
         },
-        "help": "When selected, anyone accessing your public url will be able to see gifts, without need of creating account. Anonymous users however cannot see claimed status or claim gifts.",
+        "help": "When selected, anyone accessing your public url will be able to see gifts, without need of creating account.<br>Anonymous users however cannot see claimed status or claim gifts.",
         "text": "Public wish list"
       },
       "updated": {
-        "0": "Settings successfully updated",
-        "error": "Failed to update user settings"
+        "error": "Failed to update user settings",
+        "success": "Settings successfully updated"
       }
     },
     "sort": {

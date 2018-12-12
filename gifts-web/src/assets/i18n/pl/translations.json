@@ -1,6 +1,7 @@
 {
   "app": {
     "general": {
+      "cancel": "Anuluj",
       "undo": "Cofnij"
     },
     "manage": {
@@ -164,10 +165,10 @@
       "with": "Szukaj z"
     },
     "share": {
-      "0": "Podziel się listą prezentów",
       "help": "Podziel się swoją listą życzeń przez email. Wprowadz adresy e-mail wszystkich odbiorców, rodzielonych średnikami (;). Wszyscy otrzymąją publiczny link do twojej listy życzeń.",
       "subject": "{0} podzielił się z Tobą swoją listą życzeń",
-      "success": "Wiadomość z publicznym linkiem została wysłana do poprawnych odbiorców: {0}"
+      "success": "Wiadomość z publicznym linkiem została wysłana do poprawnych odbiorców: {{emails}}",
+      "text": "Podziel się listą prezentów"
     },
     "status": {
       "claimed": "Prezent zarezerwowany przez",
@@ -265,11 +266,11 @@
       }
     },
     "delete": {
-      "0": "Usuń swoje konto",
       "confirm": "Jesteś pewień, że chcesz usunąc swoje konto? Tej operacji nie można cofnąć. Wszystkie twoje prezenty i rezerwację zostaną usunięte wraz z twoim kontem",
       "error": "Nie możesz usunąć innego konta, które nie jest dzieckiem z twojej rodziny",
       "help": "Permametnie usuń swoje konto z aplikacji. Tej operacji nie da się cofnąć, wszystkie twoje prezenty i rezerwacje zostaną usunięte wraz z twoim kontem",
-      "success": "Twoje konto zostało usunięte. Szkoda :("
+      "success": "Twoje konto zostało usunięte. Szkoda :(",
+      "text": "Usuń swoje konto"
     },
     "email": "E-mail",
     "family": {
@@ -392,28 +393,30 @@
     },
     "settings": {
       "avatar": {
-        "0": "Awatar",
+        "change": "Zmień awatar",
         "save": "Zapisz awatar",
         "success": "Awatar został zmnienony",
+        "text": "Awatar",
         "upload": "Wybierz plik",
         "wronguser": "Bład podczas zmiany awatara. Złe zapytanie"
       },
       "language": "Język",
       "newsletter": {
-        "0": "Otrzymuj newsletter",
-        "help": "Zaznacz aby otrzymywać powiadomienia email z informacjami o nowych lub zrealizowanych prezentach w aplikacji. Newsletter będzie wysyłany w każdy poniedziałek o ile wystąpiły jakieś wydarzenia"
+        "help": "Zaznacz aby otrzymywać powiadomienia email z informacjami o nowych lub zrealizowanych prezentach w aplikacji.<br>Newsletter będzie wysyłany w każdy poniedziałek o ile wystąpiły jakieś wydarzenia",
+        "recieve": "Otrzymuj newsletter",
+        "text": "Newsletter"
       },
       "public": {
         "copy": {
-          "0": "Kopiuj link publiczny",
-          "success": "Link został skopiowany do schowka"
+          "success": "Link został skopiowany do schowka",
+          "text": "Kopiuj link publiczny"
         },
-        "help": "Jeżeli lista życzeń zostanie oznaczona jako publiczna, osoba posiadająca link do twojej listy, będzie mogła ją ogladać bez potrzeby logowania się. Anonimowi użytkownicy nie będą jednak widzieć rezerwacji, ani móc zarezerwować prezent",
+        "help": "Jeżeli lista życzeń zostanie oznaczona jako publiczna, osoba posiadająca link do twojej listy, będzie mogła ją ogladać bez potrzeby logowania się.<br>Anonimowi użytkownicy nie będą jednak widzieć rezerwacji, ani móc zarezerwować prezent",
         "text": "Publiczna lista życzeń"
       },
       "updated": {
-        "0": "Ustawienia zostały pomyślnie zmienione",
-        "error": "Zmiana nie powiodła się"
+        "error": "Zmiana nie powiodła się",
+        "success": "Ustawienia zostały pomyślnie zmienione"
       }
     },
     "sort": {

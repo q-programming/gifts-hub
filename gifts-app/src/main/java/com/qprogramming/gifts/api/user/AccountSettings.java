@@ -1,6 +1,6 @@
 package com.qprogramming.gifts.api.user;
 
-public class Settings {
+public class AccountSettings {
     private boolean newsletter;
     private boolean publicList;
     private String language;

@@ -12,8 +12,10 @@ export class Account {
   fullname?: string;
   familyAdmin?: boolean;
   type: AccountType;
-  giftsCount?:number;
-  publicList?:boolean;
+  giftsCount?: number;
+  publicList?: boolean;
+  newsletter?: boolean;
+  seenChangelog?: boolean;
 }
 
 export class Authority {

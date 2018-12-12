@@ -36,7 +36,9 @@ import {HighlightPipe} from "./pipes/highlight.directive";
 import {AccountListComponent} from './components/gifts/account-list/account-list.component';
 import {NgProgressRouterModule} from "@ngx-progressbar/router";
 import {UserComponent} from './components/user-list/user/user.component';
-import { GiftsPublicComponent } from './components/gifts/gifts-public.component';
+import {GiftsPublicComponent} from './components/gifts/gifts-public.component';
+import {AvatarUploadComponent, SettingsComponent} from './components/settings/settings.component';
+import {ImageCropperModule} from "ngx-img-cropper";
 
 
 @NgModule({
@@ -56,7 +58,10 @@ import { GiftsPublicComponent } from './components/gifts/gifts-public.component'
     AccountListComponent,
     UserComponent,
     GiftsPublicComponent,
+    SettingsComponent,
+    AvatarUploadComponent,
   ],
+  entryComponents: [AvatarUploadComponent],
   imports: [
     FormsModule,
     ReactiveFormsModule,
@@ -67,6 +72,7 @@ import { GiftsPublicComponent } from './components/gifts/gifts-public.component'
     AppMaterialModules,
     NgProgressModule.forRoot(),
     NgProgressRouterModule.forRoot(),
+    ImageCropperModule,
     FlexLayoutModule,
     LoggerModule.forRoot({
       level: environment.logging,

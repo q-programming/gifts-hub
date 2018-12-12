@@ -517,7 +517,7 @@ public class UserRestController {
     @Transactional
     @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/settings", method = RequestMethod.POST)
-    public ResponseEntity changeSettings(@RequestBody Settings settings) {
+    public ResponseEntity changeSettings(@RequestBody AccountSettings accountSettings) {
         //TODO rewrite ?
         Account account;
         try {
@@ -526,11 +526,11 @@ public class UserRestController {
             LOG.error("Account with id {} not found", Utils.getCurrentAccountId());
             return new ResultData.ResultBuilder().notFound().build();
         }
-        if (StringUtils.isNotBlank(settings.getLanguage())) {
-            account.setLanguage(settings.getLanguage());
+        if (StringUtils.isNotBlank(accountSettings.getLanguage())) {
+            account.setLanguage(accountSettings.getLanguage());
         }
-        account.setPublicList(settings.getPublicList());
-        account.setNewsletter(settings.getNewsletter());
+        account.setPublicList(accountSettings.getPublicList());
+        account.setNewsletter(accountSettings.getNewsletter());
         accountService.update(account);
         accountService.signin(account);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -653,8 +653,11 @@ public class UserRestController {
             LOG.error("Error while sending emailLists {}", e);
             return new ResultData.ResultBuilder().badReqest().error().message(e.getMessage()).build();
         }
-        String message = msgSrv.getMessage("gift.share.success", new Object[]{StringUtils.join(emailLists, ", ")}, "", Utils.getCurrentLocale());
-        return new ResultData.ResultBuilder().ok().message(message).build();
+        HashMap<String, String> model = new HashMap<>();
+        model.put("emails", StringUtils.join(emailLists, ", "));
+        return ResponseEntity.ok(model);
+//        String message = msgSrv.getMessage("gift.share.success", new Object[]{StringUtils.join(emailLists, ", ")}, "", Utils.getCurrentLocale());
+//        return new ResultData.ResultBuilder().ok().message(message).build();
     }
 
     //TODO delete afterwards
