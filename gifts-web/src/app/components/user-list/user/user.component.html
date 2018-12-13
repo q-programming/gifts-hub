@@ -24,7 +24,7 @@
        matTooltip="{{'user.settings.public.text'|translate}}" class="mr-1 black">
       <i class="fa fa-link"></i>
     </a>
-    <button mat-stroked-button *ngIf="user.type === AccountType.KID && isUserFamily" class="white-button">
+    <button mat-stroked-button *ngIf="user.type === AccountType.KID && isUserFamily" class="white-button" (click)="editKid()">
       <i class="fa fa-pencil"></i>
     </button>
     <button mat-stroked-button  routerLink="/list/{{user.username}}" class="white-button">

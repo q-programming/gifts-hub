@@ -1,10 +1,11 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {UserService} from "@services/user.service";
 import {SortBy} from "@model/Settings";
-import {MatButtonToggleGroup} from "@angular/material";
+import {MatButtonToggleGroup, MatDialog} from "@angular/material";
 import {NGXLogger} from "ngx-logger";
 import {Family} from "@model/Family";
 import {Account} from "@model/Account";
+import {KidComponent} from "./kid/kid.component";
 
 @Component({
   selector: 'user-list',
@@ -19,7 +20,7 @@ export class UserListComponent implements OnInit {
   withoutFamily: Account[] = [];
   usersByName: Account[] = [];
 
-  constructor(private userSrv: UserService, private logger: NGXLogger) {
+  constructor(private userSrv: UserService, private logger: NGXLogger, public dialog: MatDialog) {
   }
 
   ngOnInit() {
@@ -63,6 +64,22 @@ export class UserListComponent implements OnInit {
   isUserFamily(family: Family): boolean {
     return this.family && this.family.id === family.id
   }
+
+  openKidDialog(kid?: Account) {
+    const dialogRef = this.dialog.open(KidComponent, {
+      panelClass: 'gifts-modal-normal', //TODO class needed
+      //TODO send potential kid data to edit
+      data: {
+        account: kid
+      }
+    });
+    dialogRef.afterClosed().subscribe((done) => {
+      if (done) {
+        console.log(done)
+      }
+    });
+  }
+
 
   trackByFn(index, item) {
     return item.id;

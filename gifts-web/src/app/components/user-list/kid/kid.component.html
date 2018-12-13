@@ -1,0 +1,61 @@
+<h1 mat-dialog-title>
+  <i class="fa fa-child mr-1"></i>
+  Edit add kid</h1>
+<mat-dialog-content>
+  <form [formGroup]="form">
+    <div fxLayout="row wrap" fxLayoutAlign="center center">
+      <div fxFlex="80%" class="text-center">
+        <div>
+          <input #fileInput type="file" (change)="fileChangeListener($event)" style="display:none;">
+          <div><span>{{fileInput.value}}</span></div>
+          <img-cropper #cropper [image]="avatarData" [settings]="cropperSettings"></img-cropper>
+          <img [src]="avatarData.image" [width]="cropperSettings.croppedWidth" [height]="cropperSettings.croppedHeight">
+        </div>
+        <div>
+          <button mat-raised-button (click)="fileInput.click()" class="mb-1">
+            <mat-icon>insert_drive_file</mat-icon>
+            {{'user.settings.avatar.upload' |translate}}
+          </button>
+
+        </div>
+      </div>
+      <div fxFlex="80%">
+        <mat-form-field fxFlex="100%">
+          <input matInput placeholder="Imie" formControlName="name">
+        </mat-form-field>
+      </div>
+      <div fxFlex="80%">
+        <mat-form-field fxFlex="100%">
+          <input matInput placeholder="Nazwisko" formControlName="surname">
+        </mat-form-field>
+      </div>
+      <div fxFlex="80%">
+        <mat-form-field fxFlex="100%">
+          <input matInput placeholder="Login" formControlName="username">
+        </mat-form-field>
+      </div>
+      <div class="mb-2" fxFlex="80%">
+        <mat-slide-toggle formControlName="publicList">
+          {{'user.settings.public.text'|translate}}
+        </mat-slide-toggle>
+      </div>
+      <div [innerHTML]="'user.settings.public.help'|translate" class="help" fxFlex="80%">
+      </div>
+      <div fxFlex="80%" *ngIf="kid.publicList">
+        <mat-form-field fxFlex="100%">
+          <input matInput [value]="publicUrl" #publicLink disabled>
+          <button matSuffix mat-stroked-button matTooltip="{{'user.settings.public.copy.text'|translate}}"
+                  (click)="copyLink(publicLink)">
+            <mat-icon>link</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+    </div>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end" class="pr-2 pl-2">
+  <button mat-raised-button mat-dialog-close>{{'app.general.cancel'|translate}}</button>
+  <button mat-raised-button class="success-button" [disabled]="form.invalid">
+    {{update ? ('app.general.edit'|translate) : ('app.general.create'|translate)}}
+  </button>
+</mat-dialog-actions>

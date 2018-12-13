@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Account, AccountType} from "@model/Account";
 
 @Component({
@@ -12,6 +12,7 @@ export class UserComponent implements OnInit {
   @Input() user: Account;
   @Input() even: boolean;
   @Input() isUserFamily: boolean;
+  @Output() kid = new EventEmitter<Account>();
 
 
   constructor() {
@@ -20,4 +21,9 @@ export class UserComponent implements OnInit {
   ngOnInit() {
   }
 
+  editKid() {
+    if (this.user.type === AccountType.KID) {
+      this.kid.emit(this.user);
+    }
+  }
 }

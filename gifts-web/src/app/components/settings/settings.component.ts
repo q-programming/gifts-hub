@@ -32,7 +32,7 @@ export class SettingsComponent implements OnInit {
               private translate: TranslateService,
               private logger: NGXLogger,
               @Inject(DOCUMENT) private document: Document,
-              public dialog: MatDialog,) {
+              public dialog: MatDialog) {
   }
 
   ngOnInit() {
@@ -132,6 +132,8 @@ export class AvatarUploadComponent implements OnInit {
     this.cropperSettings = new CropperSettings();
     this.cropperSettings.width = 100;
     this.cropperSettings.height = 100;
+    this.cropperSettings.cropperClass = '';
+    this.cropperSettings.croppingClass = '';
     this.cropperSettings.croppedWidth = 100;
     this.cropperSettings.croppedHeight = 100;
     this.cropperSettings.canvasWidth = 350;
@@ -141,6 +143,8 @@ export class AvatarUploadComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    const that = this;
+    that.cropper.setImage(this.avatarData.image);
   }
 
   fileChangeListener($event) {

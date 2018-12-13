@@ -11,8 +11,8 @@
       </mat-button-toggle-group>
     </div>
     <div fxFlex>
-      <button mat-flat-button class="success-button pull-right mr-1 font-smaller">
-        <i class="fa fa-plus"></i><i class="fa fa-child" aria-hidden="true"></i>
+      <button mat-flat-button class="success-button pull-right mr-1 font-smaller" (click)="openKidDialog()">
+        <i class="fa fa-plus"></i><i class="fa fa-child"></i>
         <span fxShow.lt-md="false">
         {{'user.family.add.kid.text'|translate}}
         </span>
@@ -48,7 +48,11 @@
         </mat-panel-title>
       </mat-expansion-panel-header>
       <div *ngFor="let user of family.members;let even=even;trackBy: trackByFn">
-        <user [user]="user" [even]="even" [isUserFamily]="isUserFamily(family)"></user>
+        <user [user]="user"
+              [even]="even"
+              [isUserFamily]="isUserFamily(family)"
+              (kid)="openKidDialog(user)">
+        </user>
       </div>
     </mat-expansion-panel>
     <mat-expansion-panel expanded="true">
@@ -65,7 +69,10 @@
   <ng-container *ngIf="sortBy.value === SortBy.NAME">
     <mat-card>
       <div *ngFor="let user of usersByName;let even=even;trackBy: trackByFn">
-        <user [user]="user" [even]="even"></user>
+        <user [user]="user"
+              [even]="even"
+              (kid)="openKidDialog(user)">
+        </user>
       </div>
     </mat-card>
   </ng-container>
