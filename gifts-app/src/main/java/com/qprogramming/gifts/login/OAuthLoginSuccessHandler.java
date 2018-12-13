@@ -100,6 +100,7 @@ public class OAuthLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
         account.setType(AccountType.FACEBOOK);
         String locale = _propertyService.getDefaultLang();
         setLocale(account, locale);
+        setUsername(account);
         account = _accountService.createAcount(account);
         byte[] userProfileImage = facebook.userOperations().getUserProfileImage();
         _accountService.createAvatar(account, userProfileImage);
@@ -121,6 +122,7 @@ public class OAuthLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
         account.setEmail(details.get(EMAIL));
         account.setEnabled(true);
         account.setType(AccountType.GOOGLE);
+        setUsername(account);
         String locale = details.get(LOCALE);
         setLocale(account, locale);
         account = _accountService.createAcount(account);
@@ -131,6 +133,16 @@ public class OAuthLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
         }
         LOG.debug("Google+ account has been created with id:{} and username{}", account.getId(), account.getUsername());
         return account;
+    }
+
+    private void setUsername(Account account) {
+        String userString = account.getEmail().split("@")[0];
+        StringBuilder username = new StringBuilder(userString.replace(".", "_"));
+        Optional<Account> optionalAccount = _accountService.findByUsername(username.toString());
+        if (optionalAccount.isPresent()) {
+            username.append("_").append(account.getType().getCode());
+        }
+        account.setUsername(username.toString());
     }
 
     private void setLocale(Account account, String locale) {
