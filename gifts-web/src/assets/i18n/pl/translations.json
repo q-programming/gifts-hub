@@ -302,16 +302,16 @@
       "delete": {
         "error": "Nie możesz usunąć konta dziecka ponieważ nie jesteś administratorem rodziny",
         "kid": {
-          "0": "Usuń konto dziecka",
           "confirm": "Jesteś pewień, że chcesz usunąć to konto dziecka? Operacja jest nie odwracalna i wraz z kontem zostaną usunięte wszystkie prezenty oraz rezerwacje na nich",
-          "success": "Konto dziecka zostało usunięte"
+          "success": "Konto dziecka zostało usunięte",
+          "text": "Usuń konto dziecka"
         }
       },
       "edit": {
         "help": "Edytuj członków rodziny. Dodaj lub usuń użytkowników, którzy mają już konto w aplikacji.",
         "kid": {
-          "0": "Edytuj dziecko",
-          "success": "Dane dziecka zostały zaktualizowane"
+          "success": "Dane dziecka zostały zaktualizowane",
+          "text": "Edytuj dziecko"
         },
         "success": {
           "0": "Rodzina została zaktualizowana",
@@ -388,7 +388,7 @@
       "text": "Zarejestruj",
       "username": {
         "chars": "Proszę używać tylko małych dużych liter, cyfr i lub podkreślenia",
-        "exists": "Użytkownik z loginem"
+        "exists": "Użytkownik z tym loginem już istnieje"
       }
     },
     "settings": {

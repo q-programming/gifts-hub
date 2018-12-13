@@ -4,7 +4,9 @@ import {CropperSettings, ImageCropperComponent} from "ngx-img-cropper";
 import {Account} from "@model/Account";
 import {DOCUMENT} from "@angular/common";
 import {AlertService} from "@services/alert.service";
-import {FormControl, FormGroup} from "@angular/forms";
+import {FormControl, FormGroup, Validators} from "@angular/forms";
+import {ApiService} from "@services/api.service";
+import {environment} from "@env/environment";
 
 @Component({
   selector: 'app-kid',
@@ -26,6 +28,7 @@ export class KidComponent implements OnInit {
   constructor(private dialogRef: MatDialogRef<KidComponent>,
               @Inject(MAT_DIALOG_DATA) public data: any,
               @Inject(DOCUMENT) private document: Document,
+              private apiSrv: ApiService,
               private alertSrv: AlertService) {
     this.kid = data.account;
     if (data.account.id) {
@@ -33,9 +36,9 @@ export class KidComponent implements OnInit {
       this.update = true;
     }
     this.form = new FormGroup({
-        name: new FormControl(this.kid.name),
-        surname: new FormControl(this.kid.surname),
-        username: new FormControl(this.kid.username),
+        name: new FormControl(this.kid.name, [Validators.required]),
+        surname: new FormControl(this.kid.surname, [Validators.required]),
+        username: new FormControl(this.kid.username, [Validators.required]),
         publicList: new FormControl(this.kid.publicList)
       }
     );
@@ -52,6 +55,14 @@ export class KidComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.form.controls.username.valueChanges
+      .debounceTime(300).subscribe(value => {
+      this.apiSrv.post(`${environment.account_url}/validate-username`, value).subscribe(() => {
+      }, error => {
+        this.form.controls.username.setErrors({username: true})
+      })
+    })
+
 
   }
 
@@ -77,6 +88,17 @@ export class KidComponent implements OnInit {
     document.execCommand('copy');
     element.setSelectionRange(0, 0);
     this.alertSrv.success('user.settings.public.copy.success');
+  }
+
+  commitKid(valid: boolean) {
+    if (valid) {
+      this.kid.name = this.form.controls.name.value;
+      this.kid.surname = this.form.controls.surname.value;
+      this.kid.username = this.form.controls.username.value;
+      this.kid.publicList = this.form.controls.publicList.value;
+      this.kid.avatar = this.avatarData.image;
+      this.dialogRef.close(this.kid);
+    }
   }
 
 }

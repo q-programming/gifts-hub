@@ -302,16 +302,16 @@
       "delete": {
         "error": "You cannot remove kid's account because you are not family administrator",
         "kid": {
-          "0": "Delete kid account",
           "confirm": "Are you sure you want to delete this kid's account? This operation cannot be undone and together with account all gifts and theirs reservation will be removed",
-          "success": "Kid's account has was removed"
+          "success": "Kid's account has was removed",
+          "text": "Delete kid account"
         }
       },
       "edit": {
         "help": "Edit your family members. Add or remove existing application users.",
         "kid": {
-          "0": "Edit kid",
-          "success": "Kid data was updated"
+          "success": "Kid data was updated",
+          "text": "Edit kid"
         },
         "success": {
           "0": "Family has been updated",
@@ -388,7 +388,7 @@
       "text": "Register",
       "username": {
         "chars": "Please use only small/large letters numbers and/or underscore",
-        "exists": "User with username"
+        "exists": "User with that username already exists"
       }
     },
     "settings": {

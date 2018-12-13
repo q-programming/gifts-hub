@@ -1,6 +1,6 @@
 <h1 mat-dialog-title>
   <i class="fa fa-child mr-1"></i>
-  {{update ? ('app.general.edit'|translate) : ('app.general.create'|translate)}}
+  {{update ? ('user.family.edit.kid.text'|translate) : ('user.family.add.kid.text'|translate)}}
 </h1>
 <mat-dialog-content>
   <form [formGroup]="form">
@@ -9,8 +9,10 @@
         <div>
           <input #fileInput type="file" (change)="fileChangeListener($event)" style="display:none;">
           <div><span>{{fileInput.value}}</span></div>
-          <img-cropper #cropper [image]="avatarData" [settings]="cropperSettings" *ngIf="uploadInProgress"></img-cropper>
-          <img *ngIf="avatarData.image && !uploadInProgress" [src]="avatarData.image" [width]="cropperSettings.croppedWidth" [height]="cropperSettings.croppedHeight">
+          <img-cropper #cropper [image]="avatarData" [settings]="cropperSettings"
+                       *ngIf="uploadInProgress"></img-cropper>
+          <img *ngIf="avatarData.image && !uploadInProgress" [src]="avatarData.image"
+               [width]="cropperSettings.croppedWidth" [height]="cropperSettings.croppedHeight">
         </div>
         <div>
           <button mat-raised-button (click)="fileInput.click()" class="mb-1">
@@ -22,17 +24,20 @@
       </div>
       <div fxFlex="80%">
         <mat-form-field fxFlex="100%">
-          <input matInput placeholder="Imie" formControlName="name">
+          <input matInput placeholder="Imie" formControlName="name" required>
         </mat-form-field>
       </div>
       <div fxFlex="80%">
         <mat-form-field fxFlex="100%">
-          <input matInput placeholder="Nazwisko" formControlName="surname">
+          <input matInput placeholder="Nazwisko" formControlName="surname" required>
         </mat-form-field>
       </div>
       <div fxFlex="80%">
         <mat-form-field fxFlex="100%">
-          <input matInput placeholder="Login" formControlName="username">
+          <input matInput placeholder="Login" formControlName="username" required>
+          <mat-error *ngIf="form.controls.username.hasError('username')">
+            {{'user.register.username.exists'|translate}}
+          </mat-error>
         </mat-form-field>
       </div>
       <div class="mb-2" fxFlex="80%">
@@ -51,12 +56,17 @@
           </button>
         </mat-form-field>
       </div>
+      <div fxFlex="80%" class="text-center" *ngIf="kid.id && update">
+        <button mat-flat-button color="warn">
+          {{'user.family.delete.kid.text'|translate}}
+        </button>
+      </div>
     </div>
   </form>
 </mat-dialog-content>
 <mat-dialog-actions align="end" class="pr-2 pl-2">
   <button mat-raised-button mat-dialog-close>{{'app.general.cancel'|translate}}</button>
-  <button mat-raised-button class="success-button" [disabled]="form.invalid">
-    {{update ? ('app.general.edit'|translate) : ('app.general.create'|translate)}}
+  <button mat-raised-button class="success-button" [disabled]="form.invalid" (click)="commitKid(form.valid)">
+    {{update ? ('user.family.edit.kid.text'|translate) : ('user.family.add.kid.text'|translate)}}
   </button>
 </mat-dialog-actions>

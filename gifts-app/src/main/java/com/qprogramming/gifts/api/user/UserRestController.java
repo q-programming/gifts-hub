@@ -442,7 +442,6 @@ public class UserRestController {
 
 
     @RequestMapping(value = "/validate-email", method = RequestMethod.POST)
-    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity validateEmail(@RequestBody String email) {
         Optional<Account> acc = accountService.findByEmail(email);
         if (!acc.isPresent()) {
@@ -452,13 +451,12 @@ public class UserRestController {
     }
 
     @RequestMapping(value = "/validate-username", method = RequestMethod.POST)
-    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity validateUsername(@RequestBody String username) {
         Optional<Account> optionalAccount = accountService.findByUsername(username);
         if (!optionalAccount.isPresent()) {
             return ResponseEntity.ok(new ResultData.ResultBuilder().ok().build());
         }
-        return ResponseEntity.ok(new ResultData.ResultBuilder().error().message("User exists").build());
+        return ResponseEntity.status(HttpStatus.CONFLICT).build();
     }
 
     @PreAuthorize("hasRole('ROLE_USER')")
