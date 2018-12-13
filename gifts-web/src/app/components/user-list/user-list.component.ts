@@ -65,10 +65,24 @@ export class UserListComponent implements OnInit {
     return this.family && this.family.id === family.id
   }
 
-  openKidDialog(kid?: Account) {
+  openKidDialog() {
+    let kid = new Account();
     const dialogRef = this.dialog.open(KidComponent, {
       panelClass: 'gifts-modal-normal', //TODO class needed
-      //TODO send potential kid data to edit
+      data: {
+        account: kid
+      }
+    });
+    dialogRef.afterClosed().subscribe((done) => {
+      if (done) {
+        console.log(done)
+      }
+    });
+  }
+
+  editKidDialog(kid: Account) {
+    const dialogRef = this.dialog.open(KidComponent, {
+      panelClass: 'gifts-modal-normal', //TODO class needed
       data: {
         account: kid
       }

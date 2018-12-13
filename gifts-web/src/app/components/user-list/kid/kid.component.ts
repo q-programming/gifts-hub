@@ -16,18 +16,21 @@ export class KidComponent implements OnInit {
   @ViewChild('cropper', undefined)
   cropper: ImageCropperComponent;
   cropperSettings: CropperSettings;
-  kid = new Account();
+  kid: Account;
   avatarData: any = {};
   form: FormGroup;
+  update: boolean;
+  uploadInProgress: boolean;
 
 
   constructor(private dialogRef: MatDialogRef<KidComponent>,
               @Inject(MAT_DIALOG_DATA) public data: any,
               @Inject(DOCUMENT) private document: Document,
               private alertSrv: AlertService) {
-    if (data.account) {
-      this.kid = data.account;
+    this.kid = data.account;
+    if (data.account.id) {
       this.avatarData.image = this.kid.avatar;
+      this.update = true;
     }
     this.form = new FormGroup({
         name: new FormControl(this.kid.name),
@@ -53,6 +56,7 @@ export class KidComponent implements OnInit {
   }
 
   fileChangeListener($event) {
+    this.uploadInProgress = true;
     let image: any = new Image();
     let file: File = $event.target.files[0];
     const myReader: FileReader = new FileReader();

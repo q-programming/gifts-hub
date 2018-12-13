@@ -124,6 +124,7 @@ export class AvatarUploadComponent implements OnInit {
   cropperSettings: CropperSettings;
   account: Account;
   avatarData: any;
+  uploadInProgress:boolean;
 
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any) {
@@ -148,6 +149,7 @@ export class AvatarUploadComponent implements OnInit {
   }
 
   fileChangeListener($event) {
+    this.uploadInProgress = true;
     let image: any = new Image();
     let file: File = $event.target.files[0];
     const myReader: FileReader = new FileReader();

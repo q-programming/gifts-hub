@@ -51,7 +51,7 @@
         <user [user]="user"
               [even]="even"
               [isUserFamily]="isUserFamily(family)"
-              (kid)="openKidDialog(user)">
+              (kid)="editKidDialog(user)">
         </user>
       </div>
     </mat-expansion-panel>
@@ -71,7 +71,7 @@
       <div *ngFor="let user of usersByName;let even=even;trackBy: trackByFn">
         <user [user]="user"
               [even]="even"
-              (kid)="openKidDialog(user)">
+              (kid)="editKidDialog(user)">
         </user>
       </div>
     </mat-card>
