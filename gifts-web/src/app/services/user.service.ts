@@ -62,4 +62,11 @@ export class UserService {
     return accounts
   }
 
+  addKid(kid: Account): Observable<Account> {
+    return this.apiSrv.post(`${environment.account_url}/kid-add`, kid)
+  }
+
+  updateKid(kid: Account): Observable<Account> {
+    return this.apiSrv.post(`${environment.account_url}/kid-update`, kid)
+  }
 }

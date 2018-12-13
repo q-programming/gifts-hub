@@ -384,16 +384,15 @@ public class UserRestController {
     public ResponseEntity<?> addKid(@RequestBody @Valid KidForm form) {
         Optional<Account> optionalAccount = accountService.findByUsername(form.getUsername());
         if (optionalAccount.isPresent()) {
-            String message = msgSrv.getMessage("user.register.username.exists") + " " + msgSrv.getMessage("user.register.alreadyexists");
-            return new ResultData.ResultBuilder().badReqest().error().message(msgSrv.getMessage(message)).build();
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("username");
         }
         Account currentAccount = Utils.getCurrentAccount();
         Family family = familyService.getFamily(currentAccount);
         if (family == null) {
-            return new ResultData.ResultBuilder().badReqest().message(msgSrv.getMessage("user.family.add.kid.error")).build();
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("family");
         }
         if (!family.getAdmins().contains(currentAccount)) {
-            return new ResultData.ResultBuilder().badReqest().message(msgSrv.getMessage("user.family.admin.error")).build();
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("family_admin");
         }
         Account kidAccount = form.createAccount();
         kidAccount = accountService.createKidAccount(kidAccount);
@@ -413,10 +412,10 @@ public class UserRestController {
         Account currentAccount = Utils.getCurrentAccount();
         Family family = familyService.getFamily(currentAccount);
         if (family == null) {
-            return new ResultData.ResultBuilder().badReqest().message(msgSrv.getMessage("user.family.add.kid.error")).build();
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("family");
         }
         if (!family.getAdmins().contains(currentAccount)) {
-            return new ResultData.ResultBuilder().badReqest().message(msgSrv.getMessage("user.family.admin.error")).build();
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("family_admin");
         }
         Account kidAccount;
         try {

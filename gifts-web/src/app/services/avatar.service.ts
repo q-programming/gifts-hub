@@ -70,4 +70,15 @@ export class AvatarService {
             });
         })
     }
+
+  /**
+   * Reloads account avatar by removing it from locastorage and fetching it once more
+   * @param account account for which avatar will be reloaded
+   */
+  reloadAvatar(account: Account){
+    localStorage.removeItem("avatar:" + account.username);
+    this.getUserAvatar(account).subscribe(avatar => {
+      account.avatar = avatar;
+    });
+    }
 }

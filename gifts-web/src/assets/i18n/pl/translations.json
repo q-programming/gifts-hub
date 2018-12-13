@@ -142,10 +142,10 @@
       "wrongType": "Wybrany plik nie był poprawnym plikiem excel"
     },
     "link": {
-      "0": "Linki",
       "add": "Dodaj więcej linków",
       "error": "Zły format adresu url. Proszę użyć pełnego adresu wraz z http://",
-      "remove": "Usuń link"
+      "remove": "Usuń link",
+      "text": "Linki"
     },
     "list": {
       "0": "Lista życzeń  użytkownika",
@@ -277,7 +277,7 @@
       "add": {
         "kid": {
           "error": "Proszę najpierw stworzyć rodzinę",
-          "help": "Dodaj konto typu dziecko. To specjalny rodzaj konta, na które nie można się zalogować. Tylko administrator rodziny może edytować i dodawać prezenty dla tego konta",
+          "help": "Dodaj konto typu dziecko. To specjalny rodzaj konta, na które nie można się zalogować.<br> Tylko administrator rodziny może edytować i dodawać prezenty dla tego konta",
           "success": "Nowe dziecko zostało dodane do twojej rodziny",
           "text": "Dodaj dziecko"
         }

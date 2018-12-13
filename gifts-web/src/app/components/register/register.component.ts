@@ -32,10 +32,10 @@ export class RegisterComponent implements OnInit {
     constructor(private formBuilder: FormBuilder,
                 private router: Router,
                 private translate: TranslateService,
-                private apiService: ApiService,
+                private apiSrv: ApiService,
                 private alertSrv: AlertService,
                 private authSrv: AuthenticationService) {
-        this.apiService.get(`${environment.app_url}/default-language`).subscribe(defaults => {
+        this.apiSrv.get(`${environment.app_url}/default-language`).subscribe(defaults => {
             if (defaults) {
                 let lang = defaults.language;
                 this.translate.setDefaultLang(lang);
@@ -64,6 +64,13 @@ export class RegisterComponent implements OnInit {
             .subscribe(value => {
                 this.currentPass = value;
             });
+      this.baseForm.controls.username.valueChanges
+        .debounceTime(300).subscribe(value => {
+        this.apiSrv.post(`${environment.account_url}/validate-username`, value).subscribe(() => {
+        }, error => {
+          this.baseForm.controls.username.setErrors({username: true})
+        })
+      })
     }
 
     matchingPasswords(c: AbstractControl): { [key: string]: any } {
@@ -80,7 +87,7 @@ export class RegisterComponent implements OnInit {
 
     register() {
         if (this.baseForm.valid && this.passwordForm.valid) {
-            this.apiService.post(`${environment.account_url}/register`, {
+            this.apiSrv.post(`${environment.account_url}/register`, {
                 name: this.baseForm.controls.name.value,
                 surname: this.baseForm.controls.surname.value,
                 email: this.baseForm.controls.email.value,

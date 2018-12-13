@@ -17,10 +17,10 @@ export class ErrorComponent implements OnInit {
 
     constructor(private activatedRoute: ActivatedRoute,
                 private translate: TranslateService,
-                private apiService: ApiService,
+                private apiSrv: ApiService,
                 private authSrv:AuthenticationService) {
         if(!this.authSrv.currentAccount){
-            this.apiService.get(`${environment.app_url}/default-language`).subscribe(defaults => {
+            this.apiSrv.get(`${environment.app_url}/default-language`).subscribe(defaults => {
                 if (defaults) {
                     let lang = defaults.language;
                     this.translate.setDefaultLang(lang);

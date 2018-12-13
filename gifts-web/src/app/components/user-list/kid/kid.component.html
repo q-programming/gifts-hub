@@ -3,10 +3,16 @@
   {{update ? ('user.family.edit.kid.text'|translate) : ('user.family.add.kid.text'|translate)}}
 </h1>
 <mat-dialog-content>
+  <div class="help text-center" [innerHTML]="'user.family.add.kid.help'|translate" *ngIf="!update">
+  </div>
   <form [formGroup]="form">
     <div fxLayout="row wrap" fxLayoutAlign="center center">
       <div fxFlex="80%" class="text-center">
         <div>
+          <h3>
+            <mat-icon>assignment_ind</mat-icon>
+            {{'user.settings.avatar.text'|translate}}
+          </h3>
           <input #fileInput type="file" (change)="fileChangeListener($event)" style="display:none;">
           <div><span>{{fileInput.value}}</span></div>
           <img-cropper #cropper [image]="avatarData" [settings]="cropperSettings"
@@ -19,22 +25,21 @@
             <mat-icon>insert_drive_file</mat-icon>
             {{'user.settings.avatar.upload' |translate}}
           </button>
-
         </div>
       </div>
       <div fxFlex="80%">
         <mat-form-field fxFlex="100%">
-          <input matInput placeholder="Imie" formControlName="name" required>
+          <input matInput placeholder="{{'user.firstname.text'|translate}}" formControlName="name" required>
         </mat-form-field>
       </div>
       <div fxFlex="80%">
         <mat-form-field fxFlex="100%">
-          <input matInput placeholder="Nazwisko" formControlName="surname" required>
+          <input matInput placeholder="{{'user.surname.text'|translate}}" formControlName="surname" required>
         </mat-form-field>
       </div>
       <div fxFlex="80%">
-        <mat-form-field fxFlex="100%">
-          <input matInput placeholder="Login" formControlName="username" required>
+        <mat-form-field fxFlex="100%" *ngIf="!update">
+          <input matInput placeholder="{{'user.username'|translate}}" formControlName="username">
           <mat-error *ngIf="form.controls.username.hasError('username')">
             {{'user.register.username.exists'|translate}}
           </mat-error>

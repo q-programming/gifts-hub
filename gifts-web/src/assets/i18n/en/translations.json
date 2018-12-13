@@ -142,10 +142,10 @@
       "wrongType": "Uploaded file was not valid excel file"
     },
     "link": {
-      "0": "Links",
       "add": "Add more links",
       "error": "Wrong url format. Please remember to use full address including http://",
-      "remove": "Remove link"
+      "remove": "Remove link",
+      "text": "Links"
     },
     "list": {
       "0": "Gift list of",
@@ -277,7 +277,7 @@
       "add": {
         "kid": {
           "error": "Please create family first",
-          "help": "Add new account of type kid. It is a special type of account, on which you cannot login. Only family administrator is able to edit and add gifts for that account",
+          "help": "Add new account of type kid. It is a special type of account, on which you cannot login. <br>\nOnly family administrator is able to edit and add gifts for that account",
           "success": "New kid was added to your family",
           "text": "Add kid"
         }

@@ -6,6 +6,8 @@ import {NGXLogger} from "ngx-logger";
 import {Family} from "@model/Family";
 import {Account} from "@model/Account";
 import {KidComponent} from "./kid/kid.component";
+import {AlertService} from "@services/alert.service";
+import {AvatarService} from "@services/avatar.service";
 
 @Component({
   selector: 'user-list',
@@ -20,7 +22,11 @@ export class UserListComponent implements OnInit {
   withoutFamily: Account[] = [];
   usersByName: Account[] = [];
 
-  constructor(private userSrv: UserService, private logger: NGXLogger, public dialog: MatDialog) {
+  constructor(private userSrv: UserService,
+              private alertSrv: AlertService,
+              private avatarSrv: AvatarService,
+              private logger: NGXLogger,
+              public dialog: MatDialog) {
   }
 
   ngOnInit() {
@@ -65,7 +71,7 @@ export class UserListComponent implements OnInit {
     return this.family && this.family.id === family.id
   }
 
-  openKidDialog() {
+  addKidDialog() {
     let kid = new Account();
     const dialogRef = this.dialog.open(KidComponent, {
       panelClass: 'gifts-modal-normal', //TODO class needed
@@ -73,12 +79,19 @@ export class UserListComponent implements OnInit {
         account: kid
       }
     });
-    dialogRef.afterClosed().subscribe((done) => {
-      if (done) {
-        console.log(done)
+    dialogRef.afterClosed().subscribe((kid) => {
+      if (kid) {
+        this.userSrv.addKid(kid).subscribe(newKid => {
+          if (newKid) {
+            this.alertSrv.success('user.family.add.kid.success')
+          }
+        }, error => {
+          this.switchErrors(error);
+        })
       }
     });
   }
+
 
   editKidDialog(kid: Account) {
     const dialogRef = this.dialog.open(KidComponent, {
@@ -87,13 +100,34 @@ export class UserListComponent implements OnInit {
         account: kid
       }
     });
-    dialogRef.afterClosed().subscribe((done) => {
-      if (done) {
-        console.log(done)
+    dialogRef.afterClosed().subscribe((kid) => {
+      if (kid) {
+        this.userSrv.updateKid(kid).subscribe(newKid => {
+          if (newKid) {
+            this.avatarSrv.reloadAvatar(kid);
+            this.alertSrv.success('user.family.edit.kid.success')
+          }
+        }, error => {
+          this.switchErrors(error);
+        })
       }
     });
   }
 
+  private switchErrors(error) {
+    this.logger.error(error);
+    switch (error.error) {
+      case 'family':
+        this.alertSrv.error('user.register.username.exists');
+        break;
+      case 'family_admin':
+        this.alertSrv.error('user.family.admin.error');
+        break;
+      case 'username':
+        this.alertSrv.error('user.family.admin.error');
+        break;
+    }
+  }
 
   trackByFn(index, item) {
     return item.id;

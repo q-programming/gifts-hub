@@ -7,6 +7,7 @@ import {AlertService} from "@services/alert.service";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {ApiService} from "@services/api.service";
 import {environment} from "@env/environment";
+import {getBase64Image} from "../../../utils/utils";
 
 @Component({
   selector: 'app-kid',
@@ -96,7 +97,7 @@ export class KidComponent implements OnInit {
       this.kid.surname = this.form.controls.surname.value;
       this.kid.username = this.form.controls.username.value;
       this.kid.publicList = this.form.controls.publicList.value;
-      this.kid.avatar = this.avatarData.image;
+      this.kid.avatar = getBase64Image(this.avatarData.image);
       this.dialogRef.close(this.kid);
     }
   }

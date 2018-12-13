@@ -11,7 +11,7 @@
       </mat-button-toggle-group>
     </div>
     <div fxFlex>
-      <button mat-flat-button class="success-button pull-right mr-1 font-smaller" (click)="openKidDialog()">
+      <button mat-flat-button class="success-button pull-right mr-1 font-smaller" (click)="addKidDialog()">
         <i class="fa fa-plus"></i><i class="fa fa-child"></i>
         <span fxShow.lt-md="false">
         {{'user.family.add.kid.text'|translate}}
@@ -28,13 +28,19 @@
   <!--Names header-->
   <div fxLayout="row" fxShow.lt-sm="false" class="mt-2">
     <div fxFlex>
-      Imię nazwisko
+      {{'user.fullname'|translate}}
     </div>
     <div fxFlex>
-      E-mail
+      {{'user.email'|translate}}
     </div>
     <div fxFlex="10%">
-      Akcje
+      <!--<i class="fa fa-plus-circle filter-active ng-hide" ng-show="filteredCategory"></i>-->
+      <button mat-icon-button>
+        <i id="filter-btn" class="fa fa-lg fa-filter clickable"></i>
+      </button>
+      <button mat-icon-button>
+        <i class="fa fa-cogs clickable" matTooltip="{{'main.action'|translate}}"></i>
+      </button>
     </div>
   </div>
 </mat-card>

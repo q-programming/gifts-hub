@@ -14,7 +14,7 @@ export class AuthenticationService {
 
     currentAccount: Account;
 
-    constructor(private apiService: ApiService, private avatarSrv: AvatarService, private translate: TranslateService, private alertSrv: AlertService, private logger: NGXLogger) {
+    constructor(private apiSrv: ApiService, private avatarSrv: AvatarService, private translate: TranslateService, private alertSrv: AlertService, private logger: NGXLogger) {
     }
 
     /**
@@ -23,7 +23,7 @@ export class AuthenticationService {
      * If this succeeds , current user is fetched and stored into currentAccount , so that it can be reused across whole application
      */
     initUser() {
-        const promise = this.apiService.get(environment.refresh_token_url, {}).toPromise()
+        const promise = this.apiSrv.get(environment.refresh_token_url, {}).toPromise()
             .then(res => {
                 if (res.access_token !== null) {
                     // this.currentAccount = {token: res.access_token};
@@ -54,7 +54,7 @@ export class AuthenticationService {
      * Logouts currently logged user by calling api and setting currentAccount as null
      */
     logout() {
-        return this.apiService.post(environment.logout_url, {})
+        return this.apiSrv.post(environment.logout_url, {})
             .map(() => {
                 this.currentAccount = null;
             });
@@ -64,7 +64,7 @@ export class AuthenticationService {
      * Return currently logged in account information
      */
     getMyInfo() {
-        return this.apiService.post(environment.whoami_url, {},).map(account => this.currentAccount = account);
+        return this.apiSrv.post(environment.whoami_url, {},).map(account => this.currentAccount = account);
     }
 
     /**
@@ -82,7 +82,7 @@ export class AuthenticationService {
         body.set('username', username);
         body.set('password', password);
         return new Observable((observable) => {
-            this.apiService.login(environment.login_url, body).subscribe((res) => {
+            this.apiSrv.login(environment.login_url, body).subscribe((res) => {
                 if (res.access_token !== null) {
                     this.getMyInfo().subscribe(user => {
                         this.currentAccount = user as Account;

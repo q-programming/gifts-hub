@@ -219,11 +219,9 @@ public class UserRestControllerTest {
     @Test
     public void validateUsernameExists() throws Exception {
         when(accSrvMock.findByUsername(testAccount.getUsername())).thenReturn(Optional.of(testAccount));
-        MvcResult mvcResult = userRestCtrl.perform(post(API_USER_VALIDATE_USERNAME)
+        userRestCtrl.perform(post(API_USER_VALIDATE_USERNAME)
                 .contentType(APPLICATION_JSON_UTF8)
-                .content(testAccount.getUsername())).andReturn();
-        String contentAsString = mvcResult.getResponse().getContentAsString();
-        assertTrue(contentAsString.contains(ResultData.Code.ERROR.toString()));
+                .content(testAccount.getUsername())).andExpect(status().is4xxClientError());
     }
 
     @Test
@@ -383,7 +381,7 @@ public class UserRestControllerTest {
         form.setUsername("john");
         userRestCtrl.perform(post(API_USER_KID_ADD)
                 .contentType(APPLICATION_JSON_UTF8)
-                .content(convertObjectToJsonBytes(form))).andExpect(status().isBadRequest());
+                .content(convertObjectToJsonBytes(form))).andExpect(status().is4xxClientError());
     }
 
     @Test
@@ -398,7 +396,7 @@ public class UserRestControllerTest {
         form.setUsername("john");
         userRestCtrl.perform(post(API_USER_KID_ADD)
                 .contentType(APPLICATION_JSON_UTF8)
-                .content(convertObjectToJsonBytes(form))).andExpect(status().isBadRequest());
+                .content(convertObjectToJsonBytes(form))).andExpect(status().is4xxClientError());
     }
 
     @Test
@@ -410,7 +408,7 @@ public class UserRestControllerTest {
         form.setUsername(testAccount.getUsername());
         userRestCtrl.perform(post(API_USER_KID_ADD)
                 .contentType(APPLICATION_JSON_UTF8)
-                .content(convertObjectToJsonBytes(form))).andExpect(status().isBadRequest());
+                .content(convertObjectToJsonBytes(form))).andExpect(status().is4xxClientError());
     }
 
     @Test
@@ -473,7 +471,7 @@ public class UserRestControllerTest {
         form.setId(KID_ID);
         userRestCtrl.perform(post(API_USER_KID_UPDATE)
                 .contentType(APPLICATION_JSON_UTF8)
-                .content(convertObjectToJsonBytes(form))).andExpect(status().isBadRequest());
+                .content(convertObjectToJsonBytes(form))).andExpect(status().is4xxClientError());
     }
 
     @Test
@@ -489,7 +487,7 @@ public class UserRestControllerTest {
         when(familyServiceMock.getFamily(testAccount)).thenReturn(family);
         userRestCtrl.perform(post(API_USER_KID_UPDATE)
                 .contentType(APPLICATION_JSON_UTF8)
-                .content(convertObjectToJsonBytes(form))).andExpect(status().isBadRequest());
+                .content(convertObjectToJsonBytes(form))).andExpect(status().is4xxClientError());
     }
 
     @Test
