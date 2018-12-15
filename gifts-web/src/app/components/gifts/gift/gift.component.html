@@ -28,12 +28,18 @@
     </span>
   </div>
   <div fxFlex>
+    <i class="fa fa-user-secret" *ngIf="gift.hidden" matTooltip="{{'gift.hidden.text'|translate}}"></i>
     <strong>{{gift.name}}</strong>
   </div>
   <div fxFlex>
     {{gift.description}}
   </div>
-  <div fxFlex>
+  <div fxFlex="10%">
+    <div *ngFor="let link of gift.links;let i = index">
+      <a [href]="link" target="_blank">Link</a>
+    </div>
+  </div>
+  <div fxFlex="5%">
     <span *ngFor="let engine of gift.engines" class="search-engines">
       <a class="pull-right" href="{{engine.searchString + gift.name}}" target="_blank"
          matTooltip="{{'gift.search.with'|translate}} {{engine.name}}">

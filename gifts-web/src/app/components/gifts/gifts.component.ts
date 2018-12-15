@@ -27,6 +27,7 @@ export class GiftsComponent implements OnInit {
   isUserList: boolean;
   isFamilyAdmin: boolean;
   currentAccount: Account;
+  viewedAccount: Account;
   //gifts
   categorizedGifts: Map<string, Gift[]>;
   realizedGifts: Gift[] = [];
@@ -118,7 +119,7 @@ export class GiftsComponent implements OnInit {
   private removeGiftFromCollection(gift: Gift) {
     if (gift.status === GiftStatus.REALISED) {
       _.remove(this.realizedGifts, g => g.id === gift.id);
-    } else if (gift.category.id === undefined) {
+    } else if (gift.category.name === "") {
       _.remove(this.unCategorizedGifts, g => g.id === gift.id);
     } else {
       Object.keys(this.categorizedGifts).some((key) => {
@@ -136,14 +137,17 @@ export class GiftsComponent implements OnInit {
     const dialogRef = this.dialog.open(GiftDialogComponent, {
       panelClass: 'gifts-modal-normal', //TODO class needed
       data: {
-        gift: gift
+        gift: gift,
+        familyUser: this.currentAccount.id !== this.viewedAccount.id
       }
     });
     dialogRef.afterClosed().subscribe((gift) => {
       if (gift) {
+        gift.userId = this.viewedAccount.id;
         this.giftSrv.createGift(gift).subscribe(newGift => {
           if (newGift) {
-            this.alertSrv.success('user.family.add.kid.success')
+            this.getGifts();
+            this.alertSrv.success('gift.add.success', {name: newGift.name})
           }
         }, error => {
           this.switchErrors(error);
@@ -151,24 +155,31 @@ export class GiftsComponent implements OnInit {
       }
     });
   }
-  editGiftDialog(gift:Gift) {
+
+  editGiftDialog(gift: Gift) {
     const dialogRef = this.dialog.open(GiftDialogComponent, {
       panelClass: 'gifts-modal-normal', //TODO class needed
       data: {
-        gift: gift
+        gift: gift,
+        familyUser: this.currentAccount.id !== this.viewedAccount.id
       }
     });
     dialogRef.afterClosed().subscribe((gift) => {
       if (gift) {
         this.giftSrv.editGift(gift).subscribe(edited => {
           if (edited) {
-            this.alertSrv.success('user.family.add.kid.success')
+            this.getGifts();
+            this.alertSrv.success('gift.edit.success')
           }
         }, error => {
           this.switchErrors(error);
         })
       }
     });
+  }
+
+  changeViewedAccount(account: Account) {
+    this.viewedAccount = account;
   }
 
 
@@ -177,6 +188,10 @@ export class GiftsComponent implements OnInit {
   }
 
   private switchErrors(error: any) {
-    //TODO implement
+    if (error.status === '404') {
+      this.alertSrv.error('error.account.notFound')
+    } else if (error.status === '409') {
+      this.alertSrv.error('user.family.admin.error')
+    }
   }
 }

@@ -96,6 +96,7 @@ public class TestUtil {
 
     public static SearchEngine createSearchEngine(String name, String link, String icon) {
         SearchEngine engine = new SearchEngine();
+        engine.setId(1L);
         engine.setName(name);
         engine.setSearchString(link);
         engine.setIcon(icon);
@@ -107,7 +108,7 @@ public class TestUtil {
         Gift gift = new Gift();
         gift.setId(id);
         gift.setName("name");
-        gift.setLink("http://google.ocm");
+        gift.addLink("http://google.ocm");
         gift.setUserId(account.getId());
         return gift;
     }

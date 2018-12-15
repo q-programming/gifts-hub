@@ -8,10 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 public class Gift implements Serializable, Comparable<Gift> {
@@ -27,11 +24,8 @@ public class Gift implements Serializable, Comparable<Gift> {
     @Column(columnDefinition = "text")
     private String description;
 
-    @Column(columnDefinition = "text")
-    private String link;
-
     @ElementCollection
-    private List<String> links;
+    private Set<String> links = new HashSet<>();
 
     @Column
     private String userId;
@@ -73,14 +67,6 @@ public class Gift implements Serializable, Comparable<Gift> {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getLink() {
-        return link;
-    }
-
-    public void setLink(String link) {
-        this.link = link;
     }
 
     public String getUserId() {
@@ -144,14 +130,14 @@ public class Gift implements Serializable, Comparable<Gift> {
         this.claimed = claimed;
     }
 
-    public List<String> getLinks() {
+    public Set<String> getLinks() {
         if (Collections.isEmpty(links)) {
-            links = new ArrayList<>();
+            links = new HashSet<>();
         }
         return links;
     }
 
-    public void setLinks(List<String> links) {
+    public void setLinks(Set<String> links) {
         this.links = links;
     }
 
@@ -196,7 +182,7 @@ public class Gift implements Serializable, Comparable<Gift> {
     }
 
     public Boolean isHidden() {
-        return hidden!=null?hidden:false;
+        return hidden != null ? hidden : false;
     }
 
     public void setHidden(Boolean hidden) {

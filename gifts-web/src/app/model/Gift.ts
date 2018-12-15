@@ -6,9 +6,9 @@ export class Gift {
   id: number;
   name: string;
   description: string;
-  links: string[];
+  links: string[] = [];
   userId: string;
-  engines: SearchEngine[];
+  engines: SearchEngine[] = [];
   category: Category;
   claimed: Account;
   created: Date;

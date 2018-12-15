@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild} from '@angular/core';
 import {FormControl} from "@angular/forms";
 import {Account} from "@model/Account";
 import {MatSelect} from "@angular/material";
@@ -26,6 +26,7 @@ export class AccountListComponent implements OnInit, AfterViewInit, OnDestroy {
   filteredAccounts: ReplaySubject<Account[]> = new ReplaySubject<Account[]>(1);
   filterTerm: string;
   private _onDestroy = new Subject<void>();
+  @Output() account = new EventEmitter<Account>();
 
 
   constructor(private authSrv: AuthenticationService,
@@ -73,6 +74,7 @@ export class AccountListComponent implements OnInit, AfterViewInit, OnDestroy {
         } else {
           this.viewedAccount = _.find(accounts, (account) => account.username === this.currentAccount.username);
         }
+        this.account.emit(this.viewedAccount);
         this.accounts = accounts;
         this.filteredAccounts.next(accounts);
         this.usersControl.setValue(this.viewedAccount);

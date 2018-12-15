@@ -69,6 +69,9 @@
     }
   },
   "error": {
+    "account": {
+      "notFound": "Account not found"
+    },
     "api": {
       "notfound": "Api call was made to not existing resource",
       "unauthorized": "You are not authorised to execute that action"
@@ -84,9 +87,9 @@
     }
   },
   "gift": {
-    "0": "Gift",
     "add": {
-      "date": "Added on"
+      "date": "Added on",
+      "success": "New gift \"{{name}}\" was added to wish list"
     },
     "category": {
       "choose": "Select category or add new one...",
@@ -102,7 +105,7 @@
     },
     "claim": {
       "error": "You cannot claim your gift",
-      "success": "Gift {{name}} has been clamed",
+      "success": "Gift \"{{name}}\" has been clamed",
       "text": "Claim gift"
     },
     "complete": {
@@ -181,9 +184,10 @@
       "new": "New gift",
       "realised": "Realised gift"
     },
+    "text": "Gift",
     "unclaim": {
       "error": "You cannot remove claim on gift you have not previously claimed",
-      "success": "Claim on gift {{name}} was removed",
+      "success": "Claim on gift \"{{name}}\" was removed",
       "text": "Remove claim"
     }
   },

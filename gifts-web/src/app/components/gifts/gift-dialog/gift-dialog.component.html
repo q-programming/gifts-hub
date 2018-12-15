@@ -19,8 +19,7 @@
       </div>
       <div fxFlex="80%">
         <mat-form-field fxFlex="100%">
-          <textarea matInput placeholder=" {{'gift.description'|translate}}" formControlName="description"
-                    required></textarea>
+          <textarea matInput placeholder=" {{'gift.description'|translate}}" formControlName="description"></textarea>
         </mat-form-field>
       </div>
       <!--LINKS-->
@@ -31,7 +30,7 @@
         </strong>
       </div>
       <div fxFlex="80%" formArrayName="links">
-        <div *ngFor="let link of form.controls.links.controls; let i=index">
+        <div *ngFor="let link of LinksControls; let i=index">
           <mat-form-field fxFlex="100%" [formGroupName]="i">
             <input matInput placeholder=" {{'gift.link.url'|translate}}" formControlName="link" type="url"
                    autocomplete="url">
@@ -68,19 +67,21 @@
         </mat-form-field>
       </div>
       <!--HIDDEN-->
-      <div fxFlex="80%" class="mb-2">
-        <strong>
-          <i class="fa fa-user-secret mr-1"></i>
-          {{'gift.hidden.text'|translate}}
-        </strong>
-      </div>
-      <div fxFlex="80%">
-        <mat-slide-toggle formControlName="hidden">
-          {{'gift.hidden.text'|translate}}
-        </mat-slide-toggle>
-      </div>
-      <div fxFlex="80%" class="help mb-2" [innerHTML]="'gift.hidden.help'|translate">
-      </div>
+      <ng-container *ngIf="familyUser">
+        <div fxFlex="80%" class="mb-2">
+          <strong>
+            <i class="fa fa-user-secret mr-1"></i>
+            {{'gift.hidden.text'|translate}}
+          </strong>
+        </div>
+        <div fxFlex="80%">
+          <mat-slide-toggle formControlName="hidden">
+            {{'gift.hidden.text'|translate}}
+          </mat-slide-toggle>
+        </div>
+        <div fxFlex="80%" class="help mb-2" [innerHTML]="'gift.hidden.help'|translate">
+        </div>
+      </ng-container>
       <!--SEARCH ENGINES-->
       <div fxFlex="80%" class="mb-2">
         <strong>
@@ -88,9 +89,9 @@
           {{'app.manage.search.engine'|translate}}
         </strong>
       </div>
-      <div fxFlex="80%" *ngFor="let engine of searchEngines">
-        <mat-slide-toggle formControlName="{{engine.name}}">
-          <i class="fa fa-fw {{engine.icon}}"></i> {{engine.name}}
+      <div fxFlex="80%" *ngFor="let ctrl of EnginesControls;let i=index">
+        <mat-slide-toggle [formControl]="ctrl.get('selected')">
+          <i class="fa fa-fw {{ctrl.get('icon').value}}"></i> {{ctrl.get('name').value}}
         </mat-slide-toggle>
       </div>
       <div fxFlex="80%" class="help" [innerHTML]="'gift.search.help'|translate"></div>
@@ -99,7 +100,7 @@
 </mat-dialog-content>
 <mat-dialog-actions align="end" class="pr-2 pl-2">
   <button mat-raised-button mat-dialog-close>{{'app.general.cancel'|translate}}</button>
-  <button mat-raised-button class="success-button" [disabled]="form.invalid">
+  <button mat-raised-button class="success-button" [disabled]="form.invalid" (click)="commitGift()">
     {{update ? ('gift.edit.text'|translate) : ('gift.new.add'|translate)}}
   </button>
 </mat-dialog-actions>

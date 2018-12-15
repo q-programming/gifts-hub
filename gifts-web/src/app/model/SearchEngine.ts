@@ -1,6 +1,6 @@
 export class SearchEngine {
   id: number;
-  name: string;
-  searchString: string;
-  icon: string;
+  name?: string;
+  searchString?: string;
+  icon?: string;
 }

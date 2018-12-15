@@ -38,7 +38,7 @@ public class CategoryService {
     }
 
     public Category findById(Long id) {
-        return categoryRepository.findById(id).orElse(null);
+        return id != null ? categoryRepository.findById(id).orElse(null) : null;
     }
 
     public void remove(Category category) {

@@ -69,6 +69,9 @@
     }
   },
   "error": {
+    "account": {
+      "notFound": "Nie znaleziono konta"
+    },
     "api": {
       "notfound": "Wykonano zapytanie API do nie istniejącego zasobu",
       "unauthorized": "Brak wymagających uprawnień do wykonania akcji"
@@ -84,9 +87,9 @@
     }
   },
   "gift": {
-    "0": "Prezent",
     "add": {
-      "date": "Dodano"
+      "date": "Dodano",
+      "success": "Nowy prezent \"{{name}}\" został dodany do listy życzeń"
     },
     "category": {
       "choose": "Wybierz kategorię lub stwórz nową...",
@@ -102,7 +105,7 @@
     },
     "claim": {
       "error": "Nie możesz zarezerwować własnego prezentu",
-      "success": "Zarezerwowano prezent {{name}}",
+      "success": "Zarezerwowano prezent \"{{name}}\"",
       "text": "Zarezerwuj prezent"
     },
     "complete": {
@@ -181,9 +184,10 @@
       "new": "Nowy prezent",
       "realised": "Prezent zrealizowany"
     },
+    "text": "Prezent",
     "unclaim": {
       "error": "Nie można usunąć rezerwacji z prezentu, który nie był wcześniej zarezerwowany.",
-      "success": "Usunięto rezerwację z prezentu {{name}}",
+      "success": "Usunięto rezerwację z prezentu \"{{name}}\"",
       "text": "Usuń rezerwację"
     }
   },

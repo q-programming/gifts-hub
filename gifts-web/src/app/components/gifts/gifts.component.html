@@ -6,7 +6,7 @@
     </div>
     <!--Accounts search bar-->
     <div fxFlex>
-      <account-list></account-list>
+      <account-list (account)="changeViewedAccount($event)"></account-list>
     </div>
     <div fxFlex="22%" fxFlex.lt-lg="30%">
       <ng-container *ngIf="isUserList || isFamilyAdmin">
