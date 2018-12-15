@@ -11,10 +11,10 @@ import {getBase64Image} from "../../../utils/utils";
 
 @Component({
   selector: 'app-kid',
-  templateUrl: './kid.component.html',
+  templateUrl: './kid-dialog.component.html',
   styles: []
 })
-export class KidComponent implements OnInit {
+export class KidDialogComponent implements OnInit {
 
   @ViewChild('cropper', undefined)
   cropper: ImageCropperComponent;
@@ -25,8 +25,7 @@ export class KidComponent implements OnInit {
   update: boolean;
   uploadInProgress: boolean;
 
-
-  constructor(private dialogRef: MatDialogRef<KidComponent>,
+  constructor(private dialogRef: MatDialogRef<KidDialogComponent>,
               @Inject(MAT_DIALOG_DATA) public data: any,
               @Inject(DOCUMENT) private document: Document,
               private apiSrv: ApiService,

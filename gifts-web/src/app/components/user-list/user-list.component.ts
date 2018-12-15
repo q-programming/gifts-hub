@@ -5,7 +5,7 @@ import {MatButtonToggleGroup, MatDialog} from "@angular/material";
 import {NGXLogger} from "ngx-logger";
 import {Family} from "@model/Family";
 import {Account} from "@model/Account";
-import {KidComponent} from "./kid/kid.component";
+import {KidDialogComponent} from "./kid-dialog/kid-dialog.component";
 import {AlertService} from "@services/alert.service";
 import {AvatarService} from "@services/avatar.service";
 
@@ -73,7 +73,7 @@ export class UserListComponent implements OnInit {
 
   addKidDialog() {
     let kid = new Account();
-    const dialogRef = this.dialog.open(KidComponent, {
+    const dialogRef = this.dialog.open(KidDialogComponent, {
       panelClass: 'gifts-modal-normal', //TODO class needed
       data: {
         account: kid
@@ -83,6 +83,7 @@ export class UserListComponent implements OnInit {
       if (kid) {
         this.userSrv.addKid(kid).subscribe(newKid => {
           if (newKid) {
+            this.getUsers();
             this.alertSrv.success('user.family.add.kid.success')
           }
         }, error => {
@@ -94,7 +95,7 @@ export class UserListComponent implements OnInit {
 
 
   editKidDialog(kid: Account) {
-    const dialogRef = this.dialog.open(KidComponent, {
+    const dialogRef = this.dialog.open(KidDialogComponent, {
       panelClass: 'gifts-modal-normal', //TODO class needed
       data: {
         account: kid

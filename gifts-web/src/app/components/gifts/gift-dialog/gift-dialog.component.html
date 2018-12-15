@@ -1,0 +1,105 @@
+<h1 mat-dialog-title>
+  <i class="fa fa-gift mr-1"></i>
+  {{update ? ('gift.edit.text'|translate) : ('gift.new.add'|translate)}}
+</h1>
+<mat-dialog-content>
+  <form [formGroup]="form">
+    <!--GIFT DETAIL-->
+    <div fxLayout="row wrap" fxLayoutAlign="center center">
+      <div fxFlex="80%" class="mb-2">
+        <strong>
+          <i class="fa fa-gift mr-1"></i>
+          {{'gift.gift'|translate}}
+        </strong>
+      </div>
+      <div fxFlex="80%">
+        <mat-form-field fxFlex="100%">
+          <input matInput placeholder=" {{'gift.name'|translate}}" formControlName="name" required>
+        </mat-form-field>
+      </div>
+      <div fxFlex="80%">
+        <mat-form-field fxFlex="100%">
+          <textarea matInput placeholder=" {{'gift.description'|translate}}" formControlName="description"
+                    required></textarea>
+        </mat-form-field>
+      </div>
+      <!--LINKS-->
+      <div fxFlex="80%" class="mb-2">
+        <strong>
+          <i class="fa fa-link mr-1"></i>
+          {{'gift.link.text'|translate}}
+        </strong>
+      </div>
+      <div fxFlex="80%" formArrayName="links">
+        <div *ngFor="let link of form.controls.links.controls; let i=index">
+          <mat-form-field fxFlex="100%" [formGroupName]="i">
+            <input matInput placeholder=" {{'gift.link.url'|translate}}" formControlName="link" type="url"
+                   autocomplete="url">
+            <button mat-stroked-button matSuffix (click)="addLink()" matTooltip="{{'gift.link.add'|translate}}">
+              <mat-icon>add</mat-icon>
+            </button>
+            <button *ngIf="form.controls.links.controls.length > 1"
+                    mat-stroked-button matSuffix (click)="removeLink(i)" matTooltip="{{'gift.link.remove'|translate}}">
+              <mat-icon>remove</mat-icon>
+            </button>
+          </mat-form-field>
+        </div>
+      </div>
+      <!--CATEGORIES-->
+      <div fxFlex="80%" class="mb-2">
+        <strong>
+          <i class="fa fa-archive  mr-1"></i>
+          {{'gift.category.text'|translate}}
+        </strong>
+      </div>
+      <div fxFlex="80%">
+        <mat-form-field fxFlex="100%">
+          <input matInput placeholder=" {{'gift.category.choose' | translate}}" formControlName="category"
+                 [matAutocomplete]="catAutocomplete">
+          <mat-autocomplete #catAutocomplete="matAutocomplete" [displayWith]="categoryDisplay">
+            <mat-option *ngFor="let category of filteredCategories | async" [value]="category">
+              <span [innerHTML]="category.name | highlight:filterTerm"></span>
+            </mat-option>
+          </mat-autocomplete>
+          <button *ngIf="form.controls.category.value" mat-icon-button matSuffix
+                  (click)="resetCategory()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+      <!--HIDDEN-->
+      <div fxFlex="80%" class="mb-2">
+        <strong>
+          <i class="fa fa-user-secret mr-1"></i>
+          {{'gift.hidden.text'|translate}}
+        </strong>
+      </div>
+      <div fxFlex="80%">
+        <mat-slide-toggle formControlName="hidden">
+          {{'gift.hidden.text'|translate}}
+        </mat-slide-toggle>
+      </div>
+      <div fxFlex="80%" class="help mb-2" [innerHTML]="'gift.hidden.help'|translate">
+      </div>
+      <!--SEARCH ENGINES-->
+      <div fxFlex="80%" class="mb-2">
+        <strong>
+          <i class="fa fa-search mr-1"></i>
+          {{'app.manage.search.engine'|translate}}
+        </strong>
+      </div>
+      <div fxFlex="80%" *ngFor="let engine of searchEngines">
+        <mat-slide-toggle formControlName="{{engine.name}}">
+          <i class="fa fa-fw {{engine.icon}}"></i> {{engine.name}}
+        </mat-slide-toggle>
+      </div>
+      <div fxFlex="80%" class="help" [innerHTML]="'gift.search.help'|translate"></div>
+    </div>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end" class="pr-2 pl-2">
+  <button mat-raised-button mat-dialog-close>{{'app.general.cancel'|translate}}</button>
+  <button mat-raised-button class="success-button" [disabled]="form.invalid">
+    {{update ? ('gift.edit.text'|translate) : ('gift.new.add'|translate)}}
+  </button>
+</mat-dialog-actions>

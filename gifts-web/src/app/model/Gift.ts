@@ -13,6 +13,7 @@ export class Gift {
   claimed: Account;
   created: Date;
   status: GiftStatus;
+  hidden: boolean;
 }
 
 export enum GiftStatus {

@@ -13,7 +13,7 @@
         <button mat-flat-button class="success-button pull-right font-smaller" fxShow.lt-md="false">
           <mat-icon>cloud_upload</mat-icon>
         </button>
-        <button mat-flat-button class="success-button pull-right mr-1 font-smaller">
+        <button mat-flat-button class="success-button pull-right mr-1 font-smaller" (click)="addGiftDialog()">
           <mat-icon>add</mat-icon>
           <span fxShow.lt-md="false">
         {{'gift.new.add'|translate}}
@@ -55,6 +55,7 @@
             [canEdit]="isUserList || isFamilyAdmin"
             (refresh)="refresh($event)"
             (delete)="delete($event)"
+            (edit)="editGiftDialog($event)"
       ></gift>
     </div>
   </mat-expansion-panel>
@@ -71,6 +72,7 @@
             [canEdit]="isUserList || isFamilyAdmin"
             (refresh)="refresh($event)"
             (delete)="delete($event)"
+            (edit)="editGiftDialog($event)"
       ></gift>
     </div>
   </mat-expansion-panel>
@@ -87,6 +89,7 @@
             [canEdit]="isUserList || isFamilyAdmin"
             (refresh)="refresh($event)"
             (delete)="delete($event)"
+            (edit)="editGiftDialog($event)"
       ></gift>
     </div>
   </mat-expansion-panel>

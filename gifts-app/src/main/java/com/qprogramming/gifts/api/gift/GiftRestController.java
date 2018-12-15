@@ -117,6 +117,7 @@ public class GiftRestController {
         return new ResultData.ResultBuilder().badReqest().error().message(msgSrv.getMessage("user.family.admin.error")).build();
     }
 
+    @PreAuthorize("hasRole('ROLE_USER')")
     @Transactional
     @RequestMapping("/edit")
     public ResponseEntity editGift(@RequestBody GiftForm giftForm) {
@@ -298,7 +299,7 @@ public class GiftRestController {
 
     @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping("/mine")
-    public ResponseEntity getUserGifts() {
+    public ResponseEntity getMineGifts() {
         if (Utils.getCurrentAccount() != null) {
             return new ResponseEntity<>(giftService.findAllByCurrentUser(), HttpStatus.OK);
         } else

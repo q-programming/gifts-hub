@@ -60,7 +60,7 @@
       </button>
       <ng-container *ngIf="canEdit">
         <button mat-icon-button matTooltip="{{'gift.edit.text'|translate}}" fxFlex="50%"
-                *ngIf="gift.status !== GiftStatus.REALISED">
+                (click)="editGift()" *ngIf="gift.status !== GiftStatus.REALISED">
           <i class="fa fa-fw fa-lg fa-pencil"></i>
         </button>
         <button mat-icon-button matTooltip="{{'gift.complete.text'|translate}}" fxFlex="50%"

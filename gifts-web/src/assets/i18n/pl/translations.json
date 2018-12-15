@@ -13,7 +13,6 @@
         "removed": "Usunięto prawa administratora aplikacji uzytkownikowi"
       },
       "categories": {
-        "0": "Kategorie",
         "count": "# Użyć",
         "priority": {
           "0": "Priorytet",
@@ -22,6 +21,7 @@
           "up": "Zwiększ"
         },
         "removed": "Kategoria została usunięta",
+        "text": "Kategorie",
         "updated": "Kategoria zaktualizowana"
       },
       "email": {
@@ -89,15 +89,16 @@
       "date": "Dodano"
     },
     "category": {
-      "0": "Kategoria",
       "choose": "Wybierz kategorię lub stwórz nową...",
       "filter": {
-        "0": "Filtruj po kategorii",
-        "choose": "Wybierz kategorię do filtrowania"
+        "choose": "Wybierz kategorię do filtrowania",
+        "text": "Filtruj po kategorii"
       },
+      "new": "Nowa kategoria ( naciśnij enter aby stworzyć)",
       "other": "Inne",
       "prohibited": "Kategoria <strong>{0}</strong> nie jest dozwolona, proszę wybrać inną",
-      "realised": "Zrealizowane"
+      "realised": "Zrealizowane",
+      "text": "Kategoria"
     },
     "claim": {
       "error": "Nie możesz zarezerwować własnego prezentu",
@@ -127,6 +128,10 @@
     },
     "gift": "Prezent",
     "gifts": "prez.",
+    "hidden": {
+      "help": "Specjalna opcja dla administratora rodziny<br>\nKiedy prezent zostanie dodany do listy życzeń członkowi rodziny jako ukryty, osoba której dodajemy ten prezent nie będize go widzieć\n(ale wszyscy użytkownicy aplikacji go będą widzieć )",
+      "text": "Ukryty prezent"
+    },
     "import": {
       "0": "Importuj prezenty",
       "added": "<strong>[Wiersz {0}]</strong> Prezent <strong>{1}</strong> dodany",
@@ -145,7 +150,8 @@
       "add": "Dodaj więcej linków",
       "error": "Zły format adresu url. Proszę użyć pełnego adresu wraz z http://",
       "remove": "Usuń link",
-      "text": "Linki"
+      "text": "Linki",
+      "url": "URL linka"
     },
     "list": {
       "0": "Lista życzeń  użytkownika",
@@ -161,7 +167,7 @@
       "added": "Nowy prezent został dodany do listy życzeń"
     },
     "search": {
-      "help": "Wybierz które wyszukiwarki mają być wyświetlone obok tego prezętu. Wszyscy będą mogli szybko wyszukać ten prezent, klikając na ikonę",
+      "help": "Wybierz które wyszukiwarki mają być wyświetlone obok tego prezętu.<br>Wszyscy będą mogli szybko wyszukać ten prezent, klikając na ikonę",
       "with": "Szukaj z"
     },
     "share": {

@@ -10,6 +10,9 @@ import {Account} from "@model/Account";
 import * as _ from "lodash"
 import {AlertService} from "@services/alert.service";
 import {NGXLogger} from "ngx-logger";
+import {MatDialog} from "@angular/material";
+import {KidDialogComponent} from "../user-list/kid-dialog/kid-dialog.component";
+import {GiftDialogComponent} from "./gift-dialog/gift-dialog.component";
 
 @Component({
   selector: 'gifts-list',
@@ -38,6 +41,7 @@ export class GiftsComponent implements OnInit {
               private authSrv: AuthenticationService,
               private userSrv: UserService,
               private alertSrv: AlertService,
+              public dialog: MatDialog,
               private logger: NGXLogger) {
   }
 
@@ -76,7 +80,6 @@ export class GiftsComponent implements OnInit {
     this.unCategorizedGifts = this.categorizedGifts[''];
     delete this.categorizedGifts[GiftStatus.REALISED];
     delete this.categorizedGifts[''];
-    console.log(this.unCategorizedGifts);
   }
 
   getAvatar(username: string) {
@@ -128,7 +131,52 @@ export class GiftsComponent implements OnInit {
     }
   }
 
+  addGiftDialog() {
+    let gift = new Gift();
+    const dialogRef = this.dialog.open(GiftDialogComponent, {
+      panelClass: 'gifts-modal-normal', //TODO class needed
+      data: {
+        gift: gift
+      }
+    });
+    dialogRef.afterClosed().subscribe((gift) => {
+      if (gift) {
+        this.giftSrv.createGift(gift).subscribe(newGift => {
+          if (newGift) {
+            this.alertSrv.success('user.family.add.kid.success')
+          }
+        }, error => {
+          this.switchErrors(error);
+        })
+      }
+    });
+  }
+  editGiftDialog(gift:Gift) {
+    const dialogRef = this.dialog.open(GiftDialogComponent, {
+      panelClass: 'gifts-modal-normal', //TODO class needed
+      data: {
+        gift: gift
+      }
+    });
+    dialogRef.afterClosed().subscribe((gift) => {
+      if (gift) {
+        this.giftSrv.editGift(gift).subscribe(edited => {
+          if (edited) {
+            this.alertSrv.success('user.family.add.kid.success')
+          }
+        }, error => {
+          this.switchErrors(error);
+        })
+      }
+    });
+  }
+
+
   trackByFn(index, item) {
     return item.id;
+  }
+
+  private switchErrors(error: any) {
+    //TODO implement
   }
 }

@@ -39,7 +39,8 @@ import {UserComponent} from './components/user-list/user/user.component';
 import {GiftsPublicComponent} from './components/gifts/gifts-public.component';
 import {AvatarUploadComponent, SettingsComponent} from './components/settings/settings.component';
 import {ImageCropperModule} from "ngx-img-cropper";
-import {KidComponent} from './components/user-list/kid/kid.component';
+import {KidDialogComponent} from './components/user-list/kid-dialog/kid-dialog.component';
+import {GiftDialogComponent} from './components/gifts/gift-dialog/gift-dialog.component';
 
 
 @NgModule({
@@ -61,9 +62,14 @@ import {KidComponent} from './components/user-list/kid/kid.component';
     GiftsPublicComponent,
     SettingsComponent,
     AvatarUploadComponent,
-    KidComponent,
+    KidDialogComponent,
+    GiftDialogComponent,
   ],
-  entryComponents: [AvatarUploadComponent, KidComponent],
+  entryComponents: [
+    AvatarUploadComponent,
+    KidDialogComponent,
+    GiftDialogComponent
+  ],
   imports: [
     FormsModule,
     ReactiveFormsModule,

@@ -20,6 +20,7 @@ export class GiftComponent implements OnInit {
   @Input() public: boolean;
   @Output() refresh = new EventEmitter<boolean>();
   @Output() delete = new EventEmitter<Gift>();
+  @Output() edit = new EventEmitter<Gift>();
   currentAccount: Account;
 
 
@@ -67,6 +68,10 @@ export class GiftComponent implements OnInit {
    */
   deleteGift() {
     this.delete.emit(this.gift);
+  }
+
+  editGift() {
+    this.edit.emit(this.gift);
   }
 
 

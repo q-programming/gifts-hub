@@ -13,7 +13,6 @@
         "removed": "Users application administrator privileges were revoked"
       },
       "categories": {
-        "0": "Categories",
         "count": "# Used",
         "priority": {
           "0": "Priority",
@@ -22,6 +21,7 @@
           "up": "Increase"
         },
         "removed": "Category was removed",
+        "text": "Categories",
         "updated": "Category was updated"
       },
       "email": {
@@ -89,15 +89,16 @@
       "date": "Added on"
     },
     "category": {
-      "0": "Category",
       "choose": "Select category or add new one...",
       "filter": {
-        "0": "Filter by category",
-        "choose": "Select category to filter"
+        "choose": "Select category to filter",
+        "text": "Filter by category"
       },
+      "new": "New category (press enter to create)",
       "other": "Other",
       "prohibited": "Category <strong>{0}</strong> is not permitted, please choose other",
-      "realised": "Realised"
+      "realised": "Realised",
+      "text": "Category"
     },
     "claim": {
       "error": "You cannot claim your gift",
@@ -127,6 +128,10 @@
     },
     "gift": "Gift",
     "gifts": "gifts",
+    "hidden": {
+      "help": "Special option for family admin.<br>\nIf gift is added to family member whish list as hidden , it won't be visibile for that user<br>\n( but visible for all application users)",
+      "text": "Hidden gift"
+    },
     "import": {
       "0": "Import gifts",
       "added": "<strong>[Row {0}]</strong> Gift <strong>{1}</strong> added",
@@ -145,7 +150,8 @@
       "add": "Add more links",
       "error": "Wrong url format. Please remember to use full address including http://",
       "remove": "Remove link",
-      "text": "Links"
+      "text": "Links",
+      "url": "LInk URL"
     },
     "list": {
       "0": "Gift list of",
@@ -161,7 +167,7 @@
       "added": "New gift added to wish list"
     },
     "search": {
-      "help": "Select which search engines should be shown next to this gift. Everyone will be able to quickly search using them by just clicking that icon",
+      "help": "Select which search engines should be shown next to this gift.<br>Everyone will be able to quickly search using them by just clicking that icon",
       "with": "Search with"
     },
     "share": {

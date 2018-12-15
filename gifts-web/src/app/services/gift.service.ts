@@ -32,4 +32,12 @@ export class GiftService {
   delete(gift: Gift) {
     return this.apiSrv.delete(`${environment.gift_url}/delete/${gift.id}`)
   }
+
+  createGift(gift: Gift): Observable<Gift> {
+    return this.apiSrv.post(`${environment.gift_url}/create`, gift)
+  }
+
+  editGift(gift: Gift): Observable<Gift> {
+    return this.apiSrv.put(`${environment.gift_url}/edit`, gift)
+  }
 }

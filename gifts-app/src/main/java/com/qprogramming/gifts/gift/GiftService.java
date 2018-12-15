@@ -9,8 +9,10 @@ import org.joda.time.LocalDate;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.qprogramming.gifts.settings.Settings.APP_GIFT_AGE;
+import static com.qprogramming.gifts.support.Utils.not;
 
 @Service
 public class GiftService {
@@ -53,14 +55,23 @@ public class GiftService {
      * @return Map&lt;Category,List&lt;Gift&gt;&gt;
      */
     public Map<Category, List<Gift>> findAllByCurrentUser() {
-        int giftAge = Integer.valueOf(propertyService.getProperty(APP_GIFT_AGE));
-        List<Gift> giftList = giftRepository.findByUserIdOrderByCreatedDesc(Utils.getCurrentAccountId());
-        giftList.forEach(gift -> {
-            setGiftStatus(gift, giftAge);
-            gift.setClaimed(null);//remove claimed as current user shouldn't see it
-        });
+        List<Gift> giftList = getCurrentUserGifts();
         return toGiftTreeMap(giftList, false);
     }
+
+    private List<Gift> getCurrentUserGifts() {
+        int giftAge = Integer.valueOf(propertyService.getProperty(APP_GIFT_AGE));
+        return giftRepository.findByUserIdOrderByCreatedDesc(Utils.getCurrentAccountId()).stream().filter(not(Gift::isHidden)).peek(gift -> {
+            setGiftStatus(gift, giftAge);
+            gift.setClaimed(null);//remove claimed as current user shouldn't see it
+        }).collect(Collectors.toList());
+    }
+
+    private List<Gift> getUserGifts(String id) {
+        int giftAge = Integer.valueOf(propertyService.getProperty(APP_GIFT_AGE));
+        return giftRepository.findByUserIdOrderByCreatedDesc(id).stream().peek(gift -> setGiftStatus(gift, giftAge)).collect(Collectors.toList());
+    }
+
 
     /**
      * Returns a tree map of Category,GiftList for user
@@ -69,15 +80,8 @@ public class GiftService {
      * @return Map&lt;Category,List&lt;Gift&gt;&gt;
      */
     public Map<Category, List<Gift>> findAllByUser(String id) {
-        int giftAge = Integer.valueOf(propertyService.getProperty(APP_GIFT_AGE));
-        List<Gift> giftList = giftRepository.findByUserIdOrderByCreatedDesc(id);
-        giftList.forEach(gift -> {
-            setGiftStatus(gift, giftAge);
-            if (id.equals(Utils.getCurrentAccountId())) {//if current user is browsing his own list
-                gift.setClaimed(null);
-            }
-
-        });
+        List<Gift> giftList = id.equals(Utils.getCurrentAccountId()) ?
+                getCurrentUserGifts() : getUserGifts(id);
         boolean sort = !id.equals(Utils.getCurrentAccountId());
         return toGiftTreeMap(giftList, sort);
     }

@@ -52,6 +52,9 @@ public class Gift implements Serializable, Comparable<Gift> {
     @Column
     private GiftStatus status;
 
+    @Column
+    private Boolean hidden = false;
+
     public Gift() {
         this.created = new Date();
     }
@@ -185,11 +188,18 @@ public class Gift implements Serializable, Comparable<Gift> {
 
     @Override
     public int compareTo(Gift gift) {
-
-        return 0;
+        return this.getName().compareTo(gift.getName());
     }
 
     public void addLink(String link) {
         this.getLinks().add(link);
+    }
+
+    public Boolean isHidden() {
+        return hidden!=null?hidden:false;
+    }
+
+    public void setHidden(Boolean hidden) {
+        this.hidden = hidden;
     }
 }
