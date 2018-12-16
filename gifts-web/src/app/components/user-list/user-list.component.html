@@ -44,8 +44,8 @@
     </div>
   </div>
 </mat-card>
-<div style="margin-top: 85px">
-  <h4>{{'user.list'|translate}}</h4>
+<div style="margin-top: 95px">
+  <!--TODO Needs proper handling ( for ex. on mobile ) -->
   <ng-container *ngIf="sortBy.value === SortBy.FAMILY">
     <mat-expansion-panel *ngFor="let family of families" expanded="true">
       <mat-expansion-panel-header>
