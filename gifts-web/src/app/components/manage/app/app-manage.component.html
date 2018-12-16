@@ -2,11 +2,19 @@
   <div fxFlex="60" fxFlex.xs="100">
     <form [formGroup]="form">
       <div fxLayout="column">
+        <h4>
+          <i class="fa fa-globe"></i>
+          {{'app.manage.language'|translate}}
+        </h4>
         <mat-form-field>
           <mat-select placeholder="{{'app.manage.language'|translate}}" formControlName="language">
             <mat-option *ngFor="let lang of languages" [value]="lang.id">{{lang.name}}</mat-option>
           </mat-select>
         </mat-form-field>
+        <h4>
+          <i class="fa fa-link"></i>
+          {{'app.manage.url.text'|translate}}
+        </h4>
         <mat-form-field>
           <input type="text" matInput formControlName="appUrl"
                  placeholder="{{'app.manage.url.text'|translate}}">
@@ -17,12 +25,31 @@
             </mat-icon>
           </button>
         </mat-form-field>
+        <h4>
+          <i class="fa fa-clock-o"></i>
+          {{'app.manage.gift.age.text'|translate}}
+        </h4>
         <mat-form-field>
-          <mat-label>{{'app.manage.gift.age.text'|translate}}</mat-label>
           <input matInput type="number" formControlName="giftAge">
           <span matSuffix>{{'app.manage.gift.age.days'|translate}}</span>
         </mat-form-field>
         <mat-help>{{'app.manage.gift.age.help'|translate}}</mat-help>
+        <h4>
+          <i class="fa fa-sort-amount-desc" aria-hidden="true"></i>
+          {{'user.sort.default'|translate}}
+        </h4>
+        <mat-radio-group formControlName="sort">
+          <div>
+            <mat-radio-button [value]="SortBy.NAME">
+              <i class="fa fa-sort-alpha-asc"></i>
+              {{'user.sort.name'|translate}}</mat-radio-button>
+          </div>
+          <div>
+            <mat-radio-button [value]="SortBy.FAMILY">
+              <i class="fa fa-users"></i>
+              {{'user.sort.family'|translate}}</mat-radio-button>
+          </div>
+        </mat-radio-group>
       </div>
       <button mat-raised-button class="success-button pull-right" (click)="saveConfiguration()"
               [disabled]="form.invalid || !form.touched">{{'app.manage.app.save'|translate}}

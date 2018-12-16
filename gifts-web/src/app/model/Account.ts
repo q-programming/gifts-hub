@@ -16,6 +16,7 @@ export class Account {
   publicList?: boolean;
   newsletter?: boolean;
   seenChangelog?: boolean;
+  admin:boolean
 }
 
 export class Authority {

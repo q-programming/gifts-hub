@@ -8,6 +8,7 @@ import {TranslateService} from "@ngx-translate/core";
 import {AlertService} from "./alert.service";
 import {NGXLogger} from "ngx-logger";
 import {Observable} from "rxjs";
+import {isAdmin} from "../utils/utils";
 
 @Injectable()
 export class AuthenticationService {
@@ -72,7 +73,7 @@ export class AuthenticationService {
      */
     isAdmin(): boolean {
         if (this.currentAccount) {
-            return !!_.find(this.currentAccount.authorities, (o) => o.authority == Role.ROLE_ADMIN)
+          return isAdmin(this.currentAccount)
         }
         return false;
     }

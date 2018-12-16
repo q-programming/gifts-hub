@@ -63,6 +63,25 @@ export class GiftComponent implements OnInit {
     })
   }
 
+  complete() {
+    this.giftSrv.complete(this.gift).subscribe(result => {
+      this.alertSrv.success('gift.complete.success', {name: this.gift.name});
+      this.refresh.emit(true);
+    }, error1 => {
+      this.alertSrv.error('gift.complete.error');
+    })
+  }
+
+  undoComplete() {
+    this.giftSrv.undoComplete(this.gift).subscribe(() => {
+      this.alertSrv.success('gift.complete.undo.success');
+      this.refresh.emit(true);
+    }, error1 => {
+      this.alertSrv.error('gift.complete.error');
+    })
+
+  }
+
   /**
    * Notify parent component about gift deletion and show undoable message which will trigger actual deletion after timeout
    */

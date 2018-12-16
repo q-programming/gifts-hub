@@ -70,11 +70,11 @@
           <i class="fa fa-fw fa-lg fa-pencil"></i>
         </button>
         <button mat-icon-button matTooltip="{{'gift.complete.text'|translate}}" fxFlex="50%"
-                *ngIf="gift.status !== GiftStatus.REALISED">
+                *ngIf="gift.status !== GiftStatus.REALISED" (click)="complete()">
           <i class="fa fa-fw fa-lg fa-check-circle-o"></i>
         </button>
         <button mat-icon-button matTooltip="{{'gift.complete.undo.text'|translate}}" fxFlex="50%"
-                *ngIf="gift.status === GiftStatus.REALISED">
+                *ngIf="gift.status === GiftStatus.REALISED" (click)="undoComplete()">
           <i class="fa fa-fw fa-lg fa-circle-o"></i>
         </button>
         <button mat-icon-button matTooltip="{{'gift.delete.text'|translate}}" fxFlex="50%"

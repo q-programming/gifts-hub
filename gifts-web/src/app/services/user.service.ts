@@ -47,8 +47,8 @@ export class UserService {
     })
   }
 
-  getAllUsers(): Observable<Account[]> {
-    return this.apiSrv.get(`${environment.account_url}/users`).map(users => {
+  getAllUsers(users?: boolean): Observable<Account[]> {
+    return this.apiSrv.get(`${environment.account_url}/users`, {users: users}).map(users => {
       return this.fetchAvatars(users as Account[]);
     })
   }
@@ -68,5 +68,12 @@ export class UserService {
 
   updateKid(kid: Account): Observable<Account> {
     return this.apiSrv.post(`${environment.account_url}/kid-update`, kid)
+  }
+
+  addAdmin(user: Account):Observable<Account> {
+    return this.apiSrv.put(`${environment.app_url}/add-admin`, user.id)
+  }
+  removeAdmin(user: Account):Observable<Account> {
+    return this.apiSrv.put(`${environment.app_url}/remove-admin`, user.id)
   }
 }

@@ -347,7 +347,7 @@ public class GiftRestControllerTest extends MockedAccountTestBase {
 
         giftsRestCtrl.perform(
                 put(API_GIFT_COMPLETE + gift.getId()))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().is4xxClientError());
     }
 
     @Test
@@ -379,7 +379,7 @@ public class GiftRestControllerTest extends MockedAccountTestBase {
         when(giftServiceMock.findById(gift.getId())).thenReturn(gift);
         giftsRestCtrl.perform(
                 put(API_GIFT_UNDO_COMPLETE + gift.getId()))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().is4xxClientError());
     }
 
     @Test
@@ -397,7 +397,7 @@ public class GiftRestControllerTest extends MockedAccountTestBase {
         Account giftOwner = TestUtil.createAccount();
         giftOwner.setId(OTHER_USER);
         when(accSrvMock.findById(OTHER_USER)).thenReturn(giftOwner);
-        giftsRestCtrl.perform(delete(API_GIFT_DELETE + "/1")).andExpect(status().isBadRequest());
+        giftsRestCtrl.perform(delete(API_GIFT_DELETE + "/1")).andExpect(status().is4xxClientError());
     }
 
     @Test

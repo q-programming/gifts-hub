@@ -13,7 +13,6 @@ import com.qprogramming.gifts.gift.category.CategoryService;
 import com.qprogramming.gifts.messages.MessagesService;
 import com.qprogramming.gifts.settings.SearchEngineService;
 import com.qprogramming.gifts.settings.Settings;
-import com.qprogramming.gifts.support.ResultData;
 import com.qprogramming.gifts.support.Utils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -29,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.security.RolesAllowed;
 import javax.mail.MessagingException;
+import javax.transaction.Transactional;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -247,6 +247,7 @@ public class AppRestController {
     }
 
     @RolesAllowed("ROLE_ADMIN")
+    @Transactional
     @RequestMapping(value = "/remove-admin", method = RequestMethod.PUT)
     public ResponseEntity removeAdmin(@RequestBody String id) {
         Account currentAccount = Utils.getCurrentAccount();
@@ -261,7 +262,7 @@ public class AppRestController {
             return ResponseEntity.notFound().build();
         }
         if (accountService.findUsers().stream().filter(Account::getIsAdmin).count() == 1) {
-            return new ResultData.ResultBuilder().error().message(msgSrv.getMessage("error.lastAdmin")).build();
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("error.lastAdmin");
         }
         accountService.removeAdministrator(account);
         return new ResponseEntity<>(HttpStatus.OK);

@@ -1,7 +1,6 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
 import {AuthGuard} from "./guards/auth.guard";
-import {HomeComponent} from "./components/home/home.component";
 import {LoginComponent} from "./components/login/login.component";
 import {UserListComponent} from "./components/user-list/user-list.component";
 import {GiftsComponent} from "./components/gifts/gifts.component";
@@ -12,7 +11,7 @@ import {SettingsComponent} from "./components/settings/settings.component";
 import {ManageComponent} from "./components/manage/manage.component";
 
 const routes: Routes = [
-  {path: '', component: HomeComponent, canActivate: [AuthGuard]},
+  {path: '', component: GiftsComponent, canActivate: [AuthGuard]},
   {path: 'login', component: LoginComponent},
   {path: 'users', component: UserListComponent, canActivate: [AuthGuard]},
   {path: 'list', component: GiftsComponent, canActivate: [AuthGuard]},

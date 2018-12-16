@@ -27,5 +27,14 @@
         <manage-email></manage-email>
       </ng-template>
     </mat-tab>
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon>folder_shared</mat-icon>
+        <span fxShow.xs="false" class="ml-1">{{'app.manage.admin.text'|translate}}</span>
+      </ng-template>
+      <ng-template matTabContent>
+        <manage-admins></manage-admins>
+      </ng-template>
+    </mat-tab>
   </mat-tab-group>
 </mat-card>

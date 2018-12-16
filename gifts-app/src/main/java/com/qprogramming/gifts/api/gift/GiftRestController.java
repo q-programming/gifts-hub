@@ -196,7 +196,7 @@ public class GiftRestController {
     public ResponseEntity completeGift(@PathVariable(value = "giftID") String id) {
         Gift gift = giftService.findById(Long.valueOf(id));
         if (!canOperateOnGift(gift)) {
-            return new ResultData.ResultBuilder().badReqest().error().message(msgSrv.getMessage("gift.complete.error")).build();
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         gift.setStatus(GiftStatus.REALISED);
         giftService.update(gift);
@@ -206,8 +206,7 @@ public class GiftRestController {
             LOG.debug("Current account not found");
             return ResponseEntity.notFound().build();
         }
-        return new ResultData.ResultBuilder().ok().message(msgSrv.getMessage("gift.complete.success", new Object[]{gift.getName()}, "", Utils.getCurrentLocale()))
-                .build();
+        return ResponseEntity.ok().build();
     }
 
     @PreAuthorize("hasRole('ROLE_USER')")
@@ -215,7 +214,7 @@ public class GiftRestController {
     public ResponseEntity undoCompleteGift(@PathVariable(value = "giftID") String id) {
         Gift gift = giftService.findById(Long.valueOf(id));
         if (!canOperateOnGift(gift)) {
-            return new ResultData.ResultBuilder().badReqest().error().message(msgSrv.getMessage("gift.complete.error")).build();
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         gift.setStatus(null);
         giftService.update(gift);
@@ -236,7 +235,7 @@ public class GiftRestController {
             return new ResultData.ResultBuilder().notFound().build();
         }
         if (!canOperateOnGift(gift)) {
-            return new ResultData.ResultBuilder().badReqest().error().message(msgSrv.getMessage("gift.delete.error")).build();
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         try {
             eventService.deleteGiftEvents(gift);

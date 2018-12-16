@@ -45,6 +45,7 @@ import {ManageComponent} from './components/manage/manage.component';
 import {EmailManageComponent} from "./components/manage/email/email-manage.component";
 import {AppManageComponent} from "./components/manage/app/app-manage.component";
 import {EngineManageComponent} from "./components/manage/engines/engines-manage.component";
+import { AdminsComponent } from './components/manage/admins/admins.component';
 
 
 @NgModule({
@@ -71,7 +72,8 @@ import {EngineManageComponent} from "./components/manage/engines/engines-manage.
     ManageComponent,
     AppManageComponent,
     EmailManageComponent,
-    EngineManageComponent
+    EngineManageComponent,
+    AdminsComponent
   ],
   entryComponents: [
     AvatarUploadComponent,

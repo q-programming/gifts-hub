@@ -9,7 +9,8 @@
         "add": "Add application administrator privileges",
         "added": "Application administrator was successfully added",
         "remove": "Remove administrator privileges",
-        "removed": "Users application administrator privileges were revoked"
+        "removed": "Users application administrator privileges were revoked",
+        "text": "Application administrators"
       },
       "app": {
         "save": "Save settings",
@@ -121,7 +122,7 @@
     },
     "complete": {
       "error": "Unable to complete not yours gift, or you don't have enough privileges to do so",
-      "success": "Gift {0} has been marked as realised",
+      "success": "Gift \"{{name}}\" has been marked as realised",
       "text": "Mark gift as realised",
       "undo": {
         "success": "Gift is no longer marked as realised",

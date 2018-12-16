@@ -16,7 +16,6 @@ import com.qprogramming.gifts.messages.MessagesService;
 import com.qprogramming.gifts.settings.SearchEngine;
 import com.qprogramming.gifts.settings.SearchEngineService;
 import com.qprogramming.gifts.settings.Settings;
-import com.qprogramming.gifts.support.ResultData;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -372,11 +371,8 @@ public class AppRestControllerTest extends MockedAccountTestBase {
         MvcResult mvcResult = manageRestController.perform(
                 put(API_APPLICATION_REMOVE_ADMIN)
                         .contentType(TestUtil.APPLICATION_JSON_UTF8)
-                        .content(testAccount.getId()))
+                        .content(testAccount.getId())).andExpect(status().isForbidden())
                 .andReturn();
-        String contentAsString = mvcResult.getResponse().getContentAsString();
-        assertTrue(testAccount.getIsAdmin());
-        assertTrue(contentAsString.contains(ResultData.Code.ERROR.toString()));
     }
 
     private Category createCategory(String name, Long id, Integer priority) {

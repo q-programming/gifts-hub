@@ -9,7 +9,8 @@
         "add": "Nadaj uprawnienia administratora",
         "added": "Administrator aplikacji został dodany",
         "remove": "Usuń uprawnienia administratora",
-        "removed": "Usunięto prawa administratora aplikacji uzytkownikowi"
+        "removed": "Usunięto prawa administratora aplikacji uzytkownikowi",
+        "text": "Administratorzy aplikacji"
       },
       "app": {
         "save": "Zapisz ustawienia",
@@ -121,7 +122,7 @@
     },
     "complete": {
       "error": "Nie można oznaczyć jako zrealizowanego nie swojego prezentu",
-      "success": "Prezent {0} został oznaczony jako zrealizowany",
+      "success": "Prezent \"{{name}}\" został oznaczony jako zrealizowany",
       "text": "Oznacz prezent jako zrealizowany",
       "undo": {
         "success": "Cofnięto oznaczenie zrealizowanego prezentu",

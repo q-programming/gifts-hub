@@ -106,7 +106,10 @@ public class AccountService implements UserDetailsService {
     }
 
     public Account removeAdministrator(Account account) {
-        account.setAuthorities(Collections.singletonList(_authorityService.findByRole(Role.ROLE_USER)));
+        List<Authority> auths = new ArrayList<>();
+        Authority role = _authorityService.findByRole(Role.ROLE_USER);
+        auths.add(role);
+        account.setAuthorities(auths);
         return _accountRepository.save(account);
     }
 
