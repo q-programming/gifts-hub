@@ -65,7 +65,7 @@ public class AppRestController {
     }
 
     @RolesAllowed("ROLE_ADMIN")
-    @RequestMapping(value = "/settings", method = RequestMethod.POST)
+    @RequestMapping(value = "/settings", method = RequestMethod.PUT)
     public ResponseEntity changeSettings(@RequestBody Settings settings) {
         Account currentAccount = Utils.getCurrentAccount();
         if (currentAccount == null || !currentAccount.getIsAdmin()) {
@@ -103,7 +103,7 @@ public class AppRestController {
     }
 
     @RolesAllowed("ROLE_ADMIN")
-    @RequestMapping(value = "/remove-category", method = RequestMethod.POST)
+    @RequestMapping(value = "/remove-category", method = RequestMethod.DELETE)
     public ResponseEntity removeCategory(@RequestBody Category category) {
         Account currentAccount = Utils.getCurrentAccount();
         if (currentAccount == null || !currentAccount.getIsAdmin()) {
@@ -120,7 +120,7 @@ public class AppRestController {
     }
 
     @RolesAllowed("ROLE_ADMIN")
-    @RequestMapping(value = "/update-category", method = RequestMethod.POST)
+    @RequestMapping(value = "/update-category", method = RequestMethod.PUT)
     public ResponseEntity updateCategory(@RequestBody Category category) {
         Account currentAccount = Utils.getCurrentAccount();
         if (currentAccount == null || !currentAccount.getIsAdmin()) {
@@ -137,7 +137,7 @@ public class AppRestController {
 
 
     @RolesAllowed("ROLE_ADMIN")
-    @RequestMapping(value = "/settings/email", method = RequestMethod.POST)
+    @RequestMapping(value = "/settings/email", method = RequestMethod.PUT)
     public ResponseEntity changeEmailSettings(@RequestBody Email settings) {
         Account currentAccount = Utils.getCurrentAccount();
         if (currentAccount == null || !currentAccount.getIsAdmin()) {
@@ -147,7 +147,7 @@ public class AppRestController {
             mailService.testConnection(settings.getHost(), settings.getPort(), settings.getUsername(), settings.getPassword());
         } catch (MessagingException e) {
             LOG.warn("Bad SMTP configuration: {}", e);
-            return new ResultData.ResultBuilder().ok().warn().message(e.getMessage()).build();
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         }
         propertyService.update(APP_EMAIL_HOST, settings.getHost());
         propertyService.update(APP_EMAIL_PORT, String.valueOf(settings.getPort()));

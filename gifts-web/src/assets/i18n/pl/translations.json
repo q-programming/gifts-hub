@@ -5,12 +5,15 @@
       "undo": "Cofnij"
     },
     "manage": {
-      "0": "Zarządzanie aplikacją",
       "admin": {
         "add": "Nadaj uprawnienia administratora",
         "added": "Administrator aplikacji został dodany",
         "remove": "Usuń uprawnienia administratora",
         "removed": "Usunięto prawa administratora aplikacji uzytkownikowi"
+      },
+      "app": {
+        "save": "Zapisz ustawienia",
+        "text": "Ustawienia aplikacji"
       },
       "categories": {
         "count": "# Użyć",
@@ -25,46 +28,51 @@
         "updated": "Kategoria zaktualizowana"
       },
       "email": {
-        "0": "Ustawienia e-mail",
         "encoding": "Kodowanie e-maili",
-        "error": "Nie poprawna konfiguracja SMTP. Odpowiedź z serwera:",
+        "error": "Nie poprawna konfiguracja SMTP.<br>Bład: {{error}}",
         "from": "Email używany jako nadawca",
+        "header": "Wprowadz ustawienia serwera pocztowego email",
         "host": {
-          "0": "Adres url serwera SMTP",
-          "help": "Wprowadz adres url oraz port serwera SMTP"
+          "help": "Wprowadz adres url oraz port serwera SMTP",
+          "text": "Adres url serwera SMTP"
         },
         "password": "Hasło",
         "port": "Port",
         "save": "Zapisz konfigurację e-mail",
         "smtpauth": "Używaj autoryzacji SMTP",
         "startttls": "Uzywaj enkrypcji TLS",
+        "text": "Ustawienia e-mail",
         "username": {
-          "0": "Login",
-          "help": "Wprowadz login i hasło serwera SMTP"
+          "help": "Wprowadz login i hasło serwera SMTP",
+          "text": "Login"
         }
       },
+      "error": "Wystąpił bład podczas próby zapisania ustawień aplikacji",
       "gift": {
         "age": {
-          "0": "Wiek prezentu",
           "days": "dni",
-          "help": "Jak długo w dniach nowy prezent będzie oznaczony jako nowy. Po minięciu tych dni, będzie oznaczony poprostu jako prezent. Rezerwacja lub zrelizowanie prezentu nadpisuje ten status"
+          "help": "Jak długo w dniach nowy prezent będzie oznaczony jako nowy. Po minięciu tych dni, będzie oznaczony poprostu jako prezent. Rezerwacja lub zrelizowanie prezentu nadpisuje ten status",
+          "text": "Wiek prezentu"
         }
       },
       "language": "Domyślny język aplikacji",
       "saved": "Ustawienia aplikacji zostały zapisane",
       "search": {
+        "add": "Dodaj nowy silnik wyszukiwania",
         "engine": "Silniki wyszukiwania",
         "icon": {
-          "0": "Ikona wyszukiwarki",
-          "help": "Wstaw nazwe klasy z font awesome. Na przykład fa-google dla google. Po więcej informacji na temat dostępnych ikon, zobacz http://fontawesome.io/"
+          "help": "Wstaw nazwe klasy z font awesome.<br>\nNa przykład fa-google dla google. Po więcej informacji na temat dostępnych ikon, zobacz: \n<a href=\"https://fontawesome.com/v4.7.0/icons/\" target=\"_blank\">http://fontawesome.io/</a>",
+          "text": "Ikona wyszukiwarki"
         },
         "link": "Link wyszukiwarki",
-        "name": "Nazwa silnika wyszukiwania"
+        "name": "Nazwa silnika wyszukiwania",
+        "remove": "Usuń silnik wyszukiwania"
       },
       "setup": "Witaj w Gifts Hub. Jako administrator ustaw proszę podstawowe parametry aplikacji jak link, silniki wyszukiwania etc.",
+      "text": "Zarządzanie aplikacją",
       "url": {
-        "0": "Link aplikacji",
-        "get": "Pobierz link"
+        "get": "Pobierz link",
+        "text": "Link aplikacji"
       }
     }
   },
@@ -78,6 +86,9 @@
     },
     "edit": {
       "gift": "Nie możesz edytować nie swojego prezentu"
+    },
+    "email": {
+      "invalid": "Niepoprawny adres e-mail"
     },
     "fileIO": "Bład podczas czytania pliku {0}",
     "general": "Coś poszło nie tak",

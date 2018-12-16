@@ -1,0 +1,42 @@
+<div fxLayout="row wrap" fxLayoutAlign="center" class="mt-5">
+  <div fxFlex="60" fxFlex.xs="100">
+    <button mat-flat-button (click)="newEngine()" class="pull-right mb-2"
+            color="primary">
+      <mat-icon>add</mat-icon>
+      {{'app.manage.search.add'|translate}}</button>
+  </div>
+  <div fxFlex="60" fxFlex.xs="100">
+    <form [formGroup]="form">
+      <div formArrayName="engines">
+        <mat-card *ngFor="let ctrl of EnginesControls;let i=index" fxLayout="column">
+          <mat-form-field fxFlex="100%">
+            <input matInput [formControl]="ctrl.get('name')" placeholder="{{'app.manage.search.name'|translate}}"
+                   autocomplete="off">
+          </mat-form-field>
+          <mat-form-field fxFlex="100%">
+            <input matInput [formControl]="ctrl.get('icon')" placeholder="{{'app.manage.search.icon.text'|translate}}"
+                   autocomplete="fa-icons">
+            <i matSuffix class="fa {{ctrl.get('icon').value}}"></i>
+          </mat-form-field>
+          <mat-help>
+            <span [innerHTML]="'app.manage.search.icon.help'|translate"></span></mat-help>
+          <mat-form-field fxFlex="100%">
+            <input matInput [formControl]="ctrl.get('searchString')"
+                   placeholder="{{'app.manage.search.link'|translate}}" autocomplete="url">
+          </mat-form-field>
+          <mat-card-action>
+            <button mat-flat-button (click)="removeEngine()" class="pull-right mb-2"
+                    color="warn">
+              <mat-icon>remove</mat-icon>
+              {{'app.manage.search.remove'|translate}}</button>
+          </mat-card-action>
+        </mat-card>
+      </div>
+    </form>
+  </div>
+  <div fxFlex="60" fxFlex.xs="100" class="mt-2">
+    <button mat-raised-button class="success-button pull-right"
+            (click)="saveConfiguration()">{{'app.manage.app.save'|translate}}
+    </button>
+  </div>
+</div>

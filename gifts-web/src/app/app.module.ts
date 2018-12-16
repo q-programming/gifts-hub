@@ -41,6 +41,10 @@ import {AvatarUploadComponent, SettingsComponent} from './components/settings/se
 import {ImageCropperModule} from "ngx-img-cropper";
 import {KidDialogComponent} from './components/user-list/kid-dialog/kid-dialog.component';
 import {GiftDialogComponent} from './components/gifts/gift-dialog/gift-dialog.component';
+import {ManageComponent} from './components/manage/manage.component';
+import {EmailManageComponent} from "./components/manage/email/email-manage.component";
+import {AppManageComponent} from "./components/manage/app/app-manage.component";
+import {EngineManageComponent} from "./components/manage/engines/engines-manage.component";
 
 
 @NgModule({
@@ -64,6 +68,10 @@ import {GiftDialogComponent} from './components/gifts/gift-dialog/gift-dialog.co
     AvatarUploadComponent,
     KidDialogComponent,
     GiftDialogComponent,
+    ManageComponent,
+    AppManageComponent,
+    EmailManageComponent,
+    EngineManageComponent
   ],
   entryComponents: [
     AvatarUploadComponent,

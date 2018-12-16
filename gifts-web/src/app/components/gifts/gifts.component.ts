@@ -51,7 +51,7 @@ export class GiftsComponent implements OnInit {
     this.activatedRoute.params.subscribe(params => {
       this.identification = params['user'];
       //get gift list
-      this.isUserList = this.identification === this.currentAccount.username;
+      this.isUserList = !this.identification || this.identification === this.currentAccount.username;
       this.getGifts();
       this.getFamily();
       this.getAvatar(this.identification)

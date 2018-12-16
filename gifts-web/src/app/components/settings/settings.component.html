@@ -78,9 +78,9 @@
       </div>
       <div [innerHTML]="'user.settings.public.help'|translate" class="help">
       </div>
-      <div fxLayout="row" fxLayoutAlign="center center">
+      <div fxLayout="row" fxLayoutAlign="center center" *ngIf="account.publicList">
         <mat-form-field fxFlex="80%">
-          <input matInput [value]="publicUrl" #publicLink>
+          <input matInput [value]="publicUrl" #publicLink disabled>
           <button matSuffix mat-stroked-button matTooltip="{{'user.settings.public.copy.text'|translate}}"
                   (click)="copyLink(publicLink)">
             <mat-icon>link</mat-icon>

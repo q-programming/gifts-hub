@@ -5,12 +5,15 @@
       "undo": "Undo"
     },
     "manage": {
-      "0": "Application management",
       "admin": {
         "add": "Add application administrator privileges",
         "added": "Application administrator was successfully added",
         "remove": "Remove administrator privileges",
         "removed": "Users application administrator privileges were revoked"
+      },
+      "app": {
+        "save": "Save settings",
+        "text": "Application settings"
       },
       "categories": {
         "count": "# Used",
@@ -25,46 +28,51 @@
         "updated": "Category was updated"
       },
       "email": {
-        "0": "Email settings",
         "encoding": "Email encoding",
-        "error": "Invalid SMTP configuration. Reply from server:",
+        "error": "Invalid SMTP configuration.<br>Error was : {{error}}",
         "from": "Email used as sender",
+        "header": "Enter your mailing server details",
         "host": {
-          "0": "SMTP server url",
-          "help": "Enter your SMTP server url address and port"
+          "help": "Enter your SMTP server url address and port",
+          "text": "SMTP server url"
         },
         "password": "Password",
         "port": "Port",
         "save": "Save email configuration",
         "smtpauth": "Use SMTP authorization",
         "startttls": "Use TSL encryption",
+        "text": "Email settings",
         "username": {
-          "0": "Username",
-          "help": "Input your SMTP server username and password"
+          "help": "Input your SMTP server username and password",
+          "text": "Username"
         }
       },
+      "error": "There were errors while trying to save application settings",
       "gift": {
         "age": {
-          "0": "Gift age",
           "days": "days",
-          "help": "How long in days, new gifts will be marked as new. After being older than set days, they will be marked as just gifts. Calming or realising gifts overrides this"
+          "help": "How long in days, new gifts will be marked as new. After being older than set days, they will be marked as just gifts. Calming or realising gifts overrides this",
+          "text": "Gift age"
         }
       },
       "language": "Default application language",
       "saved": "Application settings were saved",
       "search": {
+        "add": "Add new search engine",
         "engine": "Search engines",
         "icon": {
-          "0": "Search icon",
-          "help": "Input font awesome class name. For example fa-google for google icon. Fore more info about available fontawesome icons please go to http://fontawesome.io/"
+          "help": "Input font awesome class name.<br>\nFor example fa-google for google icon.Fore more info about available fontawesome icons please go to \n<a href=\"https://fontawesome.com/v4.7.0/icons/\" target=\"_blank\">http://fontawesome.io/</a>",
+          "text": "Search icon"
         },
         "link": "Search link",
-        "name": "Search engine name"
+        "name": "Search engine name",
+        "remove": "Remove search engine"
       },
       "setup": "Welcome to Gifts Hub. As application administrator, please setup application with basic parameters like page url, search engines etc.",
+      "text": "Application management",
       "url": {
-        "0": "Application url",
-        "get": "Get app link"
+        "get": "Get app link",
+        "text": "Application url"
       }
     }
   },
@@ -78,6 +86,9 @@
     },
     "edit": {
       "gift": "You cannot edit not your gift"
+    },
+    "email": {
+      "invalid": "Invalid e-mail address"
     },
     "fileIO": "Unable to read file {0}",
     "general": "Something went wrong. Please check logs for more details",

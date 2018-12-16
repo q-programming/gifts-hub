@@ -9,6 +9,7 @@ import {ErrorComponent} from "./components/error/error.component";
 import {RegisterComponent} from "./components/register/register.component";
 import {GiftsPublicComponent} from "./components/gifts/gifts-public.component";
 import {SettingsComponent} from "./components/settings/settings.component";
+import {ManageComponent} from "./components/manage/manage.component";
 
 const routes: Routes = [
   {path: '', component: HomeComponent, canActivate: [AuthGuard]},
@@ -19,6 +20,7 @@ const routes: Routes = [
   {path: 'public/:user', component: GiftsPublicComponent},
   {path: 'register', component: RegisterComponent},
   {path: 'settings', component: SettingsComponent},
+  {path: 'manage', component: ManageComponent},
   {path: 'error', component: ErrorComponent},
   // otherwise redirect to home
   {path: '**', redirectTo: '/error?type=404'}

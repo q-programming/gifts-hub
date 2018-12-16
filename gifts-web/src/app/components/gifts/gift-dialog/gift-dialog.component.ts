@@ -64,13 +64,13 @@ export class GiftDialogComponent implements OnInit {
     this.apiSrv.get(`${environment.app_url}/search-engines`).subscribe(engines => {
       this.searchEngines = engines;
       if (this.searchEngines.length > 0) {
+        let that = this;
+        this.searchEngines.forEach((engine) => {
+          const enginesForm = <FormArray>that.form.controls['engines'];
+          enginesForm.push(this.addEngine(engine));
+          that.form.addControl(engine.name, new FormControl(true))
+        })
       }
-      let that = this;
-      this.searchEngines.forEach((engine) => {
-        const enginesForm = <FormArray>that.form.controls['engines'];
-        enginesForm.push(this.addEngine(engine));
-        that.form.addControl(engine.name, new FormControl(true))
-      })
 
     })
   }

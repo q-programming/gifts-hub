@@ -83,7 +83,7 @@ public class AppRestControllerTest extends MockedAccountTestBase {
         Settings settings = new Settings();
         settings.setLanguage(EN);
         manageRestController.perform(
-                post(API_APPLICATION_SETTINGS)
+                put(API_APPLICATION_SETTINGS)
                         .contentType(TestUtil.APPLICATION_JSON_UTF8)
                         .content(TestUtil.convertObjectToJsonBytes(settings)))
                 .andExpect(status().isOk());
@@ -100,7 +100,7 @@ public class AppRestControllerTest extends MockedAccountTestBase {
         Settings settings = new Settings();
         settings.addSearchEngine(engine);
         manageRestController.perform(
-                post(API_APPLICATION_SETTINGS)
+                put(API_APPLICATION_SETTINGS)
                         .contentType(TestUtil.APPLICATION_JSON_UTF8)
                         .content(TestUtil.convertObjectToJsonBytes(settings)))
                 .andExpect(status().isOk());
@@ -111,7 +111,7 @@ public class AppRestControllerTest extends MockedAccountTestBase {
     public void setApplicationSettingsBadAuthTest() throws Exception {
         Settings settings = new Settings();
         manageRestController.perform(
-                post(API_APPLICATION_SETTINGS)
+                put(API_APPLICATION_SETTINGS)
                         .contentType(TestUtil.APPLICATION_JSON_UTF8)
                         .content(TestUtil.convertObjectToJsonBytes(settings)))
                 .andExpect(status().isForbidden());
@@ -170,7 +170,7 @@ public class AppRestControllerTest extends MockedAccountTestBase {
         settings.setCategories(Stream.of(category3, category2, category1, category4)
                 .map(category -> new CategoryDTO(category, 0L))
                 .collect(Collectors.toList()));
-        manageRestController.perform(post(API_APPLICATION_SETTINGS)
+        manageRestController.perform(put(API_APPLICATION_SETTINGS)
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(settings))
         ).andExpect(status().isOk());
@@ -180,7 +180,7 @@ public class AppRestControllerTest extends MockedAccountTestBase {
     @Test
     public void removeCategoryBadAuthTest() throws Exception {
         Category category1 = createCategory("category1", 1L, Integer.MAX_VALUE);
-        manageRestController.perform(post(API_APPLICATION_REMOVE_CATEGORY)
+        manageRestController.perform(delete(API_APPLICATION_REMOVE_CATEGORY)
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(category1))
         ).andExpect(status().isForbidden());
@@ -191,7 +191,7 @@ public class AppRestControllerTest extends MockedAccountTestBase {
     public void removeCategoryNotFoundTest() throws Exception {
         testAccount.addAuthority(TestUtil.createAdminAuthority());
         Category category1 = createCategory("category1", 1L, Integer.MAX_VALUE);
-        manageRestController.perform(post(API_APPLICATION_REMOVE_CATEGORY)
+        manageRestController.perform(delete(API_APPLICATION_REMOVE_CATEGORY)
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(category1))
         ).andExpect(status().isNotFound());
@@ -203,7 +203,7 @@ public class AppRestControllerTest extends MockedAccountTestBase {
         testAccount.addAuthority(TestUtil.createAdminAuthority());
         Category category1 = createCategory("category1", 1L, Integer.MAX_VALUE);
         when(categoryServiceMock.findById(category1.getId())).thenReturn(category1);
-        manageRestController.perform(post(API_APPLICATION_REMOVE_CATEGORY)
+        manageRestController.perform(delete(API_APPLICATION_REMOVE_CATEGORY)
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(category1))
         ).andExpect(status().isOk());
@@ -214,7 +214,7 @@ public class AppRestControllerTest extends MockedAccountTestBase {
     @Test
     public void editCategoryBadAuthTest() throws Exception {
         Category category1 = createCategory("category1", 1L, Integer.MAX_VALUE);
-        manageRestController.perform(post(API_APPLICATION_UPDATE_CATEGORY)
+        manageRestController.perform(put(API_APPLICATION_UPDATE_CATEGORY)
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(category1))
         ).andExpect(status().isForbidden());
@@ -225,7 +225,7 @@ public class AppRestControllerTest extends MockedAccountTestBase {
     public void editCategoryNotFoundTest() throws Exception {
         testAccount.addAuthority(TestUtil.createAdminAuthority());
         Category category1 = createCategory("category1", 1L, Integer.MAX_VALUE);
-        manageRestController.perform(post(API_APPLICATION_UPDATE_CATEGORY)
+        manageRestController.perform(put(API_APPLICATION_UPDATE_CATEGORY)
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(category1))
         ).andExpect(status().isNotFound());
@@ -236,7 +236,7 @@ public class AppRestControllerTest extends MockedAccountTestBase {
         testAccount.addAuthority(TestUtil.createAdminAuthority());
         Category category1 = createCategory("category1", 1L, Integer.MAX_VALUE);
         when(categoryServiceMock.findById(category1.getId())).thenReturn(category1);
-        manageRestController.perform(post(API_APPLICATION_UPDATE_CATEGORY)
+        manageRestController.perform(put(API_APPLICATION_UPDATE_CATEGORY)
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(category1))
         ).andExpect(status().isOk());
