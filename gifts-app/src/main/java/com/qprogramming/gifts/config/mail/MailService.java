@@ -7,6 +7,8 @@ import com.qprogramming.gifts.account.avatar.Avatar;
 import com.qprogramming.gifts.account.event.AccountEvent;
 import com.qprogramming.gifts.config.property.DataBasePropertySource;
 import com.qprogramming.gifts.config.property.PropertyService;
+import com.qprogramming.gifts.exceptions.AccountNotFoundException;
+import com.qprogramming.gifts.gift.Gift;
 import com.qprogramming.gifts.messages.MessagesService;
 import com.qprogramming.gifts.schedule.AppEvent;
 import com.qprogramming.gifts.schedule.AppEventService;
@@ -56,6 +58,8 @@ public class MailService {
     private static final String USER_AVATAR_PNG = "userAvatar.png";
     private static final String PNG = "png";
     private static final String PUBLIC_LINK = "publicLink";
+    private static final String LIST_LINK = "listLink";
+    private static final String GIFT = "gift";
     private final Logger LOG = LoggerFactory.getLogger(this.getClass());
     JavaMailSender mailSender;
     private PropertyService propertyService;
@@ -174,9 +178,10 @@ public class MailService {
     public void sendEmail(Mail mail) {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         try {
+            String from = propertyService.getProperty(APP_EMAIL_FROM);
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
             mimeMessageHelper.setSubject(mail.getMailSubject());
-            mimeMessageHelper.setFrom(mail.getMailFrom());
+            mimeMessageHelper.setFrom(from);
             mimeMessageHelper.setTo(mail.getMailTo());
             mail.setMailContent(geContentFromTemplate(mail.getModel(), "emailTemplate.ftl"));
             mimeMessageHelper.setText(mail.getMailContent(), true);
@@ -206,12 +211,13 @@ public class MailService {
     public void shareGiftList(List<Mail> emails) throws MessagingException {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         String application = propertyService.getProperty(APP_URL);
+        String from = propertyService.getProperty(APP_EMAIL_FROM);
         String publicLink = application + "#/public/" + Utils.getCurrentAccountId();
         for (Mail mail : emails) {
             Locale locale = getMailLocale(mail);
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, propertyService.getProperty(Settings.APP_EMAIL_ENCODING));
             mimeMessageHelper.setSubject(msgSrv.getMessage("gift.share.subject", new Object[]{Utils.getCurrentAccount().getFullname()}, "", locale));
-            mimeMessageHelper.setFrom(mail.getMailFrom());
+            mimeMessageHelper.setFrom(from);
             mimeMessageHelper.setTo(mail.getMailTo());
             mail.addToModel(PUBLIC_LINK, publicLink);
             mail.addToModel(APPLICATION, application);
@@ -223,6 +229,36 @@ public class MailService {
             mailSender.send(mimeMessageHelper.getMimeMessage());
         }
     }
+
+    /**
+     * Send public gift list to list of emails
+     *
+     * @param gift gift which was removed
+     * @throws MessagingException if there were errors while sending email
+     */
+    public void notifyAboutGiftRemoved(Gift gift) throws MessagingException, AccountNotFoundException {
+        Account owner = accountService.findById(gift.getUserId());
+        Mail mail = Utils.createMail(gift.getClaimed(), owner);
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
+        String application = propertyService.getProperty(APP_URL);
+        String from = propertyService.getProperty(APP_EMAIL_FROM);
+        String listLink = application + "#/list/" + Utils.getCurrentAccountId();
+        Locale locale = getMailLocale(mail);
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, propertyService.getProperty(Settings.APP_EMAIL_ENCODING));
+        mimeMessageHelper.setSubject(msgSrv.getMessage("gift.delete.notify", new Object[]{owner.getFullname()}, "", locale));
+        mimeMessageHelper.setFrom(from);
+        mimeMessageHelper.setTo(mail.getMailTo());
+        mail.addToModel(LIST_LINK, listLink);
+        mail.addToModel(GIFT, gift.getName());
+        mail.addToModel(APPLICATION, application);
+        mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/giftRemoved.ftl"));
+        mimeMessageHelper.setText(mail.getMailContent(), true);
+        addAppLogo(mimeMessageHelper);
+        File avatarTempFile = getUserAvatar(owner);
+        mimeMessageHelper.addInline(USER_AVATAR_PNG, avatarTempFile);
+        mailSender.send(mimeMessageHelper.getMimeMessage());
+    }
+
 
     /**
      * Get resized user avatar and store it as temporary file deleted on server restart
@@ -271,12 +307,13 @@ public class MailService {
     public void sendConfirmMail(Mail mail, AccountEvent event) throws MessagingException {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         String application = propertyService.getProperty(APP_URL);
+        String from = propertyService.getProperty(APP_EMAIL_FROM);
         String confirmLink = application + "#/confirm/" + event.getToken();
         mail.addToModel(CONFIRM_LINK, confirmLink);
         Locale locale = getMailLocale(mail);
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
         String familyName = event.getFamily().getName();
-        mimeMessageHelper.setFrom(mail.getMailFrom());
+        mimeMessageHelper.setFrom(from);
         mimeMessageHelper.setTo(mail.getMailTo());
         addAppLogo(mimeMessageHelper);
         File avatarTempFile = getUserAvatar(Utils.getCurrentAccount());
@@ -313,7 +350,7 @@ public class MailService {
         int mailsSent = 0;
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         String application = propertyService.getProperty(APP_URL);
-        List<Account> allAccounts = accountService.findAllWithNewsletter();//TODO has newsletter checked
+        List<Account> allAccounts = accountService.findAllWithNotifications();//TODO has newsletter checked
         Map<Account, List<AppEvent>> eventMap = eventService.getEventsGroupedByAccount();
         for (Account account : allAccounts) {
             Map<Account, List<AppEvent>> eventsWithoutAccount = eventMap.entrySet().stream()
@@ -339,11 +376,11 @@ public class MailService {
      */
     private void sendEventForAccount(MimeMessage mimeMessage, String application, Map<Account, List<AppEvent>> eventMap, Account account) throws MessagingException {
         Mail mail = Utils.createMail(account);
-        mail.setMailFrom(propertyService.getProperty(APP_EMAIL_FROM));
+        String from = propertyService.getProperty(APP_EMAIL_FROM);
         Locale locale = getMailLocale(mail);
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, propertyService.getProperty(Settings.APP_EMAIL_ENCODING));
         mimeMessageHelper.setSubject(msgSrv.getMessage("schedule.event.summary", null, "", locale));
-        mimeMessageHelper.setFrom(mail.getMailFrom());
+        mimeMessageHelper.setFrom(from);
         mimeMessageHelper.setTo(mail.getMailTo());
         mail.addToModel(APPLICATION, application);
         mail.addToModel(NAME, account.getName());

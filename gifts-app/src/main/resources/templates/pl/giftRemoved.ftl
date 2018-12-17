@@ -3,7 +3,7 @@
 <head>
     <meta name="viewport" content="width=device-width">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Wish list</title>
+    <title>Lista &#380;ycze&#324;</title>
     <style>
         * {
             margin: 0;
@@ -60,6 +60,11 @@
             font-weight: bold;
             vertical-align: middle;
         }
+
+        .text {
+            vertical-align: middle;
+        }
+
         h1, h2, h3 {
             font-family: "Helvetica Neue", Helvetica, Arial, "Lucida Grande",
             sans-serif;
@@ -137,14 +142,14 @@
             </td>
             <td>
             <#if name??>
-                <p>Hello ${name},</p>
+                <p>Witaj ${name}</p>
             </#if>
                 <div>
-                ${owner} wanted to share with you his wish list in Gifts Hub application
+                To jest powiadomienie, &#380;e prezent "${gift}", kt&oacute;ry był przez Ciebie zarezerwowany, zosta&#322; usuni&#281;ty z listy &#380;ycze&#324; u&#380;ytkownika ${owner} w aplikacji Gifts Hub
                 </div>
-                <p>Click below to view it </p>
+                <p>Kliknij poni&#380;ej aby obejrze&#263; list&#281; &#380;ycze&#324; ${owner}</p>
                 <p>
-                    <a href="${publicLink}">${publicLink}</a>
+                    <a href="${listLink}">${listLink}</a>
                 </p>
             </td>
         </tr>
@@ -164,10 +169,10 @@
                     <tr>
                         <td align="center">
                             <p>
-                                This is automatic message sent from <a
+                                To jest automatyczna wiadomo&#347;&#263; wys&#322;ana z <a
                                     href="${application!'#'}" target="_blank">${application!'#'}</a>.</br>
-                                If you wish to stop receiving e-mail notifications, please deselect notifications option in
-                                your user settings.
+                                Je&#380;eli nie chcesz otrzymywa&#263; wi&#281;cej powiadomie&#324; poprzez
+                                e-mail, odznacz prosz&#281; opcj&#281; w paneu sterowania.
                             </p>
                         </td>
                     </tr>

@@ -94,7 +94,7 @@ export class SettingsComponent implements OnInit {
 
   getAccountSettings() {
     return {
-      newsletter: this.account.newsletter,
+      newsletter: this.account.notifications,
       publicList: this.account.publicList,
       language: this.account.language
     }

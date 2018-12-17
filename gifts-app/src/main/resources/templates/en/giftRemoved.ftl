@@ -60,6 +60,7 @@
             font-weight: bold;
             vertical-align: middle;
         }
+
         h1, h2, h3 {
             font-family: "Helvetica Neue", Helvetica, Arial, "Lucida Grande",
             sans-serif;
@@ -136,15 +137,16 @@
                 <img class="avatar" src='cid:userAvatar.png'>
             </td>
             <td>
-            <#if name??>
-                <p>Hello ${name},</p>
-            </#if>
+                <#if name??>
+                    <p>Hello ${name},</p>
+                </#if>
                 <div>
-                ${owner} wanted to share with you his wish list in Gifts Hub application
+                    This is notification that gift ${gift}, which was claimed by you, was removed from ${owner} wish
+                    list in Gifts Hub application
                 </div>
-                <p>Click below to view it </p>
+                <p>Click below view ${owner} list</p>
                 <p>
-                    <a href="${publicLink}">${publicLink}</a>
+                    <a href="${listLink}">${listLink}</a>
                 </p>
             </td>
         </tr>
@@ -165,7 +167,7 @@
                         <td align="center">
                             <p>
                                 This is automatic message sent from <a
-                                    href="${application!'#'}" target="_blank">${application!'#'}</a>.</br>
+                                        href="${application!'#'}" target="_blank">${application!'#'}</a>.</br>
                                 If you wish to stop receiving e-mail notifications, please deselect notifications option in
                                 your user settings.
                             </p>

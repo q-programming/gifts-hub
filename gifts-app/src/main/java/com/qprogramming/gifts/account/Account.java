@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.qprogramming.gifts.account.authority.Authority;
 import com.qprogramming.gifts.account.authority.Role;
 import io.jsonwebtoken.lang.Collections;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
@@ -47,7 +46,7 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
     private Boolean seenChangelog = false;
 
     @Column(columnDefinition = "boolean default false")
-    private Boolean newsletter = false;
+    private Boolean notifications = false;
 
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(name = "user_authority",
@@ -220,12 +219,12 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
         this.seenChangelog = seenChangelog;
     }
 
-    public Boolean isNewsletter() {
-        return newsletter;
+    public Boolean getNotifications() {
+        return notifications;
     }
 
-    public void setNewsletter(Boolean newsletter) {
-        this.newsletter = newsletter;
+    public void setNotifications(Boolean notifications) {
+        this.notifications = notifications;
     }
 
     @JsonIgnore

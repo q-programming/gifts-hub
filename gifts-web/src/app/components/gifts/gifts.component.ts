@@ -96,7 +96,6 @@ export class GiftsComponent implements OnInit {
         name: this.getCategoryName(key)
       }
     });
-    console.log(this.categories);
     this.realizedGifts = this.categorizedGifts[GiftStatus.REALISED];
     this.unCategorizedGifts = this.categorizedGifts[''];
     delete this.categorizedGifts[GiftStatus.REALISED];

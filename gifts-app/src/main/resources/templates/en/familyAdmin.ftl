@@ -167,7 +167,7 @@
                             <p>
                                 This is automatic message sent from <a
                                     href="${application!'#'}" target="_blank">${application!'#'}</a>.</br>
-                                If you wish to stop receiving e-mail notifications, please deselect newsletter option in
+                                If you wish to stop receiving e-mail notifications, please deselect notifications option in
                                 your user settings.
                             </p>
                         </td>

@@ -426,10 +426,10 @@
         "wronguser": "Error while uploading avatar. Wrong request"
       },
       "language": "Language",
-      "newsletter": {
-        "help": "Select to receive email newsletter with information what was added or marked as completed in application.<br>Newsletter will be sent every monday if there actually will be some events",
-        "recieve": "Receive email newsletter",
-        "text": "Newsletter"
+      "notifications": {
+        "help": "Select to receive email notifications with information about removed claimed gifts and what was added or marked as completed in application.<br>Newsletter will be sent every monday if there actually will be some events",
+        "recieve": "Receive email notifications",
+        "text": "Email notifications"
       },
       "public": {
         "copy": {

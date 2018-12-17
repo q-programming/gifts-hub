@@ -45,15 +45,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static com.qprogramming.gifts.settings.Settings.APP_EMAIL_FROM;
-
 @RestController
 @RequestMapping("/api/account")
 public class UserRestController {
 
     public static final String PASSWORD_REGEXP = "^^(?=.*[A-Z])(?=.*[0-9])(?=.*[a-z].*[a-z].*[a-z]).{8,}$";
     public static final String USERNAME_REGEXP = "^[a-zA-Z0-9_]+$";
-    public static final String NEWSLETTER = "newsletter";
+    public static final String NEWSLETTER = "notifications";
     public static final String PUBLIC_LIST = "publicList";
     public static final String LANGUAGE = "language";
     private static final Logger LOG = LoggerFactory.getLogger(UserRestController.class);
@@ -63,7 +61,6 @@ public class UserRestController {
     private FamilyService familyService;
     private GiftService giftService;
     private MailService mailService;
-    private PropertyService propertyService;
     private AppEventService eventService;
 
     @Autowired
@@ -74,7 +71,6 @@ public class UserRestController {
         this.familyService = familyService;
         this.giftService = giftService;
         this.mailService = mailService;
-        this.propertyService = propertyService;
         this.eventService = eventService;
     }
 
@@ -370,7 +366,6 @@ public class UserRestController {
             if (!AccountType.KID.equals(account.getType())) {
                 AccountEvent event = familyService.inviteAccount(account, family, type);
                 Mail mail = Utils.createMail(account, Utils.getCurrentAccount());
-                mail.setMailFrom(propertyService.getProperty(APP_EMAIL_FROM));
                 mailService.sendConfirmMail(mail, event);
             } else {
                 familyService.addAccountToFamily(account, family);
@@ -527,7 +522,7 @@ public class UserRestController {
             account.setLanguage(accountSettings.getLanguage());
         }
         account.setPublicList(accountSettings.getPublicList());
-        account.setNewsletter(accountSettings.getNewsletter());
+        account.setNotifications(accountSettings.getNewsletter());
         accountService.update(account);
         accountService.signin(account);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -635,7 +630,6 @@ public class UserRestController {
             Mail mail = new Mail();
             Optional<Account> opotionalAccount = accountService.findByEmail(email);
             mail.setMailTo(email);
-            mail.setMailFrom(propertyService.getProperty(APP_EMAIL_FROM));
             if (opotionalAccount.isPresent()) {
                 Account byEmail = opotionalAccount.get();
                 mail.setLocale(byEmail.getLanguage());

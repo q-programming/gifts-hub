@@ -426,10 +426,10 @@
         "wronguser": "Bład podczas zmiany awatara. Złe zapytanie"
       },
       "language": "Język",
-      "newsletter": {
-        "help": "Zaznacz aby otrzymywać powiadomienia email z informacjami o nowych lub zrealizowanych prezentach w aplikacji.<br>Newsletter będzie wysyłany w każdy poniedziałek o ile wystąpiły jakieś wydarzenia",
-        "recieve": "Otrzymuj newsletter",
-        "text": "Newsletter"
+      "notifications": {
+        "help": "Zaznacz aby otrzymywać powiadomienia email z informacjami o nowych lub zrealizowanych prezentach w aplikacji lub usuniętych zarezerwowanych prezentach.<br>Newsletter będzie wysyłany w każdy poniedziałek o ile wystąpiły jakieś wydarzenia",
+        "recieve": "Otrzymuj powiadomienia email",
+        "text": "Powiadomienia email"
       },
       "public": {
         "copy": {

@@ -14,7 +14,7 @@ export class Account {
   type: AccountType;
   giftsCount?: number;
   publicList?: boolean;
-  newsletter?: boolean;
+  notifications?: boolean;
   seenChangelog?: boolean;
   admin:boolean
 }

@@ -5,6 +5,7 @@ import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.account.family.Family;
 import com.qprogramming.gifts.account.family.FamilyService;
+import com.qprogramming.gifts.config.mail.MailService;
 import com.qprogramming.gifts.exceptions.AccountNotFoundException;
 import com.qprogramming.gifts.gift.Gift;
 import com.qprogramming.gifts.gift.GiftForm;
@@ -36,6 +37,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.mail.MessagingException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -67,9 +69,10 @@ public class GiftRestController {
     private MessagesService msgSrv;
     private FamilyService familyService;
     private AppEventService eventService;
+    private MailService mailService;
 
     @Autowired
-    public GiftRestController(AccountService accountService, GiftService giftService, SearchEngineService searchEngineService, CategoryService categoryService, MessagesService msgSrv, FamilyService familyService, AppEventService eventService) {
+    public GiftRestController(AccountService accountService, GiftService giftService, SearchEngineService searchEngineService, CategoryService categoryService, MessagesService msgSrv, FamilyService familyService, AppEventService eventService, MailService mailService) {
         this.accountService = accountService;
         this.giftService = giftService;
         this.searchEngineService = searchEngineService;
@@ -77,6 +80,7 @@ public class GiftRestController {
         this.msgSrv = msgSrv;
         this.familyService = familyService;
         this.eventService = eventService;
+        this.mailService = mailService;
         initProhibited();
     }
 
@@ -227,6 +231,7 @@ public class GiftRestController {
         return new ResultData.ResultBuilder().ok().message(msgSrv.getMessage("gift.complete.undo.success")).build();
     }
 
+    @Transactional
     @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/delete/{giftID}", method = RequestMethod.DELETE)
     public ResponseEntity deleteGift(@PathVariable(value = "giftID") String id) {
@@ -239,9 +244,15 @@ public class GiftRestController {
         }
         try {
             eventService.deleteGiftEvents(gift);
+            if (gift.getClaimed() != null && gift.getClaimed().getNotifications() && gift.getStatus() != GiftStatus.REALISED) {
+                mailService.notifyAboutGiftRemoved(gift);
+            }
         } catch (AccountNotFoundException e) {
             LOG.debug("Current account not found");
             return ResponseEntity.notFound().build();
+        } catch (MessagingException e) {
+            LOG.debug("Error while trying to send notification {}", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
         giftService.delete(gift);
         return new ResultData.ResultBuilder().ok().message(msgSrv.getMessage("gift.delete.success", new Object[]{gift.getName()}, "", Utils.getCurrentLocale())).build();

@@ -272,8 +272,8 @@ public class AccountService implements UserDetailsService {
         return sortedAccounts(_accountRepository.findAll());
     }
 
-    public List<Account> findAllWithNewsletter() {
-        return _accountRepository.findByNewsletterIsTrueAndEmailNotNullAndTypeIsNot(AccountType.KID);
+    public List<Account> findAllWithNotifications() {
+        return _accountRepository.findByNotificationsIsTrueAndEmailNotNullAndTypeIsNot(AccountType.KID);
     }
 
 

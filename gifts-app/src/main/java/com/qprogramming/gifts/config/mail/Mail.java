@@ -3,7 +3,6 @@ package com.qprogramming.gifts.config.mail;
 import java.util.*;
 
 public class Mail {
-    private String mailFrom;
 
     private String mailTo;
 
@@ -49,14 +48,6 @@ public class Mail {
 
     public void setMailCc(String mailCc) {
         this.mailCc = mailCc;
-    }
-
-    public String getMailFrom() {
-        return mailFrom;
-    }
-
-    public void setMailFrom(String mailFrom) {
-        this.mailFrom = mailFrom;
     }
 
     public String getMailSubject() {

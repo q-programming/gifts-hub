@@ -41,7 +41,7 @@
     <div fxFlex="60" fxFlex.xs="100">
       <h3 class="underlined">
         <mat-icon>speaker_notes</mat-icon>
-        {{'user.settings.newsletter.text'|translate}}
+        {{'user.settings.notifications.text'|translate}}
       </h3>
     </div>
   </div>
@@ -49,12 +49,12 @@
     <div fxFlex="60" fxFlex.xs="100">
       <div class="mb-2">
         <mat-slide-toggle
-          [(ngModel)]="account.newsletter"
+          [(ngModel)]="account.notifications"
           (change)="updateSettings()">
-          {{'user.settings.newsletter.recieve'|translate}}
+          {{'user.settings.notifications.recieve'|translate}}
         </mat-slide-toggle>
       </div>
-      <div [innerHTML]="'user.settings.newsletter.help'|translate" class="help">
+      <div [innerHTML]="'user.settings.notifications.help'|translate" class="help">
       </div>
     </div>
   </div>

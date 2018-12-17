@@ -6,6 +6,7 @@ import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.account.family.Family;
 import com.qprogramming.gifts.account.family.FamilyService;
+import com.qprogramming.gifts.config.mail.MailService;
 import com.qprogramming.gifts.exceptions.AccountNotFoundException;
 import com.qprogramming.gifts.gift.Gift;
 import com.qprogramming.gifts.gift.GiftForm;
@@ -83,12 +84,14 @@ public class GiftRestControllerTest extends MockedAccountTestBase {
     private MockMultipartFile mockMultipartFile;
     @Mock
     private AppEventService eventServiceMock;
+    @Mock
+    private MailService mailServiceMock;
 
     @Before
     public void setUp() throws Exception {
         super.setup();
         when(messagesServiceMock.getMessage("gift.category.other", null, "", new Locale("en"))).thenReturn("Other");
-        GiftRestController giftsCtrl = new GiftRestController(accSrvMock, giftServiceMock, searchEngineServiceMock, categoryServiceMock, messagesServiceMock, familyServiceMock, eventServiceMock);
+        GiftRestController giftsCtrl = new GiftRestController(accSrvMock, giftServiceMock, searchEngineServiceMock, categoryServiceMock, messagesServiceMock, familyServiceMock, eventServiceMock, mailServiceMock);
         this.giftsRestCtrl = MockMvcBuilders.standaloneSetup(giftsCtrl).build();
     }
 

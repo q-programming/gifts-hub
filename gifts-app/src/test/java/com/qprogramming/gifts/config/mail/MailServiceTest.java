@@ -125,8 +125,8 @@ public class MailServiceTest {
         Locale locale = new Locale("en");
         when(mailSenderMock.createMimeMessage()).thenReturn(new MimeMessage(Session.getInstance(props)));
         when(msgSrvMock.getMessage("gift.share.subject", new Object[]{testAccount.getFullname()}, "", locale)).thenReturn(SUBJECT);
+        when(propertyServiceMock.getProperty(APP_EMAIL_FROM)).thenReturn("from@mail.com");
         Mail mail = new Mail();
-        mail.setMailFrom("from@mail.com");
         mail.setMailTo("to@mail.com");
         mailService.shareGiftList(Collections.singletonList(mail));
         verify(mailSenderMock, times(1)).send(any(MimeMessage.class));
@@ -141,8 +141,8 @@ public class MailServiceTest {
         event.setToken("token");
         event.setType(AccountEventType.FAMILY_MEMEBER);
         when(msgSrvMock.getMessage("user.family.invite", new Object[]{family.getName()}, "", locale)).thenReturn(SUBJECT);
+        when(propertyServiceMock.getProperty(APP_EMAIL_FROM)).thenReturn("from@mail.com");
         Mail mail = Utils.createMail(testAccount);
-        mail.setMailFrom(MAIL_FROM_COM);
         mailService.sendConfirmMail(mail, event);
         verify(mailSenderMock, times(1)).send(any(MimeMessage.class));
     }
@@ -156,8 +156,8 @@ public class MailServiceTest {
         event.setToken("token");
         event.setType(AccountEventType.FAMILY_ADMIN);
         when(msgSrvMock.getMessage("user.family.admin", new Object[]{family.getName()}, "", locale)).thenReturn(SUBJECT);
+        when(propertyServiceMock.getProperty(APP_EMAIL_FROM)).thenReturn("from@mail.com");
         Mail mail = Utils.createMail(testAccount);
-        mail.setMailFrom(MAIL_FROM_COM);
         mailService.sendConfirmMail(mail, event);
         verify(mailSenderMock, times(1)).send(any(MimeMessage.class));
     }
@@ -171,7 +171,7 @@ public class MailServiceTest {
         Map<Account, List<AppEvent>> events = new HashMap<>();
         events.put(testAccount, Arrays.asList(event1, event2, event3));
         when(eventServiceMock.getEventsGroupedByAccount()).thenReturn(events);
-        when(accountServiceMock.findAllWithNewsletter()).thenReturn(Arrays.asList(testAccount, account));
+        when(accountServiceMock.findAllWithNotifications()).thenReturn(Arrays.asList(testAccount, account));
         when(msgSrvMock.getMessage("schedule.event.summary", null, "", locale)).thenReturn(SUBJECT);
         mailService.sendEvents();
         verify(mailSenderMock, times(1)).send(any(MimeMessage.class));
