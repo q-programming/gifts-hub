@@ -255,7 +255,7 @@ public class GiftRestController {
      * @return updated {@link Gift}
      */
     private Gift updateGiftFromForm(Gift gift) {
-        if (gift.getCategory() != null) {
+        if (gift.getCategory() != null && StringUtils.isNotBlank(gift.getCategory().getName())) {
             Category category = categoryService.findByName(gift.getCategory().getName());
             if (category == null) {
                 category = categoryService.save(gift.getCategory());

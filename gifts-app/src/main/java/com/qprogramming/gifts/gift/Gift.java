@@ -102,6 +102,9 @@ public class Gift implements Serializable, Comparable<Gift> {
     }
 
     public Set<SearchEngine> getEngines() {
+        if (Collections.isEmpty(engines)) {
+            this.engines = new HashSet<>();
+        }
         return engines;
     }
 

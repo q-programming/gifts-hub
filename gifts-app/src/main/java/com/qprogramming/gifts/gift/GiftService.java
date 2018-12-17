@@ -3,6 +3,7 @@ package com.qprogramming.gifts.gift;
 import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.config.property.PropertyService;
 import com.qprogramming.gifts.gift.category.Category;
+import com.qprogramming.gifts.settings.SearchEngine;
 import com.qprogramming.gifts.support.Utils;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
@@ -144,5 +145,11 @@ public class GiftService {
         List<Gift> allByCategory = giftRepository.findAllByCategory(category);
         allByCategory.forEach(gift -> gift.setCategory(null));
         giftRepository.saveAll(allByCategory);
+    }
+
+    public void removeSearchEngine(SearchEngine searchEngine) {
+        List<Gift> gifts = giftRepository.findByEngines(searchEngine);
+        gifts.forEach(gift -> gift.getEngines().remove(searchEngine));
+        giftRepository.saveAll(gifts);
     }
 }

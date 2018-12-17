@@ -1,5 +1,7 @@
 package com.qprogramming.gifts.settings;
 
+import com.qprogramming.gifts.gift.GiftService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -13,9 +15,12 @@ import java.util.stream.Collectors;
 public class SearchEngineService {
 
     private SearchEngineRepository searchEngineRepository;
+    private GiftService giftService;
 
-    public SearchEngineService(SearchEngineRepository searchEngineRepository) {
+    @Autowired
+    public SearchEngineService(SearchEngineRepository searchEngineRepository, GiftService giftService) {
         this.searchEngineRepository = searchEngineRepository;
+        this.giftService = giftService;
     }
 
     public List<SearchEngine> getAllSearchEngines() {
@@ -31,6 +36,10 @@ public class SearchEngineService {
         //collect items that will be deleted
         List<SearchEngine> toRemove = dbSearchEngines.stream().filter(o -> !searchEngines.contains(o)).collect(Collectors.toList());
         dbSearchEngines.removeAll(toRemove);
+        //sanitze any gifts that might be using removed search engines
+        toRemove.forEach(searchEngine -> {
+            giftService.removeSearchEngine(searchEngine);
+        });
         searchEngineRepository.deleteAll(toRemove);
         searchEngineRepository.saveAll(dbSearchEngines);
     }

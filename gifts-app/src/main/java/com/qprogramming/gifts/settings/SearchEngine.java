@@ -1,6 +1,7 @@
 package com.qprogramming.gifts.settings;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 /**
  * Created by XE050991499 on 2017-03-21.
@@ -55,7 +56,7 @@ public class SearchEngine {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         SearchEngine that = (SearchEngine) o;
-        return id != null ? id.equals(that.id) : that.id == null;
+        return Objects.equals(id, that.id);
     }
 
     @Override

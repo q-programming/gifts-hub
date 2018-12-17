@@ -81,7 +81,8 @@ export class GiftDialogComponent implements OnInit {
       name: [engine.name],
       id: [engine.id],
       icon: [engine.icon],
-      selected: [g_engine !== undefined || !this.update]
+      selected: [g_engine !== undefined || !this.update],
+      searchString: [engine.searchString]
     });
   }
 
@@ -155,7 +156,12 @@ export class GiftDialogComponent implements OnInit {
       const engines = <FormArray>this.form.get('engines');
       const enabledEngines = _.filter(engines.controls, ctrl => ctrl.get('selected').value);
       this.gift.engines = _.map(enabledEngines, eng => {
-        return {id: eng.get('id').value}
+        return {
+          id: eng.get('id').value,
+          name: eng.get('name').value,
+          icon: eng.get('icon').value,
+          searchString: eng.get('searchString').value
+        }
       });
       this.dialogRef.close(this.gift)
     }
