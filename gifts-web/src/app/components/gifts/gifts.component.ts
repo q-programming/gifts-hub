@@ -11,8 +11,9 @@ import * as _ from "lodash"
 import {AlertService} from "@services/alert.service";
 import {NGXLogger} from "ngx-logger";
 import {MatDialog} from "@angular/material";
-import {KidDialogComponent} from "../user-list/kid-dialog/kid-dialog.component";
 import {GiftDialogComponent} from "./gift-dialog/gift-dialog.component";
+import {TranslateService} from "@ngx-translate/core";
+import {CategoryOption} from "@model/Category";
 
 @Component({
   selector: 'gifts-list',
@@ -32,7 +33,15 @@ export class GiftsComponent implements OnInit {
   categorizedGifts: Map<string, Gift[]>;
   realizedGifts: Gift[] = [];
   unCategorizedGifts: Gift[] = [];
+  GiftStatus = GiftStatus;
+
   avatar: string;
+
+  label_realised: string;
+  label_other: string;
+  categories: CategoryOption[];
+  filteredCategory: string;
+  filter: boolean;
 
 
   constructor(private activatedRoute: ActivatedRoute,
@@ -43,10 +52,14 @@ export class GiftsComponent implements OnInit {
               private userSrv: UserService,
               private alertSrv: AlertService,
               public dialog: MatDialog,
-              private logger: NGXLogger) {
+              private logger: NGXLogger,
+              private translate: TranslateService) {
   }
 
   ngOnInit() {
+    //get translations
+    this.translate.get('gift.category.other').subscribe(value => this.label_other = value);
+    this.translate.get('gift.category.realised').subscribe(value => this.label_realised = value);
     this.currentAccount = this.authSrv.currentAccount;
     this.activatedRoute.params.subscribe(params => {
       this.identification = params['user'];
@@ -77,6 +90,13 @@ export class GiftsComponent implements OnInit {
 
   private processList(result: Map<string, Gift[]>) {
     this.categorizedGifts = result;
+    this.categories = Object.keys(result).map(key => {
+      return {
+        key: key ? key : '####',
+        name: this.getCategoryName(key)
+      }
+    });
+    console.log(this.categories);
     this.realizedGifts = this.categorizedGifts[GiftStatus.REALISED];
     this.unCategorizedGifts = this.categorizedGifts[''];
     delete this.categorizedGifts[GiftStatus.REALISED];
@@ -198,4 +218,23 @@ export class GiftsComponent implements OnInit {
       this.alertSrv.error('user.family.admin.error')
     }
   }
+
+  filterByCategory(category: string) {
+    this.filteredCategory = category;
+  }
+
+  getCategoryName(key: string) {
+    if (key === GiftStatus.REALISED) {
+      return this.label_realised;
+    } else if (key === '') {
+      return this.label_other;
+    }
+    return key;
+  }
+
+
+  close(event: boolean) {
+    this.filter = event
+  }
 }
+

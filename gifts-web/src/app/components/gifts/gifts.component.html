@@ -1,14 +1,14 @@
 <!--HEADER-->
 <mat-card class="pb-1 pt-1 fixed-container header">
   <div fxlayout="row" fxLayoutAlign="center center">
-    <div fxFlex="10%" fxFlex.lt-sm="15%">
+    <div fxFlex="10" fxFlex.lt-sm="15%">
       <img matCardAvatar [src]="avatar" class="avatar">
     </div>
     <!--Accounts search bar-->
     <div fxFlex>
       <account-list (account)="changeViewedAccount($event)"></account-list>
     </div>
-    <div fxFlex="22%" fxFlex.lt-lg="30%">
+    <div fxFlex="22" fxFlex.lt-lg="30%">
       <ng-container *ngIf="isUserList || isFamilyAdmin">
         <button mat-flat-button class="success-button pull-right font-smaller" fxShow.lt-md="false">
           <mat-icon>cloud_upload</mat-icon>
@@ -33,37 +33,55 @@
     <div fxFlex>
       {{'gift.link.text'|translate}}
     </div>
-    <div fxFlex="10%">
+    <div fxFlex="10">
       {{'gift.add.date'|translate}}
     </div>
-    <div fxFlex="5%">
-      {{'main.action'|translate}}
+    <div fxFlex="10" class="text-right pr-1">
+      <button mat-icon-button [matTooltip]="
+      filteredCategory?
+      ('gift.category.filter.filteringBy'|translate:{name:getCategoryName(filteredCategory)}):
+      'gift.category.filter.text'|translate" (click)="filter=!filter">
+        <i class="fa fa-plus-circle filter-active" *ngIf="filteredCategory!==undefined"></i>
+        <i id="filter-btn" class="fa fa-lg fa-filter"></i>
+      </button>
+      <i class="fa fa-cogs" matTooltip="{{'main.action'|translate}}" fxShow.lt-md="false"></i>
+    </div>
+  </div>
+  <div fxLayout="row" fxShow.lt-sm="false" *ngIf="filter">
+    <div fxFlex>
+      <category-list-filter [categories]="categories" [filteredCategory]="filteredCategory"
+                            (category)="filterByCategory($event)"
+                            (close)="close($event)"
+      ></category-list-filter>
     </div>
   </div>
 </mat-card>
 <!--GIFTS-->
-<div style="margin-top: 90px">
-  <mat-expansion-panel *ngFor="let gifts of categorizedGifts| keyvalue" expanded="true">
-    <mat-expansion-panel-header>
-      <mat-panel-title>
-        <h3>{{gifts.key}}</h3>
-      </mat-panel-title>
-    </mat-expansion-panel-header>
-    <div *ngFor="let gift of gifts.value;let even=even;trackBy: trackByFn">
-      <gift [gift]="gift"
-            [even]="even"
-            [canEdit]="isUserList || isFamilyAdmin"
-            (refresh)="refresh($event)"
-            (delete)="delete($event)"
-            (edit)="editGiftDialog($event)"
-      ></gift>
-    </div>
-  </mat-expansion-panel>
+<div [ngClass]="{'content':!filter,'content-filtered':filter}">
+  <ng-container *ngFor="let gifts of categorizedGifts| keyvalue">
+    <mat-expansion-panel expanded="true" *ngIf="!filteredCategory || gifts.key===filteredCategory">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <h3>{{gifts.key}}</h3>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div *ngFor="let gift of gifts.value;let even=even;trackBy: trackByFn">
+        <gift [gift]="gift"
+              [even]="even"
+              [canEdit]="isUserList || isFamilyAdmin"
+              (refresh)="refresh($event)"
+              (delete)="delete($event)"
+              (edit)="editGiftDialog($event)"
+        ></gift>
+      </div>
+    </mat-expansion-panel>
+  </ng-container>
   <!--OTHER-->
-  <mat-expansion-panel expanded="true" *ngIf="unCategorizedGifts && unCategorizedGifts.length > 0 ">
+  <mat-expansion-panel expanded="true"
+                       *ngIf="unCategorizedGifts && unCategorizedGifts.length > 0 && !filteredCategory ||  filteredCategory ==='####'">
     <mat-expansion-panel-header>
       <mat-panel-title>
-        <h3>{{'gift.category.other'|translate}}</h3>
+        <h3>{{label_other}}</h3>
       </mat-panel-title>
     </mat-expansion-panel-header>
     <div *ngFor="let gift of unCategorizedGifts;let even=even;trackBy: trackByFn">
@@ -77,10 +95,11 @@
     </div>
   </mat-expansion-panel>
   <!--REALISED-->
-  <mat-expansion-panel expanded="true" *ngIf="realizedGifts && realizedGifts.length > 0">
+  <mat-expansion-panel expanded="true"
+                       *ngIf="realizedGifts && realizedGifts.length > 0 && !filteredCategory ||  filteredCategory === GiftStatus.REALISED">
     <mat-expansion-panel-header>
       <mat-panel-title>
-        <h3>{{'gift.category.realised'|translate}}</h3>
+        <h3>{{label_realised}}</h3>
       </mat-panel-title>
     </mat-expansion-panel-header>
     <div *ngFor="let gift of realizedGifts;let even=even;trackBy: trackByFn">

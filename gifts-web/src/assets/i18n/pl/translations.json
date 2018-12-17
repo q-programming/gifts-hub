@@ -107,6 +107,9 @@
       "choose": "Wybierz kategorię lub stwórz nową...",
       "filter": {
         "choose": "Wybierz kategorię do filtrowania",
+        "clear": "Wyczyść filtrowanie po kategorii {{name}}",
+        "filteringBy": "Filtrowanie po kategorii \"{{name}}\"",
+        "notfound": "Kategoria nie znaleziona",
         "text": "Filtruj po kategorii"
       },
       "new": "Nowa kategoria ( naciśnij enter aby stworzyć)",

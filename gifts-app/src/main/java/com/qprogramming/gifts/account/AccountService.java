@@ -337,7 +337,7 @@ public class AccountService implements UserDetailsService {
 
     public List<Account> findAdmins() {
         Authority adminRole = _authorityService.findByRole(Role.ROLE_ADMIN);
-        return sortedAccounts(_accountRepository.findByAuthoritiesIn(Collections.singletonList(adminRole)));
+        return sortedAccounts(_accountRepository.findByAuthorities(adminRole));
 
     }
 

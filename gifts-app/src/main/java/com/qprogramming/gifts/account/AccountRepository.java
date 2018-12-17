@@ -25,5 +25,5 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
     List<Account> findByNewsletterIsTrueAndEmailNotNullAndTypeIsNot(AccountType type);
 
-    List<Account> findByAuthoritiesIn(List<Authority> roles);
+    List<Account> findByAuthorities(Authority roles);
 }

@@ -107,6 +107,9 @@
       "choose": "Select category or add new one...",
       "filter": {
         "choose": "Select category to filter",
+        "clear": "Clear filtering per {{name}} category",
+        "filteringBy": "Filtering gifts by category \"{{name}}\"",
+        "notfound": "Category not found",
         "text": "Filter by category"
       },
       "new": "New category (press enter to create)",
