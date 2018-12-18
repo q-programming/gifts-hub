@@ -45,8 +45,10 @@ import {ManageComponent} from './components/manage/manage.component';
 import {EmailManageComponent} from "./components/manage/email/email-manage.component";
 import {AppManageComponent} from "./components/manage/app/app-manage.component";
 import {EngineManageComponent} from "./components/manage/engines/engines-manage.component";
-import { AdminsComponent } from './components/manage/admins/admins.component';
-import { CategoryListComponent } from './components/gifts/category-list/category-list.component';
+import {AdminsComponent} from './components/manage/admins/admins.component';
+import {CategoryListComponent} from './components/gifts/category-list/category-list.component';
+import {ConfirmDialogComponent} from "./components/dialogs/confirm/confirm-dialog.component";
+import {AdminGuard} from "./guards/admin.guard";
 
 
 @NgModule({
@@ -75,12 +77,14 @@ import { CategoryListComponent } from './components/gifts/category-list/category
     EmailManageComponent,
     EngineManageComponent,
     AdminsComponent,
-    CategoryListComponent
+    CategoryListComponent,
+    ConfirmDialogComponent
   ],
   entryComponents: [
     AvatarUploadComponent,
     KidDialogComponent,
-    GiftDialogComponent
+    GiftDialogComponent,
+    ConfirmDialogComponent
   ],
   imports: [
     FormsModule,
@@ -117,6 +121,7 @@ import { CategoryListComponent } from './components/gifts/category-list/category
   schemas: [NO_ERRORS_SCHEMA],
   providers: [
     AuthGuard,
+    AdminGuard,
     AuthenticationService,
     ApiService,
     AvatarService,

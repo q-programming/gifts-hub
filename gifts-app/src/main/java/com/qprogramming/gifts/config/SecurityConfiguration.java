@@ -21,6 +21,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.OAuth2ClientContext;
@@ -91,25 +92,25 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         //@formatter:off
-        http.csrf()
-                .csrfTokenRepository(getCsrfTokenRepository())
+        http.
+                csrf()
+                       .csrfTokenRepository(getCsrfTokenRepository())
+                .and().sessionManagement()
+                      .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and().exceptionHandling()
-                .authenticationEntryPoint(restAuthenticationEntryPoint)
+                       .authenticationEntryPoint(restAuthenticationEntryPoint)
                 .and().addFilterBefore(jwtAuthenticationTokenFilter(), BasicAuthenticationFilter.class)
-                .authorizeRequests()
-                .anyRequest().authenticated()
+                       .authorizeRequests()
+                       .anyRequest().authenticated()
                 .and().addFilterBefore(ssoFilters(), BasicAuthenticationFilter.class)
-                .authorizeRequests().anyRequest().authenticated()
-                .and()
-                .formLogin()
-                .successHandler(authenticationSuccessHandler)
-                .failureHandler(authenticationFailureHandler)
+                       .authorizeRequests().anyRequest().authenticated()
+                .and().formLogin()
+                       .successHandler(authenticationSuccessHandler)
+                       .failureHandler(authenticationFailureHandler)
                 .and().logout()
-                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-                .invalidateHttpSession(true)
-                .logoutSuccessHandler(logoutSuccess)
-                .deleteCookies(TOKEN_COOKIE, USER_COOKIE, XSRF_TOKEN, JSESSIONID)
-                .logoutSuccessUrl("/#/login");
+                       .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                       .logoutSuccessHandler(logoutSuccess)
+                       .deleteCookies(TOKEN_COOKIE, USER_COOKIE, XSRF_TOKEN, JSESSIONID);
         //@formatter:on
     }
 

@@ -1,5 +1,5 @@
 <h2 mat-dialog-title>{{'user.settings.avatar.change'|translate}}</h2>
-<mat-dialog-content class="mat-typography">
+<mat-dialog-content class="mat-typography text-center">
   <div>
     <input #fileInput type="file" (change)="fileChangeListener($event)" style="display:none;">
     <div><span>{{fileInput.value}}</span></div>

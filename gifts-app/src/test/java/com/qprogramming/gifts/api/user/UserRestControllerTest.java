@@ -2,6 +2,7 @@ package com.qprogramming.gifts.api.user;
 
 import com.fasterxml.uuid.Generators;
 import com.qprogramming.gifts.MockSecurityContext;
+import com.qprogramming.gifts.MockedAccountTestBase;
 import com.qprogramming.gifts.TestUtil;
 import com.qprogramming.gifts.account.*;
 import com.qprogramming.gifts.account.event.AccountEvent;
@@ -29,13 +30,17 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpRequest;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -47,7 +52,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class UserRestControllerTest {
+public class UserRestControllerTest extends MockedAccountTestBase {
 
     private static final String API_USER_REGISTER = "/api/account/register";
     private static final String API_USER_SETTINGS = "/api/account/settings";
@@ -72,10 +77,6 @@ public class UserRestControllerTest {
     @Mock
     private AccountEventRepository accountEventRepositoryMock;
     @Mock
-    private MockSecurityContext securityMock;
-    @Mock
-    private Authentication authMock;
-    @Mock
     private MessagesService msgSrvMock;
     @Mock
     private FamilyService familyServiceMock;
@@ -86,21 +87,15 @@ public class UserRestControllerTest {
     @Mock
     private MailService mailServiceMock;
     @Mock
-    private PropertyService propertyServiceMock;
-    @Mock
     private AppEventService eventServiceMock;
-
-    private Account testAccount;
+    @Mock
+    private LogoutHandler logoutHandlerMock;
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-        UserRestController userCtrl = new UserRestController(accSrvMock, accountEventRepositoryMock, msgSrvMock, familyServiceMock, giftServiceMock, mailServiceMock, propertyServiceMock, eventServiceMock);
-        testAccount = createAccount();
-        when(securityMock.getAuthentication()).thenReturn(authMock);
-        when(authMock.getPrincipal()).thenReturn(testAccount);
+        super.setup();
+        UserRestController userCtrl = new UserRestController(accSrvMock, accountEventRepositoryMock, msgSrvMock, familyServiceMock, giftServiceMock, mailServiceMock, eventServiceMock, logoutHandlerMock);
         when(msgSrvMock.getMessage(anyString())).thenReturn("MESSAGE");
-        SecurityContextHolder.setContext(securityMock);
         this.userRestCtrl = MockMvcBuilders.standaloneSetup(userCtrl).build();
     }
 
@@ -534,6 +529,7 @@ public class UserRestControllerTest {
 
     @Test
     public void getUserByIdAnnonymousNotPublic() throws Exception {
+        AnonymousAuthenticationToken anonymousAuthenticationMock = mock(AnonymousAuthenticationToken.class);
         when(accSrvMock.findById(testAccount.getId())).thenReturn(testAccount);
         when(securityMock.getAuthentication()).thenReturn(annonymousTokenMock);
         MvcResult mvcResult = userRestCtrl.perform(get(API_USER + "?identification=" + testAccount.getId())).andExpect(status().isOk()).andReturn();
@@ -568,7 +564,7 @@ public class UserRestControllerTest {
         family.getMembers().add(kid);
         when(accSrvMock.findById(kid.getId())).thenReturn(kid);
         when(familyServiceMock.getFamily(kid)).thenReturn(family);
-        userRestCtrl.perform(delete(API_USER_USER_DELETE + kid.getId())).andExpect(status().isBadRequest());
+        userRestCtrl.perform(delete(API_USER_USER_DELETE + kid.getId())).andExpect(status().is4xxClientError());
     }
 
     @Test
@@ -583,7 +579,7 @@ public class UserRestControllerTest {
         family.getAdmins().add(testAccount);
         when(accSrvMock.findById(kid.getId())).thenReturn(kid);
         when(familyServiceMock.getFamily(kid)).thenReturn(family);
-        userRestCtrl.perform(delete(API_USER_USER_DELETE + kid.getId())).andExpect(status().isBadRequest());
+        userRestCtrl.perform(delete(API_USER_USER_DELETE + kid.getId())).andExpect(status().is4xxClientError());
     }
 
     @Test
@@ -619,6 +615,7 @@ public class UserRestControllerTest {
         verify(giftServiceMock, times(1)).deleteUserGifts(testAccount);
         verify(giftServiceMock, times(1)).deleteClaims(testAccount);
         verify(accSrvMock, times(1)).delete(testAccount);
+        verify(logoutHandlerMock, times(1)).logout(any(HttpServletRequest.class), any(HttpServletResponse.class), any(Authentication.class));
     }
 
     @Test

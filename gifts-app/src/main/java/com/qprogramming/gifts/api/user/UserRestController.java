@@ -34,10 +34,13 @@ import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.*;
@@ -62,9 +65,10 @@ public class UserRestController {
     private GiftService giftService;
     private MailService mailService;
     private AppEventService eventService;
+    private LogoutHandler logoutHandler;
 
     @Autowired
-    public UserRestController(AccountService accountService, AccountEventRepository accountEventRepository, MessagesService msgSrv, FamilyService familyService, GiftService giftService, MailService mailService, PropertyService propertyService, AppEventService eventService) {
+    public UserRestController(AccountService accountService, AccountEventRepository accountEventRepository, MessagesService msgSrv, FamilyService familyService, GiftService giftService, MailService mailService, AppEventService eventService, LogoutHandler logoutHandler) {
         this.accountService = accountService;
         this.accountEventRepository = accountEventRepository;
         this.msgSrv = msgSrv;
@@ -72,6 +76,7 @@ public class UserRestController {
         this.giftService = giftService;
         this.mailService = mailService;
         this.eventService = eventService;
+        this.logoutHandler = logoutHandler;
     }
 
     /**
@@ -531,26 +536,29 @@ public class UserRestController {
     @Transactional
     @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/delete/{userID}", method = RequestMethod.DELETE)
-    public ResponseEntity deleteAccount(@PathVariable(value = "userID") String id) {
+    public ResponseEntity deleteAccount(HttpServletRequest requ, HttpServletResponse resp, @PathVariable(value = "userID") String id) {
+        boolean logout = false;
         Account account;
         try {
             account = accountService.findById(id);
         } catch (AccountNotFoundException e) {
             LOG.error("Account with id {} not found", Utils.getCurrentAccountId());
-            return new ResultData.ResultBuilder().notFound().build();
+            return ResponseEntity.notFound().build();
         }
         String message;
         if (!account.equals(Utils.getCurrentAccount())) {
             if (!account.getType().equals(AccountType.KID)) {
-                return new ResultData.ResultBuilder().badReqest().error().message(msgSrv.getMessage("user.delete.error")).build();
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
             //if not deleting his account
             Family family = familyService.getFamily(account);
             if (family == null || !family.getAdmins().contains(Utils.getCurrentAccount())) {
-                return new ResultData.ResultBuilder().badReqest().error().message(msgSrv.getMessage("user.family.delete.error")).build();
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
             message = msgSrv.getMessage("user.family.delete.kid.success");
         } else {
+            //deleting his own account
+            logout = true;
             message = msgSrv.getMessage("user.delete.success");
         }
         eventService.deleteUserEvents(account);
@@ -558,8 +566,11 @@ public class UserRestController {
         giftService.deleteUserGifts(account);
         List<AccountEvent> accountEvents = accountEventRepository.findAllByAccount(account);
         accountEventRepository.deleteAll(accountEvents);
+        if (logout) {
+            logoutHandler.logout(requ, resp, SecurityContextHolder.getContext().getAuthentication());
+        }
         accountService.delete(account);
-        return new ResultData.ResultBuilder().ok().message(message).build();
+        return ResponseEntity.ok().build();
     }
 
 

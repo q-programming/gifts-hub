@@ -2,6 +2,7 @@
   "app": {
     "general": {
       "cancel": "Anuluj",
+      "delete": "Usuń",
       "undo": "Cofnij"
     },
     "manage": {
@@ -291,7 +292,7 @@
       }
     },
     "delete": {
-      "confirm": "Jesteś pewień, że chcesz usunąc swoje konto? Tej operacji nie można cofnąć. Wszystkie twoje prezenty i rezerwację zostaną usunięte wraz z twoim kontem",
+      "confirm": "Jesteś pewień, że chcesz usunąc swoje konto?<br><u>Tej operacji nie można cofnąć.</u><br>Wszystkie twoje prezenty i rezerwację zostaną usunięte wraz z twoim kontem",
       "error": "Nie możesz usunąć innego konta, które nie jest dzieckiem z twojej rodziny",
       "help": "Permametnie usuń swoje konto z aplikacji. Tej operacji nie da się cofnąć, wszystkie twoje prezenty i rezerwacje zostaną usunięte wraz z twoim kontem",
       "success": "Twoje konto zostało usunięte. Szkoda :(",
@@ -387,6 +388,10 @@
       "using": {
         "logpass": "Zaloguj się używająć loginu i hasła",
         "social": "Zaloguj się używająć:"
+      },
+      "welcome": {
+        "sub": "Aplikacji do dzielenia się listami życzeń prezentów  z rodziną i przyjaciómi",
+        "text": "Witaj w Gifts Hub"
       }
     },
     "password": "Hasło",

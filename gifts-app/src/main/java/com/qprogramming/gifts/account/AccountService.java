@@ -332,6 +332,7 @@ public class AccountService implements UserDetailsService {
         if (avatar != null) {
             _avatarRepository.delete(avatar);
         }
+        account.setAuthorities(new ArrayList<>());
         _accountRepository.delete(account);
     }
 

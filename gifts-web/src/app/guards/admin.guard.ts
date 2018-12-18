@@ -13,7 +13,7 @@ export class AdminGuard implements CanActivate {
             if (this.authService.isAdmin()) {
                 return true;
             } else {
-                this.router.navigate(['/403']);
+              this.router.navigate(['/error'], {queryParams: {type: 403}});
                 return false;
             }
         } else {

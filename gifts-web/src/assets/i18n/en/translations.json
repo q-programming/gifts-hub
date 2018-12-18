@@ -2,6 +2,7 @@
   "app": {
     "general": {
       "cancel": "Cancel",
+      "delete": "Delete",
       "undo": "Undo"
     },
     "manage": {
@@ -291,7 +292,7 @@
       }
     },
     "delete": {
-      "confirm": "Are you sure you want to delete your account? This operation cannot be undone. All your gifts, claims will be deleted together with your account.",
+      "confirm": "Are you sure you want to delete your account?<br><u>This operation cannot be undone.</u><br>All your gifts, claims will be deleted together with your account.",
       "error": "You cannot delete other accounts that are not kids from your family",
       "help": "Permanently remove your account from application. Please note that this operation cannot be undone, and all your gifts, claims will be deleted together with your account.",
       "success": "Your account was removed. Sorry to see you go :(",
@@ -387,6 +388,10 @@
       "using": {
         "logpass": "Login using username and password",
         "social": "Login using:"
+      },
+      "welcome": {
+        "sub": "Application to share gifts wish list with your family and friends",
+        "text": "Welcome to Gifts Hub"
       }
     },
     "password": "Password",

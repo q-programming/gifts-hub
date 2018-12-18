@@ -43,6 +43,9 @@ export class ErrorComponent implements OnInit {
                 case '404':
                     this.message = 'app.error.404';
                     break;
+                case '403':
+                    this.message = 'app.error.403';
+                    break;
             }
         });
     }

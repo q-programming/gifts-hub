@@ -8,10 +8,12 @@ import {AlertService} from "@services/alert.service";
 import {NGXLogger} from "ngx-logger";
 import {TranslateService} from "@ngx-translate/core";
 import {DOCUMENT} from "@angular/common";
-import {MAT_DIALOG_DATA, MatDialog} from "@angular/material";
+import {MAT_DIALOG_DATA, MatDialog, MatDialogConfig} from "@angular/material";
 import {CropperSettings, ImageCropperComponent} from "ngx-img-cropper";
 import {AvatarService} from "@services/avatar.service";
 import {getBase64Image} from "../../utils/utils";
+import {ConfirmDialog, ConfirmDialogComponent} from "../dialogs/confirm/confirm-dialog.component";
+import {Router} from "@angular/router";
 
 
 @Component({
@@ -32,7 +34,8 @@ export class SettingsComponent implements OnInit {
               private translate: TranslateService,
               private logger: NGXLogger,
               @Inject(DOCUMENT) private document: Document,
-              public dialog: MatDialog) {
+              public dialog: MatDialog,
+              private router: Router) {
   }
 
   ngOnInit() {
@@ -42,7 +45,7 @@ export class SettingsComponent implements OnInit {
 
   openAvatarDialog() {
     const dialogRef = this.dialog.open(AvatarUploadComponent, {
-      panelClass: 'shopper-modal-normal', //TODO class needed
+      panelClass: 'gifts-modal-normal',
       data: {
         account: this.account,
         avatarData: this.avatarData
@@ -88,10 +91,6 @@ export class SettingsComponent implements OnInit {
     })
   }
 
-  deleteAccount() {
-
-  }
-
   getAccountSettings() {
     return {
       newsletter: this.account.notifications,
@@ -110,6 +109,31 @@ export class SettingsComponent implements OnInit {
     element.setSelectionRange(0, 0);
     this.alertSrv.success('user.settings.public.copy.success');
   }
+
+  deleteAccount() {
+    const data: ConfirmDialog = {
+      title_key: 'user.delete.text',
+      message_key: 'user.delete.confirm',
+      action_key: 'app.general.delete',
+      action_class: 'warn'
+    };
+    const dialogConfig: MatDialogConfig = {
+      disableClose: true,
+      panelClass: 'gifts-dialog-modal',
+      data: data
+    };
+    let dialogRef = this.dialog.open(ConfirmDialogComponent, dialogConfig);
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.apiSrv.delete(`${environment.account_url}/delete/${this.account.id}`).subscribe(() => {
+          this.alertSrv.success('user.delete.success');
+          this.authSrv.currentAccount = null;
+          this.router.navigate(['/login'])
+
+        })
+      }
+    })
+  }
 }
 
 @Component({
@@ -124,7 +148,7 @@ export class AvatarUploadComponent implements OnInit {
   cropperSettings: CropperSettings;
   account: Account;
   avatarData: any;
-  uploadInProgress:boolean;
+  uploadInProgress: boolean;
 
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any) {
@@ -144,8 +168,6 @@ export class AvatarUploadComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const that = this;
-    that.cropper.setImage(this.avatarData.image);
   }
 
   fileChangeListener($event) {
@@ -160,4 +182,6 @@ export class AvatarUploadComponent implements OnInit {
     };
     myReader.readAsDataURL(file);
   }
+
+
 }

@@ -9,6 +9,7 @@ import {RegisterComponent} from "./components/register/register.component";
 import {GiftsPublicComponent} from "./components/gifts/gifts-public.component";
 import {SettingsComponent} from "./components/settings/settings.component";
 import {ManageComponent} from "./components/manage/manage.component";
+import {AdminGuard} from "./guards/admin.guard";
 
 const routes: Routes = [
   {path: '', component: GiftsComponent, canActivate: [AuthGuard]},
@@ -16,10 +17,10 @@ const routes: Routes = [
   {path: 'users', component: UserListComponent, canActivate: [AuthGuard]},
   {path: 'list', component: GiftsComponent, canActivate: [AuthGuard]},
   {path: 'list/:user', component: GiftsComponent, canActivate: [AuthGuard]},
+  {path: 'manage', component: ManageComponent, canActivate: [AdminGuard]},
+  {path: 'settings', component: SettingsComponent, canActivate: [AuthGuard]},
   {path: 'public/:user', component: GiftsPublicComponent},
   {path: 'register', component: RegisterComponent},
-  {path: 'settings', component: SettingsComponent},
-  {path: 'manage', component: ManageComponent},
   {path: 'error', component: ErrorComponent},
   // otherwise redirect to home
   {path: '**', redirectTo: '/error?type=404'}

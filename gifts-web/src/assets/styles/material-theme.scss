@@ -31,13 +31,29 @@ body {
 }
 
 .mat-toolbar-row, .mat-toolbar-single-row {
-  height: 55px !important;
+  //height: 60px !important;
+}
+
+.gifts-dialog-modal > mat-dialog-container {
+  padding: 0 0 24px 0;
+}
+
+.modal-header {
+  background: #2c5aa0;
+  color: white;
+  padding: 20px;
+  margin-top: 0;
 }
 
 .modal-header > mat-icon {
   float: left;
   font-size: 30px;
 }
+
+.modal-header.warn {
+  background: #f44336;
+}
+
 
 .success-button {
   background: #43b05c;
@@ -123,7 +139,7 @@ a.black {
   position: fixed !important;
   padding: 0.1em 2em !important;
   left: 50%;
-  top: 56px;
+  top: 65px;
   flex: 1 1 80%;
   box-sizing: border-box;
   max-width: 80%;

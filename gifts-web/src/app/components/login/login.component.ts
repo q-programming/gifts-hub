@@ -17,13 +17,20 @@ export class LoginComponent implements OnInit {
   usernameCtrl = new FormControl('', Validators.required);
   passwordCtrl = new FormControl('', Validators.required);
 
-  constructor(private authSrv: AuthenticationService, private router: Router) {
+  constructor(private authSrv: AuthenticationService, private router: Router, private apiSrv: ApiService, private translate: TranslateService) {
   }
 
   ngOnInit() {
     if (this.authSrv.currentAccount) {
       this.router.navigate(['/']);
     }
+    this.apiSrv.get(`${environment.app_url}/default-language`).subscribe(defaults => {
+      if (defaults) {
+        let lang = defaults.language;
+        this.translate.setDefaultLang(lang);
+        this.translate.use(lang)
+      }
+    })
   }
 
   login() {
