@@ -255,7 +255,7 @@ public class GiftRestController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
         giftService.delete(gift);
-        return new ResultData.ResultBuilder().ok().message(msgSrv.getMessage("gift.delete.success", new Object[]{gift.getName()}, "", Utils.getCurrentLocale())).build();
+        return ResponseEntity.ok().build();
     }
 
 

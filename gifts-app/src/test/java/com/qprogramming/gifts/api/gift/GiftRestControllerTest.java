@@ -24,6 +24,7 @@ import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.springframework.mail.MailSendException;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.test.web.servlet.MockMvc;
@@ -31,6 +32,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import javax.mail.MessagingException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.net.URL;
@@ -414,6 +416,52 @@ public class GiftRestControllerTest extends MockedAccountTestBase {
         giftsRestCtrl.perform(delete(API_GIFT_DELETE + gift.getId())).andExpect(status().isOk());
         verify(giftServiceMock, times(1)).delete(gift);
     }
+
+    @Test
+    public void deleteClaimedGiftNoNotifications() throws Exception {
+        Gift gift = new Gift();
+        gift.setId(1L);
+        gift.setName(NAME);
+        gift.setUserId(testAccount.getId());
+        Account claimed = TestUtil.createAccount();
+        gift.setClaimed(claimed);
+        when(giftServiceMock.findById(gift.getId())).thenReturn(gift);
+        when(accSrvMock.findById(testAccount.getId())).thenReturn(testAccount);
+        giftsRestCtrl.perform(delete(API_GIFT_DELETE + gift.getId())).andExpect(status().isOk());
+        verify(giftServiceMock, times(1)).delete(gift);
+    }
+
+    @Test
+    public void deleteClaimedGiftWithNotifications() throws Exception {
+        Gift gift = new Gift();
+        gift.setId(1L);
+        gift.setName(NAME);
+        gift.setUserId(testAccount.getId());
+        Account claimed = TestUtil.createAccount();
+        claimed.setNotifications(true);
+        gift.setClaimed(claimed);
+        when(giftServiceMock.findById(gift.getId())).thenReturn(gift);
+        when(accSrvMock.findById(testAccount.getId())).thenReturn(testAccount);
+        giftsRestCtrl.perform(delete(API_GIFT_DELETE + gift.getId())).andExpect(status().isOk());
+        verify(giftServiceMock, times(1)).delete(gift);
+        verify(mailServiceMock, times(1)).notifyAboutGiftRemoved(gift);
+    }
+
+    @Test
+    public void deleteClaimedGiftWithMailerError() throws Exception {
+        Gift gift = new Gift();
+        gift.setId(1L);
+        gift.setName(NAME);
+        gift.setUserId(testAccount.getId());
+        Account claimed = TestUtil.createAccount();
+        claimed.setNotifications(true);
+        gift.setClaimed(claimed);
+        when(giftServiceMock.findById(gift.getId())).thenReturn(gift);
+        when(accSrvMock.findById(testAccount.getId())).thenReturn(testAccount);
+        doThrow(MessagingException.class).when(mailServiceMock).notifyAboutGiftRemoved(gift);
+        giftsRestCtrl.perform(delete(API_GIFT_DELETE + gift.getId())).andExpect(status().isInternalServerError());
+    }
+
 
     @Test
     public void deleteGiftAsFamilyAdminSuccess() throws Exception {
