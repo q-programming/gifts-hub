@@ -31,7 +31,13 @@ img.avatar.large {
 .header {
   font-size: smaller;
 }
+
 .help {
   color: gray;
+}
+
+.header-button {
+  min-width: 3rem !important;
+  padding: 0 0.5rem !important;
 }
 

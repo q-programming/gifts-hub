@@ -1,6 +1,6 @@
 <!--HEADER-->
 <mat-card class="pb-1 pt-1 fixed-container header">
-  <div fxlayout="row" fxLayoutAlign="center center">
+  <div fxLayout="row" fxLayoutAlign="center center">
     <div fxFlex="10" fxFlex.lt-sm="15%">
       <img matCardAvatar [src]="avatar" class="avatar">
     </div>
@@ -8,14 +8,28 @@
     <div fxFlex>
       <account-list (account)="changeViewedAccount($event)"></account-list>
     </div>
-    <div fxFlex="22" fxFlex.lt-lg="30%">
+    <div fxFlex="22" fxFlex.lt-lg="30" fxFlex.lt-md="35">
+      <!--mobile buttons-->
+      <div fxShow.gt-sm="false" fxLayout="row" fxLayoutAlign="end">
+        <button class="header-button" fxFlex mat-flat-button [matTooltip]="filteredCategory?
+                    ('gift.category.filter.filteringBy'|translate:{name:getCategoryName(filteredCategory)}):
+                     'gift.category.filter.text'|translate" (click)="filter=!filter">
+          <i class="fa fa-plus-circle filter-active" *ngIf="filteredCategory!==undefined"></i>
+          <i class="fa fa-lg fa-filter"></i>
+        </button>
+        <button class="header-button success-button" fxFlex mat-flat-button (click)="addGiftDialog()"
+                *ngIf="isUserList || isFamilyAdmin">
+          <mat-icon>add</mat-icon>
+        </button>
+      </div>
       <ng-container *ngIf="isUserList || isFamilyAdmin">
-        <button mat-flat-button class="success-button pull-right font-smaller" fxShow.lt-md="false">
+        <button fxShow.lt-md="false" mat-flat-button class="success-button pull-right font-smaller">
           <mat-icon>cloud_upload</mat-icon>
         </button>
-        <button mat-flat-button class="success-button pull-right mr-1 font-smaller" (click)="addGiftDialog()">
+        <button fxShow.lt-md="false" mat-flat-button class="success-button pull-right mr-1 font-smaller"
+                (click)="addGiftDialog()">
           <mat-icon>add</mat-icon>
-          <span fxShow.lt-md="false">
+          <span>
         {{'gift.new.add'|translate}}
         </span>
         </button>
@@ -23,17 +37,17 @@
     </div>
   </div>
   <!--Names header-->
-  <div fxLayout="row" fxShow.lt-sm="false">
-    <div fxFlex>
+  <div fxLayout="row" fxLayoutGap="5px" fxShow.lt-sm="false">
+    <div fxFlex="35">
       {{'gift.name'|translate}}
     </div>
-    <div fxFlex>
+    <div fxFlex="35">
       {{'gift.description'|translate}}
     </div>
-    <div fxFlex>
+    <div fxFlex="5">
       {{'gift.link.text'|translate}}
     </div>
-    <div fxFlex="10">
+    <div fxFlex="10" class="text-right" cl>
       {{'gift.add.date'|translate}}
     </div>
     <div fxFlex="10" class="text-right pr-1">
@@ -47,7 +61,8 @@
       <i class="fa fa-cogs" matTooltip="{{'main.action'|translate}}" fxShow.lt-md="false"></i>
     </div>
   </div>
-  <div fxLayout="row" fxShow.lt-sm="false" *ngIf="filter">
+  <!--FILTER-->
+  <div fxLayout="row" *ngIf="filter">
     <div fxFlex>
       <category-list-filter [categories]="categories" [filteredCategory]="filteredCategory"
                             (category)="filterByCategory($event)"

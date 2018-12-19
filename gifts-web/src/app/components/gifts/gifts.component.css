@@ -5,14 +5,22 @@
   font-size: x-small !important;
   color: #5cb85c !important;
 }
-.content{
+
+.content {
   margin-top: 115px;
 }
-.content-filtered{
-  margin-top:180px
+
+.content-filtered {
+  margin-top: 180px
 }
+
 @media (max-width: 598px) {
-  .content{
-    margin-top: 80px;
+  .content {
+    margin-top: 65px;
+  }
+
+  .content-filtered {
+    margin-top: 132px
   }
 }
+

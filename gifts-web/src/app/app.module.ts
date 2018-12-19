@@ -10,6 +10,7 @@ import {AuthenticationService} from "@services/authentication.service";
 import {ApiService} from "@services/api.service";
 import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {AuthGuard} from "./guards/auth.guard";
+import {AdminGuard} from "./guards/admin.guard";
 import {AuthInterceptor} from "./guards/auth.interceptor";
 import {FlexLayoutModule} from "@angular/flex-layout";
 import {AppMaterialModules} from "./material.module";
@@ -48,7 +49,8 @@ import {EngineManageComponent} from "./components/manage/engines/engines-manage.
 import {AdminsComponent} from './components/manage/admins/admins.component';
 import {CategoryListComponent} from './components/gifts/category-list/category-list.component';
 import {ConfirmDialogComponent} from "./components/dialogs/confirm/confirm-dialog.component";
-import {AdminGuard} from "./guards/admin.guard";
+import {GoTopButtonModule} from 'ng2-go-top-button';
+
 
 
 @NgModule({
@@ -116,7 +118,8 @@ import {AdminGuard} from "./guards/admin.guard";
     MatSidenavModule,
     MatIconModule,
     MatListModule,
-    PasswordStrengthBarModule
+    PasswordStrengthBarModule,
+    GoTopButtonModule
   ],
   schemas: [NO_ERRORS_SCHEMA],
   providers: [

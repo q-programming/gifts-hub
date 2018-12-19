@@ -11,13 +11,14 @@
       </mat-button-toggle-group>
     </div>
     <div fxFlex>
-      <button mat-flat-button class="success-button pull-right mr-1 font-smaller" (click)="addKidDialog()">
+      <button mat-flat-button class="success-button pull-right mr-1 font-smaller header-button "
+              (click)="addKidDialog()">
         <i class="fa fa-plus"></i><i class="fa fa-child"></i>
         <span fxShow.lt-md="false">
         {{'user.family.add.kid.text'|translate}}
         </span>
       </button>
-      <button mat-flat-button class="success-button pull-right mr-1 font-smaller">
+      <button mat-flat-button class="success-button pull-right mr-1 font-smaller header-button ">
         <mat-icon>edit</mat-icon>
         <span fxShow.lt-md="false">
         {{'user.family.edit.text'|translate}}
@@ -38,8 +39,7 @@
     </div>
   </div>
 </mat-card>
-<div style="margin-top: 95px">
-  <!--TODO Needs proper handling ( for ex. on mobile ) -->
+<div class="content">
   <ng-container *ngIf="sortBy.value === SortBy.FAMILY">
     <mat-expansion-panel *ngFor="let family of families" expanded="true">
       <mat-expansion-panel-header>

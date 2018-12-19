@@ -14,11 +14,12 @@ import {MatDialog} from "@angular/material";
 import {GiftDialogComponent} from "./gift-dialog/gift-dialog.component";
 import {TranslateService} from "@ngx-translate/core";
 import {CategoryOption} from "@model/Category";
+import {animate, state, style, transition, trigger} from "@angular/animations";
 
 @Component({
   selector: 'gifts-list',
   templateUrl: './gifts.component.html',
-  styleUrls: ['gifts.component.css']
+  styleUrls: ['gifts.component.css'],
 })
 export class GiftsComponent implements OnInit {
 
@@ -42,6 +43,7 @@ export class GiftsComponent implements OnInit {
   categories: CategoryOption[];
   filteredCategory: string;
   filter: boolean;
+  filterTabOpen: string;
 
 
   constructor(private activatedRoute: ActivatedRoute,
@@ -216,6 +218,11 @@ export class GiftsComponent implements OnInit {
     } else if (error.status === '409') {
       this.alertSrv.error('user.family.admin.error')
     }
+  }
+
+  // Filtering
+  toggleHelpMenu(): void {
+    this.filterTabOpen = this.filterTabOpen === 'out' ? 'in' : 'out';
   }
 
   filterByCategory(category: string) {

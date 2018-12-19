@@ -12,7 +12,7 @@ import {AvatarService} from "@services/avatar.service";
 @Component({
   selector: 'user-list',
   templateUrl: './user-list.component.html',
-  styles: []
+  styleUrls: ['user-list.component.css']
 })
 export class UserListComponent implements OnInit {
   SortBy = SortBy;
