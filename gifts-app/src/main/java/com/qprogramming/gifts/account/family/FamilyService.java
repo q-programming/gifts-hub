@@ -88,7 +88,7 @@ public class FamilyService {
      */
     public Family addAccountToFamily(Account account, Long id) {
         Optional<Family> familyOptional = familyRepository.findById(id);
-        return familyOptional.map(family -> addAccountToFamily(account,family)).orElse(null);
+        return familyOptional.map(family -> addAccountToFamily(account, family)).orElse(null);
     }
 
     /**
@@ -99,11 +99,12 @@ public class FamilyService {
      * @param account
      * @param family
      */
-    public void removeFromFamily(Account account, Family family) {
+    public Family removeFromFamily(Account account, Family family) {
         family.getMembers().remove(account);
         family.getAdmins().remove(account);
         if (family.getAdmins().isEmpty() && family.getMembers().isEmpty()) {
             delete(family);
+            return null;
         } else if (family.getAdmins().isEmpty() && !family.getMembers().isEmpty()) {
             Optional<Account> first = family.getMembers().stream().filter(member -> !AccountType.KID.equals(member.getType())).findFirst();
             if (first.isPresent()) {
@@ -112,8 +113,11 @@ public class FamilyService {
             } else {
                 family.setMembers(new HashSet<>());
                 delete(family);
+                return null;
             }
+            return update(family);
         }
+        return family;
     }
 
     /**
@@ -136,6 +140,8 @@ public class FamilyService {
     }
 
     public void delete(Family family) {
+        List<AccountEvent> accountEvents = accountEventRepository.findAllByFamily(family);
+        accountEventRepository.deleteAll(accountEvents);
         familyRepository.delete(family);
     }
 

@@ -5,6 +5,12 @@ export class Family {
   name: string;
   members: Account[];
   admins: Account[];
-
-
 }
+
+export class FamilyForm {
+  name?: string;
+  members?: string[];
+  admins?: string[];
+  removed?: boolean;
+}
+

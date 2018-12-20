@@ -22,3 +22,10 @@
 .new-gift {
   color: green;
 }
+
+.action-button {
+  width: 25px !important;
+  height: 25px !important;
+  max-width: 25px!important;
+  line-height: initial !important;
+}

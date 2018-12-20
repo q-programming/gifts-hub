@@ -60,6 +60,7 @@
             font-weight: bold;
             vertical-align: middle;
         }
+
         h1, h2, h3 {
             font-family: "Helvetica Neue", Helvetica, Arial, "Lucida Grande",
             sans-serif;
@@ -139,12 +140,19 @@
                     <p>Witaj ${name},</p>
                 </#if>
                 <div>
-                ${owner} zaprosi&#322; Ci&#281; do rodziny "${familyName}" w aplikacji Gifts Hub
+                    ${owner} zaprosi&#322; Ci&#281; do rodziny "${familyName}" w aplikacji Gifts Hub
                 </div>
-                <p>Kliknij link poni&#380;ej aby potwierdzi&#263; zaproszenie</p>
-                <p>
-                    <a href="${confirmLink}">${confirmLink}</a>
-                </p>
+                <#if confirmLink??>
+                    <p>Kliknij link poni&#380;ej aby potwierdzi&#263; zaproszenie</p>
+                    <p>
+                        <a href="${confirmLink}">${confirmLink}</a>
+                    </p>
+                <#else>
+                    <p>Poniewa&#380; jeszcze nie posiadasz konta, mo&#380;esz je za&#322;o&#380;y&#263; klikaj&#261;&#263; na link poni&#380;ej:</p>
+                    <p>
+                        <a href="${registerLink}">${registerLink}</a>
+                    </p>
+                </#if>
             </td>
         </tr>
         </tbody>
@@ -164,7 +172,7 @@
                         <td align="center">
                             <p>
                                 To jest automatyczna wiadomo&#347;&#263; wys&#322;ana z <a
-                                    href="${application!'#'}" target="_blank">${application!'#'}</a>.</br>
+                                        href="${application!'#'}" target="_blank">${application!'#'}</a>.</br>
                                 Je&#380;eli nie chcesz otrzymywa&#263; wi&#281;cej powiadomie&#324; poprzez
                                 e-mail, odznacz prosz&#281; opcj&#281; w paneu sterowania.
                             </p>

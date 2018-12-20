@@ -1,6 +1,6 @@
 {
   "name": "gifts-web",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve --proxy-config proxy.conf.json --base-href=/gifts/",
@@ -31,6 +31,7 @@
     "font-awesome": "^4.7.0",
     "hammerjs": "^2.0.8",
     "lodash": "^4.17.11",
+    "ng2-go-top-button": "^6.0.0",
     "ng2-password-strength-bar": "^1.2.2",
     "ngx-img-cropper": "^0.11.0",
     "ngx-logger": "^3.3.6",

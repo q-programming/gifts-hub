@@ -97,7 +97,8 @@
     "lastAdmin": "Nie można usunąc ostatniego administratora aplikacji",
     "page": {
       "notfound": "Nie znaleziono strony"
-    }
+    },
+    "required": "To pole jest wymagane"
   },
   "gift": {
     "add": {
@@ -315,15 +316,16 @@
       "administrator": "Administrator rodziny",
       "admins": "Administratorzy",
       "create": {
-        "0": "Stwórz rodzinę",
         "admin": {
           "help": "Dodaj administratorów sposród członków rodziny. Domyślnie twórca rodziny jest oznaczany jako administrator"
         },
+        "error": "Wystąpił bład podczas tworzenia rodziny. Proszę skontaktuj się z administratorem załączająć logi z przeglądarki",
         "help": "Stwórz swoją rodzinę. Dodaj do niej użytkowników, którzy mają już konto w aplikacji. Można należeć tylko do jednej rodziny.",
         "success": {
-          "0": "Nowa rodzina została utworzona",
-          "invites": "Nowa rodzina została utworzona. Wiadomości e-mail z linkiem potwierdzającym zostały wysłane do zaproszonych użytkowników"
-        }
+          "invites": "Nowa rodzina została utworzona. Wiadomości e-mail z linkiem potwierdzającym zostały wysłane do zaproszonych użytkowników",
+          "text": "Nowa rodzina została utworzona"
+        },
+        "text": "Stwórz rodzinę"
       },
       "delete": {
         "error": "Nie możesz usunąć konta dziecka ponieważ nie jesteś administratorem rodziny",
@@ -334,14 +336,15 @@
         }
       },
       "edit": {
+        "error": "Wystąpił bład podczas aktualizowania rodziny. Proszę skontaktuj się z administratorem załączająć logi z przeglądarki",
         "help": "Edytuj członków rodziny. Dodaj lub usuń użytkowników, którzy mają już konto w aplikacji.",
         "kid": {
           "success": "Dane dziecka zostały zaktualizowane",
           "text": "Edytuj dziecko"
         },
         "success": {
-          "0": "Rodzina została zaktualizowana",
-          "invites": "Rodzina została zaktualizowana. Wiadomości e-mail z linkiem potwierdzającym zostały wysłane do zaproszonych użytkowników"
+          "invites": "Rodzina została zaktualizowana. Wiadomości e-mail z linkiem potwierdzającym zostały wysłane do zaproszonych użytkowników",
+          "text": "Rodzina została zaktualizowana"
         },
         "text": "Edytuj rodzinę"
       },
@@ -350,17 +353,22 @@
       },
       "invite": {
         "0": "Zaproszenie do rodziny {0}",
-        "mailError": "Wystąpił bład poczas wysyłania zaproszenia. Proszę skontaktować się z administratorem."
+        "mailError": "Wystąpił bład poczas wysyłania zaproszenia. Proszę skontaktować się z administratorem.",
+        "new": "Zaproś do rodziny wpisując email"
       },
       "kid": "Dziecko",
       "leave": {
-        "0": "Opuść rodzinę",
-        "confirm": "Czy jesteś pewien, że chcesz opuścić twoją obecną rodzinę? Aby dołaczyć do niej ponownie, będziesz musiał poprosić jej administratora aby Cię zaprosił."
+        "confirm": "Czy jesteś pewien, że chcesz opuścić twoją obecną rodzinę? Aby dołaczyć do niej ponownie, będziesz musiał poprosić jej administratora aby Cię zaprosił.",
+        "text": "Opuść rodzinę"
       },
       "left": "Opuściłeś rodzinę",
       "members": "Członkowie",
       "name": "Nazwa rodziny",
       "other": "Inni",
+      "permision": {
+        "help": "Ustaw kto może oglądać listy zyczeń twojej rodziny",
+        "text": "Uprawnienia"
+      },
       "select": {
         "notfound": "Nie znaleziono poszukiwanego użytkownika",
         "text": "Wyszukaj innych użytkowników"

@@ -97,7 +97,8 @@
     "lastAdmin": "Unable to remove last application admin",
     "page": {
       "notfound": "Page was not found"
-    }
+    },
+    "required": "This is required field"
   },
   "gift": {
     "add": {
@@ -315,15 +316,16 @@
       "administrator": "Family administrator",
       "admins": "Administrators",
       "create": {
-        "0": "Create family",
         "admin": {
           "help": "Add family administrators from family members. By default creator of family is made administrator"
         },
+        "error": "There were errors while trying to create new family.Please contact application administrator and enclose browser log",
         "help": "Create your family. Add users, who are already registered in application. You can be member of only one family",
         "success": {
-          "0": "New family was created",
-          "invites": "New family was created. Emails with confirmation links were sent to invited application users"
-        }
+          "invites": "New family was created. Emails with confirmation links were sent to invited application users",
+          "text": "New family was created"
+        },
+        "text": "Create family"
       },
       "delete": {
         "error": "You cannot remove kid's account because you are not family administrator",
@@ -334,14 +336,15 @@
         }
       },
       "edit": {
+        "error": "There were errors while trying to update family.Please contact application administrator and enclose browser log",
         "help": "Edit your family members. Add or remove existing application users.",
         "kid": {
           "success": "Kid data was updated",
           "text": "Edit kid"
         },
         "success": {
-          "0": "Family has been updated",
-          "invites": "Family has been updated. Emails with confirmation links were sent to invited application users"
+          "invites": "Family has been updated. Emails with confirmation links were sent to invited application users",
+          "text": "Family has been updated"
         },
         "text": "Edit family"
       },
@@ -350,17 +353,22 @@
       },
       "invite": {
         "0": "Invitation to {0} family",
-        "mailError": "There was error while sending invite via e-mail. Please contact administration"
+        "mailError": "There was error while sending invite via e-mail. Please contact administration",
+        "new": "Invite new family member by email"
       },
       "kid": "Kid",
       "leave": {
-        "0": "Leave family",
-        "confirm": "Are you sure you want to leave your curent family? In order to rejoin it , you will have to ask family administrator to invite you."
+        "confirm": "Are you sure you want to leave your curent family? In order to rejoin it , you will have to ask family administrator to invite you.",
+        "text": "Leave family"
       },
       "left": "You have left family",
       "members": "Members",
       "name": "Family name",
       "other": "Other",
+      "permision": {
+        "help": "Set up who can view your family's wish lists",
+        "text": "Permission"
+      },
       "select": {
         "notfound": "Searched user was not found",
         "text": "Find other users"

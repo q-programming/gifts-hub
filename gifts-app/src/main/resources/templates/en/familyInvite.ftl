@@ -140,12 +140,19 @@
                     <p>Hello ${name},</p>
                 </#if>
                 <div>
-                ${owner} wanted to invite you to his family "${familyName}" in Gifts Hub application
+                    ${owner} wanted to invite you to his family "${familyName}" in Gifts Hub application
                 </div>
-                <p>Click link below to confirm invitation </p>
-                <p>
-                    <a href="${confirmLink}">${confirmLink}</a>
-                </p>
+                <#if confirmLink??>
+                    <p>Click link below to confirm invitation </p>
+                    <p>
+                        <a href="${confirmLink}">${confirmLink}</a>
+                    </p>
+                <#else>
+                    <p>Because you don't have account yet, please be invited to create one by clicking link below:</p>
+                    <p>
+                        <a href="${registerLink}">${registerLink}</a>
+                    </p>
+                </#if>
             </td>
         </tr>
         </tbody>
@@ -165,8 +172,9 @@
                         <td align="center">
                             <p>
                                 This is automatic message sent from <a
-                                    href="${application!'#'}" target="_blank">${application!'#'}</a>.</br>
-                                If you wish to stop receiving e-mail notifications, please deselect notifications option in
+                                        href="${application!'#'}" target="_blank">${application!'#'}</a>.</br>
+                                If you wish to stop receiving e-mail notifications, please deselect notifications option
+                                in
                                 your user settings.
                             </p>
                         </td>

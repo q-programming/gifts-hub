@@ -10,9 +10,7 @@ import {Message, MessageType} from "@model/Message";
     animations: [
         trigger('alertsAnimation', [
             transition('* => *', [
-
                 query(':enter', style({opacity: 0}), {optional: true}),
-
                 query(':enter', stagger('300ms', [
                     animate('.6s ease-in', keyframes([
                         style({opacity: 0, transform: 'translateY(-75%)', offset: 0}),

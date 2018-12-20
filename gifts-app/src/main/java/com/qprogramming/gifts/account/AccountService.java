@@ -323,6 +323,20 @@ public class AccountService implements UserDetailsService {
         return _accountRepository.findByIdIn(members);
     }
 
+    /**
+     * Finds all accounts by emails. If account was not found in database , new fake temp account will be added to returned list
+     * This is so that the temp accounts can recieve invitiation to application later on
+     *
+     * @param emails list of emails
+     * @return list of all accounts both DB presnet and temp ones
+     */
+    public List<Account> findByEmails(List<String> emails) {
+        List<Account> accounts = _accountRepository.findByEmailIn(emails);
+        emails.removeAll(accounts.stream().map(Account::getEmail).collect(Collectors.toSet()));
+        accounts.addAll(emails.stream().map(Account::new).collect(Collectors.toSet()));
+        return accounts;
+    }
+
     public void delete(Account account) {
         Family family = _familyService.getFamily(account);
         if (family != null) {

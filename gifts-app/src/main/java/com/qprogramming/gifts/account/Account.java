@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.qprogramming.gifts.account.authority.Authority;
 import com.qprogramming.gifts.account.authority.Role;
 import io.jsonwebtoken.lang.Collections;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
@@ -78,7 +79,11 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
         this.email = email;
         this.password = password;
         this.created = new Date();
+    }
 
+    public Account(String email) {
+        this.email = email;
+        this.type = AccountType.TEMP;
     }
 
     public String getId() {
@@ -184,7 +189,7 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
     }
 
     public String getFullname() {
-        return getName() + " " + getSurname();
+        return StringUtils.isNotBlank(name) && StringUtils.isNotBlank(surname) ? name + " " + surname : null;
     }
 
     public Boolean getPublicList() {
@@ -276,29 +281,24 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
         return this.authorities.stream().map(Authority::getName).anyMatch(Role.ROLE_ADMIN::equals);
     }
 
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         Account account = (Account) o;
-
-        if (!id.equals(account.id)) return false;
-        if (!Objects.equals(email, account.email)) return false;
-        if (!name.equals(account.name)) return false;
-        if (!surname.equals(account.surname)) return false;
-        return Objects.equals(created, account.created);
+        return Objects.equals(id, account.id) &&
+                email.equals(account.email) &&
+                Objects.equals(language, account.language) &&
+                Objects.equals(name, account.name) &&
+                Objects.equals(surname, account.surname) &&
+                username.equals(account.username) &&
+                Objects.equals(created, account.created) &&
+                type == account.type;
     }
 
     @Override
     public int hashCode() {
-        int result = id.hashCode();
-        result = 31 * result + (email != null ? email.hashCode() : 0);
-        result = 31 * result + name.hashCode();
-        result = 31 * result + surname.hashCode();
-        result = 31 * result + (created != null ? created.hashCode() : 0);
-        return result;
+        return Objects.hash(id, email, language, name, surname, username, created, type);
     }
 
     @Override

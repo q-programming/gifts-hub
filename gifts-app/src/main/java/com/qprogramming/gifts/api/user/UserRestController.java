@@ -228,7 +228,8 @@ public class UserRestController {
         return ResponseEntity.ok(familyService.getFamily(Utils.getCurrentAccount()));
     }
 
-    @RequestMapping(value = "/family-create", method = RequestMethod.PUT)
+    @Transactional
+    @RequestMapping(value = "/family-create", method = RequestMethod.POST)
     @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<?> createFamily(@RequestBody FamilyForm form) {
         Family family = familyService.getFamily(Utils.getCurrentAccount());
@@ -241,17 +242,20 @@ public class UserRestController {
         }
         family.setName(form.getName());
         family = familyService.update(family);
-        List<Account> members = accountService.findByIds(form.getMembers());
+        List<Account> members = accountService.findByEmails(form.getMembers());
         try {
             sendInvites(members, family, AccountEventType.FAMILY_MEMEBER);
         } catch (MessagingException e) {
-            return new ResultData.ResultBuilder().badReqest().message(msgSrv.getMessage("user.family.invite.mailError")).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
         //family.getAdmins().addAll(accountService.findByIds(form.getAdmins()));
+        HashMap<String, String> model = new HashMap<>();
         if (members.size() > 0) {
-            return new ResultData.ResultBuilder().ok().message(msgSrv.getMessage("user.family.create.success.invites")).build();
+            model.put("result", "invites");
+        } else {
+            model.put("result", "ok");
         }
-        return new ResultData.ResultBuilder().ok().message(msgSrv.getMessage("user.family.create.success")).build();
+        return ResponseEntity.ok(model);
     }
 
     @Transactional
@@ -266,13 +270,13 @@ public class UserRestController {
         if (family.getAdmins().contains(currentAccount)) {
             //set members
             form.getMembers().add(Utils.getCurrentAccountId());
-            Set<Account> formMembers = new HashSet<>(accountService.findByIds(form.getMembers()));
+            Set<Account> formMembers = new HashSet<>(accountService.findByEmails(form.getMembers()));
             Set<Account> membersToInvite = formMembers.stream().filter(account -> !family.getMembers().contains(account)).collect(Collectors.toSet());
             formMembers.removeAll(membersToInvite);
             family.setMembers(formMembers);
             //set admins
             form.getAdmins().add(Utils.getCurrentAccountId());
-            Set<Account> formAdmins = new HashSet<>(accountService.findByIds(form.getAdmins()));
+            Set<Account> formAdmins = new HashSet<>(accountService.findByEmails(form.getAdmins()));
             Set<Account> adminsToInvite = formAdmins.stream().filter(account -> !family.getAdmins().contains(account)).collect(Collectors.toSet());
             formAdmins.removeAll(adminsToInvite);
             family.setAdmins(formAdmins);
@@ -282,20 +286,24 @@ public class UserRestController {
                 sendInvites(membersToInvite, family, AccountEventType.FAMILY_MEMEBER);
                 sendInvites(adminsToInvite, family, AccountEventType.FAMILY_ADMIN);
             } catch (MessagingException e) {
-                return new ResultData.ResultBuilder().badReqest().message(msgSrv.getMessage("user.family.invite.mailError")).build();
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
             }
             if (StringUtils.isBlank(form.getName())) {
                 form.setName(Utils.getCurrentAccount().getSurname());
             }
             family.setName(form.getName());
+            HashMap<String, String> model = new HashMap<>();
             if (membersToInvite.size() > 0 || adminsToInvite.size() > 0) {
-                return new ResultData.ResultBuilder().ok().message(msgSrv.getMessage("user.family.edit.success.invites")).build();
+                model.put("result", "invites");
+            } else {
+                model.put("result", "ok");
             }
-            return new ResultData.ResultBuilder().ok().message(msgSrv.getMessage("user.family.edit.success")).build();
+            return ResponseEntity.ok(model);
         }
-        return new ResultData.ResultBuilder().badReqest().message(msgSrv.getMessage("user.family.admin.error")).build();
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
+    @Transactional
     @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/family-leave", method = RequestMethod.PUT)
     public ResponseEntity<?> leaveFamily() {
@@ -304,8 +312,8 @@ public class UserRestController {
         if (family == null) {
             return ResponseEntity.notFound().build();
         }
-        family.getMembers().remove(currentAccount);
-        return ResponseEntity.ok(familyService.update(family));
+        family = familyService.removeFromFamily(currentAccount, family);
+        return ResponseEntity.ok(family);
     }
 
 
@@ -368,12 +376,15 @@ public class UserRestController {
 
     private void sendInvites(List<Account> members, Family family, AccountEventType type) throws MessagingException {
         for (Account account : members) {
-            if (!AccountType.KID.equals(account.getType())) {
+            if (AccountType.KID.equals(account.getType())) {
+                familyService.addAccountToFamily(account, family);
+            } else if (AccountType.TEMP.equals(account.getType())) {
+                Mail mail = Utils.createMail(account, Utils.getCurrentAccount());
+                mailService.sendInvite(mail, family.getName());
+            } else {
                 AccountEvent event = familyService.inviteAccount(account, family, type);
                 Mail mail = Utils.createMail(account, Utils.getCurrentAccount());
                 mailService.sendConfirmMail(mail, event);
-            } else {
-                familyService.addAccountToFamily(account, family);
             }
         }
     }

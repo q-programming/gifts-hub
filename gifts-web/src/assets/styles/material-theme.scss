@@ -26,6 +26,26 @@ body {
   background-color: #567bb3;
 }
 
+.active-link {
+  color: #08182f;
+}
+
+.navbar {
+  background-color: #2c5aa0 !important;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .16), 0 2px 10px 0 rgba(0, 0, 0, .12);
+  font-weight: 300;
+}
+
+.nav-modal {
+  background-color: #2c5aa0 !important;
+  color: white;
+  box-shadow: none !important;
+}
+
+.mat-toolbar.mat-primary {
+  background: #567bb3;
+}
+
 .mat-form-field-full-width {
   width: 100%;
 }
@@ -36,6 +56,10 @@ body {
 
 .gifts-dialog-modal > mat-dialog-container {
   padding: 0 0 24px 0;
+}
+
+.modal-content-m-0{
+  margin: 0 !important;
 }
 
 .modal-header {
@@ -151,7 +175,15 @@ a.black {
 
 @media (max-width: 598px) {
   .fixed-container {
+    top: 56px;
     max-width: 100%;
+    padding: 0.1em 1em !important;
+  }
+  .mat-expansion-panel-body {
+    padding: 0 1px 0 !important;
+  }
+  .mat-card {
+    margin: 0;
   }
 }
 

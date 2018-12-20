@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {ApiService} from "@services/api.service";
-import {Family} from "@model/Family";
+import {Family, FamilyForm} from "@model/Family";
 import {Account} from "@model/Account";
 import {Observable} from "rxjs";
 import {environment} from "@env/environment.prod";
@@ -11,12 +11,17 @@ import {SortBy} from "@model/Settings";
   providedIn: 'root'
 })
 export class UserService {
-
   constructor(private apiSrv: ApiService, private avatarSrv: AvatarService) {
   }
 
   getFamily(identification?: string): Observable<Family> {
-    return this.apiSrv.get(`${environment.account_url}/family`, {username: identification})
+    return this.apiSrv.get(`${environment.account_url}/family`, {username: identification}).map(family => {
+      if (family) {
+        this.fetchAvatars(<Family>family.members);
+        this.fetchAvatars(<Family>family.admins);
+      }
+      return <Family>family;
+    })
   }
 
   getRelatedUsers(identification: string): Observable<Account[]> {
@@ -70,10 +75,25 @@ export class UserService {
     return this.apiSrv.post(`${environment.account_url}/kid-update`, kid)
   }
 
-  addAdmin(user: Account):Observable<Account> {
+  addAdmin(user: Account): Observable<Account> {
     return this.apiSrv.put(`${environment.app_url}/add-admin`, user.id)
   }
-  removeAdmin(user: Account):Observable<Account> {
+
+  removeAdmin(user: Account): Observable<Account> {
     return this.apiSrv.put(`${environment.app_url}/remove-admin`, user.id)
   }
+
+  createFamily(form: FamilyForm): Observable<any> {
+    return this.apiSrv.post(`${environment.account_url}/family-create`, form)
+  }
+
+  updateFamily(form: FamilyForm): Observable<any> {
+    return this.apiSrv.put(`${environment.account_url}/family-update`, form)
+  }
+
+
+  leaveFamily() {
+    return this.apiSrv.put(`${environment.account_url}/family-leave`)
+  }
+
 }

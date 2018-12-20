@@ -21,6 +21,8 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
     List<Account> findByIdIn(List<String> list);
 
+    List<Account> findByEmailIn(List<String> list);
+
     List<Account> findByTypeNot(AccountType type);
 
     List<Account> findByNotificationsIsTrueAndEmailNotNullAndTypeIsNot(AccountType type);

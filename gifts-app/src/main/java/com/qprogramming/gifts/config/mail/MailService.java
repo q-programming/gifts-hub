@@ -53,6 +53,7 @@ public class MailService {
     private static final String EVENTS = "events";
     private static final String FAMILY_NAME = "familyName";
     private static final String CONFIRM_LINK = "confirmLink";
+    private static final String REGISTER_LINK = "registerLink";
     private static final String LOGO_PNG = "logo.png";
     private static final String AVATAR = "avatar_";
     private static final String USER_AVATAR_PNG = "userAvatar.png";
@@ -305,20 +306,11 @@ public class MailService {
      * @throws MessagingException if there were errors while sending email
      */
     public void sendConfirmMail(Mail mail, AccountEvent event) throws MessagingException {
-        MimeMessage mimeMessage = mailSender.createMimeMessage();
-        String application = propertyService.getProperty(APP_URL);
-        String from = propertyService.getProperty(APP_EMAIL_FROM);
-        String confirmLink = application + "#/confirm/" + event.getToken();
-        mail.addToModel(CONFIRM_LINK, confirmLink);
+        MimeMessageHelper mimeMessageHelper = createBaseMimeMessage(mail);
         Locale locale = getMailLocale(mail);
-        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
+        String confirmLink = mail.getModel().get(APPLICATION) + "#/confirm/" + event.getToken();
+        mail.addToModel(CONFIRM_LINK, confirmLink);
         String familyName = event.getFamily().getName();
-        mimeMessageHelper.setFrom(from);
-        mimeMessageHelper.setTo(mail.getMailTo());
-        addAppLogo(mimeMessageHelper);
-        File avatarTempFile = getUserAvatar(Utils.getCurrentAccount());
-        mimeMessageHelper.addInline(USER_AVATAR_PNG, avatarTempFile);
-        mail.addToModel(APPLICATION, application);
         switch (event.getType()) {
             case FAMILY_MEMEBER:
                 mimeMessageHelper.setSubject(msgSrv.getMessage("user.family.invite", new Object[]{familyName}, "", locale));
@@ -333,6 +325,32 @@ public class MailService {
             case FAMILY_REMOVE:
                 break;
         }
+        mimeMessageHelper.setText(mail.getMailContent(), true);
+        mailSender.send(mimeMessageHelper.getMimeMessage());
+    }
+
+    private MimeMessageHelper createBaseMimeMessage(Mail mail) throws MessagingException {
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
+        String application = propertyService.getProperty(APP_URL);
+        String from = propertyService.getProperty(APP_EMAIL_FROM);
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
+        mimeMessageHelper.setFrom(from);
+        mimeMessageHelper.setTo(mail.getMailTo());
+        addAppLogo(mimeMessageHelper);
+        File avatarTempFile = getUserAvatar(Utils.getCurrentAccount());
+        mail.addToModel(APPLICATION, application);
+        mimeMessageHelper.addInline(USER_AVATAR_PNG, avatarTempFile);
+        return mimeMessageHelper;
+    }
+
+    public void sendInvite(Mail mail, String familyName) throws MessagingException {
+        MimeMessageHelper mimeMessageHelper = createBaseMimeMessage(mail);
+        Locale locale = getMailLocale(mail);
+        mimeMessageHelper.setSubject(msgSrv.getMessage("user.family.invite", new Object[]{familyName}, "", locale));
+        String confirmLink = mail.getModel().get(APPLICATION) + "#/register/";
+        mail.addToModel(REGISTER_LINK, confirmLink);
+        mail.addToModel(FAMILY_NAME, familyName);
+        mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/familyInvite.ftl"));
         mimeMessageHelper.setText(mail.getMailContent(), true);
         mailSender.send(mimeMessageHelper.getMimeMessage());
     }

@@ -9,7 +9,7 @@
     <span *ngIf="user.familyAdmin" matTooltip="{{'user.family.administrator'|translate}}">
       <i class="fa fa-address-card-o"></i>
     </span>
-    {{user.fullname}}
+    {{user.fullname}} ({{user.username}})
   </div>
   <div fxFlex="25%">
     <a href="mailto:{{user.email}}" *ngIf="user.email">
