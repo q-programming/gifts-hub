@@ -37,6 +37,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static com.qprogramming.gifts.support.Utils.ACCOUNT_COMPARATOR;
@@ -45,6 +47,8 @@ import static com.qprogramming.gifts.support.Utils.ACCOUNT_COMPARATOR;
 @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class AccountService implements UserDetailsService {
     private final Logger LOG = LoggerFactory.getLogger(this.getClass());
+    public static final Pattern VALID_EMAIL_ADDRESS_REGEX =
+            Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
 
 
     private AccountRepository _accountRepository;
@@ -285,12 +289,12 @@ public class AccountService implements UserDetailsService {
      * @return list of all sorted users
      */
     public Set<Account> findAllSortByFamily(Account account) {
-        Family family = _familyService.getFamily(account);
+        Optional<Family> family = _familyService.getFamily(account);
         List<Account> list = findAll();
         Set<Account> result = new LinkedHashSet<>();
-        if (family != null) {
+        if (family.isPresent()) {
             //Add all from user's family first
-            result.addAll(list.stream().filter(family.getMembers()::contains).sorted(ACCOUNT_COMPARATOR).collect(Collectors.toList()));
+            result.addAll(list.stream().filter(family.get().getMembers()::contains).sorted(ACCOUNT_COMPARATOR).collect(Collectors.toList()));
             list.removeAll(result);
         }
         result.addAll(list);
@@ -319,7 +323,7 @@ public class AccountService implements UserDetailsService {
         return all;
     }
 
-    public List<Account> findByIds(List<String> members) {
+    public Set<Account> findByIds(Set<String> members) {
         return _accountRepository.findByIdIn(members);
     }
 
@@ -327,21 +331,24 @@ public class AccountService implements UserDetailsService {
      * Finds all accounts by emails. If account was not found in database , new fake temp account will be added to returned list
      * This is so that the temp accounts can recieve invitiation to application later on
      *
-     * @param emails list of emails
+     * @param id list of emails or usernames
      * @return list of all accounts both DB presnet and temp ones
      */
-    public List<Account> findByEmails(List<String> emails) {
-        List<Account> accounts = _accountRepository.findByEmailIn(emails);
-        emails.removeAll(accounts.stream().map(Account::getEmail).collect(Collectors.toSet()));
-        accounts.addAll(emails.stream().map(Account::new).collect(Collectors.toSet()));
+    public Set<Account> findByEmailsOrUsernames(Set<String> id) {
+        Set<Account> accounts = new HashSet<>();
+        if (!id.isEmpty()) {
+            accounts = _accountRepository.findByEmailIn(id);
+            accounts.addAll(_accountRepository.findByUsernameIn(id));
+            id.removeAll(accounts.stream().map(Account::getEmail).collect(Collectors.toSet()));
+            id.removeAll(accounts.stream().map(Account::getUsername).collect(Collectors.toSet()));
+            accounts.addAll(id.stream().filter(s -> VALID_EMAIL_ADDRESS_REGEX.matcher(s).find()).map(Account::new).collect(Collectors.toSet()));
+        }
         return accounts;
     }
 
     public void delete(Account account) {
-        Family family = _familyService.getFamily(account);
-        if (family != null) {
-            _familyService.removeFromFamily(account, family);
-        }
+        Optional<Family> optionalFamily = _familyService.getFamily(account);
+        optionalFamily.ifPresent(family -> _familyService.removeFromFamily(account, family));
         Avatar avatar = _avatarRepository.findOneById(account.getId());
         if (avatar != null) {
             _avatarRepository.delete(avatar);

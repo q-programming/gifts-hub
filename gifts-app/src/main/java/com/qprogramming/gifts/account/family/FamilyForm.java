@@ -1,6 +1,6 @@
 package com.qprogramming.gifts.account.family;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Khobar on 04.04.2017.
@@ -8,8 +8,8 @@ import java.util.List;
 public class FamilyForm {
     private Long id;
     private String name;
-    private List<String> members;
-    private List<String> admins;
+    private Set<String> members;
+    private Set<String> admins;
 
     public Long getId() {
         return id;
@@ -27,19 +27,19 @@ public class FamilyForm {
         this.name = name;
     }
 
-    public List<String> getMembers() {
+    public Set<String> getMembers() {
         return members;
     }
 
-    public void setMembers(List<String> members) {
+    public void setMembers(Set<String> members) {
         this.members = members;
     }
 
-    public List<String> getAdmins() {
+    public Set<String> getAdmins() {
         return admins;
     }
 
-    public void setAdmins(List<String> admins) {
+    public void setAdmins(Set<String> admins) {
         this.admins = admins;
     }
 }

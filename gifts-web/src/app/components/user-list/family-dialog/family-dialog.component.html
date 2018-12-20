@@ -1,0 +1,78 @@
+<h1 mat-dialog-title>
+  <mat-icon>group</mat-icon>
+  {{update ? ('user.family.edit.text'|translate) : ('user.family.create.text'|translate)}}
+</h1>
+<mat-tab-group mat-stretch-tabs>
+  <mat-tab>
+    <ng-template mat-tab-label>
+      <mat-icon>person</mat-icon>
+      <span fxShow.xs="false">
+            &nbsp;{{'user.family.members'|translate}}
+            </span>
+    </ng-template>
+    <mat-dialog-content class="modal-content-m-0 mt-2">
+      <div>
+        <mat-form-field fxFlex>
+          <input matInput [formControl]="nameCtrl" placeholder="{{'user.family.name'|translate}}" type="text"
+                 autocomplete="off">
+        </mat-form-field>
+      </div>
+      <div>
+        <h4>{{'user.family.members'|translate}}</h4>
+        <div fxLayout="row wrap">
+          <mat-form-field fxFlex="100">
+            <input matInput [formControl]="newMemberCtrl" placeholder="{{'user.family.invite.new'|translate}}"
+                   type="email" autocomplete="off" (keydown.enter)="addToInvites()">
+            <button mat-stroked-button matSuffix [disabled]="newMemberCtrl.hasError('email')" (click)="addToInvites()">
+              <mat-icon>email</mat-icon>
+            </button>
+          </mat-form-field>
+          <div fxFlex="100" *ngFor="let email of identifications">
+            <i>{{email}}</i>
+          </div>
+        </div>
+        <div *ngFor="let member of Members;let even=even" [ngClass]="{'even':even}" fxLayout="row">
+          <div fxFlex="20">
+            <avatar [avatar]="member.avatar" classes="avatar small"></avatar>
+          </div>
+          <div fxFlex>
+            <span *ngIf="member.type === AccountType.KID" matTooltip="{{'user.family.kid'|translate}}">
+              <i class="fa fa-child"></i>
+            </span>
+            {{member.fullname}}
+          </div>
+          <div>
+            <button *ngIf="member.familyAdmin" mat-icon-button>
+              <button mat-button (click)="removeAdmin(member.email)">clear</button>
+            </button>
+            <button *ngIf="!member.familyAdmin && member.type !== AccountType.KID" mat-icon-button>
+              <button mat-button (click)="addAdmin(member.email)">build</button>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="update" class="text-center">
+        <button mat-flat-button color="warn" (click)="leaveFamily()">
+          <mat-icon>clear</mat-icon>
+          {{'user.family.leave.text'|translate}}</button>
+      </div>
+    </mat-dialog-content>
+  </mat-tab>
+  <mat-tab>
+    <ng-template mat-tab-label>
+      <mat-icon>lock_open</mat-icon>
+      <span fxShow.xs="false">
+            &nbsp;{{'user.family.permision.text'|translate}}
+            </span>
+    </ng-template>
+    <mat-dialog-content class="modal-content-m-0">
+      <permissions></permissions>
+    </mat-dialog-content>
+  </mat-tab>
+</mat-tab-group>
+<div class="p-2 button-panel pull-right">
+  <button mat-raised-button mat-dialog-close>{{'app.general.cancel'|translate}}</button>
+  <button mat-raised-button class="success-button" (click)="commit()">
+    {{(update ? 'app.general.edit' : 'app.general.add') |translate}}
+  </button>
+</div>

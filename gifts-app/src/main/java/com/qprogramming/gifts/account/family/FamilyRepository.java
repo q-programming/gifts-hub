@@ -10,5 +10,5 @@ import java.util.Optional;
  */
 public interface FamilyRepository extends JpaRepository<Family, Long> {
 
-    Family findByMembersContaining(Account account);
+    Optional<Family> findByMembersContaining(Account account);
 }

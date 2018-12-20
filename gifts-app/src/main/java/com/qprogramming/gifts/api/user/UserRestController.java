@@ -13,7 +13,6 @@ import com.qprogramming.gifts.account.family.FamilyService;
 import com.qprogramming.gifts.account.family.KidForm;
 import com.qprogramming.gifts.config.mail.Mail;
 import com.qprogramming.gifts.config.mail.MailService;
-import com.qprogramming.gifts.config.property.PropertyService;
 import com.qprogramming.gifts.exceptions.AccountNotFoundException;
 import com.qprogramming.gifts.gift.GiftService;
 import com.qprogramming.gifts.login.token.TokenBasedAuthentication;
@@ -223,7 +222,7 @@ public class UserRestController {
             if (!account.isPresent()) {
                 return ResponseEntity.notFound().build();
             }
-            return ResponseEntity.ok(familyService.getFamily(account.get()));
+            return ResponseEntity.ok(familyService.getFamily(account.get()).get());
         }
         return ResponseEntity.ok(familyService.getFamily(Utils.getCurrentAccount()));
     }
@@ -232,17 +231,17 @@ public class UserRestController {
     @RequestMapping(value = "/family-create", method = RequestMethod.POST)
     @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<?> createFamily(@RequestBody FamilyForm form) {
-        Family family = familyService.getFamily(Utils.getCurrentAccount());
-        if (family != null) {
+        Optional<Family> optionalFamily = familyService.getFamily(Utils.getCurrentAccount());
+        if (optionalFamily.isPresent()) {
             return new ResultData.ResultBuilder().badReqest().message(msgSrv.getMessage("user.family.exists.error")).build();
         }
-        family = familyService.createFamily();
+        Family family = familyService.createFamily();
         if (StringUtils.isBlank(form.getName())) {
             form.setName(Utils.getCurrentAccount().getSurname());
         }
         family.setName(form.getName());
         family = familyService.update(family);
-        List<Account> members = accountService.findByEmails(form.getMembers());
+        Set<Account> members = accountService.findByEmailsOrUsernames(form.getMembers());
         try {
             sendInvites(members, family, AccountEventType.FAMILY_MEMEBER);
         } catch (MessagingException e) {
@@ -263,20 +262,19 @@ public class UserRestController {
     @RequestMapping(value = "/family-update", method = RequestMethod.PUT)
     public ResponseEntity<?> updateFamily(@RequestBody FamilyForm form) {
         Account currentAccount = Utils.getCurrentAccount();
-        Family family = familyService.getFamily(currentAccount);
-        if (family == null) {
+        Optional<Family> optionalFamily = familyService.getFamily(currentAccount);
+        if (!optionalFamily.isPresent()) {
             return ResponseEntity.notFound().build();
         }
+        Family family = optionalFamily.get();
         if (family.getAdmins().contains(currentAccount)) {
             //set members
-            form.getMembers().add(Utils.getCurrentAccountId());
-            Set<Account> formMembers = new HashSet<>(accountService.findByEmails(form.getMembers()));
+            Set<Account> formMembers = new HashSet<>(accountService.findByEmailsOrUsernames(form.getMembers()));
             Set<Account> membersToInvite = formMembers.stream().filter(account -> !family.getMembers().contains(account)).collect(Collectors.toSet());
             formMembers.removeAll(membersToInvite);
             family.setMembers(formMembers);
             //set admins
-            form.getAdmins().add(Utils.getCurrentAccountId());
-            Set<Account> formAdmins = new HashSet<>(accountService.findByEmails(form.getAdmins()));
+            Set<Account> formAdmins = new HashSet<>(accountService.findByEmailsOrUsernames(form.getAdmins()));
             Set<Account> adminsToInvite = formAdmins.stream().filter(account -> !family.getAdmins().contains(account)).collect(Collectors.toSet());
             formAdmins.removeAll(adminsToInvite);
             family.setAdmins(formAdmins);
@@ -308,11 +306,11 @@ public class UserRestController {
     @RequestMapping(value = "/family-leave", method = RequestMethod.PUT)
     public ResponseEntity<?> leaveFamily() {
         Account currentAccount = Utils.getCurrentAccount();
-        Family family = familyService.getFamily(currentAccount);
-        if (family == null) {
+        Optional<Family> optionalFamily = familyService.getFamily(currentAccount);
+        if (!optionalFamily.isPresent()) {
             return ResponseEntity.notFound().build();
         }
-        family = familyService.removeFromFamily(currentAccount, family);
+        Family family = familyService.removeFromFamily(currentAccount, optionalFamily.get());
         return ResponseEntity.ok(family);
     }
 
@@ -331,21 +329,21 @@ public class UserRestController {
         if (event == null) {
             return new ResultData.ResultBuilder().notFound().build();
         }
-        Family family = familyService.getFamily(Utils.getCurrentAccount());
+        Optional<Family> optionalFamily = familyService.getFamily(Utils.getCurrentAccount());
         switch (event.getType()) {
             case FAMILY_MEMEBER:
-                if (family != null) {
-                    return familyExistsResponse(family);
+                if (optionalFamily.isPresent()) {
+                    return familyExistsResponse(optionalFamily.get());
                 }
-                family = familyService.addAccountToFamily(Utils.getCurrentAccount(), event.getFamily());
+                Family family = familyService.addAccountToFamily(Utils.getCurrentAccount(), event.getFamily());
                 accountService.eventConfirmed(event);
                 return new ResultData.ResultBuilder()
                         .ok()
                         .message(msgSrv.getMessage("user.confirm.family.success", new Object[]{family.getName()}, "", Utils.getCurrentLocale()))
                         .build();
             case FAMILY_ADMIN:
-                if (family != null && family != event.getFamily()) {
-                    return familyExistsResponse(family);
+                if (optionalFamily.isPresent() && optionalFamily.get() != event.getFamily()) {
+                    return familyExistsResponse(optionalFamily.get());
                 }
                 family = familyService.addAccountToFamily(Utils.getCurrentAccount(), event.getFamily());
                 family = familyService.addAccountToFamilyAdmins(Utils.getCurrentAccount(), family);
@@ -398,10 +396,11 @@ public class UserRestController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("username");
         }
         Account currentAccount = Utils.getCurrentAccount();
-        Family family = familyService.getFamily(currentAccount);
-        if (family == null) {
+        Optional<Family> optionalFamily = familyService.getFamily(currentAccount);
+        if (!optionalFamily.isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("family");
         }
+        Family family = optionalFamily.get();
         if (!family.getAdmins().contains(currentAccount)) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("family_admin");
         }
@@ -421,10 +420,11 @@ public class UserRestController {
     @RequestMapping("/kid-update")
     public ResponseEntity<?> updateKid(@RequestBody @Valid KidForm form) {
         Account currentAccount = Utils.getCurrentAccount();
-        Family family = familyService.getFamily(currentAccount);
-        if (family == null) {
+        Optional<Family> optionalFamily = familyService.getFamily(currentAccount);
+        if (!optionalFamily.isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("family");
         }
+        Family family = optionalFamily.get();
         if (!family.getAdmins().contains(currentAccount)) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("family_admin");
         }
@@ -562,8 +562,8 @@ public class UserRestController {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
             //if not deleting his account
-            Family family = familyService.getFamily(account);
-            if (family == null || !family.getAdmins().contains(Utils.getCurrentAccount())) {
+            Optional<Family> optionalFamily = familyService.getFamily(account);
+            if (!optionalFamily.isPresent() || !optionalFamily.get().getAdmins().contains(Utils.getCurrentAccount())) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
             message = msgSrv.getMessage("user.family.delete.kid.success");

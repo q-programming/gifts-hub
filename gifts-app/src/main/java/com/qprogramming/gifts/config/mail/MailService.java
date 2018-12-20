@@ -326,6 +326,7 @@ public class MailService {
                 break;
         }
         mimeMessageHelper.setText(mail.getMailContent(), true);
+        LOG.info("Sending confirm message to {}", mail.getMailTo());
         mailSender.send(mimeMessageHelper.getMimeMessage());
     }
 
@@ -352,6 +353,7 @@ public class MailService {
         mail.addToModel(FAMILY_NAME, familyName);
         mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/familyInvite.ftl"));
         mimeMessageHelper.setText(mail.getMailContent(), true);
+        LOG.info("Sending invite message to {}", mail.getMailTo());
         mailSender.send(mimeMessageHelper.getMimeMessage());
     }
 

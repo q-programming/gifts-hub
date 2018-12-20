@@ -96,10 +96,10 @@ public class FamilyServiceTest {
         Family family = new Family();
         family.setId(2L);
         family.getMembers().add(testAccount);
-        when(familyRepositoryMock.findByMembersContaining(testAccount)).thenReturn(family);
-        Family result = familyService.getFamily(testAccount);
-        assertNotNull(result);
-        assertTrue(family.getMembers().contains(testAccount));
+        when(familyRepositoryMock.findByMembersContaining(testAccount)).thenReturn(Optional.of(family));
+        Optional<Family> optionalFamily = familyService.getFamily(testAccount);
+        assertTrue(optionalFamily.isPresent());
+        assertTrue(optionalFamily.get().getMembers().contains(testAccount));
     }
 
     @Test
@@ -168,7 +168,7 @@ public class FamilyServiceTest {
     }
 
     @Test
-    public void sendFamilyInvite(){
+    public void sendFamilyInvite() {
 
     }
 

@@ -476,7 +476,7 @@ public class GiftRestControllerTest extends MockedAccountTestBase {
         when(giftServiceMock.findById(gift.getId())).thenReturn(gift);
         when(accSrvMock.findById(testAccount.getId())).thenReturn(testAccount);
         when(accSrvMock.findById(owner.getId())).thenReturn(owner);
-        when(familyServiceMock.getFamily(owner)).thenReturn(family);
+        when(familyServiceMock.getFamily(owner)).thenReturn(Optional.of(family));
         giftsRestCtrl.perform(delete(API_GIFT_DELETE + gift.getId())).andExpect(status().isOk());
         verify(giftServiceMock, times(1)).delete(gift);
     }
@@ -505,7 +505,7 @@ public class GiftRestControllerTest extends MockedAccountTestBase {
         family.getAdmins().add(account);
         when(giftServiceMock.create(any(Gift.class))).then(returnsFirstArg());
         when(accSrvMock.findById(account.getUsername())).thenReturn(account);
-        when(familyServiceMock.getFamily(account)).thenReturn(family);
+        when(familyServiceMock.getFamily(account)).thenReturn(Optional.of(family));
         URL fileURL = getClass().getResource("sampleImport.xls");
         mockMultipartFile = new MockMultipartFile("file", fileURL.getFile(), "text/plain",
                 getClass().getResourceAsStream("sampleImport.xls"));

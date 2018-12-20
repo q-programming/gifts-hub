@@ -142,8 +142,8 @@ public class GiftRestController {
                 LOG.debug("Gift owner with id {} was not found", id);
                 return false;
             }
-            Family family = familyService.getFamily(giftOwner);
-            return giftOwner.equals(Utils.getCurrentAccount()) || family != null && (family.getAdmins().contains(Utils.getCurrentAccount()));
+            Optional<Family> family = familyService.getFamily(giftOwner);
+            return giftOwner.equals(Utils.getCurrentAccount()) || family.isPresent() && (family.get().getAdmins().contains(Utils.getCurrentAccount()));
         }
         return false;
     }
@@ -156,12 +156,9 @@ public class GiftRestController {
             LOG.debug("Account with id {} not found", gift.getUserId());
             return false;
         }
-        Family family = familyService.getFamily(giftOwner);
-        if (family == null) {
-            return giftOwner.equals(Utils.getCurrentAccount());
-        } else {
-            return giftOwner.equals(Utils.getCurrentAccount()) || (family.getAdmins().contains(Utils.getCurrentAccount()));
-        }
+        Optional<Family> family = familyService.getFamily(giftOwner);
+        return family.map(family1 -> giftOwner.equals(Utils.getCurrentAccount()) || (family1.getAdmins().contains(Utils.getCurrentAccount())))
+                .orElseGet(() -> giftOwner.equals(Utils.getCurrentAccount()));
     }
 
     @PreAuthorize("hasRole('ROLE_USER')")

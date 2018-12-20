@@ -274,7 +274,7 @@ public class AccountServiceTest extends MockedAccountTestBase {
         family.getMembers().add(testAccount);
         family.getAdmins().add(testAccount);
         Avatar avatar = new Avatar();
-        when(familyServiceMock.getFamily(testAccount)).thenReturn(family);
+        when(familyServiceMock.getFamily(testAccount)).thenReturn(Optional.of(family));
         when(avatarRepositoryMock.findOneById(testAccount.getId())).thenReturn(avatar);
         accountService.delete(testAccount);
         verify(avatarRepositoryMock, times(1)).delete(avatar);
@@ -291,7 +291,7 @@ public class AccountServiceTest extends MockedAccountTestBase {
         Account bobAccount = all.get(0);
         family1.getMembers().addAll(Arrays.asList(testAccount, andyAccount, bobAccount));
         when(accountRepositoryMock.findAll()).thenReturn(all);
-        when(familyServiceMock.getFamily(testAccount)).thenReturn(family1);
+        when(familyServiceMock.getFamily(testAccount)).thenReturn(Optional.of(family1));
         Set<Account> result = accountService.findAllSortByFamily(testAccount);
         //convert result to array to test order
         Object[] ordered = result.toArray();

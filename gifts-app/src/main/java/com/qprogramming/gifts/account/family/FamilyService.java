@@ -51,7 +51,10 @@ public class FamilyService {
      * @return updated {@link Family}
      */
     public Family addAccountToFamily(Account account, Family family) {
-        family.getMembers().add(account);
+        Optional<Family> optionalFamily = familyRepository.findByMembersContaining(account);
+        if (!optionalFamily.isPresent()) {
+            family.getMembers().add(account);
+        }
         return familyRepository.save(family);
     }
 
@@ -126,7 +129,7 @@ public class FamilyService {
      * @param account account for which family will be returned
      * @return {@link Family}
      */
-    public Family getFamily(Account account) {
+    public Optional<Family> getFamily(Account account) {
         return familyRepository.findByMembersContaining(account);
     }
 
