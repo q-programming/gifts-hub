@@ -159,7 +159,7 @@ public class FamilyService {
 
     public String generateToken() {
         String token = Generators.timeBasedGenerator().generate().toString();
-        while (accountEventRepository.findByToken(token) != null) {
+        while (accountEventRepository.findByToken(token).isPresent()) {
             token = Generators.timeBasedGenerator().generate().toString();
         }
         return token;

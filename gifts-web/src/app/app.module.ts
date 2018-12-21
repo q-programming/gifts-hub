@@ -52,6 +52,7 @@ import {ConfirmDialogComponent} from "./components/dialogs/confirm/confirm-dialo
 import {GoTopButtonModule} from 'ng2-go-top-button';
 import {FamilyDialogComponent} from './components/user-list/family-dialog/family-dialog.component';
 import {PermissionComponent} from './components/user-list/permission/permission.component';
+import {ConfirmComponent} from './components/confirm/confirm.component';
 
 
 @NgModule({
@@ -83,7 +84,8 @@ import {PermissionComponent} from './components/user-list/permission/permission.
     CategoryListComponent,
     ConfirmDialogComponent,
     FamilyDialogComponent,
-    PermissionComponent
+    PermissionComponent,
+    ConfirmComponent
   ],
   entryComponents: [
     AvatarUploadComponent,

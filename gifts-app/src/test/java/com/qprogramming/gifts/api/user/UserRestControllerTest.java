@@ -1,12 +1,13 @@
 package com.qprogramming.gifts.api.user;
 
 import com.fasterxml.uuid.Generators;
-import com.qprogramming.gifts.MockSecurityContext;
 import com.qprogramming.gifts.MockedAccountTestBase;
 import com.qprogramming.gifts.TestUtil;
-import com.qprogramming.gifts.account.*;
+import com.qprogramming.gifts.account.Account;
+import com.qprogramming.gifts.account.AccountService;
+import com.qprogramming.gifts.account.AccountType;
+import com.qprogramming.gifts.account.RegisterForm;
 import com.qprogramming.gifts.account.event.AccountEvent;
-import com.qprogramming.gifts.account.event.AccountEventRepository;
 import com.qprogramming.gifts.account.event.AccountEventType;
 import com.qprogramming.gifts.account.family.Family;
 import com.qprogramming.gifts.account.family.FamilyForm;
@@ -14,7 +15,6 @@ import com.qprogramming.gifts.account.family.FamilyService;
 import com.qprogramming.gifts.account.family.KidForm;
 import com.qprogramming.gifts.config.mail.Mail;
 import com.qprogramming.gifts.config.mail.MailService;
-import com.qprogramming.gifts.config.property.PropertyService;
 import com.qprogramming.gifts.exceptions.AccountNotFoundException;
 import com.qprogramming.gifts.gift.Gift;
 import com.qprogramming.gifts.gift.GiftService;
@@ -29,11 +29,8 @@ import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.http.HttpRequest;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -75,8 +72,6 @@ public class UserRestControllerTest extends MockedAccountTestBase {
     @Mock
     private AccountService accSrvMock;
     @Mock
-    private AccountEventRepository accountEventRepositoryMock;
-    @Mock
     private MessagesService msgSrvMock;
     @Mock
     private FamilyService familyServiceMock;
@@ -94,7 +89,7 @@ public class UserRestControllerTest extends MockedAccountTestBase {
     @Before
     public void setUp() throws Exception {
         super.setup();
-        UserRestController userCtrl = new UserRestController(accSrvMock, accountEventRepositoryMock, msgSrvMock, familyServiceMock, giftServiceMock, mailServiceMock, eventServiceMock, logoutHandlerMock);
+        UserRestController userCtrl = new UserRestController(accSrvMock, msgSrvMock, familyServiceMock, giftServiceMock, mailServiceMock, eventServiceMock, logoutHandlerMock);
         when(msgSrvMock.getMessage(anyString())).thenReturn("MESSAGE");
         this.userRestCtrl = MockMvcBuilders.standaloneSetup(userCtrl).build();
     }
@@ -253,7 +248,7 @@ public class UserRestControllerTest extends MockedAccountTestBase {
         family.getAdmins().add(testAccount);
         when(familyServiceMock.createFamily()).thenReturn(family);
         when(familyServiceMock.update(family)).then(returnsFirstArg());
-        userRestCtrl.perform(put(API_USER_FAMILY_CREATE)
+        userRestCtrl.perform(post(API_USER_FAMILY_CREATE)
                 .contentType(APPLICATION_JSON_UTF8)
                 .content(convertObjectToJsonBytes(form))).andExpect(status().isOk());
         verify(familyServiceMock, times(1)).update(any(Family.class));
@@ -262,24 +257,24 @@ public class UserRestControllerTest extends MockedAccountTestBase {
     @Test
     public void createFamilyMembersAndAdmins() throws Exception {
         FamilyForm form = new FamilyForm();
-        form.setAdmins(Collections.singleton(USER_RANDOM_ID + "1"));
-        form.setMembers(Collections.singleton((USER_RANDOM_ID + "1")));
+        form.setAdmins(Collections.singleton(USERNAME + "1"));
+        form.setMembers(Collections.singleton((USERNAME + "1")));
         Family family = new Family();
         family.setId(1L);
         family.getMembers().add(testAccount);
         family.getAdmins().add(testAccount);
         Account memberAndAdmin = createAccount("John", "Doe");
-        memberAndAdmin.setId(USER_RANDOM_ID + "1");
+        memberAndAdmin.setUsername(USERNAME + "1");
         AccountEvent event = new AccountEvent();
         event.setAccount(testAccount);
         event.setFamily(family);
         event.setType(AccountEventType.FAMILY_MEMEBER);
         event.setToken("aaa");
-        when(accSrvMock.findByIds(Collections.singleton(USER_RANDOM_ID + "1"))).thenReturn(Collections.singleton(memberAndAdmin));
+        when(accSrvMock.findByEmailsOrUsernames(Collections.singleton(USERNAME + "1"))).thenReturn(Collections.singleton(memberAndAdmin));
         when(familyServiceMock.createFamily()).thenReturn(family);
         when(familyServiceMock.inviteAccount(any(Account.class), any(Family.class), any(AccountEventType.class))).thenReturn(event);
         when(familyServiceMock.update(family)).then(returnsFirstArg());
-        MvcResult mvcResult = userRestCtrl.perform(put(API_USER_FAMILY_CREATE)
+        MvcResult mvcResult = userRestCtrl.perform(post(API_USER_FAMILY_CREATE)
                 .contentType(APPLICATION_JSON_UTF8)
                 .content(convertObjectToJsonBytes(form))).andExpect(status().isOk()).andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
@@ -297,7 +292,7 @@ public class UserRestControllerTest extends MockedAccountTestBase {
         when(familyServiceMock.getFamily(testAccount)).thenReturn(Optional.of(family));
         userRestCtrl.perform(put(API_USER_FAMILY_CREATE)
                 .contentType(APPLICATION_JSON_UTF8)
-                .content(convertObjectToJsonBytes(form))).andExpect(status().isBadRequest());
+                .content(convertObjectToJsonBytes(form))).andExpect(status().is4xxClientError());
     }
 
 
@@ -314,15 +309,28 @@ public class UserRestControllerTest extends MockedAccountTestBase {
     @Test
     public void updateFamilyAddMemberAndAdmin() throws Exception {
         FamilyForm form = new FamilyForm();
-        form.setAdmins(Collections.singleton(USER_RANDOM_ID + "1"));
-        form.setMembers(Collections.singleton(USER_RANDOM_ID + "1"));
+        HashSet<String> members = new HashSet<>();
+        HashSet<String> admins = new HashSet<>();
+        String newUsername = USERNAME + "1";
+        members.add(newUsername);
+        members.add(testAccount.getUsername());
+        admins.add(newUsername);
+        admins.add(testAccount.getUsername());
+        form.setAdmins(admins);
+        form.setMembers(members);
         Family family = new Family();
         family.setId(1L);
         family.getMembers().add(testAccount);
         family.getAdmins().add(testAccount);
-        Account memberAndAdmin = createAccount("John", "Doe");
-        memberAndAdmin.setId(USER_RANDOM_ID + "1");
-        when(accSrvMock.findByIds(new HashSet<>(Arrays.asList(USER_RANDOM_ID + "1", testAccount.getId())))).thenReturn(new HashSet<>(Arrays.asList(memberAndAdmin, testAccount)));
+        Account memberAndAdmin = createAdminAccount();
+        memberAndAdmin.setUsername(newUsername);
+        HashSet<Account> dbMembers = new HashSet<>();
+        dbMembers.add(testAccount);
+        dbMembers.add(memberAndAdmin);
+        HashSet<Account> dbAdmins = new HashSet<>();
+        dbAdmins.add(testAccount);
+        dbAdmins.add(memberAndAdmin);
+        when(accSrvMock.findByEmailsOrUsernames(members)).thenReturn(dbMembers).thenReturn(dbAdmins);
         when(familyServiceMock.getFamily(testAccount)).thenReturn(Optional.of(family));
         when(familyServiceMock.update(family)).then(returnsFirstArg());
         MvcResult mvcResult = userRestCtrl.perform(put(API_USER_FAMILY_UPDATE)
@@ -344,7 +352,7 @@ public class UserRestControllerTest extends MockedAccountTestBase {
         when(familyServiceMock.getFamily(testAccount)).thenReturn(Optional.of(family));
         userRestCtrl.perform(put(API_USER_FAMILY_UPDATE)
                 .contentType(APPLICATION_JSON_UTF8)
-                .content(convertObjectToJsonBytes(form))).andExpect(status().isBadRequest());
+                .content(convertObjectToJsonBytes(form))).andExpect(status().isForbidden());
     }
 
     @Test
@@ -362,9 +370,7 @@ public class UserRestControllerTest extends MockedAccountTestBase {
         when(familyServiceMock.update(family)).then(returnsFirstArg());
         MvcResult mvcResult = userRestCtrl.perform(put(API_USER_FAMILY_LEAVE)).andExpect(status().isOk()).andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
-        Family result = convertJsonToObject(contentAsString, Family.class);
-        verify(familyServiceMock, times(1)).update(result);
-        assertTrue(result.getMembers().size() == 0);
+        verify(familyServiceMock, times(1)).removeFromFamily(testAccount, family);
 
     }
 
@@ -646,8 +652,20 @@ public class UserRestControllerTest extends MockedAccountTestBase {
     @Test
     public void confirmFamilymemberTokenExpired() throws Exception {
         String token = "09011a27-478c-11e7-bcf7-930b1424157e";
-        userRestCtrl.perform(post(API_USER_CONFIRM).content(token)).andExpect(status().isBadRequest());
+        AccountEvent event = new AccountEvent();
+        event.setToken(token);
+        event.setAccount(testAccount);
+        when(accSrvMock.findEvent(token)).thenReturn(Optional.of(event));
+        userRestCtrl.perform(post(API_USER_CONFIRM).content(token)).andExpect(status().isConflict());
     }
+
+    @Test
+    public void confirmFamilymemberTokenNotFound() throws Exception {
+        String token = "09011a27-478c-11e7-bcf7-930b1424157e";
+        when(accSrvMock.findEvent(token)).thenReturn(Optional.empty());
+        userRestCtrl.perform(post(API_USER_CONFIRM).content(token)).andExpect(status().isNotFound());
+    }
+
 
     @Test
     public void confirmFamilymemberAlreadyMemberTest() throws Exception {
@@ -660,8 +678,8 @@ public class UserRestControllerTest extends MockedAccountTestBase {
         event.setFamily(family);
         event.setType(AccountEventType.FAMILY_MEMEBER);
         when(familyServiceMock.getFamily(testAccount)).thenReturn(Optional.of(family));
-        when(accSrvMock.findEvent(token)).thenReturn(event);
-        userRestCtrl.perform(post(API_USER_CONFIRM).content(token)).andExpect(status().isBadRequest());
+        when(accSrvMock.findEvent(token)).thenReturn(Optional.of(event));
+        userRestCtrl.perform(post(API_USER_CONFIRM).content(token)).andExpect(status().isConflict());
     }
 
     @Test
@@ -673,7 +691,7 @@ public class UserRestControllerTest extends MockedAccountTestBase {
         event.setAccount(testAccount);
         event.setFamily(family);
         event.setType(AccountEventType.FAMILY_MEMEBER);
-        when(accSrvMock.findEvent(token)).thenReturn(event);
+        when(accSrvMock.findEvent(token)).thenReturn(Optional.of(event));
         when(familyServiceMock.addAccountToFamily(testAccount, family)).thenReturn(family);
         userRestCtrl.perform(post(API_USER_CONFIRM).content(token)).andExpect(status().isOk());
         verify(familyServiceMock, times(1)).addAccountToFamily(testAccount, family);

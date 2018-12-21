@@ -10,6 +10,7 @@ import {GiftsPublicComponent} from "./components/gifts/gifts-public.component";
 import {SettingsComponent} from "./components/settings/settings.component";
 import {ManageComponent} from "./components/manage/manage.component";
 import {AdminGuard} from "./guards/admin.guard";
+import {ConfirmComponent} from "./components/confirm/confirm.component";
 
 const routes: Routes = [
   {path: '', component: GiftsComponent, canActivate: [AuthGuard]},
@@ -20,6 +21,7 @@ const routes: Routes = [
   {path: 'manage', component: ManageComponent, canActivate: [AdminGuard]},
   {path: 'settings', component: SettingsComponent, canActivate: [AuthGuard]},
   {path: 'public/:user', component: GiftsPublicComponent},
+  {path: 'confirm/:token', component: ConfirmComponent},
   {path: 'register', component: RegisterComponent},
   {path: 'error', component: ErrorComponent},
   // otherwise redirect to home

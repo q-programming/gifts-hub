@@ -11,7 +11,7 @@ public interface AccountEventRepository extends JpaRepository<AccountEvent, Long
 
     Optional<AccountEvent> findById(Long id);
 
-    AccountEvent findByToken(String token);
+    Optional<AccountEvent> findByToken(String token);
 
     List<AccountEvent> findAllByAccount(Account account);
 

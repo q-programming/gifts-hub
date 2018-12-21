@@ -277,16 +277,14 @@
     "confirm": {
       "family": {
         "admin": {
-          "success": "You have become administrator of {0} family"
+          "success": "You have become administrator of family"
         },
-        "exists": "You are already a member of {0} family and cannot join other",
-        "success": "You have been successfully added to {0} family"
+        "exists": "You are already a member of family and cannot join other",
+        "success": "You have been successfully joined to family"
       },
       "token": {
         "error": {
-          "missing": "Wrong or missing confirmation token"
-        },
-        "errro": {
+          "missing": "Wrong or missing confirmation token",
           "time": "Confirmation token has expired"
         },
         "tryagain": "Please login and try again"
@@ -310,8 +308,10 @@
         }
       },
       "admin": {
-        "0": "{0} family administrator",
-        "error": "You have to be family admin to perform that operation"
+        "add": "Set as family administrator",
+        "error": "You have to be family admin to perform that operation",
+        "remove": "Remove family administrator rights from that family member",
+        "text": "Admin"
       },
       "administrator": "Family administrator",
       "admins": "Administrators",
@@ -352,13 +352,13 @@
         "error": "You are already member of other family, and cannot create new one."
       },
       "invite": {
-        "0": "Invitation to {0} family",
         "mailError": "There was error while sending invite via e-mail. Please contact administration",
-        "new": "Invite new family member by email"
+        "new": "Invite new family member by email or their username",
+        "text": "Invite to family"
       },
       "kid": "Kid",
       "leave": {
-        "confirm": "Are you sure you want to leave your curent family? In order to rejoin it , you will have to ask family administrator to invite you.",
+        "confirm": "Are you sure you want to leave your curent family?<br>In order to rejoin it , you will have to ask family administrator to invite you.",
         "text": "Leave family"
       },
       "left": "You have left family",

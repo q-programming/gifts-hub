@@ -81,7 +81,8 @@ export class UserListComponent implements OnInit {
     const dialogRef = this.dialog.open(FamilyDialogComponent, {
       panelClass: 'gifts-modal-normal',
       autoFocus: true,
-      width: '500px',
+      disableClose: true,
+      width: '600px',
       data: {
         family: new Family()
       }
@@ -108,8 +109,9 @@ export class UserListComponent implements OnInit {
   editFamilyDailog() {
     const dialogRef = this.dialog.open(FamilyDialogComponent, {
       panelClass: 'gifts-modal-normal',
+      disableClose: true,
       autoFocus: true,
-      width: '500px',
+      width: '600px',
       data: {
         family: this.family
       }

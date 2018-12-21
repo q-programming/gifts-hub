@@ -58,7 +58,6 @@ public class UserRestController {
     public static final String LANGUAGE = "language";
     private static final Logger LOG = LoggerFactory.getLogger(UserRestController.class);
     private AccountService accountService;
-    private AccountEventRepository accountEventRepository;
     private MessagesService msgSrv;
     private FamilyService familyService;
     private GiftService giftService;
@@ -67,9 +66,8 @@ public class UserRestController {
     private LogoutHandler logoutHandler;
 
     @Autowired
-    public UserRestController(AccountService accountService, AccountEventRepository accountEventRepository, MessagesService msgSrv, FamilyService familyService, GiftService giftService, MailService mailService, AppEventService eventService, LogoutHandler logoutHandler) {
+    public UserRestController(AccountService accountService, MessagesService msgSrv, FamilyService familyService, GiftService giftService, MailService mailService, AppEventService eventService, LogoutHandler logoutHandler) {
         this.accountService = accountService;
-        this.accountEventRepository = accountEventRepository;
         this.msgSrv = msgSrv;
         this.familyService = familyService;
         this.giftService = giftService;
@@ -269,12 +267,12 @@ public class UserRestController {
         Family family = optionalFamily.get();
         if (family.getAdmins().contains(currentAccount)) {
             //set members
-            Set<Account> formMembers = new HashSet<>(accountService.findByEmailsOrUsernames(form.getMembers()));
+            Set<Account> formMembers = accountService.findByEmailsOrUsernames(form.getMembers());
             Set<Account> membersToInvite = formMembers.stream().filter(account -> !family.getMembers().contains(account)).collect(Collectors.toSet());
             formMembers.removeAll(membersToInvite);
             family.setMembers(formMembers);
             //set admins
-            Set<Account> formAdmins = new HashSet<>(accountService.findByEmailsOrUsernames(form.getAdmins()));
+            Set<Account> formAdmins = accountService.findByEmailsOrUsernames(form.getAdmins());
             Set<Account> adminsToInvite = formAdmins.stream().filter(account -> !family.getAdmins().contains(account)).collect(Collectors.toSet());
             formAdmins.removeAll(adminsToInvite);
             family.setAdmins(formAdmins);
@@ -320,40 +318,47 @@ public class UserRestController {
     @RequestMapping("/confirm")
     public ResponseEntity confirmOperation(@RequestBody String token) {
         UUID uuid = UUID.fromString(token);
+        Optional<AccountEvent> eventOptional = accountService.findEvent(token);
+        if (!eventOptional.isPresent()) {
+            return new ResultData.ResultBuilder().notFound().build();
+        }
+        AccountEvent event = eventOptional.get();
         DateTime date = new DateTime(Utils.getTimeFromUUID(uuid));
         DateTime expireDate = date.plusDays(7);
         if (new DateTime().isAfter(expireDate)) {
-            return new ResultData.ResultBuilder().badReqest().message(msgSrv.getMessage("user.confirm.token.errro.time")).build();
+            accountService.removeEvent(event);
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("expired");
         }
-        AccountEvent event = accountService.findEvent(token);
-        if (event == null) {
-            return new ResultData.ResultBuilder().notFound().build();
+        if (!event.getType().equals(AccountEventType.ACCOUNT_CONFIRM) && !event.getAccount().equals(Utils.getCurrentAccount())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        Optional<Family> optionalFamily = familyService.getFamily(Utils.getCurrentAccount());
+        Optional<Family> optionalFamily;
+        HashMap<String, String> model = new HashMap<>();
         switch (event.getType()) {
             case FAMILY_MEMEBER:
+                optionalFamily = familyService.getFamily(Utils.getCurrentAccount());
                 if (optionalFamily.isPresent()) {
-                    return familyExistsResponse(optionalFamily.get());
+                    return ResponseEntity.status(HttpStatus.CONFLICT).body("family_exists");
+                }
+                familyService.addAccountToFamily(Utils.getCurrentAccount(), event.getFamily());
+                accountService.eventConfirmed(event);
+                model.put("result", "family_member");
+                return ResponseEntity.ok(model);
+            case FAMILY_ADMIN:
+                optionalFamily = familyService.getFamily(Utils.getCurrentAccount());
+                if (optionalFamily.isPresent() && optionalFamily.get() != event.getFamily()) {
+                    return ResponseEntity.status(HttpStatus.CONFLICT).body("family_exists");
                 }
                 Family family = familyService.addAccountToFamily(Utils.getCurrentAccount(), event.getFamily());
+                familyService.addAccountToFamilyAdmins(Utils.getCurrentAccount(), family);
                 accountService.eventConfirmed(event);
-                return new ResultData.ResultBuilder()
-                        .ok()
-                        .message(msgSrv.getMessage("user.confirm.family.success", new Object[]{family.getName()}, "", Utils.getCurrentLocale()))
-                        .build();
-            case FAMILY_ADMIN:
-                if (optionalFamily.isPresent() && optionalFamily.get() != event.getFamily()) {
-                    return familyExistsResponse(optionalFamily.get());
-                }
-                family = familyService.addAccountToFamily(Utils.getCurrentAccount(), event.getFamily());
-                family = familyService.addAccountToFamilyAdmins(Utils.getCurrentAccount(), family);
-                accountService.eventConfirmed(event);
-                return new ResultData.ResultBuilder()
-                        .ok()
-                        .message(msgSrv.getMessage("user.confirm.family.admin.success", new Object[]{family.getName()}, "", Utils.getCurrentLocale()))
-                        .build();
+                model.put("result", "family_admin");
+                return ResponseEntity.ok(model);
             case FAMILY_REMOVE:
                 //TODO not used
+                break;
+            case ACCOUNT_CONFIRM:
+
                 break;
         }
         return new ResultData.ResultBuilder().badReqest().build();
@@ -575,8 +580,7 @@ public class UserRestController {
         eventService.deleteUserEvents(account);
         giftService.deleteClaims(account);
         giftService.deleteUserGifts(account);
-        List<AccountEvent> accountEvents = accountEventRepository.findAllByAccount(account);
-        accountEventRepository.deleteAll(accountEvents);
+        accountService.removeAllEvents(account);
         if (logout) {
             logoutHandler.logout(requ, resp, SecurityContextHolder.getContext().getAuthentication());
         }

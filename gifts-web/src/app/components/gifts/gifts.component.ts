@@ -212,9 +212,9 @@ export class GiftsComponent implements OnInit {
   }
 
   private switchErrors(error: any) {
-    if (error.status === '404') {
+    if (error.status === 404) {
       this.alertSrv.error('error.account.notFound')
-    } else if (error.status === '409') {
+    } else if (error.status === 409) {
       this.alertSrv.error('user.family.admin.error')
     }
   }

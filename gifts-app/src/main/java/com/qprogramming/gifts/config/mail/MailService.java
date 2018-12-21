@@ -326,6 +326,9 @@ public class MailService {
                 break;
         }
         mimeMessageHelper.setText(mail.getMailContent(), true);
+        File avatarTempFile = getUserAvatar(Utils.getCurrentAccount());
+        mimeMessageHelper.addInline(USER_AVATAR_PNG, avatarTempFile);
+        addAppLogo(mimeMessageHelper);
         LOG.info("Sending confirm message to {}", mail.getMailTo());
         mailSender.send(mimeMessageHelper.getMimeMessage());
     }
@@ -337,10 +340,7 @@ public class MailService {
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
         mimeMessageHelper.setFrom(from);
         mimeMessageHelper.setTo(mail.getMailTo());
-        addAppLogo(mimeMessageHelper);
-        File avatarTempFile = getUserAvatar(Utils.getCurrentAccount());
         mail.addToModel(APPLICATION, application);
-        mimeMessageHelper.addInline(USER_AVATAR_PNG, avatarTempFile);
         return mimeMessageHelper;
     }
 

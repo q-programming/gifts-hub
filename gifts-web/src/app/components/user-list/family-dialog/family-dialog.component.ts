@@ -37,14 +37,21 @@ export class FamilyDialogComponent implements OnInit {
       this.update = true;
       //check for admins
       this.family.members.forEach((member) => {
-        member.familyAdmin = !!_.find(this.family.admins, (a) => a.id === member.id);
-        if (member.familyAdmin) {
-          this.admins.push(member.email)
-        }
-      },this);
+        this.findAndSetAdmins(member);
+      }, this);
     }
     this.newMemberCtrl = new FormControl('');
     this.nameCtrl = new FormControl(this.family.name);
+  }
+
+  private findAndSetAdmins(member) {
+    member.familyAdmin = !!_.find(this.family.admins, (a) => a.id === member.id);
+    if (member.familyAdmin) {
+      this.admins.push(member.email);
+      if (this.currentAccount.id === member.id) {
+        this.currentAccount.familyAdmin = true;
+      }
+    }
   }
 
   ngOnInit() {
@@ -54,27 +61,25 @@ export class FamilyDialogComponent implements OnInit {
     return _.filter(this.family.members, (m) => m.id !== this.currentAccount.id)
   }
 
-  commit() {
-    const form = new FamilyForm();
-    form.members = this.identifications.concat(_.map(this.family.members, (m) => m.email));
-    form.admins = this.admins;
-    form.name = this.nameCtrl.value;
-    this.dialogRef.close(form);
-  }
 
   addToInvites() {
     if (this.newMemberCtrl.valid) {
-      this.identifications.push(this.newMemberCtrl.value);
+      if (this.newMemberCtrl.value) {
+        this.identifications.push(this.newMemberCtrl.value);
+      }
       this.newMemberCtrl.setValue('');
     }
   }
 
-  addAdmin(email: string) {
-    this.admins.push(email);
+  addAdmin(member: Account) {
+    this.family.admins.push(member);
+    this.findAndSetAdmins(member);
   }
 
-  removeAdmin(email: string) {
-    _.remove(this.admins, s => s === email);
+  removeAdmin(member: Account) {
+    _.remove(this.family.admins, m => m === member.email);
+    _.remove(this.admins, s => s === member.email);
+    member.familyAdmin = false;
   }
 
   leaveFamily() {
@@ -100,5 +105,16 @@ export class FamilyDialogComponent implements OnInit {
         });
       }
     });
+  }
+
+  /**
+   * Commit any family creation or update
+   */
+  commit() {
+    const form = new FamilyForm();
+    form.members = this.identifications.concat(_.map(this.family.members, (m) => m.username));
+    form.admins = this.admins;
+    form.name = this.nameCtrl.value;
+    this.dialogRef.close(form);
   }
 }

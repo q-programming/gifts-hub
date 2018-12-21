@@ -81,6 +81,12 @@ export class ApiService {
       })
   }
 
+  /**
+   * Executes POST call to API
+   * @param path URL of API call
+   * @param body body to be passed
+   * @param customHeaders custom headers
+   */
   post(path: string, body?: any, customHeaders?: HttpHeaders): Observable<any> {
     return this.request(path, body, RequestMethod.Post, customHeaders);
   }
@@ -93,10 +99,10 @@ export class ApiService {
     return this.request(path, body, RequestMethod.Delete);
   }
 
-  private requestObject<R>(path: string, body: any, method = RequestMethod.Post, custemHeaders?: HttpHeaders): Observable<any> {
+  private requestObject<R>(path: string, body: any, method = RequestMethod.Post, customHeaders?: HttpHeaders): Observable<any> {
     path = environment.context + path;
     const req = new HttpRequest(method, path, body, {
-      headers: custemHeaders || this.headers,
+      headers: customHeaders || this.headers,
       withCredentials: true
     });
 
@@ -105,11 +111,11 @@ export class ApiService {
       .catch(error => this.checkError(error));
   }
 
-  private request(path: string, body: any, method = RequestMethod.Post, custemHeaders?: HttpHeaders): Observable<any> {
+  private request(path: string, body: any, method = RequestMethod.Post, customHeaders?: HttpHeaders): Observable<any> {
     this.progress.start();
     path = environment.context + path;
     const req = new HttpRequest(method, path, body, {
-      headers: custemHeaders || this.headers,
+      headers: customHeaders || this.headers,
       withCredentials: true
     });
 
@@ -139,5 +145,4 @@ export class ApiService {
     }
     throw error;
   }
-
 }

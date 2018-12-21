@@ -1,5 +1,5 @@
 package com.qprogramming.gifts.account.event;
 
 public enum AccountEventType {
-    FAMILY_MEMEBER, FAMILY_ADMIN, FAMILY_REMOVE,GIFT_REMOVE
+    FAMILY_MEMEBER, FAMILY_ADMIN, FAMILY_REMOVE,GIFT_REMOVE,ACCOUNT_CONFIRM
 }

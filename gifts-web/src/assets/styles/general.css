@@ -1631,6 +1631,9 @@
 .text-center {
   text-align: center !important
 }
+.text-v-middle{
+  vertical-align: middle;
+}
 
 @media (min-width: 576px) {
   .text-sm-left {

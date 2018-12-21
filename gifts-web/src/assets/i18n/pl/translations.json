@@ -277,16 +277,14 @@
     "confirm": {
       "family": {
         "admin": {
-          "success": "Zostałeś administratorem rodziny {0}"
+          "success": "Zostałeś administratorem rodziny"
         },
-        "exists": "Należysz już do rodziny {0} i nie możesz dołączyć do innej",
-        "success": "Dołączyłeś do rodziny {0}"
+        "exists": "Należysz już do rodziny i nie możesz dołączyć do innej",
+        "success": "Dołączyłeś do rodziny"
       },
       "token": {
         "error": {
-          "missing": "Zły lub brakujący token"
-        },
-        "errro": {
+          "missing": "Zły lub brakujący token",
           "time": "Token wygasł"
         },
         "tryagain": "Zaloguj się i spróbuj proszę jeszcze raz"
@@ -310,8 +308,10 @@
         }
       },
       "admin": {
-        "0": "Administrator rodziny {0}",
-        "error": "Aby wykonać tą operację musisz być administratorem rodziny"
+        "add": "Ustaw jako administratora rodziny",
+        "error": "Aby wykonać tą operację musisz być administratorem rodziny",
+        "remove": "Usuń uprawnienia administratora rodziny temu członkowi rodziny",
+        "text": "Admin"
       },
       "administrator": "Administrator rodziny",
       "admins": "Administratorzy",
@@ -352,13 +352,13 @@
         "error": "Należysz już do jednej rodziny i nie możesz stworzyć nowej."
       },
       "invite": {
-        "0": "Zaproszenie do rodziny {0}",
         "mailError": "Wystąpił bład poczas wysyłania zaproszenia. Proszę skontaktować się z administratorem.",
-        "new": "Zaproś do rodziny wpisując email"
+        "new": "Zaproś do rodziny wpisując email lub login",
+        "text": "Zaproś do rodziny"
       },
       "kid": "Dziecko",
       "leave": {
-        "confirm": "Czy jesteś pewien, że chcesz opuścić twoją obecną rodzinę? Aby dołaczyć do niej ponownie, będziesz musiał poprosić jej administratora aby Cię zaprosił.",
+        "confirm": "Czy jesteś pewien, że chcesz opuścić twoją obecną rodzinę?<br>Aby dołaczyć do niej ponownie, będziesz musiał poprosić jej administratora aby Cię zaprosił.",
         "text": "Opuść rodzinę"
       },
       "left": "Opuściłeś rodzinę",

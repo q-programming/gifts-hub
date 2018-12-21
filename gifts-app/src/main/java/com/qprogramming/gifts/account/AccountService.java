@@ -341,7 +341,9 @@ public class AccountService implements UserDetailsService {
             accounts.addAll(_accountRepository.findByUsernameIn(id));
             id.removeAll(accounts.stream().map(Account::getEmail).collect(Collectors.toSet()));
             id.removeAll(accounts.stream().map(Account::getUsername).collect(Collectors.toSet()));
-            accounts.addAll(id.stream().filter(s -> VALID_EMAIL_ADDRESS_REGEX.matcher(s).find()).map(Account::new).collect(Collectors.toSet()));
+            if (!id.isEmpty()) {
+                accounts.addAll(id.stream().filter(s -> VALID_EMAIL_ADDRESS_REGEX.matcher(s).find()).map(Account::new).collect(Collectors.toSet()));
+            }
         }
         return accounts;
     }
@@ -363,7 +365,7 @@ public class AccountService implements UserDetailsService {
 
     }
 
-    public AccountEvent findEvent(String token) {
+    public Optional<AccountEvent> findEvent(String token) {
         return _accountEventRepository.findByToken(token);
     }
 
@@ -380,5 +382,25 @@ public class AccountService implements UserDetailsService {
     public List<Account> findUsers() {
         return sortedAccounts(_accountRepository.findByTypeNot(AccountType.KID));
 
+    }
+
+    /**
+     * Removes all accounts events for passed account
+     * Used while deleting account
+     *
+     * @param account account for which events will be deleted
+     */
+    public void removeAllEvents(Account account) {
+        List<AccountEvent> accountEvents = _accountEventRepository.findAllByAccount(account);
+        _accountEventRepository.deleteAll(accountEvents);
+    }
+
+    /**
+     * Remove AccountEvent ( for example after token was used)
+     *
+     * @param event AccountEvent to be removed
+     */
+    public void removeEvent(AccountEvent event) {
+        _accountEventRepository.delete(event);
     }
 }
