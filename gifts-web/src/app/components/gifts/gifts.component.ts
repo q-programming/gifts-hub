@@ -14,6 +14,7 @@ import {MatDialog} from "@angular/material";
 import {GiftDialogComponent} from "./gift-dialog/gift-dialog.component";
 import {TranslateService} from "@ngx-translate/core";
 import {CategoryOption} from "@model/Category";
+import {animate, state, style, transition, trigger} from "@angular/animations";
 
 @Component({
   selector: 'gifts-list',
