@@ -16,6 +16,8 @@ import com.qprogramming.gifts.account.family.KidForm;
 import com.qprogramming.gifts.config.mail.Mail;
 import com.qprogramming.gifts.config.mail.MailService;
 import com.qprogramming.gifts.exceptions.AccountNotFoundException;
+import com.qprogramming.gifts.exceptions.FamilyNotAdminException;
+import com.qprogramming.gifts.exceptions.FamilyNotFoundException;
 import com.qprogramming.gifts.gift.Gift;
 import com.qprogramming.gifts.gift.GiftService;
 import com.qprogramming.gifts.messages.MessagesService;
@@ -43,6 +45,8 @@ import java.io.InputStream;
 import java.util.*;
 
 import static com.qprogramming.gifts.TestUtil.*;
+import static com.qprogramming.gifts.account.event.AccountEventType.ACCOUNT_CONFIRM;
+import static com.qprogramming.gifts.account.event.AccountEventType.FAMILY_ALLOW_FAMILY;
 import static org.junit.Assert.*;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.Mockito.*;
@@ -68,6 +72,10 @@ public class UserRestControllerTest extends MockedAccountTestBase {
     private static final String API_USER_CONFIRM = "/api/account/confirm";
     private static final String API_USER_FETCH = "/api/account/userList";
     private static final String API_USER = "/api/account";
+    private static final String API_ALLOWED_FAMILY_CONFIRM_FAMILY = API_USER + "/allowed/family/confirm-family";
+    private static final String API_ALLOWED_FAMILY_REMOVE_FAMILY = API_USER + "/allowed/family/remove-family";
+    private static final String API_ALLOWED_ACCOUNT_ADD = API_USER + "/allowed/account/add";
+    private static final String API_ALLOWED_ACCOUNT_REMOVE = API_USER + "/allowed/account/remove";
     private MockMvc userRestCtrl;
     @Mock
     private AccountService accSrvMock;
@@ -301,6 +309,7 @@ public class UserRestControllerTest extends MockedAccountTestBase {
         FamilyForm form = new FamilyForm();
         Family family = new Family();
         family.setId(1L);
+        when(familyServiceMock.getFamilyAsFamilyAdmin()).thenThrow(FamilyNotFoundException.class);
         userRestCtrl.perform(put(API_USER_FAMILY_UPDATE)
                 .contentType(APPLICATION_JSON_UTF8)
                 .content(convertObjectToJsonBytes(form))).andExpect(status().isNotFound());
@@ -331,7 +340,7 @@ public class UserRestControllerTest extends MockedAccountTestBase {
         dbAdmins.add(testAccount);
         dbAdmins.add(memberAndAdmin);
         when(accSrvMock.findByEmailsOrUsernames(members)).thenReturn(dbMembers).thenReturn(dbAdmins);
-        when(familyServiceMock.getFamily(testAccount)).thenReturn(Optional.of(family));
+        when(familyServiceMock.getFamilyAsFamilyAdmin()).thenReturn(family);
         when(familyServiceMock.update(family)).then(returnsFirstArg());
         MvcResult mvcResult = userRestCtrl.perform(put(API_USER_FAMILY_UPDATE)
                 .contentType(APPLICATION_JSON_UTF8)
@@ -349,7 +358,7 @@ public class UserRestControllerTest extends MockedAccountTestBase {
         Family family = new Family();
         family.setId(1L);
         family.getMembers().add(testAccount);
-        when(familyServiceMock.getFamily(testAccount)).thenReturn(Optional.of(family));
+        when(familyServiceMock.getFamilyAsFamilyAdmin()).thenThrow(FamilyNotAdminException.class);
         userRestCtrl.perform(put(API_USER_FAMILY_UPDATE)
                 .contentType(APPLICATION_JSON_UTF8)
                 .content(convertObjectToJsonBytes(form))).andExpect(status().isForbidden());
@@ -380,6 +389,7 @@ public class UserRestControllerTest extends MockedAccountTestBase {
         form.setName("John");
         form.setSurname("Doe");
         form.setUsername("john");
+        when(familyServiceMock.getFamilyAsFamilyAdmin()).thenThrow(FamilyNotFoundException.class);
         userRestCtrl.perform(post(API_USER_KID_ADD)
                 .contentType(APPLICATION_JSON_UTF8)
                 .content(convertObjectToJsonBytes(form))).andExpect(status().is4xxClientError());
@@ -390,7 +400,7 @@ public class UserRestControllerTest extends MockedAccountTestBase {
         Family family = new Family();
         family.setId(1L);
         family.getMembers().add(testAccount);
-        when(familyServiceMock.getFamily(testAccount)).thenReturn(Optional.of(family));
+        when(familyServiceMock.getFamilyAsFamilyAdmin()).thenThrow(FamilyNotAdminException.class);
         KidForm form = new KidForm();
         form.setName("John");
         form.setSurname("Doe");
@@ -428,7 +438,7 @@ public class UserRestControllerTest extends MockedAccountTestBase {
             family.setId(1L);
             family.getMembers().add(testAccount);
             family.getAdmins().add(testAccount);
-            when(familyServiceMock.getFamily(testAccount)).thenReturn(Optional.of(family));
+            when(familyServiceMock.getFamilyAsFamilyAdmin()).thenReturn(family);
             Account kid = form.createAccount();
             kid.setId(USER_RANDOM_ID + (Math.random() * 100));
             kid.setType(AccountType.KID);
@@ -470,6 +480,7 @@ public class UserRestControllerTest extends MockedAccountTestBase {
         form.setSurname("surname");
         form.setUsername("username");
         form.setId(KID_ID);
+        when(familyServiceMock.getFamilyAsFamilyAdmin()).thenThrow(FamilyNotFoundException.class);
         userRestCtrl.perform(post(API_USER_KID_UPDATE)
                 .contentType(APPLICATION_JSON_UTF8)
                 .content(convertObjectToJsonBytes(form))).andExpect(status().is4xxClientError());
@@ -485,7 +496,7 @@ public class UserRestControllerTest extends MockedAccountTestBase {
         Family family = new Family();
         family.setId(1L);
         family.getMembers().add(testAccount);
-        when(familyServiceMock.getFamily(testAccount)).thenReturn(Optional.of(family));
+        when(familyServiceMock.getFamilyAsFamilyAdmin()).thenThrow(FamilyNotAdminException.class);
         userRestCtrl.perform(post(API_USER_KID_UPDATE)
                 .contentType(APPLICATION_JSON_UTF8)
                 .content(convertObjectToJsonBytes(form))).andExpect(status().is4xxClientError());
@@ -508,7 +519,7 @@ public class UserRestControllerTest extends MockedAccountTestBase {
             family.setId(1L);
             family.getMembers().add(testAccount);
             family.getAdmins().add(testAccount);
-            when(familyServiceMock.getFamily(testAccount)).thenReturn(Optional.of(family));
+            when(familyServiceMock.getFamilyAsFamilyAdmin()).thenReturn(family);
             when(accSrvMock.findById(KID_ID)).thenReturn(kidAccount);
             MvcResult mvcResult = userRestCtrl.perform(post(API_USER_KID_UPDATE)
                     .contentType(APPLICATION_JSON_UTF8)
@@ -732,5 +743,134 @@ public class UserRestControllerTest extends MockedAccountTestBase {
         assertTrue(result.contains(testAccount));
     }
 
+    @Test
+    public void addAccountToAllowed() throws Exception {
+        Account account = createAdminAccount();
+        when(accSrvMock.findById(account.getId())).thenReturn(account);
+        when(accSrvMock.getCurrentAccount()).thenReturn(testAccount);
+        userRestCtrl.perform(put(API_ALLOWED_ACCOUNT_ADD).content(account.getId()))
+                .andExpect(status().isOk());
+        verify(accSrvMock, times(1)).update(testAccount);
+        assertTrue(testAccount.getAllowed().contains(account.getId()));
+    }
 
+    @Test
+    public void addAccountToAllowedNotFound() throws Exception {
+        Account account = createAdminAccount();
+        when(accSrvMock.findById(account.getId())).thenThrow(AccountNotFoundException.class);
+        when(accSrvMock.getCurrentAccount()).thenReturn(testAccount);
+        userRestCtrl.perform(put(API_ALLOWED_ACCOUNT_ADD).content(account.getId()))
+                .andExpect(status().isNotFound());
+        assertFalse(testAccount.getAllowed().contains(account.getId()));
+    }
+
+    @Test
+    public void removeAccountFromAllowedNotFound() throws Exception {
+        testAccount.getAllowed().add(ADMIN_RANDOM_ID);
+        when(accSrvMock.findById(ADMIN_RANDOM_ID)).thenThrow(AccountNotFoundException.class);
+        when(accSrvMock.getCurrentAccount()).thenReturn(testAccount);
+        userRestCtrl.perform(delete(API_ALLOWED_ACCOUNT_REMOVE).content(ADMIN_RANDOM_ID))
+                .andExpect(status().isNotFound());
+        assertTrue(testAccount.getAllowed().contains(ADMIN_RANDOM_ID));
+    }
+
+    @Test
+    public void removeAccountFromAllowed() throws Exception {
+        Account account = createAdminAccount();
+        testAccount.getAllowed().add(account.getId());
+        when(accSrvMock.findById(account.getId())).thenReturn(account);
+        when(accSrvMock.getCurrentAccount()).thenReturn(testAccount);
+        userRestCtrl.perform(delete(API_ALLOWED_ACCOUNT_REMOVE).content(account.getId()))
+                .andExpect(status().isOk());
+        verify(accSrvMock, times(1)).update(testAccount);
+        assertFalse(testAccount.getAllowed().contains(account.getId()));
+    }
+
+    @Test
+    public void confirmAddFamilyToAllowedNotFound() throws Exception {
+        String token = Generators.timeBasedGenerator().generate().toString();
+        AccountEvent event = new AccountEvent();
+        event.setType(FAMILY_ALLOW_FAMILY);
+        event.setAccount(testAccount);
+        when(accSrvMock.findEvent(token)).thenReturn(Optional.of(event));
+        when(familyServiceMock.getFamilyAsFamilyAdmin()).thenThrow(FamilyNotFoundException.class);
+        userRestCtrl.perform(put(API_USER_CONFIRM)
+                .contentType(APPLICATION_JSON_UTF8)
+                .content(token))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void confirmAddFamilyToAllowedNotAdmin() throws Exception {
+        String token = Generators.timeBasedGenerator().generate().toString();
+        AccountEvent event = new AccountEvent();
+        event.setAccount(testAccount);
+        event.setType(FAMILY_ALLOW_FAMILY);
+        when(accSrvMock.findEvent(token)).thenReturn(Optional.of(event));
+        when(familyServiceMock.getFamilyAsFamilyAdmin()).thenThrow(FamilyNotAdminException.class);
+        userRestCtrl.perform(put(API_USER_CONFIRM)
+                .contentType(APPLICATION_JSON_UTF8)
+                .content(token))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void confirmAddFamilyToAllowedNotFoundEvent() throws Exception {
+        String token = Generators.timeBasedGenerator().generate().toString();
+        when(accSrvMock.findEvent(anyString())).thenReturn(Optional.empty());
+        Family family = new Family();
+        when(familyServiceMock.getFamilyAsFamilyAdmin()).thenReturn(family);
+        when(familyServiceMock.getFamilyById(1L)).thenReturn(Optional.empty());
+        userRestCtrl.perform(put(API_USER_CONFIRM)
+                .contentType(APPLICATION_JSON_UTF8)
+                .content(token))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void confirmAddFamilyToAllowed() throws Exception {
+        Account adminAccount = createAdminAccount();
+        Account normalAccount = createAccount("John", "Doe");
+        Family targetFamily = new Family();
+        targetFamily.getMembers().add(testAccount);
+        targetFamily.getMembers().add(normalAccount);
+        Family sourceFamily = new Family();
+        sourceFamily.getMembers().add(adminAccount);
+        String token = Generators.timeBasedGenerator().generate().toString();
+        AccountEvent event = new AccountEvent();
+        event.setAccount(testAccount);
+        event.setFamily(sourceFamily);
+        event.setType(FAMILY_ALLOW_FAMILY);
+        when(accSrvMock.findEvent(token)).thenReturn(Optional.of(event));
+        when(familyServiceMock.getFamilyAsFamilyAdmin()).thenReturn(targetFamily);
+        doCallRealMethod().when(accSrvMock).addAllowedToFamily(any(Family.class), anySet());
+        userRestCtrl.perform(put(API_USER_CONFIRM)
+                .contentType(APPLICATION_JSON_UTF8)
+                .content(token))
+                .andExpect(status().isOk());
+        verify(familyServiceMock, times(2)).update(any());
+        assertTrue(testAccount.getAllowed().contains(adminAccount.getId()));
+        assertTrue(adminAccount.getAllowed().contains(testAccount.getId()));
+    }
+
+    @Test
+    public void removeFamilyFromAllowed() throws Exception {
+        Account adminAccount = createAdminAccount();
+        Account normalAccount = createAccount("John", "Doe");
+        Family targetFamily = new Family();
+        targetFamily.getMembers().add(testAccount);
+        targetFamily.getMembers().add(normalAccount);
+        Family sourceFamily = new Family();
+        sourceFamily.getMembers().add(adminAccount);
+        when(familyServiceMock.getFamilyAsFamilyAdmin()).thenReturn(targetFamily);
+        when(familyServiceMock.getFamilyById(1L)).thenReturn(Optional.of(sourceFamily));
+        doCallRealMethod().when(accSrvMock).addAllowedToFamily(any(Family.class), anySet());
+        userRestCtrl.perform(delete(API_ALLOWED_FAMILY_REMOVE_FAMILY)
+                .contentType(APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(1L)))
+                .andExpect(status().isOk());
+        verify(familyServiceMock, times(2)).update(any());
+        assertFalse(testAccount.getAllowed().contains(adminAccount.getId()));
+        assertFalse(adminAccount.getAllowed().contains(testAccount.getId()));
+    }
 }

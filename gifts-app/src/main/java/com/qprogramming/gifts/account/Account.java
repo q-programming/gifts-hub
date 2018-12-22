@@ -61,6 +61,9 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
     @Column(columnDefinition = "boolean default false")
     private boolean enabled = false;
 
+    @ElementCollection
+    private Set<String> allowed;
+
     private String fullname;
 
     private Boolean familyAdmin = false;
@@ -321,5 +324,16 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
 
     public void setUuid(String uuid) {
         this.uuid = uuid;
+    }
+
+    public Set<String> getAllowed() {
+        if (Collections.isEmpty(allowed)) {
+            allowed = new HashSet<>();
+        }
+        return allowed;
+    }
+
+    public void setAllowed(Set<String> allowed) {
+        this.allowed = allowed;
     }
 }

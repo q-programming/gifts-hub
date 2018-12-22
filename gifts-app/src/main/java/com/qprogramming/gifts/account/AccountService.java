@@ -13,6 +13,7 @@ import com.qprogramming.gifts.account.family.FamilyService;
 import com.qprogramming.gifts.config.property.PropertyService;
 import com.qprogramming.gifts.exceptions.AccountNotFoundException;
 import com.qprogramming.gifts.gift.GiftService;
+import com.qprogramming.gifts.support.Utils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -402,5 +403,26 @@ public class AccountService implements UserDetailsService {
      */
     public void removeEvent(AccountEvent event) {
         _accountEventRepository.delete(event);
+    }
+
+    public Account getCurrentAccount() throws AccountNotFoundException {
+        return findById(Utils.getCurrentAccountId());
+    }
+
+    public Set<Account> update(Set<Account> members) {
+        return new HashSet<>(_accountRepository.saveAll(members));
+    }
+
+
+    public void addAllowedToFamily(Family target, Set<Account> accounts) {
+        Set<String> ids = accounts.stream().map(Account::getId).collect(Collectors.toSet());
+        target.getMembers().forEach(account -> account.getAllowed().addAll(ids));
+        update(target.getMembers());
+    }
+
+    public void removeAllowedFromFamily(Family target, Set<Account> accounts) {
+        Set<String> ids = accounts.stream().map(Account::getId).collect(Collectors.toSet());
+        target.getMembers().forEach(account -> account.getAllowed().removeAll(ids));
+        update(target.getMembers());
     }
 }

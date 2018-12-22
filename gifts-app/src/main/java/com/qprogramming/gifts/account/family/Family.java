@@ -1,6 +1,7 @@
 package com.qprogramming.gifts.account.family;
 
 import com.qprogramming.gifts.account.Account;
+import io.jsonwebtoken.lang.Collections;
 import org.springframework.util.CollectionUtils;
 
 import javax.persistence.*;
@@ -26,6 +27,12 @@ public class Family {
     @OneToMany
     @JoinTable(name = "family_admins")
     private Set<Account> admins;
+
+    @ElementCollection
+    private Set<String> allowedAccounts;
+
+    @ElementCollection
+    private Set<Long> allowedFamilies;
 
 
     public Long getId() {
@@ -64,6 +71,28 @@ public class Family {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Set<String> getAllowedAccounts() {
+        if (Collections.isEmpty(allowedAccounts)) {
+            allowedAccounts = new HashSet<>();
+        }
+        return allowedAccounts;
+    }
+
+    public void setAllowedAccounts(Set<String> allowedAccounts) {
+        this.allowedAccounts = allowedAccounts;
+    }
+
+    public Set<Long> getAllowedFamilies() {
+        if (Collections.isEmpty(allowedFamilies)) {
+            allowedFamilies = new HashSet<>();
+        }
+        return allowedFamilies;
+    }
+
+    public void setAllowedFamilies(Set<Long> allowedFamilies) {
+        this.allowedFamilies = allowedFamilies;
     }
 
     @Override

@@ -5,7 +5,6 @@ import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.account.AccountType;
 import com.qprogramming.gifts.account.RegisterForm;
 import com.qprogramming.gifts.account.event.AccountEvent;
-import com.qprogramming.gifts.account.event.AccountEventRepository;
 import com.qprogramming.gifts.account.event.AccountEventType;
 import com.qprogramming.gifts.account.family.Family;
 import com.qprogramming.gifts.account.family.FamilyForm;
@@ -14,6 +13,8 @@ import com.qprogramming.gifts.account.family.KidForm;
 import com.qprogramming.gifts.config.mail.Mail;
 import com.qprogramming.gifts.config.mail.MailService;
 import com.qprogramming.gifts.exceptions.AccountNotFoundException;
+import com.qprogramming.gifts.exceptions.FamilyNotAdminException;
+import com.qprogramming.gifts.exceptions.FamilyNotFoundException;
 import com.qprogramming.gifts.gift.GiftService;
 import com.qprogramming.gifts.login.token.TokenBasedAuthentication;
 import com.qprogramming.gifts.messages.MessagesService;
@@ -46,6 +47,8 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import static com.qprogramming.gifts.exceptions.AccountNotFoundException.ACCOUNT_WITH_ID_WAS_NOT_FOUND;
 
 @RestController
 @RequestMapping("/api/account")
@@ -194,9 +197,7 @@ public class UserRestController {
     }
 
     private void addGiftCounts(Set<Account> list) {
-        list.forEach(account -> {
-            account.setGiftsCount(giftService.countAllByUser(account.getId()));
-        });
+        list.forEach(account -> account.setGiftsCount(giftService.countAllByUser(account.getId())));
     }
 
     private void markAdmins(Family family) {
@@ -259,13 +260,8 @@ public class UserRestController {
     @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/family-update", method = RequestMethod.PUT)
     public ResponseEntity<?> updateFamily(@RequestBody FamilyForm form) {
-        Account currentAccount = Utils.getCurrentAccount();
-        Optional<Family> optionalFamily = familyService.getFamily(currentAccount);
-        if (!optionalFamily.isPresent()) {
-            return ResponseEntity.notFound().build();
-        }
-        Family family = optionalFamily.get();
-        if (family.getAdmins().contains(currentAccount)) {
+        try {
+            Family family = familyService.getFamilyAsFamilyAdmin();
             //set members
             Set<Account> formMembers = accountService.findByEmailsOrUsernames(form.getMembers());
             Set<Account> membersToInvite = formMembers.stream().filter(account -> !family.getMembers().contains(account)).collect(Collectors.toSet());
@@ -295,8 +291,11 @@ public class UserRestController {
                 model.put("result", "ok");
             }
             return ResponseEntity.ok(model);
+        } catch (FamilyNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (FamilyNotAdminException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("family_admin");
         }
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
     @Transactional
@@ -332,36 +331,63 @@ public class UserRestController {
         if (!event.getType().equals(AccountEventType.ACCOUNT_CONFIRM) && !event.getAccount().equals(Utils.getCurrentAccount())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        Optional<Family> optionalFamily;
-        HashMap<String, String> model = new HashMap<>();
         switch (event.getType()) {
             case FAMILY_MEMEBER:
-                optionalFamily = familyService.getFamily(Utils.getCurrentAccount());
-                if (optionalFamily.isPresent()) {
-                    return ResponseEntity.status(HttpStatus.CONFLICT).body("family_exists");
-                }
-                familyService.addAccountToFamily(Utils.getCurrentAccount(), event.getFamily());
-                accountService.eventConfirmed(event);
-                model.put("result", "family_member");
-                return ResponseEntity.ok(model);
+                return handleBecomeFamilyMember(event);
             case FAMILY_ADMIN:
-                optionalFamily = familyService.getFamily(Utils.getCurrentAccount());
-                if (optionalFamily.isPresent() && optionalFamily.get() != event.getFamily()) {
-                    return ResponseEntity.status(HttpStatus.CONFLICT).body("family_exists");
-                }
-                Family family = familyService.addAccountToFamily(Utils.getCurrentAccount(), event.getFamily());
-                familyService.addAccountToFamilyAdmins(Utils.getCurrentAccount(), family);
-                accountService.eventConfirmed(event);
-                model.put("result", "family_admin");
-                return ResponseEntity.ok(model);
-            case FAMILY_REMOVE:
-                //TODO not used
-                break;
+                return handleBecomeFamilyAdmin(event);
+            case FAMILY_ALLOW_FAMILY:
+                return handleConfirmAllowFamily(event);
             case ACCOUNT_CONFIRM:
-
                 break;
         }
         return new ResultData.ResultBuilder().badReqest().build();
+    }
+
+    private ResponseEntity handleConfirmAllowFamily(AccountEvent event) {
+        try {
+            Family userFamily = familyService.getFamilyAsFamilyAdmin();
+            if (event.getFamily() == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+            Family targetFamily = event.getFamily();
+            targetFamily.getAllowedFamilies().add(userFamily.getId());
+            userFamily.getAllowedFamilies().add(targetFamily.getId());
+            accountService.addAllowedToFamily(userFamily, targetFamily.getMembers());
+            accountService.addAllowedToFamily(targetFamily, userFamily.getMembers());
+            familyService.update(userFamily);
+            familyService.update(targetFamily);
+            return ResponseEntity.ok().build();
+        } catch (FamilyNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (FamilyNotAdminException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("family_admin");
+        }
+    }
+
+    private ResponseEntity handleBecomeFamilyAdmin(AccountEvent event) {
+        HashMap<String, String> model = new HashMap<>();
+        Optional<Family> optionalFamily = familyService.getFamily(Utils.getCurrentAccount());
+        if (optionalFamily.isPresent() && optionalFamily.get() != event.getFamily()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("family_exists");
+        }
+        Family family = familyService.addAccountToFamily(Utils.getCurrentAccount(), event.getFamily());
+        familyService.addAccountToFamilyAdmins(Utils.getCurrentAccount(), family);
+        accountService.eventConfirmed(event);
+        model.put("result", "family_admin");
+        return ResponseEntity.ok(model);
+    }
+
+    private ResponseEntity handleBecomeFamilyMember(AccountEvent event) {
+        HashMap<String, String> model = new HashMap<>();
+        Optional<Family> optionalFamily = familyService.getFamily(Utils.getCurrentAccount());
+        if (optionalFamily.isPresent()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("family_exists");
+        }
+        familyService.addAccountToFamily(Utils.getCurrentAccount(), event.getFamily());
+        accountService.eventConfirmed(event);
+        model.put("result", "family_member");
+        return ResponseEntity.ok(model);
     }
 
 
@@ -400,59 +426,58 @@ public class UserRestController {
         if (optionalAccount.isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("username");
         }
-        Account currentAccount = Utils.getCurrentAccount();
-        Optional<Family> optionalFamily = familyService.getFamily(currentAccount);
-        if (!optionalFamily.isPresent()) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("family");
+        try {
+            Family family = familyService.getFamilyAsFamilyAdmin();
+            Account kidAccount = form.createAccount();
+            kidAccount = accountService.createKidAccount(kidAccount);
+            family.getMembers().add(kidAccount);
+            familyService.update(family);
+            if (StringUtils.isNotBlank(form.getAvatar())) {
+                byte[] data = Base64.decodeBase64(form.getAvatar());
+                accountService.updateAvatar(kidAccount, data);
+            }
+            return ResponseEntity.ok(kidAccount);
+        } catch (FamilyNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (FamilyNotAdminException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("family_admin");
         }
-        Family family = optionalFamily.get();
-        if (!family.getAdmins().contains(currentAccount)) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("family_admin");
-        }
-        Account kidAccount = form.createAccount();
-        kidAccount = accountService.createKidAccount(kidAccount);
-        family.getMembers().add(kidAccount);
-        familyService.update(family);
-        if (StringUtils.isNotBlank(form.getAvatar())) {
-            byte[] data = Base64.decodeBase64(form.getAvatar());
-            accountService.updateAvatar(kidAccount, data);
-        }
-        return ResponseEntity.ok(kidAccount);
+
     }
 
     @Transactional
     @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping("/kid-update")
     public ResponseEntity<?> updateKid(@RequestBody @Valid KidForm form) {
-        Account currentAccount = Utils.getCurrentAccount();
-        Optional<Family> optionalFamily = familyService.getFamily(currentAccount);
-        if (!optionalFamily.isPresent()) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("family");
-        }
-        Family family = optionalFamily.get();
-        if (!family.getAdmins().contains(currentAccount)) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("family_admin");
-        }
-        Account kidAccount;
         try {
+            Family family = familyService.getFamilyAsFamilyAdmin();
+            Account kidAccount;
             kidAccount = accountService.findById(form.getId());
+            if (!family.getMembers().contains(kidAccount)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("family_admin");
+            }
+            if (StringUtils.isNotBlank(form.getName())) {
+                kidAccount.setName(form.getName());
+            }
+            if (StringUtils.isNotBlank(form.getSurname())) {
+                kidAccount.setSurname(form.getSurname());
+            }
+            kidAccount.setPublicList(form.getPublicList());
+            accountService.update(kidAccount);
+            if (StringUtils.isNotBlank(form.getAvatar())) {
+                byte[] data = Base64.decodeBase64(form.getAvatar());
+                accountService.updateAvatar(kidAccount, data);
+            }
+            return ResponseEntity.ok(kidAccount);
         } catch (AccountNotFoundException e) {
             LOG.error("Unable to find KID account with id {}", form.getId());
             return ResponseEntity.notFound().build();
+        } catch (FamilyNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (FamilyNotAdminException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("family_admin");
         }
-        if (StringUtils.isNotBlank(form.getName())) {
-            kidAccount.setName(form.getName());
-        }
-        if (StringUtils.isNotBlank(form.getSurname())) {
-            kidAccount.setSurname(form.getSurname());
-        }
-        kidAccount.setPublicList(form.getPublicList());
-        accountService.update(kidAccount);
-        if (StringUtils.isNotBlank(form.getAvatar())) {
-            byte[] data = Base64.decodeBase64(form.getAvatar());
-            accountService.updateAvatar(kidAccount, data);
-        }
-        return ResponseEntity.ok(kidAccount);
+
     }
 
 
@@ -675,6 +700,106 @@ public class UserRestController {
         return ResponseEntity.ok(model);
 //        String message = msgSrv.getMessage("gift.share.success", new Object[]{StringUtils.join(emailLists, ", ")}, "", Utils.getCurrentLocale());
 //        return new ResultData.ResultBuilder().ok().message(message).build();
+    }
+
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @RequestMapping(value = "/allowed/account/add", method = RequestMethod.PUT)
+    public ResponseEntity addAccountToAllowed(@RequestBody String accountID) {
+        try {
+            Account account = accountService.findById(accountID);
+            Account currentAccount = accountService.getCurrentAccount();
+            currentAccount.getAllowed().add(account.getId());
+            accountService.update(currentAccount);
+            //TODO notify via email
+            return ResponseEntity.ok().build();
+        } catch (AccountNotFoundException e) {
+            LOG.error(ACCOUNT_WITH_ID_WAS_NOT_FOUND, Utils.getCurrentAccountId());
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @RequestMapping(value = "/allowed/account/remove", method = RequestMethod.DELETE)
+    public ResponseEntity removeAccountToAllowed(@RequestBody String accountID) {
+        try {
+            Account account = accountService.findById(accountID);
+            Account currentAccount = accountService.getCurrentAccount();
+            currentAccount.getAllowed().remove(account.getId());
+            accountService.update(currentAccount);
+            //TODO notify via email
+            return ResponseEntity.ok().build();
+        } catch (AccountNotFoundException e) {
+            LOG.error(ACCOUNT_WITH_ID_WAS_NOT_FOUND, Utils.getCurrentAccountId());
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @RequestMapping(value = "/allowed/family/add-account", method = RequestMethod.PUT)
+    public ResponseEntity addAccountToFamilyAllowed(@RequestBody String accountID) {
+        try {
+            Family userFamily = familyService.getFamilyAsFamilyAdmin();
+            Account targetAccount = accountService.findById(accountID);
+            userFamily.getAllowedAccounts().add(accountID);
+            accountService.addAllowedToFamily(userFamily, Collections.singleton(targetAccount));
+            familyService.update(userFamily);
+            //TODO notify target account
+            return ResponseEntity.ok().build();
+        } catch (AccountNotFoundException e) {
+            LOG.error(ACCOUNT_WITH_ID_WAS_NOT_FOUND, accountID);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (FamilyNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (FamilyNotAdminException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("family_admin");
+        }
+    }
+
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @RequestMapping(value = "/allowed/family/remove-account", method = RequestMethod.DELETE)
+    public ResponseEntity removeAccountFromFamilyAllowed(@RequestBody String accountID) {
+        try {
+            Family userFamily = familyService.getFamilyAsFamilyAdmin();
+            Account targetAccount = accountService.findById(accountID);
+            userFamily.getAllowedAccounts().remove(accountID);
+            accountService.removeAllowedFromFamily(userFamily, Collections.singleton(targetAccount));
+            familyService.update(userFamily);
+            //TODO notify target account
+            return ResponseEntity.ok().build();
+        } catch (AccountNotFoundException e) {
+            LOG.error(ACCOUNT_WITH_ID_WAS_NOT_FOUND, accountID);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (FamilyNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (FamilyNotAdminException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("family_admin");
+        }
+    }
+
+    @Transactional
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @RequestMapping(value = "/allowed/family/remove-family", method = RequestMethod.DELETE)
+    public ResponseEntity removeFamilyFromAllowed(@RequestBody Long targetFamilyID) {
+        try {
+            Family userFamily = familyService.getFamilyAsFamilyAdmin();
+            Optional<Family> optionalTargetFamily = familyService.getFamilyById(targetFamilyID);
+            if (!optionalTargetFamily.isPresent()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+            Family targetFamily = optionalTargetFamily.get();
+            targetFamily.getAllowedFamilies().remove(userFamily.getId());
+            userFamily.getAllowedFamilies().remove(targetFamily.getId());
+            accountService.removeAllowedFromFamily(userFamily, targetFamily.getMembers());
+            accountService.removeAllowedFromFamily(targetFamily, userFamily.getMembers());
+            familyService.update(userFamily);
+            familyService.update(targetFamily);
+            return ResponseEntity.ok().build();
+        } catch (FamilyNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (FamilyNotAdminException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("family_admin");
+        }
     }
 
     //TODO delete afterwards

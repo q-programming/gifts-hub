@@ -6,9 +6,13 @@ import com.qprogramming.gifts.account.AccountType;
 import com.qprogramming.gifts.account.event.AccountEvent;
 import com.qprogramming.gifts.account.event.AccountEventRepository;
 import com.qprogramming.gifts.account.event.AccountEventType;
+import com.qprogramming.gifts.exceptions.FamilyNotAdminException;
+import com.qprogramming.gifts.exceptions.FamilyNotFoundException;
 import com.qprogramming.gifts.support.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -131,6 +135,30 @@ public class FamilyService {
      */
     public Optional<Family> getFamily(Account account) {
         return familyRepository.findByMembersContaining(account);
+    }
+
+    public Optional<Family> getFamilyById(Long id) {
+        return familyRepository.findById(id);
+    }
+
+    /**
+     * Returns currently logged in user family and checks if that user is admin in that family
+     *
+     * @return Family of currently logged in user
+     * @throws FamilyNotFoundException when current user is not part of any family
+     * @throws FamilyNotAdminException when current user is not administator of found family
+     */
+    public Family getFamilyAsFamilyAdmin() throws FamilyNotFoundException, FamilyNotAdminException {
+        Account currentAccount = Utils.getCurrentAccount();
+        Optional<Family> optionalFamily = getFamily(currentAccount);
+        if (!optionalFamily.isPresent()) {
+            throw new FamilyNotFoundException();
+        }
+        Family userFamily = optionalFamily.get();
+        if (!userFamily.getAdmins().contains(currentAccount)) {
+            throw new FamilyNotAdminException();
+        }
+        return userFamily;
     }
 
 
