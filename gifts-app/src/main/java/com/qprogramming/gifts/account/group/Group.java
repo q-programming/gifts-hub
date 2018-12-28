@@ -14,6 +14,7 @@ import java.util.Set;
 //        generator = ObjectIdGenerators.PropertyGenerator.class,
 //        property = "id")
 @Entity
+@Table(name = "group_table")
 public class Group {
 
     @Id

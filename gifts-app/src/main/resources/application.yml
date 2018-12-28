@@ -43,6 +43,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+    show-sql: false
   social:
     facebook:
       app-id: 1750703375258695

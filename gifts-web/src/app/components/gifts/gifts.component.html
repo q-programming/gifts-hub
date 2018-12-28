@@ -18,11 +18,11 @@
           <i class="fa fa-lg fa-filter"></i>
         </button>
         <button class="header-button success-button" fxFlex mat-flat-button (click)="addGiftDialog()"
-                *ngIf="isUserList || isFamilyAdmin">
+                *ngIf="isUserList || isGroupAdmin">
           <mat-icon>add</mat-icon>
         </button>
       </div>
-      <ng-container *ngIf="isUserList || isFamilyAdmin">
+      <ng-container *ngIf="isUserList || isGroupAdmin">
         <button fxShow.lt-md="false" mat-flat-button class="success-button pull-right font-smaller">
           <mat-icon>cloud_upload</mat-icon>
         </button>
@@ -47,7 +47,7 @@
     <div fxFlex="5">
       {{'gift.link.text'|translate}}
     </div>
-    <div fxFlex="10" class="text-right" cl>
+    <div fxFlex="10" class="text-right">
       {{'gift.add.date'|translate}}
     </div>
     <div fxFlex="10" class="text-right pr-1">
@@ -83,7 +83,7 @@
       <div *ngFor="let gift of gifts.value;let even=even;trackBy: trackByFn">
         <gift [gift]="gift"
               [even]="even"
-              [canEdit]="isUserList || isFamilyAdmin"
+              [canEdit]="isUserList || isGroupAdmin"
               (refresh)="refresh($event)"
               (delete)="delete($event)"
               (edit)="editGiftDialog($event)"
@@ -102,7 +102,7 @@
     <div *ngFor="let gift of unCategorizedGifts;let even=even;trackBy: trackByFn">
       <gift [gift]="gift"
             [even]="even"
-            [canEdit]="isUserList || isFamilyAdmin"
+            [canEdit]="isUserList || isGroupAdmin"
             (refresh)="refresh($event)"
             (delete)="delete($event)"
             (edit)="editGiftDialog($event)"
@@ -120,7 +120,7 @@
     <div *ngFor="let gift of realizedGifts;let even=even;trackBy: trackByFn">
       <gift [gift]="gift"
             [even]="even"
-            [canEdit]="isUserList || isFamilyAdmin"
+            [canEdit]="isUserList || isGroupAdmin"
             (refresh)="refresh($event)"
             (delete)="delete($event)"
             (edit)="editGiftDialog($event)"

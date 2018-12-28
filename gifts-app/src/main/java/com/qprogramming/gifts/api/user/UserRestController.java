@@ -1,6 +1,5 @@
 package com.qprogramming.gifts.api.user;
 
-import com.fasterxml.jackson.annotation.JsonView;
 import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.account.AccountType;
@@ -11,7 +10,6 @@ import com.qprogramming.gifts.account.group.Group;
 import com.qprogramming.gifts.account.group.GroupForm;
 import com.qprogramming.gifts.account.group.GroupService;
 import com.qprogramming.gifts.account.group.KidForm;
-import com.qprogramming.gifts.config.MappingConfiguration;
 import com.qprogramming.gifts.config.mail.Mail;
 import com.qprogramming.gifts.config.mail.MailService;
 import com.qprogramming.gifts.exceptions.AccountNotFoundException;
@@ -148,57 +146,63 @@ public class UserRestController {
 
 
     /**
-     * Returns user list, if passed param group is true, will return all accounts without group
+     * Returns user list, if passed param users is true, will return only full accounts ( no kids)
      *
-     * @param noGroups if true , returned list will contain only accounts without group
-     * @param users    if true, only users will be retured ( no KID accounts ) and gifts count's won't be added to response
+     * @param users if true, only users will be retured ( no KID accounts ) and gifts count's won't be added to response
      * @return list of application accounts
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @RequestMapping(value = "/users", method = RequestMethod.GET)
-    public ResponseEntity<?> userList(@RequestParam(required = false) boolean noGroups, @RequestParam(required = false) boolean users) {
+    public ResponseEntity<?> userList(@RequestParam(required = false) boolean users) {
         Set<Account> list = new HashSet<>();
-//TODO to remove ?
-//        if (noGroups) {
-//            list = new LinkedHashSet<>(_accountService.findWithoutGroup());
-//            addGiftCounts(list);
-//        } else {
-//            if (users) {
-//                list = new LinkedHashSet<>(_accountService.findUsers());
-//            } else {
-//                list = new LinkedHashSet<>(_accountService.findAll());
-//                addGiftCounts(list);
-//            }
-//        }
+        if (users) {
+            list = new LinkedHashSet<>(_accountService.findUsers());
+        } else {
+            list = new LinkedHashSet<>(_accountService.findAll());
+            addGiftCounts(list);
+        }
         return ResponseEntity.ok(list);
-
     }
 
+    @Transactional
     @RequestMapping(value = "/userList", method = RequestMethod.GET)
     @PreAuthorize("hasRole('ROLE_USER')")
-    public ResponseEntity<?> userSearchList(@RequestParam(required = false) String username) {
-        Account account = Utils.getCurrentAccount();
-        if (StringUtils.isNotBlank(username)) {
-            Optional<Account> optionalAccount = _accountService.findByUsername(username);
-            if (!optionalAccount.isPresent()) {
-                return ResponseEntity.notFound().build();
+    public ResponseEntity<?> userSearchList(@RequestParam(required = false) String username, @RequestParam(required = false) boolean gifts) {
+        try {
+            Account account;
+            if (StringUtils.isNotBlank(username)) {
+                Optional<Account> optionalAccount = _accountService.findByUsername(username);
+                account = optionalAccount.orElseThrow(AccountNotFoundException::new);
+            } else {
+                account = _accountService.getCurrentAccount();
             }
-            account = optionalAccount.get();
+            Set<Account> list = _accountService.findAllFromGroups(account);
+            if (gifts) {
+                addGiftCounts(list);
+            }
+            return ResponseEntity.ok(list);
+        } catch (AccountNotFoundException e) {
+            return ResponseEntity.notFound().build();
         }
-        Set<Account> list = _accountService.findAllFromGroups(account);
-        return ResponseEntity.ok(list);
     }
 
 
     @RequestMapping("/groups")
     @PreAuthorize("hasRole('ROLE_USER')")
+    @Transactional
     public ResponseEntity<?> groupList() {
-        Map<Account, Integer> counts = new HashMap<>();
-        Set<Group> groups = Utils.getCurrentAccount().getGroups();
-        groups.forEach(group -> group.getMembers().forEach(account -> {
-            Integer count = counts.computeIfAbsent(account, this::getGiftCount);
-            account.setGiftsCount(count);
-        }));
-        return ResponseEntity.ok(groups);
+        try {
+            Map<Account, Integer> counts = new HashMap<>();
+            Account currentAccount = _accountService.getCurrentAccount();
+            Set<Group> groups = currentAccount.getGroups();
+            groups.forEach(group -> group.getMembers().forEach(account -> {
+                Integer count = counts.computeIfAbsent(account, this::getGiftCount);
+                account.setGiftsCount(count);
+            }));
+            return ResponseEntity.ok(groups);
+        } catch (AccountNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     private Integer getGiftCount(Account account) {
@@ -212,7 +216,7 @@ public class UserRestController {
     private void markAdmins(Group group) {
         group.getMembers().forEach(account -> {
             if (group.getAdmins().contains(account)) {
-                account.setFamilyAdmin(true);
+                account.setGroupAdmin(true);
             }
         });
     }
@@ -237,30 +241,54 @@ public class UserRestController {
         return ResponseEntity.notFound().build();
     }
 
+    /**
+     * Returns currently logged in user group ( or null if not found )
+     *
+     * @return {@link Group}
+     */
+    //TODO remove ?
+    @RequestMapping(value = "/family/isAdmin", method = RequestMethod.GET)
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<?> isUserGroupAdmin(@RequestParam String username) {
+        if (StringUtils.isNotBlank(username)) {
+            Optional<Account> account = _accountService.findByUsername(username);
+            if (!account.isPresent()) {
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.ok(_accountService.isAccountGroupAdmin(account.get()));
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+
     @Transactional
     @RequestMapping(value = "/group-create", method = RequestMethod.POST)
     @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<?> createGroup(@RequestBody GroupForm form) {
-        Group group = _groupService.createGroup();
-        if (StringUtils.isBlank(form.getName())) {
-            form.setName(Utils.getCurrentAccount().getSurname());
-        }
-        group.setName(form.getName());
-        group = _groupService.update(group);
-        Set<Account> members = _accountService.findByEmailsOrUsernames(form.getMembers());
         try {
-            sendInvites(members, group, AccountEventType.GROUP_MEMEBER);
-        } catch (MessagingException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            Account currentAccount = _accountService.getCurrentAccount();
+            if (StringUtils.isBlank(form.getName())) {
+                form.setName(currentAccount.getSurname());
+            }
+            Group group = _groupService.createGroup(form.getName());
+            group.addMember(currentAccount);
+            group = _groupService.addAccountToGroupAdmins(currentAccount, group);
+            Set<Account> members = _accountService.findByEmailsOrUsernames(form.getMembers());
+            try {
+                sendInvites(members, group, AccountEventType.GROUP_MEMEBER);
+            } catch (MessagingException e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            }
+            HashMap<String, String> model = new HashMap<>();
+            if (members.size() > 0) {
+                model.put("result", "invites");
+            } else {
+                model.put("result", "ok");
+            }
+            return ResponseEntity.ok(model);
+        } catch (AccountNotFoundException e) {
+            return ResponseEntity.notFound().build();
         }
-        //group.getAdmins().addAll(_accountService.findByIds(form.getAdmins()));
-        HashMap<String, String> model = new HashMap<>();
-        if (members.size() > 0) {
-            model.put("result", "invites");
-        } else {
-            model.put("result", "ok");
-        }
-        return ResponseEntity.ok(model);
     }
 
     @Transactional
@@ -309,13 +337,18 @@ public class UserRestController {
     @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/group-leave", method = RequestMethod.PUT)
     public ResponseEntity<?> leaveGroup(@RequestBody GroupForm form) {
-        Account currentAccount = Utils.getCurrentAccount();
-        Optional<Group> optionalGroup = _groupService.getGroupById(form.getId());
-        if (!optionalGroup.isPresent()) {
-            return ResponseEntity.notFound().build();
+        try {
+            Account currentAccount = _accountService.getCurrentAccount();
+            Optional<Group> optionalGroup = _groupService.getGroupById(form.getId());
+            if (!optionalGroup.isPresent()) {
+                return ResponseEntity.notFound().build();
+            }
+            Group group = _groupService.removeFromGroup(currentAccount, optionalGroup.get());
+            return ResponseEntity.ok(group);
+
+        } catch (AccountNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        Group group = _groupService.removeFromGroup(currentAccount, optionalGroup.get());
-        return ResponseEntity.ok(group);
     }
 
 
@@ -411,7 +444,8 @@ public class UserRestController {
         sendInvites(list, group, type);
     }
 
-    private void sendInvites(List<Account> members, Group group, AccountEventType type) throws MessagingException {
+    private void sendInvites(List<Account> members, Group group, AccountEventType type) throws
+            MessagingException {
         for (Account account : members) {
             if (AccountType.KID.equals(account.getType())) {
                 group.addMember(account);
@@ -453,7 +487,7 @@ public class UserRestController {
 
     }
 
-//    @JsonView(MappingConfiguration.Members.class)
+    //    @JsonView(MappingConfiguration.Members.class)
     @Transactional
     @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping("/kid-update")
@@ -586,7 +620,8 @@ public class UserRestController {
     @Transactional
     @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/delete/{userID}", method = RequestMethod.DELETE)
-    public ResponseEntity deleteAccount(HttpServletRequest requ, HttpServletResponse resp, @PathVariable(value = "userID") String id) {
+    public ResponseEntity deleteAccount(HttpServletRequest requ, HttpServletResponse
+            resp, @PathVariable(value = "userID") String id) {
         boolean logout = false;
         Account account;
         try {
@@ -704,41 +739,42 @@ public class UserRestController {
 //        return new ResultData.ResultBuilder().ok().message(message).build();
     }
 
-    @PreAuthorize("hasRole('ROLE_USER')")
-    @RequestMapping(value = "/allowed/account/add", method = RequestMethod.PUT)
-    public ResponseEntity addAccountToAllowed(@RequestBody String accountID) {
-        try {
-            Account account = _accountService.findById(accountID);
-            Account currentAccount = _accountService.getCurrentAccount();
-            currentAccount.getAllowed().add(account.getId());
-            _accountService.update(currentAccount);
-            //TODO notify via email
-            return ResponseEntity.ok().build();
-        } catch (AccountNotFoundException e) {
-            LOG.error(ACCOUNT_WITH_ID_WAS_NOT_FOUND, Utils.getCurrentAccountId());
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    @PreAuthorize("hasRole('ROLE_USER')")
-    @RequestMapping(value = "/allowed/account/remove", method = RequestMethod.DELETE)
-    public ResponseEntity removeAccountToAllowed(@RequestBody String accountID) {
-        try {
-            Account account = _accountService.findById(accountID);
-            Account currentAccount = _accountService.getCurrentAccount();
-            currentAccount.getAllowed().remove(account.getId());
-            _accountService.update(currentAccount);
-            //TODO notify via email
-            return ResponseEntity.ok().build();
-        } catch (AccountNotFoundException e) {
-            LOG.error(ACCOUNT_WITH_ID_WAS_NOT_FOUND, Utils.getCurrentAccountId());
-            return ResponseEntity.notFound().build();
-        }
-    }
+    //TODO remove
+//    @PreAuthorize("hasRole('ROLE_USER')")
+//    @RequestMapping(value = "/allowed/account/add", method = RequestMethod.PUT)
+//    public ResponseEntity addAccountToAllowed(@RequestBody String accountID) {
+//        try {
+//            Account account = _accountService.findById(accountID);
+//            Account currentAccount = _accountService.getCurrentAccount();
+//            currentAccount.getAllowed().add(account.getId());
+//            _accountService.update(currentAccount);
+//            //TODO notify via email
+//            return ResponseEntity.ok().build();
+//        } catch (AccountNotFoundException e) {
+//            LOG.error(ACCOUNT_WITH_ID_WAS_NOT_FOUND, Utils.getCurrentAccountId());
+//            return ResponseEntity.notFound().build();
+//        }
+//    }
+//
+//    @PreAuthorize("hasRole('ROLE_USER')")
+//    @RequestMapping(value = "/allowed/account/remove", method = RequestMethod.DELETE)
+//    public ResponseEntity removeAccountToAllowed(@RequestBody String accountID) {
+//        try {
+//            Account account = _accountService.findById(accountID);
+//            Account currentAccount = _accountService.getCurrentAccount();
+//            currentAccount.getAllowed().remove(account.getId());
+//            _accountService.update(currentAccount);
+//            //TODO notify via email
+//            return ResponseEntity.ok().build();
+//        } catch (AccountNotFoundException e) {
+//            LOG.error(ACCOUNT_WITH_ID_WAS_NOT_FOUND, Utils.getCurrentAccountId());
+//            return ResponseEntity.notFound().build();
+//        }
+//    }
 
 
 //    @PreAuthorize("hasRole('ROLE_USER')")
-//    @RequestMapping(value = "/allowed/family/add-account", method = RequestMethod.PUT)
+//    @RequestMapping(value = "/allowed/group/add-account", method = RequestMethod.PUT)
 //    public ResponseEntity addAccountToFamilyAllowed(@RequestBody String accountID) {
 //        try {
 //            Group userGroup = _groupService.getGroupAsGroupAdmin();
@@ -759,7 +795,7 @@ public class UserRestController {
 //    }
 //
 //    @PreAuthorize("hasRole('ROLE_USER')")
-//    @RequestMapping(value = "/allowed/family/remove-account", method = RequestMethod.DELETE)
+//    @RequestMapping(value = "/allowed/group/remove-account", method = RequestMethod.DELETE)
 //    public ResponseEntity removeAccountFromFamilyAllowed(@RequestBody String accountID) {
 //        try {
 //            Group userGroup = _groupService.getGroupAsGroupAdmin();
@@ -781,7 +817,7 @@ public class UserRestController {
 
 //    @Transactional
 //    @PreAuthorize("hasRole('ROLE_USER')")
-//    @RequestMapping(value = "/allowed/family/add-family", method = RequestMethod.DELETE)
+//    @RequestMapping(value = "/allowed/group/add-group", method = RequestMethod.DELETE)
 //    public ResponseEntity addFamilyToAllowed(@RequestBody Long targetFamilyID) {
 //        try {
 //            Group userGroup = _groupService.getGroupAsGroupAdmin();
@@ -814,7 +850,7 @@ public class UserRestController {
 //
 //    @Transactional
 //    @PreAuthorize("hasRole('ROLE_USER')")
-//    @RequestMapping(value = "/allowed/family/remove-family", method = RequestMethod.DELETE)
+//    @RequestMapping(value = "/allowed/group/remove-group", method = RequestMethod.DELETE)
 //    public ResponseEntity removeFamilyFromAllowed(@RequestBody Long targetFamilyID) {
 //        try {
 //            Group userGroup = _groupService.getGroupAsGroupAdmin();

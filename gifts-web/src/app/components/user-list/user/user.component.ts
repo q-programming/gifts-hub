@@ -11,7 +11,7 @@ export class UserComponent implements OnInit {
   AccountType = AccountType;
   @Input() user: Account;
   @Input() even: boolean;
-  @Input() isUserFamily: boolean;
+  @Input() isGroupAdmin: boolean;
   @Output() kid = new EventEmitter<Account>();
 
 

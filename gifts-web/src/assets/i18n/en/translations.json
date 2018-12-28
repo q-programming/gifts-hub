@@ -275,7 +275,7 @@
   "user": {
     "administrator": "Application administrator",
     "confirm": {
-      "family": {
+      "group": {
         "admin": {
           "success": "You have become administrator of family"
         },
@@ -298,37 +298,42 @@
       "text": "Delete your account"
     },
     "email": "Email",
-    "family": {
+    "firstname": {
+      "hint": "Enter your name",
+      "text": "Name"
+    },
+    "fullname": "Name and surname",
+    "group": {
       "add": {
         "kid": {
-          "error": "Please create family first",
-          "help": "Add new account of type kid. It is a special type of account, on which you cannot login. <br>\nOnly family administrator is able to edit and add gifts for that account",
-          "success": "New kid was added to your family",
+          "error": "Please create group first",
+          "help": "Add new account of type kid. It is a special type of account, on which you cannot login. <br>\nOnly group administrator is able to edit and add gifts for that account",
+          "success": "New kid was added to your group",
           "text": "Add kid"
         }
       },
       "admin": {
-        "add": "Set as family administrator",
-        "error": "You have to be family admin to perform that operation",
-        "remove": "Remove family administrator rights from that family member",
+        "add": "Set as group administrator",
+        "error": "You have to be grup admin to perform that operation",
+        "remove": "Remove group administrator rights from that group member",
         "text": "Admin"
       },
-      "administrator": "Family administrator",
+      "administrator": "Group administrator",
       "admins": "Administrators",
       "create": {
         "admin": {
-          "help": "Add family administrators from family members. By default creator of family is made administrator"
+          "help": "Add group administrators from group members. By default creator of group is made administrator"
         },
-        "error": "There were errors while trying to create new family.Please contact application administrator and enclose browser log",
-        "help": "Create your family. Add users, who are already registered in application. You can be member of only one family",
+        "error": "There were errors while trying to create new grup. Please contact application administrator and enclose browser log",
+        "help": "Create your group. Add users, who are already registered in application",
         "success": {
-          "invites": "New family was created. Emails with confirmation links were sent to invited application users",
-          "text": "New family was created"
+          "invites": "New group was created. Emails with confirmation links were sent to invited application users",
+          "text": "New group was created"
         },
-        "text": "Create family"
+        "text": "Create group"
       },
       "delete": {
-        "error": "You cannot remove kid's account because you are not family administrator",
+        "error": "You cannot remove kid's account because you are not group administrator",
         "kid": {
           "confirm": "Are you sure you want to delete this kid's account? This operation cannot be undone and together with account all gifts and theirs reservation will be removed",
           "success": "Kid's account has was removed",
@@ -336,50 +341,46 @@
         }
       },
       "edit": {
-        "error": "There were errors while trying to update family.Please contact application administrator and enclose browser log",
-        "help": "Edit your family members. Add or remove existing application users.",
+        "error": "There were errors while trying to update group. Please contact application administrator and enclose browser log",
+        "help": "Edit your group members. Add or remove existing application users.",
         "kid": {
           "success": "Kid data was updated",
           "text": "Edit kid"
         },
         "success": {
-          "invites": "Family has been updated. Emails with confirmation links were sent to invited application users",
-          "text": "Family has been updated"
+          "invites": "Group has been updated. Emails with confirmation links were sent to invited application users",
+          "text": "Group has been updated"
         },
-        "text": "Edit family"
+        "text": "Edit group"
       },
       "exists": {
         "error": "You are already member of other family, and cannot create new one."
       },
       "invite": {
         "mailError": "There was error while sending invite via e-mail. Please contact administration",
-        "new": "Invite new family member by email or their username",
-        "text": "Invite to family"
+        "new": "Invite new group member by email or their username",
+        "text": "Invite to group"
       },
       "kid": "Kid",
       "leave": {
-        "confirm": "Are you sure you want to leave your curent family?<br>In order to rejoin it , you will have to ask family administrator to invite you.",
-        "text": "Leave family"
+        "confirm": "Are you sure you want to leave your curent group?<br>In order to rejoin it , you will have to ask group administrator to invite you.",
+        "text": "Leave group"
       },
-      "left": "You have left family",
+      "left": "You have left group",
       "members": "Members",
-      "name": "Family name",
+      "name": "Group name",
+      "nogroups": "You don't have any groups yet.<br>\nAsk somebody to invite you to one, or create new one by cliking button in uper right corner",
       "other": "Other",
       "permision": {
-        "help": "Set up who can view your family's wish lists",
+        "help": "Set up who can view your group's wish lists",
         "text": "Permission"
       },
       "select": {
         "notfound": "Searched user was not found",
         "text": "Find other users"
       },
-      "text": "Family"
+      "text": "Group"
     },
-    "firstname": {
-      "hint": "Enter your name",
-      "text": "Name"
-    },
-    "fullname": "Name and surname",
     "list": "User lists",
     "login": {
       "existing": "Already have account?",
@@ -459,7 +460,7 @@
     },
     "sort": {
       "default": "Default sorting",
-      "family": "Show grouped in families",
+      "group": "Show grouped in groups",
       "name": "Show sorted by surnames and names"
     },
     "surname": {

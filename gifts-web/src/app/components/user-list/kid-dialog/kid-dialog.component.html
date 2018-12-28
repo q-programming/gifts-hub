@@ -1,9 +1,9 @@
 <h1 mat-dialog-title>
   <i class="fa fa-child mr-1"></i>
-  {{update ? ('user.family.edit.kid.text'|translate) : ('user.family.add.kid.text'|translate)}}
+  {{update ? ('user.group.edit.kid.text'|translate) : ('user.group.add.kid.text'|translate)}}
 </h1>
 <mat-dialog-content>
-  <div class="help text-center" [innerHTML]="'user.family.add.kid.help'|translate" *ngIf="!update">
+  <div class="help text-center" [innerHTML]="'user.group.add.kid.help'|translate" *ngIf="!update">
   </div>
   <form [formGroup]="form">
     <div fxLayout="row wrap" fxLayoutAlign="center center">
@@ -63,7 +63,7 @@
       </div>
       <div fxFlex="80%" class="text-center" *ngIf="kid.id && update">
         <button mat-flat-button color="warn">
-          {{'user.family.delete.kid.text'|translate}}
+          {{'user.group.delete.kid.text'|translate}}
         </button>
       </div>
     </div>
@@ -72,6 +72,6 @@
 <mat-dialog-actions align="end" class="pr-2 pl-2">
   <button mat-raised-button mat-dialog-close>{{'app.general.cancel'|translate}}</button>
   <button mat-raised-button class="success-button" [disabled]="form.invalid" (click)="commitKid(form.valid)">
-    {{update ? ('user.family.edit.kid.text'|translate) : ('user.family.add.kid.text'|translate)}}
+    {{update ? ('user.group.edit.kid.text'|translate) : ('user.group.add.kid.text'|translate)}}
   </button>
 </mat-dialog-actions>

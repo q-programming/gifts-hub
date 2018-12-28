@@ -46,7 +46,7 @@ public class GroupServiceTest {
     @Test
     public void createGroup() throws Exception {
         when(groupRepositoryMock.save(any(Group.class))).then(returnsFirstArg());
-        Group result = groupService.createGroup();
+        Group result = groupService.createGroup(anyString());
         assertNotNull(result);
         assertTrue(result.getAdmins().contains(testAccount));
         assertTrue(result.getMembers().contains(testAccount));
@@ -134,7 +134,6 @@ public class GroupServiceTest {
         group.getAdmins().add(account);
         groupService.removeFromGroup(testAccount, group);
         assertFalse(group.getMembers().contains(testAccount));
-
     }
 
     @Test

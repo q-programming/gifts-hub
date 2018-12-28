@@ -65,12 +65,9 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
     @Column(columnDefinition = "boolean default false")
     private boolean enabled = false;
 
-    @ElementCollection
-    private Set<String> allowed;
-
     private String fullname;
 
-    private Boolean familyAdmin = false;
+    private Boolean groupAdmin = false;
 
     private Integer giftsCount = 0;
 
@@ -214,12 +211,12 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
         this.publicList = publicList;
     }
 
-    public boolean isFamilyAdmin() {
-        return familyAdmin != null ? familyAdmin : false;
+    public boolean getGroupAdmin() {
+        return groupAdmin != null ? groupAdmin : false;
     }
 
-    public void setFamilyAdmin(boolean familyAdmin) {
-        this.familyAdmin = familyAdmin;
+    public void setGroupAdmin(boolean groupAdmin) {
+        this.groupAdmin = groupAdmin;
     }
 
     public Integer getGiftsCount() {
@@ -247,7 +244,7 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
     }
 
     public Set<Group> getGroups() {
-        if (Collections.isEmpty(groups)) {
+        if (this.groups == null) {
             this.groups = new HashSet<>();
         }
         return groups;
@@ -346,16 +343,5 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
 
     public void setUuid(String uuid) {
         this.uuid = uuid;
-    }
-
-    public Set<String> getAllowed() {
-        if (Collections.isEmpty(allowed)) {
-            allowed = new HashSet<>();
-        }
-        return allowed;
-    }
-
-    public void setAllowed(Set<String> allowed) {
-        this.allowed = allowed;
     }
 }

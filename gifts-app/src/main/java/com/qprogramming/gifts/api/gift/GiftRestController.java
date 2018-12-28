@@ -130,7 +130,7 @@ public class GiftRestController {
             gift = updateGiftFromForm(giftForm);
             return new ResponseEntity<>(gift, HttpStatus.OK);
         }
-        return ResponseEntity.status(HttpStatus.CONFLICT).body("family");
+        return ResponseEntity.status(HttpStatus.CONFLICT).body("group");
     }
 
     private boolean canOperateOnUsernameGifts(String id) {
@@ -348,7 +348,7 @@ public class GiftRestController {
     @RequestMapping(value = "/import", method = RequestMethod.POST)
     public ResponseEntity importGifts(@RequestParam(value = "file") MultipartFile importFile, @RequestParam(value = "user", required = false) String username) {
         if (StringUtils.isNotBlank(username) && !canOperateOnUsernameGifts(username)) {
-            ResponseEntity.status(HttpStatus.CONFLICT).body("family");
+            ResponseEntity.status(HttpStatus.CONFLICT).body("group");
         }
         StringBuilder logger = new StringBuilder();
         Workbook workbook;

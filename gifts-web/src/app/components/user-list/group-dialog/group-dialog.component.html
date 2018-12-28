@@ -1,0 +1,104 @@
+<h1 mat-dialog-title>
+  <mat-icon>group</mat-icon>
+  {{update ? ('user.group.edit.text'|translate) : ('user.group.create.text'|translate)}}
+</h1>
+<!--<mat-tab-group mat-stretch-tabs>-->
+  <!--<mat-tab>-->
+    <!--<ng-template mat-tab-label>-->
+      <!--<mat-icon>person</mat-icon>-->
+      <!--<span fxShow.xs="false">-->
+            <!--&nbsp;{{'user.group.members'|translate}}-->
+            <!--</span>-->
+    <!--</ng-template>-->
+    <mat-dialog-content class="modal-content-m-0">
+      <div class="mt-3">
+        <mat-form-field fxFlex>
+          <input matInput [formControl]="nameCtrl" placeholder="{{'user.group.name'|translate}}" type="text"
+                 autocomplete="off">
+        </mat-form-field>
+      </div>
+      <div>
+        <ng-container *ngIf="members.length > 0 ">
+          <h4>
+            <mat-icon>group</mat-icon>
+            {{'user.group.members'|translate}}
+          </h4>
+          <div fxLayout="row" fxLayoutAlign="end">
+            <div fxFlex>
+              {{'user.fullname'|translate}}
+            </div>
+            <div fxFlex="20">
+              {{'user.group.admin.text'|translate}}
+            </div>
+          </div>
+          <div *ngFor="let member of members;let even=even" [ngClass]="{'even':even}" fxLayout="row">
+            <div fxFlex="20">
+              <avatar [avatar]="member.avatar" classes="avatar small"></avatar>
+            </div>
+            <div fxFlex>
+            <span *ngIf="member.type === AccountType.KID" matTooltip="{{'user.group.kid'|translate}}">
+              <i class="fa fa-child"></i>
+            </span>
+              <span *ngIf="member.groupAdmin" matTooltip="{{'user.group.administrator'|translate}}">
+               <i class="fa fa-address-card-o"></i>
+            </span>
+              {{member.fullname}}
+            </div>
+            <div *ngIf="currentAccount.groupAdmin" fxFlex="20">
+              <button *ngIf="member.groupAdmin" mat-icon-button (click)="removeAdmin(member)"
+                      matTooltip="{{'user.group.admin.remove'|translate}}">
+                <mat-icon>clear</mat-icon>
+              </button>
+              <button *ngIf="!member.groupAdmin && member.type !== AccountType.KID" mat-icon-button
+                      (click)="addAdmin(member)" matTooltip="{{'user.group.admin.add'|translate}}">
+                <mat-icon>build</mat-icon>
+              </button>
+            </div>
+          </div>
+        </ng-container>
+        <h4>
+          <mat-icon>group_add</mat-icon>
+          {{'user.group.invite.text'|translate}}</h4>
+        <div fxLayout="row wrap">
+          <mat-form-field fxFlex="100">
+            <input matInput [formControl]="newMemberCtrl" placeholder="{{'user.group.invite.new'|translate}}"
+                   type="email" autocomplete="off" (keydown.enter)="addToInvites()">
+            <button mat-stroked-button matSuffix [disabled]="newMemberCtrl.hasError('email')" (click)="addToInvites()">
+              <mat-icon>person_add</mat-icon>
+            </button>
+          </mat-form-field>
+          <div fxFlex="100" *ngFor="let identification of identifications">
+            <i>{{identification}}</i>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="update" class="mt-3 mb-3">
+        <h4>{{'user.group.leave.text'|translate}}</h4>
+        <div class="text-center ">
+          <button mat-flat-button color="warn" (click)="leaveFamily()">
+            <mat-icon>clear</mat-icon>
+            {{'user.group.leave.text'|translate}}
+          </button>
+        </div>
+      </div>
+    </mat-dialog-content>
+  <!--</mat-tab>-->
+  <!--<mat-tab>-->
+    <!--<ng-template mat-tab-label>-->
+      <!--<mat-icon>lock_open</mat-icon>-->
+      <!--<span fxShow.xs="false">-->
+            <!--&nbsp;{{'user.group.permision.text'|translate}}-->
+            <!--</span>-->
+    <!--</ng-template>-->
+    <!--<mat-dialog-content class="modal-content-m-0">-->
+      <!--<permissions></permissions>-->
+    <!--</mat-dialog-content>-->
+  <!--</mat-tab>-->
+<!--</mat-tab-group>-->
+<hr>
+<div class="p-2 button-panel pull-right">
+  <button mat-raised-button mat-dialog-close>{{'app.general.cancel'|translate}}</button>
+  <button mat-raised-button class="success-button" (click)="commit()">
+    {{(update ? 'user.group.edit.text' : 'user.group.create.text') |translate}}
+  </button>
+</div>

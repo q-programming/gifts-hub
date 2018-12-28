@@ -3,7 +3,7 @@
 <head>
     <meta name="viewport" content="width=device-width">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>${familyName} group administrator</title>
+    <title>Administrator rodziny ${groupName}</title>
     <style>
         * {
             margin: 0;
@@ -137,16 +137,15 @@
             </td>
             <td>
                 <#if name??>
-                    <p>Hello ${name},</p>
+                    <p>Witaj ${name},</p>
                 </#if>
                 <div>
-                ${owner} designated you as administrator of "${familyName}" group in Gifts Hub application
+                ${owner} oznaczy&#322; Ci&#281; jako administratora rodziny "${groupName}" w aplikacji Gifts Hub
                 </div>
-                <p>Click link below to confirm</p>
+                <p>Kliknij link poni&#380;ej, lub skopiuj i wklej go w prz&#281;gl&#261;darce aby potwierdzi&#263;</p>
                 <p>
                     <a href="${confirmLink}">${confirmLink}</a>
                 </p>
-
             </td>
         </tr>
         </tbody>
@@ -165,10 +164,10 @@
                     <tr>
                         <td align="center">
                             <p>
-                                This is automatic message sent from <a
+                                To jest automatyczna wiadomo&#347;&#263; wys&#322;ana z <a
                                     href="${application!'#'}" target="_blank">${application!'#'}</a>.</br>
-                                If you wish to stop receiving e-mail notifications, please deselect notifications option in
-                                your user settings.
+                                Je&#380;eli nie chcesz otrzymywa&#263; wi&#281;cej powiadomie&#324; poprzez
+                                e-mail, odznacz prosz&#281; opcj&#281; w paneu sterowania.
                             </p>
                         </td>
                     </tr>

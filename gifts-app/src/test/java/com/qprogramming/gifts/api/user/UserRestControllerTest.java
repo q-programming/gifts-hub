@@ -253,7 +253,7 @@ public class UserRestControllerTest extends MockedAccountTestBase {
         group.setId(1L);
         group.addMember(testAccount);
         group.getAdmins().add(testAccount);
-        when(groupServiceMock.createGroup()).thenReturn(group);
+        when(groupServiceMock.createGroup(anyString())).thenReturn(group);
         when(groupServiceMock.update(group)).then(returnsFirstArg());
         userRestCtrl.perform(post(API_USER_GROUP_CREATE)
                 .contentType(APPLICATION_JSON_UTF8)
@@ -278,7 +278,7 @@ public class UserRestControllerTest extends MockedAccountTestBase {
         event.setType(AccountEventType.GROUP_MEMEBER);
         event.setToken("aaa");
         when(accSrvMock.findByEmailsOrUsernames(Collections.singleton(USERNAME + "1"))).thenReturn(Collections.singleton(memberAndAdmin));
-        when(groupServiceMock.createGroup()).thenReturn(group);
+        when(groupServiceMock.createGroup(anyString())).thenReturn(group);
         when(groupServiceMock.inviteAccount(any(Account.class), any(Group.class), any(AccountEventType.class))).thenReturn(event);
         when(groupServiceMock.update(group)).then(returnsFirstArg());
         MvcResult mvcResult = userRestCtrl.perform(post(API_USER_GROUP_CREATE)
@@ -745,49 +745,49 @@ public class UserRestControllerTest extends MockedAccountTestBase {
         List<Account> result = convertJsonToList(contentAsString, List.class, Account.class);
         assertTrue(result.contains(testAccount));
     }
-
-    @Test
-    public void addAccountToAllowed() throws Exception {
-        Account account = createAdminAccount();
-        when(accSrvMock.findById(account.getId())).thenReturn(account);
-        when(accSrvMock.getCurrentAccount()).thenReturn(testAccount);
-        userRestCtrl.perform(put(API_ALLOWED_ACCOUNT_ADD).content(account.getId()))
-                .andExpect(status().isOk());
-        verify(accSrvMock, times(1)).update(testAccount);
-        assertTrue(testAccount.getAllowed().contains(account.getId()));
-    }
-
-    @Test
-    public void addAccountToAllowedNotFound() throws Exception {
-        Account account = createAdminAccount();
-        when(accSrvMock.findById(account.getId())).thenThrow(AccountNotFoundException.class);
-        when(accSrvMock.getCurrentAccount()).thenReturn(testAccount);
-        userRestCtrl.perform(put(API_ALLOWED_ACCOUNT_ADD).content(account.getId()))
-                .andExpect(status().isNotFound());
-        assertFalse(testAccount.getAllowed().contains(account.getId()));
-    }
-
-    @Test
-    public void removeAccountFromAllowedNotFound() throws Exception {
-        testAccount.getAllowed().add(ADMIN_RANDOM_ID);
-        when(accSrvMock.findById(ADMIN_RANDOM_ID)).thenThrow(AccountNotFoundException.class);
-        when(accSrvMock.getCurrentAccount()).thenReturn(testAccount);
-        userRestCtrl.perform(delete(API_ALLOWED_ACCOUNT_REMOVE).content(ADMIN_RANDOM_ID))
-                .andExpect(status().isNotFound());
-        assertTrue(testAccount.getAllowed().contains(ADMIN_RANDOM_ID));
-    }
-
-    @Test
-    public void removeAccountFromAllowed() throws Exception {
-        Account account = createAdminAccount();
-        testAccount.getAllowed().add(account.getId());
-        when(accSrvMock.findById(account.getId())).thenReturn(account);
-        when(accSrvMock.getCurrentAccount()).thenReturn(testAccount);
-        userRestCtrl.perform(delete(API_ALLOWED_ACCOUNT_REMOVE).content(account.getId()))
-                .andExpect(status().isOk());
-        verify(accSrvMock, times(1)).update(testAccount);
-        assertFalse(testAccount.getAllowed().contains(account.getId()));
-    }
+//
+//    @Test
+//    public void addAccountToAllowed() throws Exception {
+//        Account account = createAdminAccount();
+//        when(accSrvMock.findById(account.getId())).thenReturn(account);
+//        when(accSrvMock.getCurrentAccount()).thenReturn(testAccount);
+//        userRestCtrl.perform(put(API_ALLOWED_ACCOUNT_ADD).content(account.getId()))
+//                .andExpect(status().isOk());
+//        verify(accSrvMock, times(1)).update(testAccount);
+//        assertTrue(testAccount.getAllowed().contains(account.getId()));
+//    }
+//
+//    @Test
+//    public void addAccountToAllowedNotFound() throws Exception {
+//        Account account = createAdminAccount();
+//        when(accSrvMock.findById(account.getId())).thenThrow(AccountNotFoundException.class);
+//        when(accSrvMock.getCurrentAccount()).thenReturn(testAccount);
+//        userRestCtrl.perform(put(API_ALLOWED_ACCOUNT_ADD).content(account.getId()))
+//                .andExpect(status().isNotFound());
+//        assertFalse(testAccount.getAllowed().contains(account.getId()));
+//    }
+//
+//    @Test
+//    public void removeAccountFromAllowedNotFound() throws Exception {
+//        testAccount.getAllowed().add(ADMIN_RANDOM_ID);
+//        when(accSrvMock.findById(ADMIN_RANDOM_ID)).thenThrow(AccountNotFoundException.class);
+//        when(accSrvMock.getCurrentAccount()).thenReturn(testAccount);
+//        userRestCtrl.perform(delete(API_ALLOWED_ACCOUNT_REMOVE).content(ADMIN_RANDOM_ID))
+//                .andExpect(status().isNotFound());
+//        assertTrue(testAccount.getAllowed().contains(ADMIN_RANDOM_ID));
+//    }
+//
+//    @Test
+//    public void removeAccountFromAllowed() throws Exception {
+//        Account account = createAdminAccount();
+//        testAccount.getAllowed().add(account.getId());
+//        when(accSrvMock.findById(account.getId())).thenReturn(account);
+//        when(accSrvMock.getCurrentAccount()).thenReturn(testAccount);
+//        userRestCtrl.perform(delete(API_ALLOWED_ACCOUNT_REMOVE).content(account.getId()))
+//                .andExpect(status().isOk());
+//        verify(accSrvMock, times(1)).update(testAccount);
+//        assertFalse(testAccount.getAllowed().contains(account.getId()));
+//    }
 
 //    @Test
 //    public void confirmAddGroupToAllowedNotFound() throws Exception {

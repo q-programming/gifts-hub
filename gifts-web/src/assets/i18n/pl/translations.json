@@ -275,7 +275,7 @@
   "user": {
     "administrator": "Administrator aplikacji",
     "confirm": {
-      "family": {
+      "group": {
         "admin": {
           "success": "Zostałeś administratorem rodziny"
         },
@@ -298,37 +298,42 @@
       "text": "Usuń swoje konto"
     },
     "email": "E-mail",
-    "family": {
+    "firstname": {
+      "hint": "Wprowdz imię",
+      "text": "Imię"
+    },
+    "fullname": "Imię i nazwisko",
+    "group": {
       "add": {
         "kid": {
-          "error": "Proszę najpierw stworzyć rodzinę",
-          "help": "Dodaj konto typu dziecko. To specjalny rodzaj konta, na które nie można się zalogować.<br> Tylko administrator rodziny może edytować i dodawać prezenty dla tego konta",
-          "success": "Nowe dziecko zostało dodane do twojej rodziny",
+          "error": "Proszę najpierw stworzyć grupę",
+          "help": "Dodaj konto typu dziecko. To specjalny rodzaj konta, na które nie można się zalogować.<br> Tylko administrator grupy może edytować i dodawać prezenty dla tego konta",
+          "success": "Nowe dziecko zostało dodane do twojej group",
           "text": "Dodaj dziecko"
         }
       },
       "admin": {
-        "add": "Ustaw jako administratora rodziny",
-        "error": "Aby wykonać tą operację musisz być administratorem rodziny",
-        "remove": "Usuń uprawnienia administratora rodziny temu członkowi rodziny",
+        "add": "Ustaw jako administratora grupy",
+        "error": "Aby wykonać tą operację musisz być administratorem grupy",
+        "remove": "Usuń uprawnienia administratora grupy temu członkowi",
         "text": "Admin"
       },
-      "administrator": "Administrator rodziny",
+      "administrator": "Administrator grupy",
       "admins": "Administratorzy",
       "create": {
         "admin": {
-          "help": "Dodaj administratorów sposród członków rodziny. Domyślnie twórca rodziny jest oznaczany jako administrator"
+          "help": "Dodaj administratorów sposród członków grupy. Domyślnie twórca grupy jest oznaczany jako administrator"
         },
-        "error": "Wystąpił bład podczas tworzenia rodziny. Proszę skontaktuj się z administratorem załączająć logi z przeglądarki",
-        "help": "Stwórz swoją rodzinę. Dodaj do niej użytkowników, którzy mają już konto w aplikacji. Można należeć tylko do jednej rodziny.",
+        "error": "Wystąpił bład podczas tworzenia grupy. Proszę skontaktuj się z administratorem załączająć logi z przeglądarki",
+        "help": "Stwórz swoją grupę. Dodaj do niej użytkowników, którzy mają już konto w aplikacji.",
         "success": {
-          "invites": "Nowa rodzina została utworzona. Wiadomości e-mail z linkiem potwierdzającym zostały wysłane do zaproszonych użytkowników",
-          "text": "Nowa rodzina została utworzona"
+          "invites": "Nowa grupa została utworzona. Wiadomości e-mail z linkiem potwierdzającym zostały wysłane do zaproszonych użytkowników",
+          "text": "Nowa grupa została utworzona"
         },
-        "text": "Stwórz rodzinę"
+        "text": "Stwórz grupę"
       },
       "delete": {
-        "error": "Nie możesz usunąć konta dziecka ponieważ nie jesteś administratorem rodziny",
+        "error": "Nie możesz usunąć konta dziecka ponieważ nie jesteś administratorem grupy",
         "kid": {
           "confirm": "Jesteś pewień, że chcesz usunąć to konto dziecka? Operacja jest nie odwracalna i wraz z kontem zostaną usunięte wszystkie prezenty oraz rezerwacje na nich",
           "success": "Konto dziecka zostało usunięte",
@@ -336,50 +341,46 @@
         }
       },
       "edit": {
-        "error": "Wystąpił bład podczas aktualizowania rodziny. Proszę skontaktuj się z administratorem załączająć logi z przeglądarki",
-        "help": "Edytuj członków rodziny. Dodaj lub usuń użytkowników, którzy mają już konto w aplikacji.",
+        "error": "Wystąpił bład podczas aktualizowania grupy. Proszę skontaktuj się z administratorem załączająć logi z przeglądarki",
+        "help": "Edytuj członków grupy. Dodaj lub usuń użytkowników, którzy mają już konto w aplikacji.",
         "kid": {
           "success": "Dane dziecka zostały zaktualizowane",
           "text": "Edytuj dziecko"
         },
         "success": {
-          "invites": "Rodzina została zaktualizowana. Wiadomości e-mail z linkiem potwierdzającym zostały wysłane do zaproszonych użytkowników",
-          "text": "Rodzina została zaktualizowana"
+          "invites": "Grupa została zaktualizowana. Wiadomości e-mail z linkiem potwierdzającym zostały wysłane do zaproszonych użytkowników",
+          "text": "Grupa została zaktualizowana"
         },
-        "text": "Edytuj rodzinę"
+        "text": "Edytuj grupę"
       },
       "exists": {
         "error": "Należysz już do jednej rodziny i nie możesz stworzyć nowej."
       },
       "invite": {
         "mailError": "Wystąpił bład poczas wysyłania zaproszenia. Proszę skontaktować się z administratorem.",
-        "new": "Zaproś do rodziny wpisując email lub login",
-        "text": "Zaproś do rodziny"
+        "new": "Zaproś do grupy wpisując email lub login",
+        "text": "Zaproś do grupy"
       },
       "kid": "Dziecko",
       "leave": {
-        "confirm": "Czy jesteś pewien, że chcesz opuścić twoją obecną rodzinę?<br>Aby dołaczyć do niej ponownie, będziesz musiał poprosić jej administratora aby Cię zaprosił.",
-        "text": "Opuść rodzinę"
+        "confirm": "Czy jesteś pewien, że chcesz opuścić twoją obecną grupę?<br>Aby dołaczyć do niej ponownie, będziesz musiał poprosić jej administratora aby Cię zaprosił.",
+        "text": "Opuść grupę"
       },
-      "left": "Opuściłeś rodzinę",
+      "left": "Opuściłeś grupę",
       "members": "Członkowie",
-      "name": "Nazwa rodziny",
+      "name": "Nazwa grupy",
+      "nogroups": "Nie jesteś członkiem żadnej grupy.<br>\nPoproś kogoś aby Cię zaprosił , lub stwórz nową klikająć guzik w prawym górynym rogu",
       "other": "Inni",
       "permision": {
-        "help": "Ustaw kto może oglądać listy zyczeń twojej rodziny",
+        "help": "Ustaw kto może oglądać listy zyczeń twojej grupy",
         "text": "Uprawnienia"
       },
       "select": {
         "notfound": "Nie znaleziono poszukiwanego użytkownika",
         "text": "Wyszukaj innych użytkowników"
       },
-      "text": "Rodzina"
+      "text": "Grupa"
     },
-    "firstname": {
-      "hint": "Wprowdz imię",
-      "text": "Imię"
-    },
-    "fullname": "Imię i nazwisko",
     "list": "Lista użytkowników",
     "login": {
       "existing": "Już posiadasz konto?",
@@ -459,7 +460,7 @@
     },
     "sort": {
       "default": "Domyślne sortowanie",
-      "family": "Pokazuj zgrupowane po rodzinach",
+      "group": "Pokazuj zgrupowane po grupach",
       "name": "Pokazuj sortowane po nazwiskach i imionach"
     },
     "surname": {

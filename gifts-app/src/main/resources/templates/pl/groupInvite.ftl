@@ -3,7 +3,7 @@
 <head>
     <meta name="viewport" content="width=device-width">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Invitation to ${familyName} group</title>
+    <title>Zaproszenie do grupy ${groupName}</title>
     <style>
         * {
             margin: 0;
@@ -137,18 +137,18 @@
             </td>
             <td>
                 <#if name??>
-                    <p>Hello ${name},</p>
+                    <p>Witaj ${name},</p>
                 </#if>
                 <div>
-                    ${owner} wanted to invite you to his group "${familyName}" in Gifts Hub application
+                    ${owner} zaprosi&#322; Ci&#281; do grupy "${groupName}" w aplikacji Gifts Hub
                 </div>
                 <#if confirmLink??>
-                    <p>Click link below to confirm invitation </p>
+                    <p>Kliknij link poni&#380;ej, lub skopiuj i wklej go w prz&#281;gl&#261;darce aby potwierdzi&#263; zaproszenie</p>
                     <p>
                         <a href="${confirmLink}">${confirmLink}</a>
                     </p>
                 <#else>
-                    <p>Because you don't have account yet, please be invited to create one by clicking link below:</p>
+                    <p>Poniewa&#380; jeszcze nie posiadasz konta, mo&#380;esz je za&#322;o&#380;y&#263; klikaj&#261;&#263; na link poni&#380;ej:</p>
                     <p>
                         <a href="${registerLink}">${registerLink}</a>
                     </p>
@@ -171,11 +171,10 @@
                     <tr>
                         <td align="center">
                             <p>
-                                This is automatic message sent from <a
+                                To jest automatyczna wiadomo&#347;&#263; wys&#322;ana z <a
                                         href="${application!'#'}" target="_blank">${application!'#'}</a>.</br>
-                                If you wish to stop receiving e-mail notifications, please deselect notifications option
-                                in
-                                your user settings.
+                                Je&#380;eli nie chcesz otrzymywa&#263; wi&#281;cej powiadomie&#324; poprzez
+                                e-mail, odznacz prosz&#281; opcj&#281; w paneu sterowania.
                             </p>
                         </td>
                     </tr>
@@ -188,5 +187,7 @@
     </tbody>
 </table>
 <!-- /footer -->
+
+
 </body>
 </html>

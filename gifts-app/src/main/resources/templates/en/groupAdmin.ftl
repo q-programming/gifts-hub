@@ -3,7 +3,7 @@
 <head>
     <meta name="viewport" content="width=device-width">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Zaproszenie do rodziny ${familyName}</title>
+    <title>${groupName} group administrator</title>
     <style>
         * {
             margin: 0;
@@ -137,22 +137,16 @@
             </td>
             <td>
                 <#if name??>
-                    <p>Witaj ${name},</p>
+                    <p>Hello ${name},</p>
                 </#if>
                 <div>
-                    ${owner} zaprosi&#322; Ci&#281; do rodziny "${familyName}" w aplikacji Gifts Hub
+                ${owner} designated you as administrator of "${groupName}" group in Gifts Hub application
                 </div>
-                <#if confirmLink??>
-                    <p>Kliknij link poni&#380;ej aby potwierdzi&#263; zaproszenie</p>
-                    <p>
-                        <a href="${confirmLink}">${confirmLink}</a>
-                    </p>
-                <#else>
-                    <p>Poniewa&#380; jeszcze nie posiadasz konta, mo&#380;esz je za&#322;o&#380;y&#263; klikaj&#261;&#263; na link poni&#380;ej:</p>
-                    <p>
-                        <a href="${registerLink}">${registerLink}</a>
-                    </p>
-                </#if>
+                <p>Click link below, or copy and paste it in browser to confirm</p>
+                <p>
+                    <a href="${confirmLink}">${confirmLink}</a>
+                </p>
+
             </td>
         </tr>
         </tbody>
@@ -171,10 +165,10 @@
                     <tr>
                         <td align="center">
                             <p>
-                                To jest automatyczna wiadomo&#347;&#263; wys&#322;ana z <a
-                                        href="${application!'#'}" target="_blank">${application!'#'}</a>.</br>
-                                Je&#380;eli nie chcesz otrzymywa&#263; wi&#281;cej powiadomie&#324; poprzez
-                                e-mail, odznacz prosz&#281; opcj&#281; w paneu sterowania.
+                                This is automatic message sent from <a
+                                    href="${application!'#'}" target="_blank">${application!'#'}</a>.</br>
+                                If you wish to stop receiving e-mail notifications, please deselect notifications option in
+                                your user settings.
                             </p>
                         </td>
                     </tr>

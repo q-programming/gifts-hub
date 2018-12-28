@@ -40,12 +40,10 @@ public class GroupService {
      *
      * @return new {@link Group}
      */
-    public Group createGroup() {
+    public Group createGroup(String name) {
         Group group = new Group();
-        group = groupRepository.save(group);
-        Account currentAccount = Utils.getCurrentAccount();
-        group = group.addMember(currentAccount);
-        return addAccountToGroupAdmins(currentAccount, group);
+        group.setName(name);
+        return groupRepository.save(group);
     }
 
     /**

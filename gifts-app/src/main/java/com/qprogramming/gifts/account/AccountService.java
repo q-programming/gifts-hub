@@ -291,6 +291,7 @@ public class AccountService implements UserDetailsService {
         Set<Account> accounts = _accountRepository.findByGroupsIn(account.getGroups());
         TreeSet<Account> result = new TreeSet<>(ACCOUNT_COMPARATOR);
         result.addAll(accounts);
+        result.add(account);
         return result;
     }
 

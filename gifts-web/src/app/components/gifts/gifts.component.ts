@@ -5,7 +5,7 @@ import {Gift, GiftStatus} from "@model/Gift";
 import {AvatarService} from "@services/avatar.service";
 import {AuthenticationService} from "@services/authentication.service";
 import {UserService} from "@services/user.service";
-import {Family} from "@model/Family";
+import {Group} from "@model/Group";
 import {Account} from "@model/Account";
 import * as _ from "lodash"
 import {AlertService} from "@services/alert.service";
@@ -14,7 +14,6 @@ import {MatDialog} from "@angular/material";
 import {GiftDialogComponent} from "./gift-dialog/gift-dialog.component";
 import {TranslateService} from "@ngx-translate/core";
 import {CategoryOption} from "@model/Category";
-import {animate, state, style, transition, trigger} from "@angular/animations";
 
 @Component({
   selector: 'gifts-list',
@@ -25,9 +24,9 @@ export class GiftsComponent implements OnInit {
 
   //accounts
   identification: string;
-  family: Family;
+  group: Group;
   isUserList: boolean;
-  isFamilyAdmin: boolean;
+  isGroupAdmin: boolean;
   currentAccount: Account;
   viewedAccount: Account;
   //gifts
@@ -68,7 +67,7 @@ export class GiftsComponent implements OnInit {
       //get gift list
       this.isUserList = !this.identification || this.identification === this.currentAccount.username;
       this.getGifts();
-      this.getFamily();
+      this.checkIfGroupAdmin();
       this.getAvatar(this.identification)
     });
   }
@@ -80,15 +79,13 @@ export class GiftsComponent implements OnInit {
     });
   }
 
-  private getFamily() {
-    this.userSrv.getFamily(this.identification).subscribe(family => {
-      if (family) {
-        this.family = family;
-        this.isFamilyAdmin = _.find(family.admins, (admin) => admin.id === this.currentAccount.id) !== undefined;
-      }
-    });
+  private checkIfGroupAdmin() {
+    if (this.identification) {
+      this.userSrv.isGroupAdmin(this.identification).subscribe(result => {
+        this.isGroupAdmin = result;
+      })
+    }
   }
-
 
   private processList(result: Map<string, Gift[]>) {
     this.categorizedGifts = result;
@@ -216,7 +213,7 @@ export class GiftsComponent implements OnInit {
     if (error.status === 404) {
       this.alertSrv.error('error.account.notFound')
     } else if (error.status === 409) {
-      this.alertSrv.error('user.family.admin.error')
+      this.alertSrv.error('user.group.admin.error')
     }
   }
 

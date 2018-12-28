@@ -1,3 +1,5 @@
+import {Group} from "@model/Group";
+
 export class Account {
   id?: string;
   username?: string;
@@ -10,13 +12,14 @@ export class Account {
   avatar?: any;
   token: string;
   fullname?: string;
-  familyAdmin?: boolean;
+  groupAdmin?: boolean;
   type: AccountType;
   giftsCount?: number;
   publicList?: boolean;
   notifications?: boolean;
   seenChangelog?: boolean;
-  admin:boolean
+  admin:boolean;
+  groups:Group[];
 }
 
 export class Authority {

@@ -28,10 +28,10 @@ export class ConfirmComponent implements OnInit {
       this.apiSrv.post(`${environment.account_url}/confirm`, this.token).subscribe(response => {
         switch (response.result) {
           case 'family_admin':
-            this.alertSrv.success('user.confirm.family.admin.success');
+            this.alertSrv.success('user.confirm.group.admin.success');
             break;
           case 'family_member':
-            this.alertSrv.success('user.confirm.family.success');
+            this.alertSrv.success('user.confirm.group.success');
             break;
         }
         this.router.navigate(['/']);
@@ -50,7 +50,7 @@ export class ConfirmComponent implements OnInit {
           this.alertSrv.error('user.confirm.token.error.time');
           break;
         case 'family_exists':
-          this.alertSrv.error('user.confirm.family.exists');
+          this.alertSrv.error('user.confirm.group.exists');
           break;
       }
     }

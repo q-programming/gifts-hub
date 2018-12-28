@@ -3,7 +3,7 @@
 <head>
     <meta name="viewport" content="width=device-width">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Administrator rodziny ${familyName}</title>
+    <title>Invitation to ${groupName} group</title>
     <style>
         * {
             margin: 0;
@@ -137,15 +137,22 @@
             </td>
             <td>
                 <#if name??>
-                    <p>Witaj ${name},</p>
+                    <p>Hello ${name},</p>
                 </#if>
                 <div>
-                ${owner} oznaczy&#322; Ci&#281; jako administratora rodziny "${familyName}" w aplikacji Gifts Hub
+                    ${owner} wanted to invite you to his group "${groupName}" in Gifts Hub application
                 </div>
-                <p>Kliknij link poni&#380;ej aby potwierdzi&#263;</p>
-                <p>
-                    <a href="${confirmLink}">${confirmLink}</a>
-                </p>
+                <#if confirmLink??>
+                    <p>Click link below, or copy and paste it in browser to confirm invitation </p>
+                    <p>
+                        <a href="${confirmLink}">${confirmLink}</a>
+                    </p>
+                <#else>
+                    <p>Because you don't have account yet, please be invited to create one by clicking link below:</p>
+                    <p>
+                        <a href="${registerLink}">${registerLink}</a>
+                    </p>
+                </#if>
             </td>
         </tr>
         </tbody>
@@ -164,10 +171,11 @@
                     <tr>
                         <td align="center">
                             <p>
-                                To jest automatyczna wiadomo&#347;&#263; wys&#322;ana z <a
-                                    href="${application!'#'}" target="_blank">${application!'#'}</a>.</br>
-                                Je&#380;eli nie chcesz otrzymywa&#263; wi&#281;cej powiadomie&#324; poprzez
-                                e-mail, odznacz prosz&#281; opcj&#281; w paneu sterowania.
+                                This is automatic message sent from <a
+                                        href="${application!'#'}" target="_blank">${application!'#'}</a>.</br>
+                                If you wish to stop receiving e-mail notifications, please deselect notifications option
+                                in
+                                your user settings.
                             </p>
                         </td>
                     </tr>
@@ -180,7 +188,5 @@
     </tbody>
 </table>
 <!-- /footer -->
-
-
 </body>
 </html>

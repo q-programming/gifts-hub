@@ -50,7 +50,7 @@ import {AdminsComponent} from './components/manage/admins/admins.component';
 import {CategoryListComponent} from './components/gifts/category-list/category-list.component';
 import {ConfirmDialogComponent} from "./components/dialogs/confirm/confirm-dialog.component";
 import {GoTopButtonModule} from 'ng2-go-top-button';
-import {FamilyDialogComponent} from './components/user-list/family-dialog/family-dialog.component';
+import {GroupDialogComponent} from './components/user-list/group-dialog/group-dialog.component';
 import {PermissionComponent} from './components/user-list/permission/permission.component';
 import {ConfirmComponent} from './components/confirm/confirm.component';
 
@@ -83,7 +83,7 @@ import {ConfirmComponent} from './components/confirm/confirm.component';
     AdminsComponent,
     CategoryListComponent,
     ConfirmDialogComponent,
-    FamilyDialogComponent,
+    GroupDialogComponent,
     PermissionComponent,
     ConfirmComponent
   ],
@@ -92,7 +92,7 @@ import {ConfirmComponent} from './components/confirm/confirm.component';
     KidDialogComponent,
     GiftDialogComponent,
     ConfirmDialogComponent,
-    FamilyDialogComponent
+    GroupDialogComponent
   ],
   imports: [
     FormsModule,

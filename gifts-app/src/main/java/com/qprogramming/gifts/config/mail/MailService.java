@@ -51,7 +51,7 @@ public class MailService {
     private static final String APPLICATION = "application";
     private static final String NAME = "name";
     private static final String EVENTS = "events";
-    private static final String FAMILY_NAME = "familyName";
+    private static final String GROUP_NAME = "groupName";
     private static final String CONFIRM_LINK = "confirmLink";
     private static final String REGISTER_LINK = "registerLink";
     private static final String LOGO_PNG = "logo.png";
@@ -314,12 +314,12 @@ public class MailService {
         switch (event.getType()) {
             case GROUP_MEMEBER:
                 mimeMessageHelper.setSubject(msgSrv.getMessage("user.group.invite", new Object[]{familyName}, "", locale));
-                mail.addToModel(FAMILY_NAME, familyName);
+                mail.addToModel(GROUP_NAME, familyName);
                 mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/groupInvite.ftl"));
                 break;
             case GROUP_ADMIN:
                 mimeMessageHelper.setSubject(msgSrv.getMessage("user.group.admin", new Object[]{familyName}, "", locale));
-                mail.addToModel(FAMILY_NAME, familyName);
+                mail.addToModel(GROUP_NAME, familyName);
                 mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/groupAdmin.ftl"));
                 break;
             case GROUP_REMOVE:
@@ -350,7 +350,7 @@ public class MailService {
         mimeMessageHelper.setSubject(msgSrv.getMessage("user.group.invite", new Object[]{familyName}, "", locale));
         String confirmLink = mail.getModel().get(APPLICATION) + "#/register/";
         mail.addToModel(REGISTER_LINK, confirmLink);
-        mail.addToModel(FAMILY_NAME, familyName);
+        mail.addToModel(GROUP_NAME, familyName);
         mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/groupInvite.ftl"));
         mimeMessageHelper.setText(mail.getMailContent(), true);
         LOG.info("Sending invite message to {}", mail.getMailTo());

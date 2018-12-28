@@ -1,13 +1,14 @@
 import {Account} from "@model/Account";
 
-export class Family {
+export class Group {
   id: number;
   name: string;
   members: Account[];
   admins: Account[];
 }
 
-export class FamilyForm {
+export class GroupForm {
+  id?: number;
   name?: string;
   members?: string[];
   admins?: string[];

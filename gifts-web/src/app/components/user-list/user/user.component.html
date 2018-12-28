@@ -3,10 +3,10 @@
     <img matCardAvatar [src]="user.avatar" class="avatar">
   </div>
   <div fxFlex="40%">
-    <span *ngIf="user.type === AccountType.KID" matTooltip="{{'user.family.kid'|translate}}">
+    <span *ngIf="user.type === AccountType.KID" matTooltip="{{'user.group.kid'|translate}}">
       <i class="fa fa-child"></i>
     </span>
-    <span *ngIf="user.familyAdmin" matTooltip="{{'user.family.administrator'|translate}}">
+    <span *ngIf="user.groupAdmin" matTooltip="{{'user.group.administrator'|translate}}">
       <i class="fa fa-address-card-o"></i>
     </span>
     {{user.fullname}} ({{user.username}})
@@ -24,8 +24,8 @@
        matTooltip="{{'user.settings.public.text'|translate}}" class="mr-1 black">
       <i class="fa fa-link"></i>
     </a>
-    <button mat-stroked-button *ngIf="user.type === AccountType.KID && isUserFamily" class="white-button"
-            (click)="editKid()" matTooltip="{{'user.family.edit.kid.text'|translate}}">
+    <button mat-stroked-button *ngIf="user.type === AccountType.KID && isGroupAdmin" class="white-button"
+            (click)="editKid()" matTooltip="{{'user.group.edit.kid.text'|translate}}">
       <i class="fa fa-pencil"></i>
     </button>
     <button mat-stroked-button routerLink="/list/{{user.username}}" class="white-button">

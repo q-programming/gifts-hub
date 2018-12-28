@@ -99,7 +99,7 @@ public class Settings {
     }
 
     public enum SortBy {
-        FAMILY, NAME;
+        GROUP, NAME;
 
         public static SortBy fromString(String string) {
             if (StringUtils.isEmpty(string)) {

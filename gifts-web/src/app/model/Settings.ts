@@ -14,7 +14,7 @@ export class Settings {
 }
 
 export enum SortBy {
-  FAMILY = "FAMILY", NAME = "NAME"
+  GROUP = "GROUP", NAME = "NAME"
 }
 
 export class EmailSettings {
