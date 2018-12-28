@@ -779,6 +779,39 @@ public class UserRestController {
 
     @Transactional
     @PreAuthorize("hasRole('ROLE_USER')")
+    @RequestMapping(value = "/allowed/family/add-family", method = RequestMethod.DELETE)
+    public ResponseEntity addFamilyToAllowed(@RequestBody Long targetFamilyID) {
+        try {
+            Family userFamily = familyService.getFamilyAsFamilyAdmin();
+            Optional<Family> optionalTargetFamily = familyService.getFamilyById(targetFamilyID);
+            if (!optionalTargetFamily.isPresent()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+            Family targetFamily = optionalTargetFamily.get();
+            Set<AccountEvent> events = targetFamily.getAdmins()
+                    .stream()
+                    .map(account -> familyService.familyAllowFamilyEvent(account, userFamily))
+                    .collect(Collectors.toSet());
+            for (AccountEvent event : events) {
+                Mail mail = Utils.createMail(event.getAccount(), Utils.getCurrentAccount());
+                mailService.sendConfirmMail(mail, event);
+            }
+            return ResponseEntity.ok().build();
+        } catch (FamilyNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (FamilyNotAdminException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("family_admin");
+        } catch (MessagingException e) {
+            LOG.error("Error while trying to send emails. {}", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    private void sendConfirmation(Set<AccountEvent> events) {
+    }
+
+    @Transactional
+    @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/allowed/family/remove-family", method = RequestMethod.DELETE)
     public ResponseEntity removeFamilyFromAllowed(@RequestBody Long targetFamilyID) {
         try {

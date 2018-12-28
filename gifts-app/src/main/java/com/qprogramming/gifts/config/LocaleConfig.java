@@ -27,7 +27,7 @@ public class LocaleConfig {
     @Bean
     public LocaleResolver localeResolver() {
         SessionLocaleResolver slr = new SessionLocaleResolver();
-        slr.setDefaultLocale(new Locale(propertyService.getDefaultLang()));//TODO change to application properties
+        slr.setDefaultLocale(new Locale(propertyService.getDefaultLang()));
         return slr;
     }
 

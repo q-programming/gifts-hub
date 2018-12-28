@@ -185,6 +185,14 @@ public class FamilyService {
         return accountEventRepository.save(event);
     }
 
+    public AccountEvent familyAllowFamilyEvent(Account account, Family target) {
+        AccountEvent event = new AccountEvent();
+        event.setFamily(target);
+        event.setAccount(account);
+        event.setType(AccountEventType.FAMILY_ALLOW_FAMILY);
+        return accountEventRepository.save(event);
+    }
+
     public String generateToken() {
         String token = Generators.timeBasedGenerator().generate().toString();
         while (accountEventRepository.findByToken(token).isPresent()) {
