@@ -1,7 +1,7 @@
 package com.qprogramming.gifts.account.event;
 
 import com.qprogramming.gifts.account.Account;
-import com.qprogramming.gifts.account.family.Family;
+import com.qprogramming.gifts.account.group.Group;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -15,5 +15,5 @@ public interface AccountEventRepository extends JpaRepository<AccountEvent, Long
 
     List<AccountEvent> findAllByAccount(Account account);
 
-    List<AccountEvent> findAllByFamily(Family family);
+    List<AccountEvent> findAllByGroup(Group group);
 }

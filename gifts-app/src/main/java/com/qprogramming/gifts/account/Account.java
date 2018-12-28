@@ -3,6 +3,7 @@ package com.qprogramming.gifts.account;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.qprogramming.gifts.account.authority.Authority;
 import com.qprogramming.gifts.account.authority.Role;
+import com.qprogramming.gifts.account.group.Group;
 import io.jsonwebtoken.lang.Collections;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,6 +14,9 @@ import java.util.*;
 
 import static com.qprogramming.gifts.support.Utils.ACCOUNT_COMPARATOR;
 
+//@JsonIdentityInfo(
+//        generator = ObjectIdGenerators.PropertyGenerator.class,
+//        property = "id")
 @Entity
 public class Account implements Serializable, UserDetails, Comparable<Account> {
 
@@ -72,6 +76,13 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
 
     @Transient
     private String tokenValue;
+
+    @ManyToMany
+    @JoinTable(name = "account_groups",
+            joinColumns = {@JoinColumn(name = "fk_account")},
+            inverseJoinColumns = {@JoinColumn(name = "fk_group")})
+    @JsonIgnore
+    private Set<Group> groups;
 
     public Account() {
         this.created = new Date();
@@ -233,6 +244,17 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
 
     public void setNotifications(Boolean notifications) {
         this.notifications = notifications;
+    }
+
+    public Set<Group> getGroups() {
+        if (Collections.isEmpty(groups)) {
+            this.groups = new HashSet<>();
+        }
+        return groups;
+    }
+
+    public void setGroups(Set<Group> groups) {
+        this.groups = groups;
     }
 
     @JsonIgnore

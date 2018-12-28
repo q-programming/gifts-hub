@@ -108,7 +108,7 @@ export class FamilyDialogComponent implements OnInit {
   }
 
   /**
-   * Commit any family creation or update
+   * Commit any group creation or update
    */
   commit() {
     const form = new FamilyForm();

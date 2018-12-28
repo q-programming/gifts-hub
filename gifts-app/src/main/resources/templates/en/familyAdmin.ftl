@@ -3,7 +3,7 @@
 <head>
     <meta name="viewport" content="width=device-width">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>${familyName} family administrator</title>
+    <title>${familyName} group administrator</title>
     <style>
         * {
             margin: 0;
@@ -140,7 +140,7 @@
                     <p>Hello ${name},</p>
                 </#if>
                 <div>
-                ${owner} designated you as administrator of "${familyName}" family in Gifts Hub application
+                ${owner} designated you as administrator of "${familyName}" group in Gifts Hub application
                 </div>
                 <p>Click link below to confirm</p>
                 <p>

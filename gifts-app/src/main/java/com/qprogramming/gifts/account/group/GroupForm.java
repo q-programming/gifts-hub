@@ -1,11 +1,11 @@
-package com.qprogramming.gifts.account.family;
+package com.qprogramming.gifts.account.group;
 
 import java.util.Set;
 
 /**
  * Created by Khobar on 04.04.2017.
  */
-public class FamilyForm {
+public class GroupForm {
     private Long id;
     private String name;
     private Set<String> members;

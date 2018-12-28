@@ -13,10 +13,16 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 @Configuration
 public class MappingConfiguration {
 
+    public static class Public {
+    }
+    public static class Members {
+    }
+
 
     @Bean
     public Jackson2ObjectMapperBuilder configureObjectMapper() {
         return new Jackson2ObjectMapperBuilder()
+                .defaultViewInclusion(true)
                 .failOnUnknownProperties(false)
                 .modulesToInstall(Hibernate5Module.class);
     }

@@ -3,7 +3,7 @@
 <head>
     <meta name="viewport" content="width=device-width">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Invitation to ${familyName} family</title>
+    <title>Invitation to ${familyName} group</title>
     <style>
         * {
             margin: 0;
@@ -140,7 +140,7 @@
                     <p>Hello ${name},</p>
                 </#if>
                 <div>
-                    ${owner} wanted to invite you to his family "${familyName}" in Gifts Hub application
+                    ${owner} wanted to invite you to his group "${familyName}" in Gifts Hub application
                 </div>
                 <#if confirmLink??>
                     <p>Click link below to confirm invitation </p>

@@ -1,13 +1,16 @@
-package com.qprogramming.gifts.account.family;
+package com.qprogramming.gifts.account.group;
 
 import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.RegisterForm;
+
 import javax.validation.constraints.NotBlank;
 
 /**
  * Created by Remote on 05.04.2017.
  */
 public class KidForm {
+
+    private Long groupId;
     private String id;
     @NotBlank(message = RegisterForm.NOT_BLANK_MESSAGE)
     private String name;
@@ -64,6 +67,14 @@ public class KidForm {
 
     public void setPublicList(Boolean publicList) {
         this.publicList = publicList;
+    }
+
+    public Long getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(Long groupId) {
+        this.groupId = groupId;
     }
 
     public Account createAccount() {

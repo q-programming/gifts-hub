@@ -1,9 +1,9 @@
 package com.qprogramming.gifts.account.event;
 
 public enum AccountEventType {
-    FAMILY_MEMEBER,
-    FAMILY_ADMIN,
-    FAMILY_REMOVE,
-    FAMILY_ALLOW_FAMILY,
+    GROUP_MEMEBER,
+    GROUP_ADMIN,
+    GROUP_REMOVE,
+    GROUP_ALLOW_GROUP,
     ACCOUNT_CONFIRM
 }

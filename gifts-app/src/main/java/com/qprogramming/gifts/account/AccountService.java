@@ -8,8 +8,8 @@ import com.qprogramming.gifts.account.avatar.Avatar;
 import com.qprogramming.gifts.account.avatar.AvatarRepository;
 import com.qprogramming.gifts.account.event.AccountEvent;
 import com.qprogramming.gifts.account.event.AccountEventRepository;
-import com.qprogramming.gifts.account.family.Family;
-import com.qprogramming.gifts.account.family.FamilyService;
+import com.qprogramming.gifts.account.group.Group;
+import com.qprogramming.gifts.account.group.GroupService;
 import com.qprogramming.gifts.config.property.PropertyService;
 import com.qprogramming.gifts.exceptions.AccountNotFoundException;
 import com.qprogramming.gifts.gift.GiftService;
@@ -38,7 +38,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.*;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -55,7 +54,7 @@ public class AccountService implements UserDetailsService {
     private AccountRepository _accountRepository;
     private AccountPasswordEncoder _accountPasswordEncoder;
     private AvatarRepository _avatarRepository;
-    private FamilyService _familyService;
+    private GroupService _groupService;
     private PropertyService _propertyService;
     private AccountEventRepository _accountEventRepository;
     private GiftService giftService;
@@ -63,11 +62,11 @@ public class AccountService implements UserDetailsService {
 
 
     @Autowired
-    public AccountService(AccountRepository accountRepository, AccountPasswordEncoder accountPasswordEncoder, AvatarRepository avatarRepository, FamilyService familyService, PropertyService propertyService, AccountEventRepository accountEventRepository, GiftService giftService, AuthorityService authorityService) {
+    public AccountService(AccountRepository accountRepository, AccountPasswordEncoder accountPasswordEncoder, AvatarRepository avatarRepository, GroupService groupService, PropertyService propertyService, AccountEventRepository accountEventRepository, GiftService giftService, AuthorityService authorityService) {
         this._accountRepository = accountRepository;
         this._accountPasswordEncoder = accountPasswordEncoder;
         this._avatarRepository = avatarRepository;
-        this._familyService = familyService;
+        this._groupService = groupService;
         this._propertyService = propertyService;
         this._accountEventRepository = accountEventRepository;
         this.giftService = giftService;
@@ -283,22 +282,15 @@ public class AccountService implements UserDetailsService {
 
 
     /**
-     * Search for all users within application.
-     * If user has family , user from that family will be shown firsts. Other users are sorted per Surname/Name
+     * Search for all users that are member of group that account belongs to
      *
-     * @param account account for which potential family will be used to sort
+     * @param account account for which group will be used to fetch all member
      * @return list of all sorted users
      */
-    public Set<Account> findAllSortByFamily(Account account) {
-        Optional<Family> family = _familyService.getFamily(account);
-        List<Account> list = findAll();
-        Set<Account> result = new LinkedHashSet<>();
-        if (family.isPresent()) {
-            //Add all from user's family first
-            result.addAll(list.stream().filter(family.get().getMembers()::contains).sorted(ACCOUNT_COMPARATOR).collect(Collectors.toList()));
-            list.removeAll(result);
-        }
-        result.addAll(list);
+    public Set<Account> findAllFromGroups(Account account) {
+        Set<Account> accounts = _accountRepository.findByGroupsIn(account.getGroups());
+        TreeSet<Account> result = new TreeSet<>(ACCOUNT_COMPARATOR);
+        result.addAll(accounts);
         return result;
     }
 
@@ -310,18 +302,6 @@ public class AccountService implements UserDetailsService {
      */
     public List<Account> sortedAccounts(List<Account> list) {
         return list.stream().sorted(ACCOUNT_COMPARATOR).collect(Collectors.toList());
-    }
-
-    /**
-     * Return all accounts without family
-     *
-     * @return
-     */
-    public List<Account> findWithoutFamily() {
-        List<Account> all = findAll();
-        List<Account> accountsWithFamily = _familyService.findAll().stream().map(Family::getMembers).flatMap(Collection::stream).distinct().collect(Collectors.toList());
-        all.removeAll(accountsWithFamily);
-        return all;
     }
 
     public Set<Account> findByIds(Set<String> members) {
@@ -350,8 +330,10 @@ public class AccountService implements UserDetailsService {
     }
 
     public void delete(Account account) {
-        Optional<Family> optionalFamily = _familyService.getFamily(account);
-        optionalFamily.ifPresent(family -> _familyService.removeFromFamily(account, family));
+        Set<Group> allAccountGroups = _groupService.findAllAccountGroups(account);
+        allAccountGroups.forEach(group -> {
+            _groupService.removeFromGroup(account, group);
+        });
         Avatar avatar = _avatarRepository.findOneById(account.getId());
         if (avatar != null) {
             _avatarRepository.delete(avatar);
@@ -413,16 +395,7 @@ public class AccountService implements UserDetailsService {
         return new HashSet<>(_accountRepository.saveAll(members));
     }
 
-
-    public void addAllowedToFamily(Family target, Set<Account> accounts) {
-        Set<String> ids = accounts.stream().map(Account::getId).collect(Collectors.toSet());
-        target.getMembers().forEach(account -> account.getAllowed().addAll(ids));
-        update(target.getMembers());
-    }
-
-    public void removeAllowedFromFamily(Family target, Set<Account> accounts) {
-        Set<String> ids = accounts.stream().map(Account::getId).collect(Collectors.toSet());
-        target.getMembers().forEach(account -> account.getAllowed().removeAll(ids));
-        update(target.getMembers());
+    public boolean isAccountGroupAdmin(Account account) {
+        return account.getGroups().stream().anyMatch(group -> group.getAdmins().contains(Utils.getCurrentAccount()));
     }
 }

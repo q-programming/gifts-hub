@@ -1,6 +1,7 @@
 package com.qprogramming.gifts.account;
 
 import com.qprogramming.gifts.account.authority.Authority;
+import com.qprogramming.gifts.account.group.Group;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -31,4 +32,6 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     List<Account> findByNotificationsIsTrueAndEmailNotNullAndTypeIsNot(AccountType type);
 
     List<Account> findByAuthorities(Authority roles);
+
+    Set<Account> findByGroupsIn(Set<Group> groups);
 }

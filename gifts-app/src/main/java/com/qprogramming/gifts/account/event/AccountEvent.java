@@ -1,15 +1,15 @@
 package com.qprogramming.gifts.account.event;
 
 import com.qprogramming.gifts.account.Account;
-import com.qprogramming.gifts.account.family.Family;
+import com.qprogramming.gifts.account.group.Group;
 
 import javax.persistence.*;
 
 @Entity
 public class AccountEvent {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "family_event_seq_gen")
-    @SequenceGenerator(name = "family_event_seq_gen", sequenceName = "family_event_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "account_event_seq_gen")
+    @SequenceGenerator(name = "account_event_seq_gen", sequenceName = "account_event_id_seq", allocationSize = 1)
     private Long id;
 
     @ManyToOne
@@ -19,7 +19,7 @@ public class AccountEvent {
     private AccountEventType type;
 
     @ManyToOne
-    private Family family;
+    private Group group;
 
     @Column(unique = true)
     private String token;
@@ -48,12 +48,12 @@ public class AccountEvent {
         this.type = type;
     }
 
-    public Family getFamily() {
-        return family;
+    public Group getGroup() {
+        return group;
     }
 
-    public void setFamily(Family family) {
-        this.family = family;
+    public void setGroup(Group group) {
+        this.group = group;
     }
 
     public String getToken() {
@@ -74,7 +74,7 @@ public class AccountEvent {
         if (id != null ? !id.equals(that.id) : that.id != null) return false;
         if (account != null ? !account.equals(that.account) : that.account != null) return false;
         if (type != that.type) return false;
-        if (family != null ? !family.equals(that.family) : that.family != null) return false;
+        if (group != null ? !group.equals(that.group) : that.group != null) return false;
         return token != null ? token.equals(that.token) : that.token == null;
     }
 
@@ -83,7 +83,7 @@ public class AccountEvent {
         int result = id != null ? id.hashCode() : 0;
         result = 31 * result + (account != null ? account.hashCode() : 0);
         result = 31 * result + (type != null ? type.hashCode() : 0);
-        result = 31 * result + (family != null ? family.hashCode() : 0);
+        result = 31 * result + (group != null ? group.hashCode() : 0);
         result = 31 * result + (token != null ? token.hashCode() : 0);
         return result;
     }

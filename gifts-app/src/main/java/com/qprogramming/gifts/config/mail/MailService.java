@@ -310,19 +310,19 @@ public class MailService {
         Locale locale = getMailLocale(mail);
         String confirmLink = mail.getModel().get(APPLICATION) + "#/confirm/" + event.getToken();
         mail.addToModel(CONFIRM_LINK, confirmLink);
-        String familyName = event.getFamily().getName();
+        String familyName = event.getGroup().getName();
         switch (event.getType()) {
-            case FAMILY_MEMEBER:
-                mimeMessageHelper.setSubject(msgSrv.getMessage("user.family.invite", new Object[]{familyName}, "", locale));
+            case GROUP_MEMEBER:
+                mimeMessageHelper.setSubject(msgSrv.getMessage("user.group.invite", new Object[]{familyName}, "", locale));
                 mail.addToModel(FAMILY_NAME, familyName);
-                mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/familyInvite.ftl"));
+                mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/groupInvite.ftl"));
                 break;
-            case FAMILY_ADMIN:
-                mimeMessageHelper.setSubject(msgSrv.getMessage("user.family.admin", new Object[]{familyName}, "", locale));
+            case GROUP_ADMIN:
+                mimeMessageHelper.setSubject(msgSrv.getMessage("user.group.admin", new Object[]{familyName}, "", locale));
                 mail.addToModel(FAMILY_NAME, familyName);
-                mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/familyAdmin.ftl"));
+                mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/groupAdmin.ftl"));
                 break;
-            case FAMILY_REMOVE:
+            case GROUP_REMOVE:
                 break;
         }
         mimeMessageHelper.setText(mail.getMailContent(), true);
@@ -347,11 +347,11 @@ public class MailService {
     public void sendInvite(Mail mail, String familyName) throws MessagingException {
         MimeMessageHelper mimeMessageHelper = createBaseMimeMessage(mail);
         Locale locale = getMailLocale(mail);
-        mimeMessageHelper.setSubject(msgSrv.getMessage("user.family.invite", new Object[]{familyName}, "", locale));
+        mimeMessageHelper.setSubject(msgSrv.getMessage("user.group.invite", new Object[]{familyName}, "", locale));
         String confirmLink = mail.getModel().get(APPLICATION) + "#/register/";
         mail.addToModel(REGISTER_LINK, confirmLink);
         mail.addToModel(FAMILY_NAME, familyName);
-        mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/familyInvite.ftl"));
+        mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/groupInvite.ftl"));
         mimeMessageHelper.setText(mail.getMailContent(), true);
         LOG.info("Sending invite message to {}", mail.getMailTo());
         mailSender.send(mimeMessageHelper.getMimeMessage());

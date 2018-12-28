@@ -3,8 +3,8 @@ package com.qprogramming.gifts.api.gift;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.AccountService;
-import com.qprogramming.gifts.account.family.Family;
-import com.qprogramming.gifts.account.family.FamilyService;
+import com.qprogramming.gifts.account.group.Group;
+import com.qprogramming.gifts.account.group.GroupService;
 import com.qprogramming.gifts.config.mail.MailService;
 import com.qprogramming.gifts.exceptions.AccountNotFoundException;
 import com.qprogramming.gifts.gift.Gift;
@@ -67,18 +67,18 @@ public class GiftRestController {
     private SearchEngineService searchEngineService;
     private CategoryService categoryService;
     private MessagesService msgSrv;
-    private FamilyService familyService;
+    private GroupService groupService;
     private AppEventService eventService;
     private MailService mailService;
 
     @Autowired
-    public GiftRestController(AccountService accountService, GiftService giftService, SearchEngineService searchEngineService, CategoryService categoryService, MessagesService msgSrv, FamilyService familyService, AppEventService eventService, MailService mailService) {
+    public GiftRestController(AccountService accountService, GiftService giftService, SearchEngineService searchEngineService, CategoryService categoryService, MessagesService msgSrv, GroupService groupService, AppEventService eventService, MailService mailService) {
         this.accountService = accountService;
         this.giftService = giftService;
         this.searchEngineService = searchEngineService;
         this.categoryService = categoryService;
         this.msgSrv = msgSrv;
-        this.familyService = familyService;
+        this.groupService = groupService;
         this.eventService = eventService;
         this.mailService = mailService;
         initProhibited();
@@ -115,7 +115,7 @@ public class GiftRestController {
             }
             return new ResponseEntity<>(gift, HttpStatus.CREATED);
         }
-        return ResponseEntity.status(HttpStatus.CONFLICT).body("family");
+        return ResponseEntity.status(HttpStatus.CONFLICT).body("group");
     }
 
     @PreAuthorize("hasRole('ROLE_USER')")
@@ -130,7 +130,7 @@ public class GiftRestController {
             gift = updateGiftFromForm(giftForm);
             return new ResponseEntity<>(gift, HttpStatus.OK);
         }
-        return new ResultData.ResultBuilder().badReqest().error().message(msgSrv.getMessage("user.family.admin.error")).build();
+        return ResponseEntity.status(HttpStatus.CONFLICT).body("family");
     }
 
     private boolean canOperateOnUsernameGifts(String id) {
@@ -142,10 +142,15 @@ public class GiftRestController {
                 LOG.debug("Gift owner with id {} was not found", id);
                 return false;
             }
-            Optional<Family> family = familyService.getFamily(giftOwner);
-            return giftOwner.equals(Utils.getCurrentAccount()) || family.isPresent() && (family.get().getAdmins().contains(Utils.getCurrentAccount()));
+            return isGiftOwnerOrGroupAdmin(giftOwner);
         }
         return false;
+    }
+
+    private boolean isGiftOwnerOrGroupAdmin(Account giftOwner) {
+        return giftOwner.equals(Utils.getCurrentAccount())
+                || accountService.isAccountGroupAdmin(giftOwner);
+
     }
 
     private boolean canOperateOnGift(Gift gift) {
@@ -156,9 +161,7 @@ public class GiftRestController {
             LOG.debug("Account with id {} not found", gift.getUserId());
             return false;
         }
-        Optional<Family> family = familyService.getFamily(giftOwner);
-        return family.map(family1 -> giftOwner.equals(Utils.getCurrentAccount()) || (family1.getAdmins().contains(Utils.getCurrentAccount())))
-                .orElseGet(() -> giftOwner.equals(Utils.getCurrentAccount()));
+        return isGiftOwnerOrGroupAdmin(giftOwner);
     }
 
     @PreAuthorize("hasRole('ROLE_USER')")
@@ -345,7 +348,7 @@ public class GiftRestController {
     @RequestMapping(value = "/import", method = RequestMethod.POST)
     public ResponseEntity importGifts(@RequestParam(value = "file") MultipartFile importFile, @RequestParam(value = "user", required = false) String username) {
         if (StringUtils.isNotBlank(username) && !canOperateOnUsernameGifts(username)) {
-            return new ResultData.ResultBuilder().badReqest().error().message(msgSrv.getMessage("user.family.admin.error")).build();
+            ResponseEntity.status(HttpStatus.CONFLICT).body("family");
         }
         StringBuilder logger = new StringBuilder();
         Workbook workbook;

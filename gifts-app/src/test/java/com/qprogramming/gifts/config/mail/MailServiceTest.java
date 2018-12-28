@@ -6,7 +6,7 @@ import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.account.event.AccountEvent;
 import com.qprogramming.gifts.account.event.AccountEventType;
-import com.qprogramming.gifts.account.family.Family;
+import com.qprogramming.gifts.account.group.Group;
 import com.qprogramming.gifts.config.property.DataBasePropertySource;
 import com.qprogramming.gifts.config.property.PropertyService;
 import com.qprogramming.gifts.messages.MessagesService;
@@ -135,12 +135,12 @@ public class MailServiceTest {
     @Test
     public void sendMemberConfirmMail() throws MessagingException {
         AccountEvent event = new AccountEvent();
-        Family family = new Family();
-        family.setName(testAccount.getSurname());
-        event.setFamily(family);
+        Group group = new Group();
+        group.setName(testAccount.getSurname());
+        event.setGroup(group);
         event.setToken("token");
-        event.setType(AccountEventType.FAMILY_MEMEBER);
-        when(msgSrvMock.getMessage("user.family.invite", new Object[]{family.getName()}, "", locale)).thenReturn(SUBJECT);
+        event.setType(AccountEventType.GROUP_MEMEBER);
+        when(msgSrvMock.getMessage("user.group.invite", new Object[]{group.getName()}, "", locale)).thenReturn(SUBJECT);
         when(propertyServiceMock.getProperty(APP_EMAIL_FROM)).thenReturn("from@mail.com");
         Mail mail = Utils.createMail(testAccount);
         mailService.sendConfirmMail(mail, event);
@@ -150,12 +150,12 @@ public class MailServiceTest {
     @Test
     public void sendAdminConfirmMail() throws MessagingException {
         AccountEvent event = new AccountEvent();
-        Family family = new Family();
-        family.setName(testAccount.getSurname());
-        event.setFamily(family);
+        Group group = new Group();
+        group.setName(testAccount.getSurname());
+        event.setGroup(group);
         event.setToken("token");
-        event.setType(AccountEventType.FAMILY_ADMIN);
-        when(msgSrvMock.getMessage("user.family.admin", new Object[]{family.getName()}, "", locale)).thenReturn(SUBJECT);
+        event.setType(AccountEventType.GROUP_ADMIN);
+        when(msgSrvMock.getMessage("user.group.admin", new Object[]{group.getName()}, "", locale)).thenReturn(SUBJECT);
         when(propertyServiceMock.getProperty(APP_EMAIL_FROM)).thenReturn("from@mail.com");
         Mail mail = Utils.createMail(testAccount);
         mailService.sendConfirmMail(mail, event);

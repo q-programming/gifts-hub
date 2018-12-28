@@ -9,8 +9,8 @@ import com.qprogramming.gifts.account.authority.Role;
 import com.qprogramming.gifts.account.avatar.Avatar;
 import com.qprogramming.gifts.account.avatar.AvatarRepository;
 import com.qprogramming.gifts.account.event.AccountEventRepository;
-import com.qprogramming.gifts.account.family.Family;
-import com.qprogramming.gifts.account.family.FamilyService;
+import com.qprogramming.gifts.account.group.Group;
+import com.qprogramming.gifts.account.group.GroupService;
 import com.qprogramming.gifts.config.property.PropertyService;
 import com.qprogramming.gifts.gift.GiftService;
 import org.apache.commons.io.IOUtils;
@@ -39,7 +39,7 @@ public class AccountServiceTest extends MockedAccountTestBase {
     public static final String STATIC_IMAGES_LOGO_WHITE_PNG = "static/images/logo-white.png";
     public static final String STATIC_AVATAR_PLACEHOLDER = "static/images/avatar-placeholder.png";
     @Mock
-    private FamilyService familyServiceMock;
+    private GroupService groupServiceMock;
     @Mock
     private AccountRepository accountRepositoryMock;
     @Mock
@@ -65,7 +65,7 @@ public class AccountServiceTest extends MockedAccountTestBase {
         super.setup();
         when(giftServiceMock.countAllByUser(anyString())).thenReturn(1);
         AuthorityService authorityService = new AuthorityService(authorityRepositoryMock);
-        accountService = new AccountService(accountRepositoryMock, passwordEncoderMock, avatarRepositoryMock, familyServiceMock, propertyServiceMock, accountEventRepositoryMock, giftServiceMock, authorityService) {
+        accountService = new AccountService(accountRepositoryMock, passwordEncoderMock, avatarRepositoryMock, groupServiceMock, propertyServiceMock, accountEventRepositoryMock, giftServiceMock, authorityService) {
             @Override
             protected byte[] downloadFromUrl(URL url) {
                 ClassLoader loader = getClass().getClassLoader();
@@ -234,51 +234,17 @@ public class AccountServiceTest extends MockedAccountTestBase {
         verify(avatarRepositoryMock, times(1)).save(any(Avatar.class));
     }
 
-
-    @Test
-    public void findWithoutFamily() throws Exception {
-        Account account1 = TestUtil.createAccount("John", "Doe");
-        account1.setId(USER_RANDOM_ID + "1");
-        Account account2 = TestUtil.createAccount("John", "Doe");
-        account2.setId(USER_RANDOM_ID + "2");
-        Account account3 = TestUtil.createAccount("John", "Doe");
-        account3.setId(USER_RANDOM_ID + "3");
-        Account account4 = TestUtil.createAccount("John", "Doe");
-        account4.setId(USER_RANDOM_ID + "4");
-        Account account5 = TestUtil.createAccount("John", "Doe");
-        account5.setId(USER_RANDOM_ID + "5");
-        Account account6 = TestUtil.createAccount("John", "Doe");
-        account6.setId(USER_RANDOM_ID + "6");
-        Family family1 = new Family();
-        family1.getMembers().addAll(Arrays.asList(account1, account2));
-        Family family2 = new Family();
-        family1.getMembers().addAll(Arrays.asList(account3, account4));
-        List<Account> all = new ArrayList<>();
-        all.add(account1);
-        all.add(account2);
-        all.add(account3);
-        all.add(account4);
-        all.add(account5);
-        all.add(account6);
-        when(familyServiceMock.findAll()).thenReturn(Arrays.asList(family1, family2));
-        when(accountRepositoryMock.findAll()).thenReturn(all);
-        List<Account> withoutFamily = accountService.findWithoutFamily();
-        assertTrue(withoutFamily.contains(account5));
-        assertTrue(withoutFamily.contains(account6));
-        assertFalse(withoutFamily.contains(account1));
-    }
-
     @Test
     public void delete() throws Exception {
-        Family family = new Family();
-        family.getMembers().add(testAccount);
-        family.getAdmins().add(testAccount);
+        Group group = new Group();
+        group.addMember(testAccount);
+        group.getAdmins().add(testAccount);
         Avatar avatar = new Avatar();
-        when(familyServiceMock.getFamily(testAccount)).thenReturn(Optional.of(family));
+        when(groupServiceMock.findAllAccountGroups(testAccount)).thenReturn(Collections.singleton(group));
         when(avatarRepositoryMock.findOneById(testAccount.getId())).thenReturn(avatar);
         accountService.delete(testAccount);
         verify(avatarRepositoryMock, times(1)).delete(avatar);
-        verify(familyServiceMock, times(1)).removeFromFamily(testAccount, family);
+        verify(groupServiceMock, times(1)).removeFromGroup(testAccount, group);
         verify(accountRepositoryMock, times(1)).delete(testAccount);
     }
 
@@ -286,13 +252,16 @@ public class AccountServiceTest extends MockedAccountTestBase {
     public void findAllSortByFamily() throws Exception {
         List<Account> all = createAccountList();
         all.add(testAccount);
-        Family family1 = new Family();
+        Group group1 = new Group();
         Account andyAccount = all.get(1);
         Account bobAccount = all.get(0);
-        family1.getMembers().addAll(Arrays.asList(testAccount, andyAccount, bobAccount));
-        when(accountRepositoryMock.findAll()).thenReturn(all);
-        when(familyServiceMock.getFamily(testAccount)).thenReturn(Optional.of(family1));
-        Set<Account> result = accountService.findAllSortByFamily(testAccount);
+        group1.addMember(andyAccount);
+        group1.addMember(bobAccount);
+        group1.addMember(testAccount);
+        testAccount.setGroups(Collections.singleton(group1));
+        when(accountRepositoryMock.findByGroupsIn(testAccount.getGroups())).thenReturn(group1.getMembers());
+        when(groupServiceMock.findAllAccountGroups(testAccount)).thenReturn(Collections.singleton(group1));
+        Set<Account> result = accountService.findAllFromGroups(testAccount);
         //convert result to array to test order
         Object[] ordered = result.toArray();
         assertEquals(ordered[0], andyAccount);
@@ -302,17 +271,11 @@ public class AccountServiceTest extends MockedAccountTestBase {
 
     @Test
     public void findAllSortByFamilyNoFamily() throws Exception {
-        List<Account> all = createAccountList();
-        all.add(testAccount);
-        Account andyAccount = all.get(1);
-        Account bobAccount = all.get(0);
-        when(accountRepositoryMock.findAll()).thenReturn(all);
-        Set<Account> result = accountService.findAllSortByFamily(testAccount);
+        when(accountRepositoryMock.findByGroupsIn(testAccount.getGroups())).thenReturn(Collections.emptySet());
+        Set<Account> result = accountService.findAllFromGroups(testAccount);
         //convert result to array to test order
         Object[] ordered = result.toArray();
-        assertEquals(ordered[0], andyAccount);
-        assertEquals(ordered[1], bobAccount);
-        assertEquals(ordered[6], testAccount);
+        assertTrue(result.size() == 0);
     }
 
 
