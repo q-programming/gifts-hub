@@ -29,7 +29,7 @@ public class Group {
     @JsonView(MappingConfiguration.Members.class)
     private Set<Account> members;
 
-    @OneToMany
+    @ManyToMany
     @JoinTable(name = "group_admins")
     @JsonView(MappingConfiguration.Members.class)
     private Set<Account> admins;

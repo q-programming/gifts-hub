@@ -19,6 +19,13 @@
 .v-middle {
   vertical-align: middle !important;
 }
+.vertically-centered{
+  position: relative;
+  top: 50%;
+  -ms-transform: translateY(-50%);
+  -webkit-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
 
 .v-sub {
   vertical-align: sub !important;

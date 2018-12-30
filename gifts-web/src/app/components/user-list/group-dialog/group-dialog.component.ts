@@ -45,8 +45,7 @@ export class GroupDialogComponent implements OnInit {
   }
 
   private findAndSetAdmins(member) {
-    member.familyAdmin = !!_.find(this.group.admins, (a) => a.id === member.id);
-    if (member.familyAdmin) {
+    if (member.groupAdmin) {
       this.admins.push(member.email);
       if (this.currentAccount.id === member.id) {
         this.currentAccount.groupAdmin = true;
@@ -72,14 +71,26 @@ export class GroupDialogComponent implements OnInit {
   }
 
   addAdmin(member: Account) {
+    member.groupAdmin = true;
     this.group.admins.push(member);
     this.findAndSetAdmins(member);
+    this.alertSrv.success("user.group.admin.add.success", {name: member.fullname});
   }
 
   removeAdmin(member: Account) {
-    _.remove(this.group.admins, m => m === member.email);
+    let removed = _.remove(this.group.admins, m => m.email === member.email);
     _.remove(this.admins, s => s === member.email);
     member.groupAdmin = false;
+    if (removed.length > 0) {
+      this.alertSrv.success("user.group.admin.remove.success", {name: member.fullname});
+    }
+  }
+
+  removeMember(member: Account) {
+    _.remove(this.group.members, m => m.email === member.email);
+    _.remove(this.members, s => s.email === member.email);
+    this.removeAdmin(member);
+    this.alertSrv.success("user.group.kick.success", {name: member.fullname});
   }
 
   leaveFamily() {
@@ -102,4 +113,9 @@ export class GroupDialogComponent implements OnInit {
     form.name = this.nameCtrl.value;
     this.dialogRef.close(form);
   }
+
+  cancel() {
+    this.dialogRef.close({canceled: true})
+  }
+
 }

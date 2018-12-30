@@ -396,7 +396,17 @@ public class AccountService implements UserDetailsService {
         return new HashSet<>(_accountRepository.saveAll(members));
     }
 
+    public boolean isAccountGroupMember(Account account) {
+        return account.getGroups().stream().anyMatch(group -> group.getMembers().contains(Utils.getCurrentAccount()));
+    }
+
     public boolean isAccountGroupAdmin(Account account) {
         return account.getGroups().stream().anyMatch(group -> group.getAdmins().contains(Utils.getCurrentAccount()));
     }
+
+    public boolean isKidAdmin(Account kid) {
+        return kid.getType().equals(AccountType.KID) && isAccountGroupAdmin(kid);
+    }
+
+
 }

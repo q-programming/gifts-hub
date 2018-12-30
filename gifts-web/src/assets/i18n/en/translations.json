@@ -280,7 +280,7 @@
           "success": "You have become administrator of family"
         },
         "exists": "You are already a member of family and cannot join other",
-        "success": "You have been successfully joined to family"
+        "success": "You have been successfully joined to group"
       },
       "token": {
         "error": {
@@ -313,9 +313,15 @@
         }
       },
       "admin": {
-        "add": "Set as group administrator",
+        "add": {
+          "success": "{{name}} was set as group administrator.<br>\nConfirm operation by clicking \"Edit group\".",
+          "text": "Set as group administrator"
+        },
         "error": "You have to be grup admin to perform that operation",
-        "remove": "Remove group administrator rights from that group member",
+        "remove": {
+          "success": "{{name}} was removed from group administrator.<br>\nConfirm operation by clicking \"Edit group\".",
+          "text": "Remove group administrator rights from that group member"
+        },
         "text": "Admin"
       },
       "administrator": "Group administrator",
@@ -327,7 +333,7 @@
         "error": "There were errors while trying to create new grup. Please contact application administrator and enclose browser log",
         "help": "Create your group. Add users, who are already registered in application",
         "success": {
-          "invites": "New group was created. Emails with confirmation links were sent to invited application users",
+          "invites": "New group was created.<br>Emails with confirmation links were sent to invited application users",
           "text": "New group was created"
         },
         "text": "Create group"
@@ -348,7 +354,7 @@
           "text": "Edit kid"
         },
         "success": {
-          "invites": "Group has been updated. Emails with confirmation links were sent to invited application users",
+          "invites": "Group has been updated.<br>\nEmails with confirmation links were sent to invited application users",
           "text": "Group has been updated"
         },
         "text": "Edit group"
@@ -360,6 +366,10 @@
         "mailError": "There was error while sending invite via e-mail. Please contact administration",
         "new": "Invite new group member by email or their username",
         "text": "Invite to group"
+      },
+      "kick": {
+        "success": "You have kicked out user {{name}} out of group.<br>\nConfirm operation by clicking \"Edit group\"",
+        "text": "Kick out user out of group"
       },
       "kid": "Kid",
       "leave": {

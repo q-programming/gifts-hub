@@ -3,7 +3,6 @@ package com.qprogramming.gifts.api.gift;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.AccountService;
-import com.qprogramming.gifts.account.group.Group;
 import com.qprogramming.gifts.account.group.GroupService;
 import com.qprogramming.gifts.config.mail.MailService;
 import com.qprogramming.gifts.exceptions.AccountNotFoundException;
@@ -142,14 +141,14 @@ public class GiftRestController {
                 LOG.debug("Gift owner with id {} was not found", id);
                 return false;
             }
-            return isGiftOwnerOrGroupAdmin(giftOwner);
+            return isGiftOwnerOrGroupMember(giftOwner);
         }
         return false;
     }
 
-    private boolean isGiftOwnerOrGroupAdmin(Account giftOwner) {
+    private boolean isGiftOwnerOrGroupMember(Account giftOwner) {
         return giftOwner.equals(Utils.getCurrentAccount())
-                || accountService.isAccountGroupAdmin(giftOwner);
+                || accountService.isAccountGroupMember(giftOwner);
 
     }
 
@@ -161,7 +160,9 @@ public class GiftRestController {
             LOG.debug("Account with id {} not found", gift.getUserId());
             return false;
         }
-        return isGiftOwnerOrGroupAdmin(giftOwner);
+        return Utils.getCurrentAccountId().equals(gift.getCreatedBy())
+                || Utils.getCurrentAccount().equals(giftOwner)
+                || accountService.isKidAdmin(giftOwner);
     }
 
     @PreAuthorize("hasRole('ROLE_USER')")
@@ -316,6 +317,8 @@ public class GiftRestController {
             if (!account.getPublicList()) {
                 return new ResultData.ResultBuilder().badReqest().error().message(msgSrv.getMessage("gift.list.public.error")).build();
             }
+        } else if (!accountService.isAccountGroupMember(account)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         return new ResponseEntity<>(giftService.findAllByUser(account.getId()), HttpStatus.OK);
     }

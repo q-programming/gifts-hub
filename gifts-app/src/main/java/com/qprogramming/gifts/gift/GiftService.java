@@ -5,6 +5,7 @@ import com.qprogramming.gifts.config.property.PropertyService;
 import com.qprogramming.gifts.gift.category.Category;
 import com.qprogramming.gifts.settings.SearchEngine;
 import com.qprogramming.gifts.support.Utils;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.springframework.stereotype.Service;
@@ -45,8 +46,15 @@ public class GiftService {
         return result;
     }
 
+    /**
+     * Create gift. Additionally sets created by and date of creation
+     *
+     * @param gift gift to be persisted
+     * @return persisted gift
+     */
     public Gift create(Gift gift) {
         gift.setCreated(new Date());
+        gift.setCreatedBy(Utils.getCurrentAccountId());
         return giftRepository.save(gift);
     }
 
@@ -78,7 +86,7 @@ public class GiftService {
      * Returns a tree map of Category,GiftList for user
      *
      * @param id id of user for which gift tree map will be returned
-     * @return Map&lt;Category,List&lt;Gift&gt;&gt;
+     * @return Map of Category - List of gifts for it
      */
     public Map<Category, List<Gift>> findAllByUser(String id) {
         List<Gift> giftList = id.equals(Utils.getCurrentAccountId()) ?
@@ -87,19 +95,53 @@ public class GiftService {
         return toGiftTreeMap(giftList, sort);
     }
 
-    public int countAllByUser(String id) {
+    /**
+     * Count all gifts for user with ID
+     *
+     * @param id account id to be checked
+     * @return count of all gifts for account
+     */
+    public int countAllByAccountId(String id) {
         return (int) giftRepository.findByUserIdOrderByCreatedDesc(id)
                 .stream()
                 .filter(gift -> gift.getStatus() == null || !GiftStatus.REALISED.equals(gift.getStatus()))
                 .count();
     }
 
+    /**
+     * Find gift by id
+     *
+     * @param id id of gift to be found
+     * @return found gift or null if it was not found
+     */
     public Gift findById(Long id) {
         return giftRepository.findById(id).orElse(null);
     }
 
+    /**
+     * Updates passed gift.
+     * If gift has other category ( with negative id, and empty name ) it will be set to null to omit any persisting issues
+     *
+     * @param gift Gift to be updated
+     * @return updated gift
+     */
     public Gift update(Gift gift) {
+        if (hasOtherCategory(gift)) {
+            gift.setCategory(null);
+        }
         return giftRepository.save(gift);
+    }
+
+    /**
+     * Check if gift has dummy other category , which has negative id ( Integer.MIN_VALUE) and empty name
+     *
+     * @param gift gift to be checked
+     * @return true if gift has other category
+     */
+    private boolean hasOtherCategory(Gift gift) {
+        return gift.getCategory() != null
+                && gift.getCategory().getId() == Integer.MIN_VALUE
+                && StringUtils.isBlank(gift.getCategory().getName());
     }
 
     /**
@@ -122,31 +164,61 @@ public class GiftService {
 
     }
 
+    /**
+     * Delete Gift
+     *
+     * @param gift gift to be deleted
+     */
     public void delete(Gift gift) {
         giftRepository.delete(gift);
     }
 
+    /**
+     * Delete all user gifts ( used when deleting account )
+     *
+     * @param account account for which gifts will be found and deleted
+     */
     public void deleteUserGifts(Account account) {
         List<Gift> userGifts = giftRepository.findByUserIdOrderByCreatedDesc(account.getId());
         giftRepository.deleteAll(userGifts);
     }
 
+    /**
+     * Delete all claims for account ( used when deleting account )
+     *
+     * @param account account for which all claims will be found and deleted
+     */
     public void deleteClaims(Account account) {
         List<Gift> claimedGifts = giftRepository.findByClaimed(account);
         claimedGifts.forEach(gift -> gift.setClaimed(null));
         giftRepository.saveAll(claimedGifts);
     }
 
+    /**
+     * Fetch all application accounts
+     *
+     * @return List of all accounts
+     */
     public List<Gift> findAll() {
         return giftRepository.findAll();
     }
 
+    /**
+     * Remove category , by finding all gifts with it, set it to null and save all
+     *
+     * @param category category to be removed from all gifts
+     */
     public void removeCategory(Category category) {
         List<Gift> allByCategory = giftRepository.findAllByCategory(category);
         allByCategory.forEach(gift -> gift.setCategory(null));
         giftRepository.saveAll(allByCategory);
     }
 
+    /**
+     * Remove all search engines from gifts
+     *
+     * @param searchEngine search engine to be found, and removed from gifst
+     */
     public void removeSearchEngine(SearchEngine searchEngine) {
         List<Gift> gifts = giftRepository.findByEngines(searchEngine);
         gifts.forEach(gift -> gift.getEngines().remove(searchEngine));

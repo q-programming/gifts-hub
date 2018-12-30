@@ -4,6 +4,7 @@ import com.qprogramming.gifts.MockedAccountTestBase;
 import com.qprogramming.gifts.TestUtil;
 import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.AccountService;
+import com.qprogramming.gifts.account.AccountType;
 import com.qprogramming.gifts.account.group.Group;
 import com.qprogramming.gifts.account.group.GroupService;
 import com.qprogramming.gifts.config.mail.MailService;
@@ -28,13 +29,11 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import javax.mail.MessagingException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
-import java.net.URL;
 import java.util.*;
 
 import static com.qprogramming.gifts.TestUtil.createSearchEngine;
@@ -216,6 +215,7 @@ public class GiftRestControllerTest extends MockedAccountTestBase {
         when(accSrvMock.findByUsername(testAccount.getId())).thenReturn(Optional.of(testAccount));
         when(giftServiceMock.findAllByUser(testAccount.getId())).thenReturn(expected);
         when(giftServiceMock.toGiftTreeMap(anyList(), anyBoolean())).thenCallRealMethod();
+        when(accSrvMock.isAccountGroupMember(testAccount)).thenReturn(true);
         MvcResult mvcResult = giftsRestCtrl.perform(get(API_GIFT_LIST + "/" + testAccount.getId())).andExpect(status().isOk()).andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
         assertTrue(contentAsString.contains(testAccount.getId()));
@@ -463,9 +463,10 @@ public class GiftRestControllerTest extends MockedAccountTestBase {
 
 
     @Test
-    public void deleteGiftAsFamilyAdminSuccess() throws Exception {
+    public void deleteGiftAsKidAdminSuccess() throws Exception {
         Account owner = TestUtil.createAccount(JOHN, DOE);
         owner.setId(OTHER_USER);
+        owner.setType(AccountType.KID);
         Gift gift = new Gift();
         gift.setId(1L);
         gift.setName(NAME);
@@ -475,7 +476,28 @@ public class GiftRestControllerTest extends MockedAccountTestBase {
         when(giftServiceMock.findById(gift.getId())).thenReturn(gift);
         when(accSrvMock.findById(testAccount.getId())).thenReturn(testAccount);
         when(accSrvMock.findById(owner.getId())).thenReturn(owner);
-        when(accSrvMock.isAccountGroupAdmin(owner)).thenReturn(true);
+        when(accSrvMock.isAccountGroupMember(owner)).thenReturn(true);
+        when(accSrvMock.isKidAdmin(owner)).thenReturn(true);
+        giftsRestCtrl.perform(delete(API_GIFT_DELETE + gift.getId())).andExpect(status().isOk());
+        verify(giftServiceMock, times(1)).delete(gift);
+    }
+
+    @Test
+    public void deleteGiftAsGiftCreatorSuccess() throws Exception {
+        Account owner = TestUtil.createAccount(JOHN, DOE);
+        owner.setId(OTHER_USER);
+        Gift gift = new Gift();
+        gift.setId(1L);
+        gift.setName(NAME);
+        gift.setUserId(owner.getId());
+        gift.setCreatedBy(testAccount.getId());
+        Group group = new Group();
+        group.getAdmins().add(testAccount);
+        when(giftServiceMock.findById(gift.getId())).thenReturn(gift);
+        when(accSrvMock.findById(testAccount.getId())).thenReturn(testAccount);
+        when(accSrvMock.findById(owner.getId())).thenReturn(owner);
+        when(accSrvMock.isAccountGroupMember(owner)).thenReturn(true);
+        when(accSrvMock.isKidAdmin(owner)).thenReturn(true);
         giftsRestCtrl.perform(delete(API_GIFT_DELETE + gift.getId())).andExpect(status().isOk());
         verify(giftServiceMock, times(1)).delete(gift);
     }

@@ -8,6 +8,6 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     Set<Category> findByNameContainingIgnoreCase(String term);
 
-    Category findByName(String category);
+    Category findByNameIgnoreCase(String category);
 
 }

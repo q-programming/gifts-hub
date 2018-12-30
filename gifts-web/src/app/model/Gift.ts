@@ -8,6 +8,7 @@ export class Gift {
   description: string;
   links: string[] = [];
   userId: string;
+  createdBy: string;
   engines: SearchEngine[] = [];
   category: Category;
   claimed: Account;

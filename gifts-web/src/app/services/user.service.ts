@@ -8,6 +8,7 @@ import {AvatarService} from "@services/avatar.service";
 import {SortBy} from "@model/Settings";
 import {MatDialog, MatDialogConfig} from "@angular/material";
 import {ConfirmDialog, ConfirmDialogComponent} from "../components/dialogs/confirm/confirm-dialog.component";
+import * as _ from "lodash";
 
 @Injectable({
   providedIn: 'root'
@@ -16,25 +17,8 @@ export class UserService {
   constructor(private apiSrv: ApiService, private avatarSrv: AvatarService, public dialog: MatDialog,) {
   }
 
-  getGroup(identification?: string): Observable<Group> {
-    return this.apiSrv.get(`${environment.account_url}/group`, {username: identification}).map(family => {
-      if (family) {
-        this.fetchAvatars(<Group>family.members);
-        this.fetchAvatars(<Group>family.admins);
-      }
-      return <Group>family;
-    })
-  }
-
-  isGroupAdmin(identification: string): Observable<boolean> {
-    return this.apiSrv.get(`${environment.account_url}/group/isAdmin`, {username: identification}).map(result => {
-      return result
-    })
-  }
-
-
   getRelatedUsers(identification?: string, gifts?: boolean): Observable<Account[]> {
-    return this.apiSrv.get(`${environment.account_url}/userList`, {
+    return this.apiSrv.get(`${environment.account_url}/users`, {
       username: identification,
       gifts: gifts
     }).map(accounts => {
@@ -51,16 +35,22 @@ export class UserService {
   getAllGroups(): Observable<Group[]> {
     return this.apiSrv.get(`${environment.account_url}/groups`).map(groups => {
       (groups as Group[]).forEach(group => {
-        this.fetchAvatars(group.members)
-
+        this.fetchAvatars(group.members);
+        this.markAdmins(group)
       });
       return groups;
     })
   }
 
   getAllUsers(users?: boolean): Observable<Account[]> {
-    return this.apiSrv.get(`${environment.account_url}/users`, {users: users}).map(users => {
+    return this.apiSrv.get(`${environment.account_url}/usersList`, {users: users}).map(users => {
       return this.fetchAvatars(users as Account[]);
+    })
+  }
+
+  private async markAdmins(group: Group) {
+    group.members.forEach((member) => {
+      member.groupAdmin = !!_.find(group.admins, (a) => a.id === member.id);
     })
   }
 
@@ -90,16 +80,16 @@ export class UserService {
   }
 
   createGroup(form: GroupForm): Observable<any> {
-    return this.apiSrv.post(`${environment.account_url}/group-create`, form)
+    return this.apiSrv.post(`${environment.account_url}/group/create`, form)
   }
 
   updateGroup(form: GroupForm): Observable<any> {
-    return this.apiSrv.put(`${environment.account_url}/group-update`, form)
+    return this.apiSrv.put(`${environment.account_url}/group/${form.id}/update`, form)
   }
 
 
   leaveGroup(form: GroupForm) {
-    return this.apiSrv.put(`${environment.account_url}/group-leave`, form)
+    return this.apiSrv.put(`${environment.account_url}/group/${form.id}/leave`, form)
   }
 
   confirmGroupLeave(group: any): Observable<boolean> {
@@ -125,5 +115,9 @@ export class UserService {
         }
       });
     });
+  }
+
+  canEditAll(identification: string) {
+    return this.apiSrv.get(`${environment.account_url}/allowed`, {username: identification})
   }
 }

@@ -26,6 +26,7 @@ export class UserListComponent implements OnInit {
   withoutFamily: Account[] = [];
   usersByName: Account[] = [];
   private currentAccount: Account;
+  loaded: boolean;
 
   constructor(private userSrv: UserService,
               private alertSrv: AlertService,
@@ -39,8 +40,6 @@ export class UserListComponent implements OnInit {
     this.currentAccount = this.authSrv.currentAccount;
     this.userSrv.getDefaultSorting().subscribe(sorting => {
       this.sortBy.value = sorting;
-      // this.getUsers();
-      // this.getGroup();
     });
     this.sortBy.valueChange
       .debounceTime(1) //small delay not to trigger multiple times
@@ -49,6 +48,10 @@ export class UserListComponent implements OnInit {
       })
   }
 
+  /**
+   * Get all users that might be part of same group as currently logged in user
+   * @param reload if passed true, cached values will be reload
+   */
   getUsers(reload?: boolean) {
     if (reload) {
       this.groups = [];
@@ -62,39 +65,47 @@ export class UserListComponent implements OnInit {
     }
   }
 
+  /**
+   * Fetch all accounts grouped per Groups
+   */
   sortByGroups() {
     if (this.groups.length == 0 && this.withoutFamily.length == 0) {
-      this.userSrv.getAllGroups().subscribe(groups => this.groups = groups);
+      this.loaded = false;
+      this.userSrv.getAllGroups().subscribe(groups => {
+        this.groups = groups;
+        this.loaded = true;
+      });
     }
   }
 
+  /**
+   * Fetch all accounts sorted by names
+   */
   sortByName() {
     if (this.usersByName.length == 0) {
-      this.userSrv.getRelatedUsers(undefined, true).subscribe(users => this.usersByName = users);
+      this.loaded = false;
+      this.userSrv.getRelatedUsers(undefined, true).subscribe(users => {
+        this.usersByName = users;
+        this.loaded = true;
+      });
     }
   }
 
-  getGroup() {
-    this.userSrv.getGroup().subscribe(group => this.group = group)
-  }
-
-
-  isUserFamily(family: Group): boolean {
-    return this.group && this.group.id === family.id
-  }
-
+  /**
+   * Show create group dialog
+   */
   createGroupDailog() {
     const dialogRef = this.dialog.open(GroupDialogComponent, {
       panelClass: 'gifts-modal-normal',
       autoFocus: true,
       disableClose: true,
-      width: '600px',
+      width: '700px',
       data: {
         group: new Group()
       }
     });
     dialogRef.afterClosed().subscribe((form) => {
-      if (form) {
+      if (form && !form.canceled) {
         this.userSrv.createGroup(form).subscribe(reply => {
           if (reply.result === 'invites') {
             this.alertSrv.success('user.group.create.success.invites')
@@ -102,7 +113,6 @@ export class UserListComponent implements OnInit {
             this.alertSrv.success('user.group.create.success.text')
           }
           this.getUsers(true);
-          this.getGroup();
         }, error => {
           this.logger.error(error);
           this.alertSrv.error('user.group.create.error');
@@ -114,34 +124,37 @@ export class UserListComponent implements OnInit {
   /**
    * Shows edit group dialog
    * @param group group to be edited
-   * @param event event to stop propagation ( so that mat-expansion-panel won't collapse )
    */
-  editGroupDailog(group: Group) {
+  editGroupDialog(group: Group) {
     this.trigger.closeMenu();
     const dialogRef = this.dialog.open(GroupDialogComponent, {
       panelClass: 'gifts-modal-normal',
       disableClose: true,
       autoFocus: true,
-      width: '600px',
+      width: '700px',
       data: {
         group: group
       }
     });
-    dialogRef.afterClosed().subscribe((form) => {
-      if (form) {
-        if (!form.removed) {
-          this.userSrv.updateGroup(form).subscribe(resp => {
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        if (result.canceled) {
+          this.getUsers(true);
+        } else if (!result.removed) {
+          this.userSrv.updateGroup(result).subscribe(resp => {
             if (resp.result === 'invites') {
               this.alertSrv.success('user.group.edit.success.invites')
             } else {
               this.alertSrv.success('user.group.edit.success.text')
             }
+            this.getUsers(true);
           }, error => {
             this.logger.error(error);
             this.alertSrv.error('user.group.edit.error');
           })
+        } else {
+          this.getUsers(true);
         }
-        this.getUsers(true);
       }
     });
   }
@@ -149,11 +162,9 @@ export class UserListComponent implements OnInit {
   /**
    * Shows confirmation dialog and leaves group if confirmed
    * @param group group which current user would like to leave
-   * @param event event to stop propagation ( so that mat-expansion-panel won't collapse )
    */
   leaveFamily(group) {
     this.trigger.closeMenu();
-    event.stopPropagation();
     this.userSrv.confirmGroupLeave(group).subscribe(result => {
       if (result) {
         this.getUsers(true);
@@ -162,14 +173,17 @@ export class UserListComponent implements OnInit {
     });
   }
 
-  menuClick(event: Event){
+  /**
+   * Stop propagation of any next event that happens after action
+   * @param event event to stop propagation ( so that mat-expansion-panel won't collapse )
+   */
+  menuClick(event: Event) {
     event.stopPropagation();
   }
 
   /**
    * Shows add kid dialog to add kid to group
    * @param group group to which kid will be added
-   * @param event event to stop propagation ( so that mat-expansion-panel won't collapse )
    */
   addKidDialog(group: Group) {
     this.trigger.closeMenu();
@@ -182,6 +196,7 @@ export class UserListComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe((kid) => {
       if (kid) {
+        kid.groupId = group.id;
         this.userSrv.addKid(kid).subscribe(newKid => {
           if (newKid) {
             this.getUsers(true);
@@ -194,7 +209,10 @@ export class UserListComponent implements OnInit {
     });
   }
 
-
+  /**
+   * Show edit kid dialog
+   * @param kid kid account that will be modified
+   */
   editKidDialog(kid: Account) {
     const dialogRef = this.dialog.open(KidDialogComponent, {
       panelClass: 'gifts-modal-normal', //TODO class needed
@@ -223,7 +241,7 @@ export class UserListComponent implements OnInit {
       case 'group':
         this.alertSrv.error('user.register.username.exists');
         break;
-      case 'family_admin':
+      case 'group_admin':
         this.alertSrv.error('user.group.admin.error');
         break;
       case 'username':
@@ -236,7 +254,11 @@ export class UserListComponent implements OnInit {
     return item.id;
   }
 
-  isGroupAdmin(group: Group):boolean {
+  /**
+   * Check whenever current account is admin of group
+   * @param group group for which admin will be evaulated
+   */
+  isGroupAdmin(group: Group): boolean {
     return !!_.find(group.admins, (a) => a.id == this.currentAccount.id);
 
   }

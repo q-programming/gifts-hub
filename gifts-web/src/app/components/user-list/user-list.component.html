@@ -35,7 +35,10 @@
 </mat-card>
 <div class="content">
   <ng-container *ngIf="sortBy.value === SortBy.GROUP">
-    <mat-card *ngIf="groups.length === 0 ">
+    <div fxLayout="column" fxLayoutAlign="center center" class="full-page" *ngIf="!loaded">
+      <mat-spinner [strokeWidth]="15"></mat-spinner>
+    </div>
+    <mat-card *ngIf="loaded && groups.length === 0 ">
       <div class="text-center">
         <h4 [innerHTML]="'user.group.nogroups'|translate"></h4>
       </div>
@@ -57,7 +60,7 @@
                   <i class="fa fa-plus"></i><i class="fa fa-1_5x fa-child"></i>
                   {{'user.group.add.kid.text'|translate}}
                 </button>
-                <button mat-menu-item (click)="editGroupDailog(group)"
+                <button mat-menu-item (click)="editGroupDialog(group)"
                         matTooltip="{{'user.group.edit.text'|translate}}">
                   <i class="fa fa-1_5x fa-pencil"></i>
                   {{'user.group.edit.text'|translate}}

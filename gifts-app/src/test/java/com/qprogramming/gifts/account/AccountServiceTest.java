@@ -26,7 +26,6 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.*;
 
-import static com.qprogramming.gifts.TestUtil.USER_RANDOM_ID;
 import static com.qprogramming.gifts.TestUtil.createAccountList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.*;
@@ -63,7 +62,7 @@ public class AccountServiceTest extends MockedAccountTestBase {
     @Before
     public void setUp() throws Exception {
         super.setup();
-        when(giftServiceMock.countAllByUser(anyString())).thenReturn(1);
+        when(giftServiceMock.countAllByAccountId(anyString())).thenReturn(1);
         AuthorityService authorityService = new AuthorityService(authorityRepositoryMock);
         accountService = new AccountService(accountRepositoryMock, passwordEncoderMock, avatarRepositoryMock, groupServiceMock, propertyServiceMock, accountEventRepositoryMock, giftServiceMock, authorityService) {
             @Override
@@ -270,12 +269,13 @@ public class AccountServiceTest extends MockedAccountTestBase {
     }
 
     @Test
-    public void findAllSortByFamilyNoFamily() throws Exception {
+    public void findAllSortByGroupNoGroup() throws Exception {
         when(accountRepositoryMock.findByGroupsIn(testAccount.getGroups())).thenReturn(Collections.emptySet());
         Set<Account> result = accountService.findAllFromGroups(testAccount);
         //convert result to array to test order
         Object[] ordered = result.toArray();
-        assertTrue(result.size() == 0);
+        assertTrue(result.size() == 1);
+        result.contains(testAccount);
     }
 
 

@@ -26,7 +26,6 @@ export class GiftsComponent implements OnInit {
   identification: string;
   group: Group;
   isUserList: boolean;
-  isGroupAdmin: boolean;
   currentAccount: Account;
   viewedAccount: Account;
   //gifts
@@ -43,6 +42,7 @@ export class GiftsComponent implements OnInit {
   filteredCategory: string;
   filter: boolean;
   filterTabOpen: string;
+  canEditAll: boolean;
 
 
   constructor(private activatedRoute: ActivatedRoute,
@@ -67,7 +67,6 @@ export class GiftsComponent implements OnInit {
       //get gift list
       this.isUserList = !this.identification || this.identification === this.currentAccount.username;
       this.getGifts();
-      this.checkIfGroupAdmin();
       this.getAvatar(this.identification)
     });
   }
@@ -75,16 +74,13 @@ export class GiftsComponent implements OnInit {
 
   private getGifts() {
     this.giftSrv.getUserGifts(this.identification).subscribe(result => {
+      if (this.identification) {
+        this.userSrv.canEditAll(this.identification).subscribe(result => this.canEditAll = result);
+      }
       this.processList(result);
+    }, () => {
+      this.router.navigate(['/']);
     });
-  }
-
-  private checkIfGroupAdmin() {
-    if (this.identification) {
-      this.userSrv.isGroupAdmin(this.identification).subscribe(result => {
-        this.isGroupAdmin = result;
-      })
-    }
   }
 
   private processList(result: Map<string, Gift[]>) {
@@ -217,6 +213,10 @@ export class GiftsComponent implements OnInit {
     }
   }
 
+  canEdit(gift) {
+    return gift.userId === this.currentAccount.id || gift.createdBy === this.currentAccount.id || this.canEditAll;
+  }
+
   // Filtering
   toggleHelpMenu(): void {
     this.filterTabOpen = this.filterTabOpen === 'out' ? 'in' : 'out';
@@ -234,7 +234,6 @@ export class GiftsComponent implements OnInit {
     }
     return key;
   }
-
 
   close(event: boolean) {
     this.filter = event

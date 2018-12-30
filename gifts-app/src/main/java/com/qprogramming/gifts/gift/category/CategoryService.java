@@ -18,7 +18,7 @@ public class CategoryService {
     }
 
     public Category findByName(String name) {
-        return categoryRepository.findByName(name);
+        return categoryRepository.findByNameIgnoreCase(name);
     }
 
     public Category save(Category category) {

@@ -27,10 +27,10 @@ export class ConfirmComponent implements OnInit {
       }
       this.apiSrv.post(`${environment.account_url}/confirm`, this.token).subscribe(response => {
         switch (response.result) {
-          case 'family_admin':
+          case 'group_admin':
             this.alertSrv.success('user.confirm.group.admin.success');
             break;
-          case 'family_member':
+          case 'group_member':
             this.alertSrv.success('user.confirm.group.success');
             break;
         }

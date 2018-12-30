@@ -50,6 +50,7 @@ import java.util.*;
 import static com.qprogramming.gifts.TestUtil.*;
 import static org.junit.Assert.*;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
+import static org.mockito.AdditionalAnswers.returnsSecondArg;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -61,9 +62,9 @@ public class UserRestControllerTest extends MockedAccountTestBase {
     private static final String API_USER_VALIDATE_EMAIL = "/api/account/validate-email";
     private static final String API_USER_VALIDATE_USERNAME = "/api/account/validate-username";
     private static final String API_USER_UPDATE_AVATAR = "/api/account/avatar-upload";
-    private static final String API_USER_GROUP_CREATE = "/api/account/group-create";
-    private static final String API_USER_GROUP_UPDATE = "/api/account/group-update";
-    private static final String API_USER_GROUP_LEAVE = "/api/account/group-leave";
+    private static final String API_USER_GROUP_CREATE = "/api/account/group/create";
+    private static final String API_USER_GROUP_UPDATE = "/api/account/group/{}/update";
+    private static final String API_USER_GROUP_LEAVE = "/api/account/group/{}/leave";
     private static final String API_USER_KID_ADD = "/api/account/kid-add";
     private static final String API_USER_KID_UPDATE = "/api/account/kid-update";
     private static final String API_USER_USER_DELETE = "/api/account/delete/";
@@ -71,7 +72,8 @@ public class UserRestControllerTest extends MockedAccountTestBase {
     private static final String API_USER_ADMINS = "/api/account/admins";
     private static final String KID_ID = "KID-ID";
     private static final String API_USER_CONFIRM = "/api/account/confirm";
-    private static final String API_USER_FETCH = "/api/account/userList";
+    private static final String API_USER_FETCH = "/api/account/users";
+    private static final String API_USER_GROUP_FETCH = "/api/account/groups";
     private static final String API_USER = "/api/account";
     private static final String API_ALLOWED_ACCOUNT_ADD = API_USER + "/allowed/account/add";
     private static final String API_ALLOWED_ACCOUNT_REMOVE = API_USER + "/allowed/account/remove";
@@ -253,12 +255,13 @@ public class UserRestControllerTest extends MockedAccountTestBase {
         group.setId(1L);
         group.addMember(testAccount);
         group.getAdmins().add(testAccount);
+        when(accSrvMock.getCurrentAccount()).thenReturn(testAccount);
         when(groupServiceMock.createGroup(anyString())).thenReturn(group);
-        when(groupServiceMock.update(group)).then(returnsFirstArg());
+        when(groupServiceMock.addAccountToGroupAdmins(any(Account.class), any(Group.class))).then(returnsSecondArg());
         userRestCtrl.perform(post(API_USER_GROUP_CREATE)
                 .contentType(APPLICATION_JSON_UTF8)
                 .content(convertObjectToJsonBytes(form))).andExpect(status().isOk());
-        verify(groupServiceMock, times(1)).update(any(Group.class));
+        verify(groupServiceMock, times(1)).createGroup(anyString());
     }
 
     @Test
@@ -277,15 +280,17 @@ public class UserRestControllerTest extends MockedAccountTestBase {
         event.setGroup(group);
         event.setType(AccountEventType.GROUP_MEMEBER);
         event.setToken("aaa");
+        when(accSrvMock.getCurrentAccount()).thenReturn(testAccount);
         when(accSrvMock.findByEmailsOrUsernames(Collections.singleton(USERNAME + "1"))).thenReturn(Collections.singleton(memberAndAdmin));
         when(groupServiceMock.createGroup(anyString())).thenReturn(group);
+        when(groupServiceMock.addAccountToGroupAdmins(any(Account.class), any(Group.class))).then(returnsSecondArg());
         when(groupServiceMock.inviteAccount(any(Account.class), any(Group.class), any(AccountEventType.class))).thenReturn(event);
         when(groupServiceMock.update(group)).then(returnsFirstArg());
         MvcResult mvcResult = userRestCtrl.perform(post(API_USER_GROUP_CREATE)
                 .contentType(APPLICATION_JSON_UTF8)
                 .content(convertObjectToJsonBytes(form))).andExpect(status().isOk()).andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
-        verify(groupServiceMock, times(1)).update(any(Group.class));
+        verify(groupServiceMock, times(1)).addAccountToGroupAdmins(any(Account.class), any(Group.class));
         verify(groupServiceMock, times(1)).inviteAccount(memberAndAdmin, group, AccountEventType.GROUP_MEMEBER);
         verify(mailServiceMock, times(1)).sendConfirmMail(any(Mail.class), any(AccountEvent.class));
     }
@@ -295,7 +300,7 @@ public class UserRestControllerTest extends MockedAccountTestBase {
         GroupForm form = new GroupForm();
         form.setId(1L);
         when(groupServiceMock.getGroupAsGroupAdmin(form.getId())).thenThrow(GroupNotFoundException.class);
-        userRestCtrl.perform(put(API_USER_GROUP_UPDATE)
+        userRestCtrl.perform(put(API_USER_GROUP_UPDATE.replace("{}", "1"))
                 .contentType(APPLICATION_JSON_UTF8)
                 .content(convertObjectToJsonBytes(form))).andExpect(status().isNotFound());
     }
@@ -328,7 +333,7 @@ public class UserRestControllerTest extends MockedAccountTestBase {
         when(accSrvMock.findByEmailsOrUsernames(members)).thenReturn(dbMembers).thenReturn(dbAdmins);
         when(groupServiceMock.getGroupAsGroupAdmin(form.getId())).thenReturn(group);
         when(groupServiceMock.update(group)).then(returnsFirstArg());
-        MvcResult mvcResult = userRestCtrl.perform(put(API_USER_GROUP_UPDATE)
+        MvcResult mvcResult = userRestCtrl.perform(put(API_USER_GROUP_UPDATE.replace("{}", "1"))
                 .contentType(APPLICATION_JSON_UTF8)
                 .content(convertObjectToJsonBytes(form))).andExpect(status().isOk()).andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
@@ -346,7 +351,7 @@ public class UserRestControllerTest extends MockedAccountTestBase {
         group.setId(1L);
         group.addMember(testAccount);
         when(groupServiceMock.getGroupAsGroupAdmin(form.getId())).thenThrow(GroupNotAdminException.class);
-        userRestCtrl.perform(put(API_USER_GROUP_UPDATE)
+        userRestCtrl.perform(put(API_USER_GROUP_UPDATE.replace("{}", "1"))
                 .contentType(APPLICATION_JSON_UTF8)
                 .content(convertObjectToJsonBytes(form))).andExpect(status().isForbidden());
     }
@@ -355,7 +360,7 @@ public class UserRestControllerTest extends MockedAccountTestBase {
     public void leaveGroupNoGroup() throws Exception {
         GroupForm form = new GroupForm();
         form.setId(1L);
-        userRestCtrl.perform(put(API_USER_GROUP_LEAVE).contentType(APPLICATION_JSON_UTF8)
+        userRestCtrl.perform(put(API_USER_GROUP_LEAVE.replace("{}", "1")).contentType(APPLICATION_JSON_UTF8)
                 .content(convertObjectToJsonBytes(form))).andExpect(status().isNotFound());
 
     }
@@ -367,9 +372,10 @@ public class UserRestControllerTest extends MockedAccountTestBase {
         Group group = new Group();
         group.setId(1L);
         group.addMember(testAccount);
+        when(accSrvMock.getCurrentAccount()).thenReturn(testAccount);
         when(groupServiceMock.getGroupById(1L)).thenReturn(Optional.of(group));
         when(groupServiceMock.update(group)).then(returnsFirstArg());
-        MvcResult mvcResult = userRestCtrl.perform(put(API_USER_GROUP_LEAVE).contentType(APPLICATION_JSON_UTF8)
+        MvcResult mvcResult = userRestCtrl.perform(put(API_USER_GROUP_LEAVE.replace("{}", "1")).contentType(APPLICATION_JSON_UTF8)
                 .content(convertObjectToJsonBytes(form))).andExpect(status().isOk()).andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
         verify(groupServiceMock, times(1)).removeFromGroup(testAccount, group);
@@ -496,7 +502,6 @@ public class UserRestControllerTest extends MockedAccountTestBase {
         Group group = new Group();
         group.setId(1L);
         group.addMember(testAccount);
-        when(groupServiceMock.getGroupAsGroupAdmin(form.getGroupId())).thenThrow(GroupNotAdminException.class);
         userRestCtrl.perform(post(API_USER_KID_UPDATE)
                 .contentType(APPLICATION_JSON_UTF8)
                 .content(convertObjectToJsonBytes(form))).andExpect(status().is4xxClientError());
@@ -521,7 +526,7 @@ public class UserRestControllerTest extends MockedAccountTestBase {
             group.addMember(testAccount);
             group.addMember(kidAccount);
             group.getAdmins().add(testAccount);
-            when(groupServiceMock.getGroupAsGroupAdmin(form.getGroupId())).thenReturn(group);
+            when(accSrvMock.isAccountGroupAdmin(kidAccount)).thenReturn(true);
             when(accSrvMock.findById(KID_ID)).thenReturn(kidAccount);
             MvcResult mvcResult = userRestCtrl.perform(post(API_USER_KID_UPDATE)
                     .contentType(APPLICATION_JSON_UTF8)
@@ -549,7 +554,6 @@ public class UserRestControllerTest extends MockedAccountTestBase {
         String result = mapper
                 .writerWithView(MappingConfiguration.Public.class)
                 .writeValueAsString(group);
-        System.out.println(result);
     }
 
     @Test
@@ -614,7 +618,7 @@ public class UserRestControllerTest extends MockedAccountTestBase {
         group.addMember(testAccount);
         group.getAdmins().add(testAccount);
         when(accSrvMock.findById(kid.getId())).thenReturn(kid);
-        when(accSrvMock.isAccountGroupAdmin(kid)).thenReturn(false);
+        when(accSrvMock.isAccountGroupMember(kid)).thenReturn(false);
         userRestCtrl.perform(delete(API_USER_USER_DELETE + kid.getId())).andExpect(status().is4xxClientError());
     }
 
@@ -630,7 +634,7 @@ public class UserRestControllerTest extends MockedAccountTestBase {
         group.getAdmins().add(testAccount);
         List<Gift> giftList = Arrays.asList(createGift(1L, kid), createGift(2L, kid), createGift(3L, kid));
         when(accSrvMock.findById(kid.getId())).thenReturn(kid);
-        when(accSrvMock.isAccountGroupAdmin(kid)).thenReturn(true);
+        when(accSrvMock.isAccountGroupMember(kid)).thenReturn(true);
         userRestCtrl.perform(delete(API_USER_USER_DELETE + kid.getId())).andExpect(status().isOk());
         verify(giftServiceMock, times(1)).deleteUserGifts(kid);
         verify(accSrvMock, times(1)).delete(kid);
@@ -666,6 +670,29 @@ public class UserRestControllerTest extends MockedAccountTestBase {
     public void shareGiftListNotPublicTest() throws Exception {
         testAccount.setPublicList(false);
         userRestCtrl.perform(post(API_USER_SHARE).content("valid@email.com;invalid@;alsovalid@email.pl")).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void getGroupsTest() throws Exception {
+        Group group1 = new Group();
+        group1.setId(1L);
+        group1.setName(testAccount.getSurname());
+        group1.addMember(testAccount);
+        Group group2 = new Group();
+        group2.setId(1L);
+        group2.setName(testAccount.getName());
+        group2.addMember(testAccount);
+        when(accSrvMock.getCurrentAccount()).thenReturn(testAccount);
+        when(giftServiceMock.countAllByAccountId(testAccount.getId())).thenReturn(3);
+        MvcResult mvcResult = userRestCtrl.perform(get(API_USER_GROUP_FETCH)).andExpect(status().isOk()).andReturn();
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        Set<Group> result = convertJsonToSet(contentAsString, Set.class, Group.class);
+        Group resultGroup1 = result.iterator().next();
+        Group resultGroup2 = result.iterator().next();
+        assertTrue(resultGroup1.getMembers().contains(testAccount));
+        assertTrue(resultGroup2.getMembers().contains(testAccount));
+        assertEquals(3, (int) resultGroup1.getMembers().iterator().next().getGiftsCount());
+        verify(giftServiceMock, times(1)).countAllByAccountId(testAccount.getId());
     }
 
     @Test
@@ -726,6 +753,7 @@ public class UserRestControllerTest extends MockedAccountTestBase {
     public void userSearchListForCurrentUserTest() throws Exception {
         List<Account> accountList = createAccountList();
         accountList.add(testAccount);
+        when(accSrvMock.getCurrentAccount()).thenReturn(testAccount);
         when(accSrvMock.findAllFromGroups(testAccount)).thenReturn(new HashSet<>(accountList));
         MvcResult mvcResult = userRestCtrl.perform(get(API_USER_FETCH)).andExpect(status().isOk()).andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();

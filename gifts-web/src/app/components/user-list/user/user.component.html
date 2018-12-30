@@ -1,8 +1,8 @@
-<div [ngClass]="{even:even}" fxlayout="row wrap" fxLayoutAlign="center center">
-  <div fxFlex="10%" fxFlex.lt-sm="15%">
+<div [ngClass]="{even:even}" fxLayout="row wrap" fxLayoutAlign="center center" class="pl-1 pr-1">
+  <div fxFlex="10" fxFlex.lt-sm="15">
     <img matCardAvatar [src]="user.avatar" class="avatar">
   </div>
-  <div fxFlex="40%">
+  <div fxFlex="">
     <span *ngIf="user.type === AccountType.KID" matTooltip="{{'user.group.kid'|translate}}">
       <i class="fa fa-child"></i>
     </span>
@@ -11,7 +11,7 @@
     </span>
     {{user.fullname}} ({{user.username}})
   </div>
-  <div fxFlex="25%">
+  <div fxFlex="30" fxFlex.lt-md="10">
     <a href="mailto:{{user.email}}" *ngIf="user.email">
       <mat-icon class="v-middle">email</mat-icon>
       <span fxShow.lt-md="false">
@@ -19,7 +19,7 @@
       </span>
     </a>
   </div>
-  <div fxFlex="20%" fxFlex.lt-sm="25%" class="text-right">
+  <div fxFlex="30" fxFlex.lt-sm="40" class="text-right">
     <a mat-icon-button routerLink="/public/{{user.username}}" *ngIf="user.publicList"
        matTooltip="{{'user.settings.public.text'|translate}}" class="mr-1 black">
       <i class="fa fa-link"></i>

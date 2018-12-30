@@ -30,6 +30,9 @@ public class Gift implements Serializable, Comparable<Gift> {
     @Column
     private String userId;
 
+    @Column
+    private String createdBy;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "search_engines")
     private Set<SearchEngine> engines;
@@ -190,5 +193,13 @@ public class Gift implements Serializable, Comparable<Gift> {
 
     public void setHidden(Boolean hidden) {
         this.hidden = hidden;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
     }
 }

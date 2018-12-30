@@ -17,13 +17,13 @@
           <i class="fa fa-plus-circle filter-active" *ngIf="filteredCategory!==undefined"></i>
           <i class="fa fa-lg fa-filter"></i>
         </button>
-        <button class="header-button success-button" fxFlex mat-flat-button (click)="addGiftDialog()"
-                *ngIf="isUserList || isGroupAdmin">
+        <button class="header-button success-button" fxFlex mat-flat-button (click)="addGiftDialog()">
           <mat-icon>add</mat-icon>
         </button>
       </div>
-      <ng-container *ngIf="isUserList || isGroupAdmin">
-        <button fxShow.lt-md="false" mat-flat-button class="success-button pull-right font-smaller">
+      <ng-container >
+        <button fxShow.lt-md="false" mat-flat-button class="success-button pull-right font-smaller"
+                *ngIf="isUserList">
           <mat-icon>cloud_upload</mat-icon>
         </button>
         <button fxShow.lt-md="false" mat-flat-button class="success-button pull-right mr-1 font-smaller"
@@ -58,7 +58,6 @@
         <i class="fa fa-plus-circle filter-active" *ngIf="filteredCategory!==undefined"></i>
         <i id="filter-btn" class="fa fa-lg fa-filter"></i>
       </button>
-      <i class="fa fa-cogs" matTooltip="{{'main.action'|translate}}" fxShow.lt-md="false"></i>
     </div>
   </div>
   <!--FILTER-->
@@ -83,7 +82,7 @@
       <div *ngFor="let gift of gifts.value;let even=even;trackBy: trackByFn">
         <gift [gift]="gift"
               [even]="even"
-              [canEdit]="isUserList || isGroupAdmin"
+              [canEdit]="canEdit(gift)"
               (refresh)="refresh($event)"
               (delete)="delete($event)"
               (edit)="editGiftDialog($event)"
@@ -102,7 +101,7 @@
     <div *ngFor="let gift of unCategorizedGifts;let even=even;trackBy: trackByFn">
       <gift [gift]="gift"
             [even]="even"
-            [canEdit]="isUserList || isGroupAdmin"
+            [canEdit]="canEdit(gift)"
             (refresh)="refresh($event)"
             (delete)="delete($event)"
             (edit)="editGiftDialog($event)"
@@ -120,7 +119,7 @@
     <div *ngFor="let gift of realizedGifts;let even=even;trackBy: trackByFn">
       <gift [gift]="gift"
             [even]="even"
-            [canEdit]="isUserList || isGroupAdmin"
+            [canEdit]="canEdit(gift)"
             (refresh)="refresh($event)"
             (delete)="delete($event)"
             (edit)="editGiftDialog($event)"

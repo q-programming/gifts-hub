@@ -48,9 +48,7 @@ public class GroupServiceTest {
         when(groupRepositoryMock.save(any(Group.class))).then(returnsFirstArg());
         Group result = groupService.createGroup(anyString());
         assertNotNull(result);
-        assertTrue(result.getAdmins().contains(testAccount));
-        assertTrue(result.getMembers().contains(testAccount));
-        verify(groupRepositoryMock, times(2)).save(any(Group.class));
+        verify(groupRepositoryMock, times(1)).save(any(Group.class));
     }
 
     @Test

@@ -280,7 +280,7 @@
           "success": "Zostałeś administratorem rodziny"
         },
         "exists": "Należysz już do rodziny i nie możesz dołączyć do innej",
-        "success": "Dołączyłeś do rodziny"
+        "success": "Dołączyłeś do groupy"
       },
       "token": {
         "error": {
@@ -313,9 +313,15 @@
         }
       },
       "admin": {
-        "add": "Ustaw jako administratora grupy",
+        "add": {
+          "success": "{{name}} ustawiony administratorem grupy.<br>\nPotwierdz operację klikająć \"Edytuj groupę\"",
+          "text": "Ustaw jako administratora grupy"
+        },
         "error": "Aby wykonać tą operację musisz być administratorem grupy",
-        "remove": "Usuń uprawnienia administratora grupy temu członkowi",
+        "remove": {
+          "success": "{{name}} został usunięty z  administratorów grupy.<br>\nPotwierdz operację klikająć \"Edytuj group\"",
+          "text": "Usuń uprawnienia administratora grupy temu członkowi"
+        },
         "text": "Admin"
       },
       "administrator": "Administrator grupy",
@@ -327,7 +333,7 @@
         "error": "Wystąpił bład podczas tworzenia grupy. Proszę skontaktuj się z administratorem załączająć logi z przeglądarki",
         "help": "Stwórz swoją grupę. Dodaj do niej użytkowników, którzy mają już konto w aplikacji.",
         "success": {
-          "invites": "Nowa grupa została utworzona. Wiadomości e-mail z linkiem potwierdzającym zostały wysłane do zaproszonych użytkowników",
+          "invites": "Nowa grupa została utworzona.<br>Wiadomości e-mail z linkiem potwierdzającym zostały wysłane do zaproszonych użytkowników",
           "text": "Nowa grupa została utworzona"
         },
         "text": "Stwórz grupę"
@@ -348,7 +354,7 @@
           "text": "Edytuj dziecko"
         },
         "success": {
-          "invites": "Grupa została zaktualizowana. Wiadomości e-mail z linkiem potwierdzającym zostały wysłane do zaproszonych użytkowników",
+          "invites": "Grupa została zaktualizowana.<br>\nWiadomości e-mail z linkiem potwierdzającym zostały wysłane do zaproszonych użytkowników",
           "text": "Grupa została zaktualizowana"
         },
         "text": "Edytuj grupę"
@@ -360,6 +366,10 @@
         "mailError": "Wystąpił bład poczas wysyłania zaproszenia. Proszę skontaktować się z administratorem.",
         "new": "Zaproś do grupy wpisując email lub login",
         "text": "Zaproś do grupy"
+      },
+      "kick": {
+        "success": "Wyrzuciłeś z grupy użytkownika {{name}}.<br>\nPotwierdz operację klikająć \"Edytuj grupę\"",
+        "text": "Wyrzuć uzytkownika z grupy"
       },
       "kid": "Dziecko",
       "leave": {
