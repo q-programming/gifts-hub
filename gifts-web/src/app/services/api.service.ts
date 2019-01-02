@@ -7,6 +7,7 @@ import {serialize} from "../utils/serialize";
 import {environment} from "@env/environment";
 import {AlertService} from "./alert.service";
 import {NgProgress, NgProgressRef} from "@ngx-progressbar/core";
+import {TranslateService} from "@ngx-translate/core";
 
 
 export enum RequestMethod {
@@ -29,7 +30,7 @@ export class ApiService {
 
   progress: NgProgressRef;
 
-  constructor(private http: HttpClient, private alertSrv: AlertService, public ngProgress: NgProgress) {
+  constructor(private http: HttpClient, private alertSrv: AlertService, public ngProgress: NgProgress, private translate: TranslateService) {
     this.progress = ngProgress.ref()
   }
 

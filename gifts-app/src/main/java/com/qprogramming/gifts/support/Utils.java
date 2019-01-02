@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 
 public class Utils {
     public static final Comparator<Account> ACCOUNT_COMPARATOR = Comparator.comparing(Account::getName).thenComparing(Account::getSurname).thenComparing(Account::getUsername);
+    public static final Comparator<Gift> GIFT_COMPARATOR = Comparator.nullsFirst(Comparator.comparing(Gift::getRealised)).thenComparing(Gift::getName);
     private static final String DATE_FORMAT = "dd-MM-yyyy";
     private static final String DATE_FORMAT_TIME = "dd-MM-yyyy HH:mm";
     private static final Logger LOG = LoggerFactory.getLogger(Utils.class);
@@ -207,7 +208,7 @@ public class Utils {
      * Creates mail out of accountTo
      *
      * @param accountTo accountTo for which mail will be created
-     * @param owner   Owner accountTo which triggered mail
+     * @param owner     Owner accountTo which triggered mail
      * @return list of {@link Mail}
      */
     public static Mail createMail(Account accountTo, Account owner) {

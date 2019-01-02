@@ -8,7 +8,11 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.*;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+
+import static com.qprogramming.gifts.support.Utils.GIFT_COMPARATOR;
 
 @Entity
 public class Gift implements Serializable, Comparable<Gift> {
@@ -45,6 +49,9 @@ public class Gift implements Serializable, Comparable<Gift> {
 
     @Column
     private Date created;
+
+    @Column
+    private Date realised;
 
     @Column
     private GiftStatus status;
@@ -180,7 +187,7 @@ public class Gift implements Serializable, Comparable<Gift> {
 
     @Override
     public int compareTo(Gift gift) {
-        return this.getName().compareTo(gift.getName());
+        return GIFT_COMPARATOR.compare(this, gift);
     }
 
     public void addLink(String link) {
@@ -201,5 +208,13 @@ public class Gift implements Serializable, Comparable<Gift> {
 
     public void setCreatedBy(String createdBy) {
         this.createdBy = createdBy;
+    }
+
+    public Date getRealised() {
+        return realised;
+    }
+
+    public void setRealised(Date realised) {
+        this.realised = realised;
     }
 }

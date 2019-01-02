@@ -1,8 +1,7 @@
 import {Injectable} from '@angular/core';
 import {ApiService} from "./api.service";
 import {environment} from "@env/environment";
-import {Account, Role} from "@model/Account";
-import * as _ from 'lodash';
+import {Account} from "@model/Account";
 import {AvatarService} from "./avatar.service";
 import {TranslateService} from "@ngx-translate/core";
 import {AlertService} from "./alert.service";

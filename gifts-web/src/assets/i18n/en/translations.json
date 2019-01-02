@@ -177,7 +177,8 @@
       "0": "Gift list of",
       "mine": "My wish list",
       "public": {
-        "error": "User list is not public"
+        "error": "User list is not public",
+        "text": "Public list"
       },
       "short": "Gift list"
     },

@@ -177,7 +177,8 @@
       "0": "Lista życzeń  użytkownika",
       "mine": "Moja list życzeń",
       "public": {
-        "error": "Szukana lista nie jest publiczna"
+        "error": "Szukana lista nie jest publiczna",
+        "text": "Lista publiczna"
       },
       "short": "Lista życzeń"
     },

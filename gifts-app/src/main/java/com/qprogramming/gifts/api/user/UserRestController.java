@@ -122,12 +122,14 @@ public class UserRestController {
 
     @Transactional
     @RequestMapping("/{username}/avatar")
-    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<?> userAvatar(@PathVariable(value = "username") String username) {
         Optional<Account> optionalAccount = _accountService.findByUsername(username);
         if (!optionalAccount.isPresent()) {
             LOG.error("Unable to find account with username {}", username);
             return ResponseEntity.notFound().build();
+        }
+        if (Utils.getCurrentAccount() == null && !optionalAccount.get().getPublicList()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         return ResponseEntity.ok(_accountService.getAccountAvatar(optionalAccount.get()));
     }

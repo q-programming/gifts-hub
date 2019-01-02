@@ -120,4 +120,10 @@ export class UserService {
   canEditAll(identification: string) {
     return this.apiSrv.get(`${environment.account_url}/allowed`, {username: identification})
   }
+
+  getUser(identification: string):Observable<Account> {
+    return this.apiSrv.get(`${environment.account_url}/get/${identification}`).map(user => {
+      return this.fetchAvatars(user as Account);
+    })
+  }
 }

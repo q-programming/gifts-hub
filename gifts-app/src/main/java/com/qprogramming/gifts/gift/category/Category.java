@@ -21,6 +21,7 @@ public class Category implements Comparable<Category> {
     private Integer priority;
 
     public Category(String name) {
+        this.id = (long) Integer.MIN_VALUE;
         this.name = name;
         this.priority = 0;
     }

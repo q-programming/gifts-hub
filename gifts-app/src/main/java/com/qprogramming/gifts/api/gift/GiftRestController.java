@@ -12,6 +12,7 @@ import com.qprogramming.gifts.gift.GiftService;
 import com.qprogramming.gifts.gift.GiftStatus;
 import com.qprogramming.gifts.gift.category.Category;
 import com.qprogramming.gifts.gift.category.CategoryService;
+import com.qprogramming.gifts.login.AnonAuthentication;
 import com.qprogramming.gifts.messages.MessagesService;
 import com.qprogramming.gifts.schedule.AppEventService;
 import com.qprogramming.gifts.schedule.AppEventType;
@@ -204,6 +205,7 @@ public class GiftRestController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         gift.setStatus(GiftStatus.REALISED);
+        gift.setRealised(new Date());
         giftService.update(gift);
         try {
             eventService.addEvent(gift, AppEventType.REALISED);
@@ -222,6 +224,7 @@ public class GiftRestController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         gift.setStatus(null);
+        gift.setRealised(null);
         giftService.update(gift);
         try {
             eventService.tryToUndoEvent(gift);
@@ -297,7 +300,6 @@ public class GiftRestController {
             return ResponseEntity.ok(Collections.EMPTY_LIST);
     }
 
-    @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping("/user/{usernameOrId}")
     public ResponseEntity getUserGifts(@PathVariable String usernameOrId) {
         Account account = null;
@@ -313,7 +315,7 @@ public class GiftRestController {
         }
         //check if anonymous user can view user gifts
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if ((authentication instanceof AnonymousAuthenticationToken)) {
+        if ((authentication instanceof AnonAuthentication)) {
             if (!account.getPublicList()) {
                 return new ResultData.ResultBuilder().badReqest().error().message(msgSrv.getMessage("gift.list.public.error")).build();
             }
@@ -340,6 +342,13 @@ public class GiftRestController {
             return new ResultData.ResultBuilder().error().message(msgSrv.getMessage("gift.category.prohibited", new Object[]{category}, "", Utils.getCurrentLocale())).build();
         }
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Deprecated
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @RequestMapping(value = "/complete/realised", method = RequestMethod.GET)
+    public ResponseEntity setRealisedDates() {
+        return ResponseEntity.ok(giftService.setRealisedDates());
     }
 
     private boolean allowedCategoryName(String category) {

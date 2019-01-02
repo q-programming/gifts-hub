@@ -204,7 +204,7 @@ public class AppRestController {
                 .findAll()
                 .stream()
                 .map(Gift::getCategory)
-                .filter(category -> category.getId() != null)
+                .filter(category -> category.getId() != Integer.MIN_VALUE)
                 .collect(groupingBy(Function.identity(), counting()));
         Map<Category, Long> sortedMap = new TreeMap<>(giftsCategories);
         List<Category> allCategories = categoryService.findAll();

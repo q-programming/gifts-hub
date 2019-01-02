@@ -34,13 +34,11 @@ public class GiftService {
      * @param gifts list of gifts to put into TreeMap
      * @return TreeMap with gifts sorted by categories ( based on priorities)
      */
-    public Map<Category, List<Gift>> toGiftTreeMap(List<Gift> gifts, boolean sort) {
-        Map<Category, List<Gift>> result = new TreeMap<>();
-        gifts.forEach(gift -> {
-            result.computeIfAbsent(gift.getCategory(), k -> new ArrayList<>());
-            result.get(gift.getCategory()).add(gift);
-        });
-        if (sort) {
+    public Map<Category, List<Gift>> toGiftTreeMap(List<Gift> gifts, boolean simple) {
+        Map<Category, List<Gift>> result = Utils.toGiftTreeMap(gifts);
+        if (simple) {
+            result.values().forEach(GiftComparator::simpleSortGiftList);
+        } else {
             result.values().forEach(GiftComparator::sortGiftList);
         }
         return result;
@@ -64,10 +62,14 @@ public class GiftService {
      * @return Map&lt;Category,List&lt;Gift&gt;&gt;
      */
     public Map<Category, List<Gift>> findAllByCurrentUser() {
-        List<Gift> giftList = getCurrentUserGifts();
-        return toGiftTreeMap(giftList, false);
+        return findAllByUser(Utils.getCurrentAccountId());
     }
 
+    /**
+     * Fetch currently logged in user gifts. Remove claimed status and filter out hidden gifts
+     *
+     * @return List of all users gifts
+     */
     private List<Gift> getCurrentUserGifts() {
         int giftAge = Integer.valueOf(propertyService.getProperty(APP_GIFT_AGE));
         return giftRepository.findByUserIdOrderByCreatedDesc(Utils.getCurrentAccountId()).stream().filter(not(Gift::isHidden)).peek(gift -> {
@@ -76,9 +78,21 @@ public class GiftService {
         }).collect(Collectors.toList());
     }
 
+    /**
+     * Fetch all gifts for account with id
+     * If Current account is empty ( annonymous user  viewing public list ) , filter out all hidden gifts
+     *
+     * @param id Account id for which gifts will be fetched
+     * @return List of all Gifts for Account with ID
+     */
     private List<Gift> getUserGifts(String id) {
         int giftAge = Integer.valueOf(propertyService.getProperty(APP_GIFT_AGE));
-        return giftRepository.findByUserIdOrderByCreatedDesc(id).stream().peek(gift -> setGiftStatus(gift, giftAge)).collect(Collectors.toList());
+        List<Gift> giftList = giftRepository.findByUserIdOrderByCreatedDesc(id).stream().peek(gift -> setGiftStatus(gift, giftAge)).collect(Collectors.toList());
+        if (Utils.getCurrentAccount() == null) {
+            giftList = giftList.stream().filter(not(Gift::isHidden)).collect(Collectors.toList());
+            giftList.forEach(gift -> gift.setClaimed(null));
+        }
+        return giftList;
     }
 
 
@@ -91,8 +105,8 @@ public class GiftService {
     public Map<Category, List<Gift>> findAllByUser(String id) {
         List<Gift> giftList = id.equals(Utils.getCurrentAccountId()) ?
                 getCurrentUserGifts() : getUserGifts(id);
-        boolean sort = !id.equals(Utils.getCurrentAccountId());
-        return toGiftTreeMap(giftList, sort);
+        boolean simple = id.equals(Utils.getCurrentAccountId());
+        return toGiftTreeMap(giftList, simple);
     }
 
     /**
@@ -223,5 +237,15 @@ public class GiftService {
         List<Gift> gifts = giftRepository.findByEngines(searchEngine);
         gifts.forEach(gift -> gift.getEngines().remove(searchEngine));
         giftRepository.saveAll(gifts);
+    }
+
+    /**
+     * Remove after executed on old database
+     */
+    @Deprecated
+    public List<Gift> setRealisedDates() {
+        List<Gift> giftList = giftRepository.findByStatusAndRealisedIsNull(GiftStatus.REALISED);
+        giftList.forEach(gift -> gift.setRealised(new Date()));
+        return giftRepository.saveAll(giftList);
     }
 }

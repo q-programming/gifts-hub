@@ -15,6 +15,7 @@ import com.qprogramming.gifts.gift.GiftService;
 import com.qprogramming.gifts.gift.GiftStatus;
 import com.qprogramming.gifts.gift.category.Category;
 import com.qprogramming.gifts.gift.category.CategoryService;
+import com.qprogramming.gifts.login.AnonAuthentication;
 import com.qprogramming.gifts.messages.MessagesService;
 import com.qprogramming.gifts.schedule.AppEventService;
 import com.qprogramming.gifts.settings.SearchEngine;
@@ -75,7 +76,7 @@ public class GiftRestControllerTest extends MockedAccountTestBase {
     @Mock
     private GroupService groupServiceMock;
     @Mock
-    private AnonymousAuthenticationToken annonymousTokenMock;
+    private AnonAuthentication annonymousTokenMock;
     @Mock
     private HttpServletResponse responseMock;
     @Mock
@@ -251,7 +252,7 @@ public class GiftRestControllerTest extends MockedAccountTestBase {
         when(accSrvMock.findByUsername(testAccount.getId())).thenReturn(Optional.of(testAccount));
         when(giftServiceMock.findAllByUser(testAccount.getId())).thenReturn(expected);
         when(securityMock.getAuthentication()).thenReturn(annonymousTokenMock);
-        giftsRestCtrl.perform(get(API_GIFT_LIST + "/" + testAccount.getId())).andExpect(status().isBadRequest());
+        giftsRestCtrl.perform(get(API_GIFT_LIST + "/" + testAccount.getId())).andExpect(status().is4xxClientError());
     }
 
     @Test

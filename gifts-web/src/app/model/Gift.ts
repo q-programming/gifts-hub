@@ -13,6 +13,7 @@ export class Gift {
   category: Category;
   claimed: Account;
   created: Date;
+  realised: Date;
   status: GiftStatus;
   hidden: boolean;
 }

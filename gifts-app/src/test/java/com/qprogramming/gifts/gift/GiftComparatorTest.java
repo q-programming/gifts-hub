@@ -5,6 +5,7 @@ import org.joda.time.DateTime;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static com.qprogramming.gifts.TestUtil.createAccount;
@@ -22,6 +23,14 @@ public class GiftComparatorTest {
         Gift oldestGift = createGift(1L, testAccount);
         oldestGift.setName("Oldest");
         oldestGift.setCreated(new DateTime().minusDays(10).toDate());
+        Gift realisedGift = createGift(1L, testAccount);
+        realisedGift.setName("Realised");
+        realisedGift.setCreated(new DateTime().minusDays(9).toDate());
+        realisedGift.setRealised(new DateTime().minusDays(5).toDate());
+        Gift oldestGiftButRealised = createGift(1L, testAccount);
+        oldestGiftButRealised.setName("Oldest Realised");
+        oldestGiftButRealised.setCreated(new DateTime().minusDays(10).toDate());
+        oldestGiftButRealised.setRealised(new DateTime().minusDays(4).toDate());
         Gift gift2days = createGift(2L, testAccount);
         gift2days.setCreated(new DateTime().minusDays(2).toDate());
         gift2days.setName("2 days ago");
@@ -42,20 +51,21 @@ public class GiftComparatorTest {
         Gift newestGift = createGift(7L, testAccount);
         newestGift.setName("Newest");
         //ADD TO LIST
-        List<Gift> list = new ArrayList<>();
-        list.add(oldestGift);
-        list.add(gift2days);
-        list.add(giftZ);
-        list.add(giftA);
-        list.add(claimedGift);
-        list.add(newestGift);
-        list.add(claimedGift2);
+
+        List<Gift> list = Arrays.asList(oldestGift, oldestGiftButRealised, gift2days, giftZ, giftA, claimedGift, newestGift, claimedGift2, realisedGift);
+        ArrayList<Gift> simpleSortList = new ArrayList<>(list);
+        ArrayList<Gift> sortList = new ArrayList<>(list);
+
         //SORT
-        GiftComparator.sortGiftList(list);
+        GiftComparator.sortGiftList(sortList);
+        GiftComparator.simpleSortGiftList(simpleSortList);
         //RESULTS CHECK
-        assertEquals(list.get(0), newestGift);
-        assertEquals(list.get(0), newestGift);
-        assertEquals(list.get(6), claimedGift2);
-        assertEquals(list.get(4), oldestGift);
+        assertEquals(realisedGift, sortList.get(1));
+        assertEquals(newestGift, sortList.get(2));
+        assertEquals(oldestGift, sortList.get(6));
+        assertEquals(claimedGift, sortList.get(7));
+        assertEquals(claimedGift2, sortList.get(8));
+        assertEquals(realisedGift, simpleSortList.get(1));
+        assertEquals(newestGift, simpleSortList.get(2));
     }
 }

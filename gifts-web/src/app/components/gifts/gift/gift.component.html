@@ -7,17 +7,20 @@
   <div fxFlex="35" fxFlex.lt-md="100">
     <!--STATUS-->
     <span class="gift-status mr-2">
-    <span *ngIf="gift.status === GiftStatus.NEW && !gift.claimed" matTooltip="{{'gift.status.new'|translate}}"
-          class="new-gift ">
-      <i class="fa fa-fw fa-certificate"></i>
-      <i class="fa fa-fw fa-2x fa-gift" aria-hidden="true"></i>
-    </span>
-      <span *ngIf="gift.status === GiftStatus.REALISED" matTooltip="{{'gift.status.realised'|translate}}">
+      <ng-container *ngIf="currentAccount">
+         <span *ngIf="gift.status === GiftStatus.NEW && !gift.claimed" matTooltip="{{'gift.status.new'|translate}}"
+               class="new-gift ">
+              <i class="fa fa-fw fa-certificate"></i>
+       <i class="fa fa-fw fa-2x fa-gift" aria-hidden="true"></i>
+        </span>
+      <span *ngIf="gift.status === GiftStatus.REALISED"
+            matTooltipClass="gift-tooltip"
+            matTooltip="{{'gift.status.realised'|translate}}&#13;{{gift.realised |date:'dd.MM.yyyy'}}">
       <i class="fa fa-fw fa-check"></i>
       <i class="fa fa-fw fa-2x fa-gift" aria-hidden="true"></i>
     </span>
       <span *ngIf="gift.claimed && gift.status !== GiftStatus.REALISED"
-            matTooltip="{{'gift.status.claimed'|translate}} {{gift.claimed.fullname}}">
+            matTooltip="{{'gift.status.claimed'|translate}}&#13;{{gift.claimed.fullname}}">
       <i class="fa fa-fw fa-hand-paper-o"></i>
       <i class="fa fa-fw fa-2x fa-gift" aria-hidden="true"></i>
     </span>
@@ -25,6 +28,13 @@
       <i class="fa fa-fw fa-minus fa-spacer"></i>
       <i class="fa fa-fw fa-2x fa-gift" aria-hidden="true"></i>
     </span>
+      </ng-container>
+      <ng-container *ngIf="!currentAccount">
+        <span matTooltip="{{'gift.gift'|translate}}">
+             <i class="fa fa-fw fa-minus fa-spacer"></i>
+             <i class="fa fa-fw fa-2x fa-gift" aria-hidden="true"></i>
+         </span>
+      </ng-container>
     </span>
     <!--NAME-->
     <span>
@@ -64,7 +74,7 @@
   </div>
   <!--ACTIONS-->
   <div fxFlex="5" fxFlex.lt-md="50">
-    <div fxLayout="row wrap" fxLayoutAlign="end center">
+    <div fxLayout="row wrap" fxLayoutAlign="end center" *ngIf="currentAccount">
       <button *ngIf="canBeClaimed()" mat-icon-button (click)="claim()" matTooltip="{{'gift.claim.text'|translate}}"
               class="action-button"
               fxFlex="50%" fxFlex.lt-md>

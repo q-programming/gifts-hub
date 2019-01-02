@@ -78,9 +78,9 @@ public class GiftServiceTest {
         List<Gift> giftList = Arrays.asList(newGift, oldestGift, newButNotNewest, oldGift);
         when(giftRepositoryMock.findByUserIdOrderByCreatedDesc(TestUtil.USER_RANDOM_ID)).thenReturn(giftList);
         Map<Category, List<Gift>> result = giftService.findAllByCurrentUser();
-        assertTrue(result.get(newGift.getCategory())
+        assertEquals(2, result.get(newGift.getCategory())
                 .stream()
-                .filter(gift -> gift.getStatus() == GiftStatus.NEW).toArray().length == 2);
+                .filter(gift -> gift.getStatus() == GiftStatus.NEW).toArray().length);
     }
 
     @Test
@@ -123,10 +123,10 @@ public class GiftServiceTest {
         when(giftRepositoryMock.findAllByCategory(category)).thenReturn(Arrays.asList(gift1, gift2, gift3, gift4));
         giftService.removeCategory(category);
         verify(giftRepositoryMock, times(1)).saveAll(anyList());
-        assertNull(gift1.getCategory().getId());
-        assertNull(gift2.getCategory().getId());
-        assertNull(gift3.getCategory().getId());
-        assertNull(gift4.getCategory().getId());
+        assertEquals((long) gift1.getCategory().getId(), Integer.MIN_VALUE);
+        assertEquals((long) gift2.getCategory().getId(), Integer.MIN_VALUE);
+        assertEquals((long) gift3.getCategory().getId(), Integer.MIN_VALUE);
+        assertEquals((long) gift4.getCategory().getId(), Integer.MIN_VALUE);
     }
 
 
