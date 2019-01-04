@@ -5,5 +5,6 @@ public enum AccountEventType {
     GROUP_ADMIN,
     GROUP_REMOVE,
     GROUP_ALLOW_GROUP,
-    ACCOUNT_CONFIRM
+    ACCOUNT_CONFIRM,
+    PASSWORD_RESET
 }

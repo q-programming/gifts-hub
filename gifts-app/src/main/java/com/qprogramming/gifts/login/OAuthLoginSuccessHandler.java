@@ -42,14 +42,12 @@ public class OAuthLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
     private final Logger LOG = LoggerFactory.getLogger(this.getClass());
     private AccountService _accountService;
     private TokenService _tokenService;
-    private PropertyService _propertyService;
     private AuthorityService _authorityService;
 
     @Autowired
-    public OAuthLoginSuccessHandler(AccountService accountService, TokenService tokenService, PropertyService propertyService, AuthorityService authorityService) {
+    public OAuthLoginSuccessHandler(AccountService accountService, TokenService tokenService, AuthorityService authorityService) {
         this._accountService = accountService;
         this._tokenService = tokenService;
-        this._propertyService = propertyService;
         this._authorityService = authorityService;
     }
 
@@ -98,8 +96,7 @@ public class OAuthLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
         account.setEmail(facebookUser.getEmail());
         account.setEnabled(true);
         account.setType(AccountType.FACEBOOK);
-        String locale = _propertyService.getDefaultLang();
-        setLocale(account, locale);
+        _accountService.setLocale(account);
         setUsername(account);
         account = _accountService.createAcount(account);
         byte[] userProfileImage = facebook.userOperations().getUserProfileImage();
@@ -124,7 +121,7 @@ public class OAuthLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
         account.setType(AccountType.GOOGLE);
         setUsername(account);
         String locale = details.get(LOCALE);
-        setLocale(account, locale);
+        _accountService.setLocale(account, locale);
         account = _accountService.createAcount(account);
         try {
             _accountService.createAvatar(account, details.get(G.PICTURE));
@@ -145,11 +142,6 @@ public class OAuthLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
         account.setUsername(username.toString());
     }
 
-    private void setLocale(Account account, String locale) {
-        if (_propertyService.getLanguages().keySet().contains(locale)) {
-            account.setLanguage(locale);
-        }
-    }
 
     class FB {
         public static final String ID = "id";

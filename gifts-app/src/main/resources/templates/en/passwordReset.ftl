@@ -3,7 +3,7 @@
 <head>
     <meta name="viewport" content="width=device-width">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Zaproszenie do grupy ${groupName}</title>
+    <title>Password reset instructions</title>
     <style>
         * {
             margin: 0;
@@ -122,6 +122,38 @@
             padding: 2px;
             border-radius: 50%
         }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .btn-social {
+            display: inline-block;
+            width: 200px;
+            border: thin solid #888;
+            box-shadow: 1px 1px 1px grey;
+            white-space: nowrap;
+            border-radius: 0;
+            padding: 5px 20px 5px 10px;
+            font-weight: bold;
+            text-align: left;
+        }
+
+        .btn-social img {
+            margin-right: 10px;
+            vertical-align: bottom;
+        }
+
+
+        .btn-social.facebook {
+            background-color: #4267b2 !important;
+            color: #fff !important;
+        }
+
+        .btn-social.google {
+            background: white;
+            color: #444;
+        }
     </style>
 </head>
 <body bgcolor="#f6f6f6">
@@ -137,22 +169,48 @@
             </td>
             <td>
                 <#if name??>
-                    <p>Witaj ${name},</p>
+                    <p>Hello ${name},</p>
                 </#if>
                 <div>
-                    ${owner} zaprosi&#322; Ci&#281; do grupy "${groupName}" w aplikacji Gifts Hub
+                    <p>
+                        You recently requested to reset your password for your Gifts Hub account.
+                    </p>
+                    <#if linkGoogle??>
+                        <p>
+                            However your account was created using google account, and there is no password associated
+                            with it.<br>
+                            Please go to login page and Sign in using Google, or click button below
+                        </p>
+                        <p class="text-center">
+                            <a class="btn-social google" href="${linkGoogle}">
+                                <img src="cid:logoGoogle.png" height="25px">
+                                Sign in with Google
+                            </a>
+                        </p>
+                    <#elseif linkFacebook??>
+                        <p>
+                            However your account was created using facebook account, and there is no password associated
+                            with it.<br>
+                            Please go to login page and Login using Facebook, or click button below
+                        </p>
+                        <p>
+                            <a class="btn-social facebook" href="${linkFacebook}">
+                                <img src="cid:logoFacebook.png" height="25px">
+                                Sign in with Google
+                            </a>
+                        </p>
+                    <#else>
+                        <p>Click link below, or copy and paste it in browser to start reseting your password</p>
+                        <p>This password reset is only valid for the next 24 hours</p>
+                        <p>
+                            <a href="${confirmLink}">${confirmLink}</a>
+                        </p>
+                    </#if>
+                    <p>
+                        If you did not request a password reset, please ignore this email or contact application
+                        administratorif you have questions
+                    </p>
                 </div>
-                <#if confirmLink??>
-                    <p>Kliknij link poni&#380;ej, lub skopiuj i wklej go w prz&#281;gl&#261;darce aby potwierdzi&#263; zaproszenie</p>
-                    <p>
-                        <a href="${confirmLink}">${confirmLink}</a>
-                    </p>
-                <#else>
-                    <p>Poniewa&#380; jeszcze nie posiadasz konta, mo&#380;esz je za&#322;o&#380;y&#263; klikaj&#261;&#263; na link poni&#380;ej:</p>
-                    <p>
-                        <a href="${registerLink}">${registerLink}</a>
-                    </p>
-                </#if>
             </td>
         </tr>
         </tbody>
@@ -171,9 +229,9 @@
                     <tr>
                         <td align="center">
                             <p>
-                                To jest automatyczna wiadomo&#347;&#263; wys&#322;ana z <a
+                                This is automatic message sent from <a
                                         href="${application!'#'}" target="_blank">${application!'#'}</a>.</br>
-                                Prosz&#281; nie odpowiada&#263;
+                                Please do not reply.
                             </p>
                         </td>
                     </tr>
@@ -186,7 +244,5 @@
     </tbody>
 </table>
 <!-- /footer -->
-
-
 </body>
 </html>

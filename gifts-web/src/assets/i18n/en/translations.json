@@ -395,9 +395,9 @@
     "list": "User lists",
     "login": {
       "existing": "Already have account?",
-      "facebook": "Sign in with Facebook",
+      "facebook": "Log in with Facebook",
       "failed": "There was a problem logging in. Please try again.",
-      "google": "Sign in with Google+",
+      "google": "Sign in with Google",
       "here": "here",
       "register": {
         "newhere": "New user? Register",
@@ -414,7 +414,17 @@
         "text": "Welcome to Gifts Hub"
       }
     },
-    "password": "Password",
+    "password": {
+      "reset": {
+        "email": "Enter email address",
+        "emailhint": "Enter email address assosiated with your account. On it, you will recieve link to reset your password",
+        "forgot": "Forgot your password? Click",
+        "sent": "If email was assosiated with account, you will recieve password reset instructions",
+        "text": "Reset password",
+        "title": "Forgot your password?<br>No worries - Just enter your email address below and press reset.<br>You will recieve reset link to your emal"
+      },
+      "text": "Password"
+    },
     "register": {
       "alreadyexists": "already exists. Please use another",
       "email": {

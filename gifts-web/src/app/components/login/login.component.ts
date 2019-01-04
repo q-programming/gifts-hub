@@ -1,9 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {environment} from "@env/environment";
-import {ApiService} from "@services/api.service";
 import {AuthenticationService} from "@services/authentication.service";
 import {Router} from "@angular/router";
-import {TranslateService} from "@ngx-translate/core";
 import {FormControl, Validators} from "@angular/forms";
 
 @Component({
@@ -17,20 +15,14 @@ export class LoginComponent implements OnInit {
   usernameCtrl = new FormControl('', Validators.required);
   passwordCtrl = new FormControl('', Validators.required);
 
-  constructor(private authSrv: AuthenticationService, private router: Router, private apiSrv: ApiService, private translate: TranslateService) {
+  constructor(private authSrv: AuthenticationService, private router: Router) {
   }
 
   ngOnInit() {
     if (this.authSrv.currentAccount) {
       this.router.navigate(['/']);
     }
-    this.apiSrv.get(`${environment.app_url}/default-language`).subscribe(defaults => {
-      if (defaults) {
-        let lang = defaults.language;
-        this.translate.setDefaultLang(lang);
-        this.translate.use(lang)
-      }
-    })
+    this.authSrv.setLanguage();
   }
 
   login() {

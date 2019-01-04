@@ -3,7 +3,7 @@
 <head>
     <meta name="viewport" content="width=device-width">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Zaproszenie do grupy ${groupName}</title>
+    <title>Instrukcja resetowania has&#322;a</title>
     <style>
         * {
             margin: 0;
@@ -122,6 +122,38 @@
             padding: 2px;
             border-radius: 50%
         }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .btn-social {
+            display: inline-block;
+            width: 200px;
+            border: thin solid #888;
+            box-shadow: 1px 1px 1px grey;
+            white-space: nowrap;
+            border-radius: 0;
+            padding: 5px 20px 5px 10px;
+            font-weight: bold;
+            text-align: left;
+        }
+
+        .btn-social img {
+            margin-right: 10px;
+            vertical-align: bottom;
+        }
+
+
+        .btn-social.facebook {
+            background-color: #4267b2 !important;
+            color: #fff !important;
+        }
+
+        .btn-social.google {
+            background: white;
+            color: #444;
+        }
     </style>
 </head>
 <body bgcolor="#f6f6f6">
@@ -137,20 +169,42 @@
             </td>
             <td>
                 <#if name??>
-                    <p>Witaj ${name},</p>
+                    <p>Witaj ${name}</p>
                 </#if>
-                <div>
-                    ${owner} zaprosi&#322; Ci&#281; do grupy "${groupName}" w aplikacji Gifts Hub
-                </div>
-                <#if confirmLink??>
-                    <p>Kliknij link poni&#380;ej, lub skopiuj i wklej go w prz&#281;gl&#261;darce aby potwierdzi&#263; zaproszenie</p>
+                <p>
+                    Poprosi&#322;es o zresetowanie swojego has&#322;a w aplikacji Gifts Hub
+                </p>
+                <#if linkGoogle??>
                     <p>
-                        <a href="${confirmLink}">${confirmLink}</a>
+                        Twoje konto zosta&#322;o stworzon&#281; przy pomocy zalogowania si&#281; z Google i nie ma &#380;adnego przypisanego
+                        has&#322;a<br>
+                        Przejdz prosz&#281; na stron&#281; logowania i uzyj opcji Zaloguj si&#281; z Google, lub kliknij na guzik
+                        poni&#380;ej
+                    </p>
+                    <p>
+                        <a class="btn-social google" href="${linkGoogle}">
+                            <img src="cid:logoGoogle.png" height="25px">
+                            Zaloguj si&#281; z Google
+                        </a>
+                    </p>
+                <#elseif linkFacebook??>
+                    <p>
+                        Twoje konto zosta&#322;o stworzon&#281; przy pomocy zalogowania si&#281; z Facebookiem i nie ma &#380;adnego
+                        przypisanego has&#322;a<br>
+                        Przejdz prosz&#281; na stron&#281; logowania i uzyj opcji Zaloguj si&#281; z przez Facebooka, lub kliknij na
+                        guzik poni&#380;ej
+                    </p>
+                    <p class="text-center">
+                        <a class="btn-social facebook" href="${linkFacebook}">
+                            <img src="cid:logoFacebook.png" height="25px">
+                            Zaloguj si&#281; z przez Facebooka
+                        </a>
                     </p>
                 <#else>
-                    <p>Poniewa&#380; jeszcze nie posiadasz konta, mo&#380;esz je za&#322;o&#380;y&#263; klikaj&#261;&#263; na link poni&#380;ej:</p>
+                    <p>Kliknij link poni&#380;ej, lub skopiuj i wklej go w prz&#281;gl&#261;darce aby potwierdzi&#263;
+                        zaproszenie</p>
                     <p>
-                        <a href="${registerLink}">${registerLink}</a>
+                        <a href="${confirmLink}">${confirmLink}</a>
                     </p>
                 </#if>
             </td>

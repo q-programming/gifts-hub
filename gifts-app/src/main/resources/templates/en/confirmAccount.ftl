@@ -3,7 +3,7 @@
 <head>
     <meta name="viewport" content="width=device-width">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Zaproszenie do grupy ${groupName}</title>
+    <title>Confirm your account in Gifts Hub</title>
     <style>
         * {
             margin: 0;
@@ -116,12 +116,6 @@
             border: 1px solid lightgray;
             padding: 10px;
         }
-
-        .avatar {
-            height: 50px;
-            padding: 2px;
-            border-radius: 50%
-        }
     </style>
 </head>
 <body bgcolor="#f6f6f6">
@@ -132,26 +126,16 @@
     <table class="main">
         <tbody>
         <tr>
-            <td valign="top" style="vertical-align: top; width:70px">
-                <img class="avatar" src='cid:userAvatar.png'>
-            </td>
             <td>
-                <#if name??>
-                    <p>Witaj ${name},</p>
-                </#if>
                 <div>
-                    ${owner} zaprosi&#322; Ci&#281; do grupy "${groupName}" w aplikacji Gifts Hub
+                    This email was used to register in Gifts Hub application
                 </div>
                 <#if confirmLink??>
-                    <p>Kliknij link poni&#380;ej, lub skopiuj i wklej go w prz&#281;gl&#261;darce aby potwierdzi&#263; zaproszenie</p>
+                    <p>Click link below, or copy and paste it in browser to confirm registration and activate your account</p>
                     <p>
                         <a href="${confirmLink}">${confirmLink}</a>
                     </p>
-                <#else>
-                    <p>Poniewa&#380; jeszcze nie posiadasz konta, mo&#380;esz je za&#322;o&#380;y&#263; klikaj&#261;&#263; na link poni&#380;ej:</p>
-                    <p>
-                        <a href="${registerLink}">${registerLink}</a>
-                    </p>
+                    <p>If you have not registered in application please ignore this email</p>
                 </#if>
             </td>
         </tr>
@@ -171,9 +155,9 @@
                     <tr>
                         <td align="center">
                             <p>
-                                To jest automatyczna wiadomo&#347;&#263; wys&#322;ana z <a
+                                This is automatic message sent from <a
                                         href="${application!'#'}" target="_blank">${application!'#'}</a>.</br>
-                                Prosz&#281; nie odpowiada&#263;
+                                Please do not reply
                             </p>
                         </td>
                     </tr>
@@ -186,7 +170,5 @@
     </tbody>
 </table>
 <!-- /footer -->
-
-
 </body>
 </html>

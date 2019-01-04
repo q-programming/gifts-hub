@@ -3,6 +3,7 @@ package com.qprogramming.gifts.config.mail;
 
 import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.AccountService;
+import com.qprogramming.gifts.account.AccountType;
 import com.qprogramming.gifts.account.avatar.Avatar;
 import com.qprogramming.gifts.account.event.AccountEvent;
 import com.qprogramming.gifts.config.property.DataBasePropertySource;
@@ -310,24 +311,45 @@ public class MailService {
         Locale locale = getMailLocale(mail);
         String confirmLink = mail.getModel().get(APPLICATION) + "#/confirm/" + event.getToken();
         mail.addToModel(CONFIRM_LINK, confirmLink);
-        String familyName = event.getGroup().getName();
+        String familyName;
         switch (event.getType()) {
             case GROUP_MEMEBER:
+                familyName = event.getGroup().getName();
                 mimeMessageHelper.setSubject(msgSrv.getMessage("user.group.invite", new Object[]{familyName}, "", locale));
                 mail.addToModel(GROUP_NAME, familyName);
                 mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/groupInvite.ftl"));
                 break;
             case GROUP_ADMIN:
+                familyName = event.getGroup().getName();
                 mimeMessageHelper.setSubject(msgSrv.getMessage("user.group.admin", new Object[]{familyName}, "", locale));
                 mail.addToModel(GROUP_NAME, familyName);
                 mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/groupAdmin.ftl"));
                 break;
             case GROUP_REMOVE:
                 break;
+            case ACCOUNT_CONFIRM:
+                mimeMessageHelper.setSubject(msgSrv.getMessage("user.register.confirm", null, "", locale));
+                mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/confirmAccount.ftl"));
+                break;
+            case PASSWORD_RESET:
+                if (event.getAccount().getType().equals(AccountType.GOOGLE)) {
+                    mail.addToModel("linkGoogle", mail.getModel().get(APPLICATION) + "login/google");
+                    mimeMessageHelper.addInline("logoGoogle.png", new ClassPathResource("static/images/logo_google.png"));
+                } else if (event.getAccount().getType().equals(AccountType.FACEBOOK)) {
+                    mail.addToModel("linkFacebook", mail.getModel().get(APPLICATION) + "login/facebook");
+                    mimeMessageHelper.addInline("logoFacebook.png", new ClassPathResource("static/images/logo_facebook.png"));
+                }
+                mimeMessageHelper.setSubject(msgSrv.getMessage("user.login.reset", null, "", locale));
+                mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/passwordReset.ftl"));
+                break;
         }
         mimeMessageHelper.setText(mail.getMailContent(), true);
-        File avatarTempFile = getUserAvatar(Utils.getCurrentAccount());
-        mimeMessageHelper.addInline(USER_AVATAR_PNG, avatarTempFile);
+        if (Utils.getCurrentAccount() != null) {
+            File avatarTempFile = getUserAvatar(Utils.getCurrentAccount());
+            mimeMessageHelper.addInline(USER_AVATAR_PNG, avatarTempFile);
+        }else{
+            mimeMessageHelper.addInline(USER_AVATAR_PNG, getUserAvatar(event.getAccount()));
+        }
         addAppLogo(mimeMessageHelper);
         LOG.info("Sending confirm message to {}", mail.getMailTo());
         mailSender.send(mimeMessageHelper.getMimeMessage());

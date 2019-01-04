@@ -19,7 +19,8 @@
 .v-middle {
   vertical-align: middle !important;
 }
-.vertically-centered{
+
+.vertically-centered {
   position: relative;
   top: 50%;
   -ms-transform: translateY(-50%);
@@ -1638,8 +1639,13 @@
 .text-center {
   text-align: center !important
 }
-.text-v-middle{
+
+.text-v-middle {
   vertical-align: middle;
+}
+
+.text-green {
+  color: green;
 }
 
 @media (min-width: 576px) {

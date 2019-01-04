@@ -9,14 +9,14 @@
   <div>
     <form [formGroup]="baseForm">
       <div fxLayout="row" fxLayoutAlign="center center" class="mt-3">
-        <mat-form-field fxFlex="40%">
+        <mat-form-field fxFlex="40" fxFlex.lt-sm="100">
           <input matInput placeholder="{{'user.firstname.text'|translate}}" formControlName="name" required
                  autocomplete="name">
           <mat-hint>{{'user.firstname.hint'|translate}}</mat-hint>
         </mat-form-field>
       </div>
       <div fxLayout="row" fxLayoutAlign="center center" class="mt-3">
-        <mat-form-field fxFlex="40%">
+        <mat-form-field fxFlex="40" fxFlex.lt-sm="100">
           <input matInput placeholder="{{'user.surname.text'|translate}}" formControlName="surname"
                  autocomplete="surname"
                  required>
@@ -24,7 +24,7 @@
         </mat-form-field>
       </div>
       <div fxLayout="row" fxLayoutAlign="center center" class="mt-3">
-        <mat-form-field fxFlex="40%">
+        <mat-form-field fxFlex="40" fxFlex.lt-sm="100">
           <input matInput placeholder="{{'user.username'|translate}}" formControlName="username" autocomplete="off"
                  required>
           <mat-hint>{{'user.register.username.chars'|translate}}</mat-hint>
@@ -34,11 +34,12 @@
           <mat-error *ngIf="baseForm.controls.username.hasError('username')">
             {{'user.register.username.exists'|translate}}
           </mat-error>
+          <mat-icon matSuffix class="text-green" *ngIf="validUsername">check</mat-icon>
         </mat-form-field>
       </div>
 
       <div fxLayout="row" fxLayoutAlign="center center" class="mt-3">
-        <mat-form-field fxFlex="40%">
+        <mat-form-field fxFlex="40" fxFlex.lt-sm="100">
           <input matInput placeholder="Email" formControlName="email" autocomplete="email">
           <mat-hint> {{'user.email'|translate}}</mat-hint>
           <mat-error *ngIf="baseForm.controls.email.hasError('email')">
@@ -55,8 +56,8 @@
     </form>
     <form [formGroup]="passwordForm">
       <div fxLayout="row" fxLayoutAlign="center center" class="mt-3">
-        <mat-form-field fxFlex="40%">
-          <input matInput placeholder="{{'user.password'|translate}}"
+        <mat-form-field fxFlex="40" fxFlex.lt-sm="100">
+          <input matInput placeholder="{{'user.password.text'|translate}}"
                  formControlName="password" required type="password">
           <mat-hint>{{'user.register.password.hint'|translate}}</mat-hint>
           <mat-error *ngIf="passwordForm.hasError('required', ['password'])">
@@ -68,7 +69,7 @@
         </mat-form-field>
       </div>
       <div fxLayout="row" fxLayoutAlign="center center" class="mt-3">
-        <mat-form-field fxFlex="40%">
+        <mat-form-field fxFlex="40" fxFlex.lt-sm="100">
           <input matInput placeholder="{{'user.register.password.confirm'|translate}}"
                  formControlName="confirmPassword" required
                  [errorStateMatcher]="matcher"
@@ -80,7 +81,7 @@
         </mat-form-field>
       </div>
       <div fxLayout="row" fxLayoutAlign="center center" class="text-left mt-3">
-        <div fxFlex="40%">
+        <div fxFlex="40" fxFlex.lt-sm="100">
           <div>
             <span fxShow.lt-sm="false">{{'user.register.password.strength'|translate}}</span>
             <ng2-password-strength-bar

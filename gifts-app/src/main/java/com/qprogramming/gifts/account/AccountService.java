@@ -8,6 +8,7 @@ import com.qprogramming.gifts.account.avatar.Avatar;
 import com.qprogramming.gifts.account.avatar.AvatarRepository;
 import com.qprogramming.gifts.account.event.AccountEvent;
 import com.qprogramming.gifts.account.event.AccountEventRepository;
+import com.qprogramming.gifts.account.event.AccountEventType;
 import com.qprogramming.gifts.account.group.Group;
 import com.qprogramming.gifts.account.group.GroupService;
 import com.qprogramming.gifts.config.property.PropertyService;
@@ -85,6 +86,7 @@ public class AccountService implements UserDetailsService {
         account.setPassword(_accountPasswordEncoder.encode(account.getPassword()));
         account.setUuid(Generators.timeBasedGenerator().generate().toString());
         account.setType(AccountType.LOCAL);
+        setLocale(account);
         return createAcount(account);
     }
 
@@ -103,6 +105,19 @@ public class AccountService implements UserDetailsService {
         //generate password if needed
         return _accountRepository.save(account);
     }
+    public void setLocale(Account account) {
+        setLocale(account,null);
+    }
+
+    public void setLocale(Account account, String locale) {
+        if (StringUtils.isBlank(locale) || _propertyService.getLanguages().keySet().contains(locale)) {
+            account.setLanguage(locale);
+        } else {
+            locale = _propertyService.getDefaultLang();
+            setLocale(account, locale);
+        }
+    }
+
 
     public Account addAsAdministrator(Account account) {
         account.addAuthority(_authorityService.findByRole(Role.ROLE_ADMIN));
@@ -409,4 +424,36 @@ public class AccountService implements UserDetailsService {
     }
 
 
+    public AccountEvent createGroupInviteEvent(Account account, Group group, AccountEventType type) {
+        AccountEvent event = new AccountEvent();
+        event.setAccount(account);
+        event.setGroup(group);
+        event.setType(type);
+        event.setToken(generateToken());
+        return _accountEventRepository.save(event);
+    }
+
+    public AccountEvent createConfirmEvent(Account newAccount) {
+        AccountEvent event = new AccountEvent();
+        event.setAccount(newAccount);
+        event.setType(AccountEventType.ACCOUNT_CONFIRM);
+        event.setToken(generateToken());
+        return _accountEventRepository.save(event);
+    }
+    public AccountEvent createPasswordResetEvent(Account newAccount) {
+        AccountEvent event = new AccountEvent();
+        event.setAccount(newAccount);
+        event.setType(AccountEventType.PASSWORD_RESET);
+        event.setToken(generateToken());
+        return _accountEventRepository.save(event);
+    }
+
+
+    public String generateToken() {
+        String token = Generators.timeBasedGenerator().generate().toString();
+        while (_accountEventRepository.findByToken(token).isPresent()) {
+            token = Generators.timeBasedGenerator().generate().toString();
+        }
+        return token;
+    }
 }

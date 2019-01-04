@@ -66,7 +66,7 @@ public class OAuthLoginSuccessHandlerTest {
         when((OAuth2AuthenticationDetails) authMock.getDetails()).thenReturn(oauthDetailsMock);
         when(authenticationMock.getDetails()).thenReturn(details);
         when(propertyServiceMock.getLanguages()).thenReturn(languageList());
-        handler = spy(new OAuthLoginSuccessHandler(accSrvMock, tokenServiceMock, propertyServiceMock, authorityServiceMock));
+        handler = spy(new OAuthLoginSuccessHandler(accSrvMock, tokenServiceMock, authorityServiceMock));
     }
 
     @Test

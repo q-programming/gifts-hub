@@ -142,14 +142,6 @@ public class GroupService {
         groupRepository.delete(group);
     }
 
-    public AccountEvent inviteAccount(Account account, Group group, AccountEventType type) {
-        AccountEvent event = new AccountEvent();
-        event.setAccount(account);
-        event.setGroup(group);
-        event.setType(type);
-        event.setToken(generateToken());
-        return accountEventRepository.save(event);
-    }
 
     public AccountEvent groupAllowFamilyEvent(Account account, Group target) {
         AccountEvent event = new AccountEvent();
@@ -159,13 +151,6 @@ public class GroupService {
         return accountEventRepository.save(event);
     }
 
-    public String generateToken() {
-        String token = Generators.timeBasedGenerator().generate().toString();
-        while (accountEventRepository.findByToken(token).isPresent()) {
-            token = Generators.timeBasedGenerator().generate().toString();
-        }
-        return token;
-    }
 
 
     public Group getGroupFromEvent(AccountEvent event) throws GroupNotFoundException {

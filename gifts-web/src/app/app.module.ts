@@ -28,7 +28,7 @@ import {MatButtonModule, MatIconModule, MatListModule, MatSidenavModule, MatTool
 import {UserListComponent} from './components/user-list/user-list.component';
 import {GiftsComponent} from './components/gifts/gifts.component';
 import {ErrorComponent} from "./components/error/error.component";
-import {RegisterComponent} from "./components/register/register.component";
+import {RegisterComponent} from "./components/login/register/register.component";
 import {PasswordStrengthBarModule} from "ng2-password-strength-bar";
 import {AvatarComponent} from './components/avatar/avatar.component';
 import {GiftComponent} from './components/gifts/gift/gift.component';
@@ -53,6 +53,7 @@ import {GoTopButtonModule} from 'ng2-go-top-button';
 import {GroupDialogComponent} from './components/user-list/group-dialog/group-dialog.component';
 import {PermissionComponent} from './components/user-list/permission/permission.component';
 import {ConfirmComponent} from './components/confirm/confirm.component';
+import {ResetPasswordComponent} from './components/login/reset-password/reset-password.component';
 
 
 @NgModule({
@@ -85,7 +86,8 @@ import {ConfirmComponent} from './components/confirm/confirm.component';
     ConfirmDialogComponent,
     GroupDialogComponent,
     PermissionComponent,
-    ConfirmComponent
+    ConfirmComponent,
+    ResetPasswordComponent
   ],
   entryComponents: [
     AvatarUploadComponent,

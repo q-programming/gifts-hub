@@ -96,7 +96,6 @@ public class UserRestController {
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     public ResponseEntity<?> register(@Valid @RequestBody RegisterForm userform) {
         if (_accountService.findByEmail(userform.getEmail()).isPresent()) {
-            String message = _msgSrv.getMessage("user.register.email.exists") + " " + _msgSrv.getMessage("user.register.alreadyexists");
             return new ResponseEntity<>("email", HttpStatus.CONFLICT);
         }
         Pattern pattern = Pattern.compile(USERNAME_REGEXP);
@@ -116,9 +115,34 @@ public class UserRestController {
         }
         Account newAccount = userform.createAccount();
         newAccount = _accountService.createLocalAccount(newAccount);
+        AccountEvent event = _accountService.createConfirmEvent(newAccount);
+        Mail mail = Utils.createMail(newAccount);
+        try {
+            _mailService.sendConfirmMail(mail, event);
+        } catch (MessagingException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
 //        _accountService.createAvatar(newAccount);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
+
+    @Transactional
+    @RequestMapping(value = "/password-reset", method = RequestMethod.POST)
+    public ResponseEntity<?> passwordReset(@RequestBody String email) {
+        Optional<Account> optionalAccount = _accountService.findByEmail(email);
+        if (optionalAccount.isPresent()) {
+            Account account = optionalAccount.get();
+            AccountEvent event = _accountService.createPasswordResetEvent(account);
+            Mail mail = Utils.createMail(account);
+            try {
+                _mailService.sendConfirmMail(mail, event);
+            } catch (MessagingException e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            }
+        }
+        return ResponseEntity.ok().build();
+    }
+
 
     @Transactional
     @RequestMapping("/{username}/avatar")
@@ -352,9 +376,19 @@ public class UserRestController {
             case GROUP_ADMIN:
                 return handleBecomeGroupAdmin(event);
             case ACCOUNT_CONFIRM:
-                break;
+                return handleConfirmAccount(event);
         }
         return new ResultData.ResultBuilder().badReqest().build();
+    }
+
+    private ResponseEntity handleConfirmAccount(AccountEvent event) {
+        Account account = event.getAccount();
+        account.setEnabled(true);
+        _accountService.update(account);
+        _accountService.eventConfirmed(event);
+        HashMap<String, String> model = new HashMap<>();
+        model.put("result", "confirmed");
+        return ResponseEntity.ok(model);
     }
 
     private ResponseEntity handleBecomeGroupAdmin(AccountEvent event) {
@@ -406,7 +440,7 @@ public class UserRestController {
                 Mail mail = Utils.createMail(account, Utils.getCurrentAccount());
                 _mailService.sendInvite(mail, group.getName());
             } else {
-                AccountEvent event = _groupService.inviteAccount(account, group, type);
+                AccountEvent event = _accountService.createGroupInviteEvent(account, group, type);
                 Mail mail = Utils.createMail(account, Utils.getCurrentAccount());
                 _mailService.sendConfirmMail(mail, event);
             }
@@ -683,8 +717,7 @@ public class UserRestController {
         return ResponseEntity.ok(model);
     }
 
-    //TODO delete afterwards
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @RequestMapping(value = "/scheduler", method = RequestMethod.POST)
     public ResponseEntity sendScheduler() {
         try {

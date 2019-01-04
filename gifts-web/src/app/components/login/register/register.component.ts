@@ -1,20 +1,19 @@
 import {Component, OnInit} from '@angular/core';
-import {environment} from "@env/environment";
+import {environment} from "../../../../environments/environment";
 import {
-    AbstractControl,
-    FormBuilder,
-    FormControl,
-    FormGroup,
-    FormGroupDirective,
-    NgForm,
-    Validators
+  AbstractControl,
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  FormGroupDirective,
+  NgForm,
+  Validators
 } from "@angular/forms";
 import {ErrorStateMatcher} from "@angular/material";
 import {Router} from "@angular/router";
-import {TranslateService} from "@ngx-translate/core";
-import {ApiService} from "@services/api.service";
-import {AlertService} from "@services/alert.service";
-import {AuthenticationService} from "@services/authentication.service";
+import {ApiService} from "../../../services/api.service";
+import {AlertService} from "../../../services/alert.service";
+import {AuthenticationService} from "../../../services/authentication.service";
 
 @Component({
     selector: 'app-register',
@@ -28,23 +27,17 @@ export class RegisterComponent implements OnInit {
     myColors = ['#DD2C00', '#FF6D00', '#FFD600', '#AEEA00', '#00C853'];
     matcher = new MyErrorStateMatcher();
     currentPass;
+    validUsername:boolean;
 
     constructor(private formBuilder: FormBuilder,
                 private router: Router,
-                private translate: TranslateService,
                 private apiSrv: ApiService,
                 private alertSrv: AlertService,
                 private authSrv: AuthenticationService) {
-        this.apiSrv.get(`${environment.app_url}/default-language`).subscribe(defaults => {
-            if (defaults) {
-                let lang = defaults.language;
-                this.translate.setDefaultLang(lang);
-                this.translate.use(lang)
-            }
-        })
     }
 
     ngOnInit() {
+        this.authSrv.setLanguage();
         if (this.authSrv.currentAccount) {
             this.router.navigate(['/']);
         }
@@ -67,6 +60,7 @@ export class RegisterComponent implements OnInit {
       this.baseForm.controls.username.valueChanges
         .debounceTime(300).subscribe(value => {
         this.apiSrv.post(`${environment.account_url}/validate-username`, value).subscribe(() => {
+          this.validUsername = true;
         }, error => {
           this.baseForm.controls.username.setErrors({username: true})
         })
@@ -104,9 +98,11 @@ export class RegisterComponent implements OnInit {
                         break;
                     case 'bad_username':
                         this.baseForm.controls.username.setErrors({badusername: true});
+                      this.validUsername = false;
                         break;
                   case 'username':
                     this.baseForm.controls.username.setErrors({username: true});
+                    this.validUsername = false;
                     break;
                   case 'passwords':
                         this.passwordForm.setErrors({notSame: true});

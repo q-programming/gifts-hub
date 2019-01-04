@@ -284,14 +284,14 @@ public class UserRestControllerTest extends MockedAccountTestBase {
         when(accSrvMock.findByEmailsOrUsernames(Collections.singleton(USERNAME + "1"))).thenReturn(Collections.singleton(memberAndAdmin));
         when(groupServiceMock.createGroup(anyString())).thenReturn(group);
         when(groupServiceMock.addAccountToGroupAdmins(any(Account.class), any(Group.class))).then(returnsSecondArg());
-        when(groupServiceMock.inviteAccount(any(Account.class), any(Group.class), any(AccountEventType.class))).thenReturn(event);
+        when(accSrvMock.createGroupInviteEvent(any(Account.class), any(Group.class), any(AccountEventType.class))).thenReturn(event);
         when(groupServiceMock.update(group)).then(returnsFirstArg());
         MvcResult mvcResult = userRestCtrl.perform(post(API_USER_GROUP_CREATE)
                 .contentType(APPLICATION_JSON_UTF8)
                 .content(convertObjectToJsonBytes(form))).andExpect(status().isOk()).andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
         verify(groupServiceMock, times(1)).addAccountToGroupAdmins(any(Account.class), any(Group.class));
-        verify(groupServiceMock, times(1)).inviteAccount(memberAndAdmin, group, AccountEventType.GROUP_MEMEBER);
+        verify(accSrvMock, times(1)).createGroupInviteEvent(memberAndAdmin, group, AccountEventType.GROUP_MEMEBER);
         verify(mailServiceMock, times(1)).sendConfirmMail(any(Mail.class), any(AccountEvent.class));
     }
 
@@ -337,7 +337,7 @@ public class UserRestControllerTest extends MockedAccountTestBase {
                 .contentType(APPLICATION_JSON_UTF8)
                 .content(convertObjectToJsonBytes(form))).andExpect(status().isOk()).andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
-        verify(groupServiceMock, times(1)).inviteAccount(memberAndAdmin, group, AccountEventType.GROUP_ADMIN);
+        verify(accSrvMock, times(1)).createGroupInviteEvent(memberAndAdmin, group, AccountEventType.GROUP_ADMIN);
         assertTrue(group.getMembers().size() == 1);
     }
 

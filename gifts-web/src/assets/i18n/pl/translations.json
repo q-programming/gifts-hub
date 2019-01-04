@@ -395,9 +395,9 @@
     "list": "Lista użytkowników",
     "login": {
       "existing": "Już posiadasz konto?",
-      "facebook": "Zaloguj się z Facebook'iem",
+      "facebook": "Zaloguj się z przez Facebooka",
       "failed": "Wystąpił błąd podczas logowania. Proszę sprobować ponownie",
-      "google": "Zaloguj się z Google+",
+      "google": "Zaloguj się z Google",
       "here": "tutaj",
       "register": {
         "newhere": "Nowy użytkownik? Zarejestruj się",
@@ -414,7 +414,17 @@
         "text": "Witaj w Gifts Hub"
       }
     },
-    "password": "Hasło",
+    "password": {
+      "reset": {
+        "email": "Wprowadz adres email",
+        "emailhint": "Wprowadz adres email twojego konta. Otrzymasz na niego link do zresetowania hasła",
+        "forgot": "Zapomniałeś hasła ? Kliknij",
+        "sent": "Jeżeli email jest przypisany do konta otrzymasz instrukcje dotyczące zresetowania hasła.",
+        "text": "Zresetuj hasło",
+        "title": "Zapomniałeś hasło?<br>\nNie przejmuj się - wprowadz adres email twojego konta poniżej.<br>Otrzymasz na niego link do zresetowania hasła"
+      },
+      "text": "Hasło"
+    },
     "register": {
       "alreadyexists": "już istnieje. Proszę użyć innego",
       "email": {
