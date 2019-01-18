@@ -122,38 +122,6 @@
             padding: 2px;
             border-radius: 50%
         }
-
-        .text-center {
-            text-align: center;
-        }
-
-        .btn-social {
-            display: inline-block;
-            width: 200px;
-            border: thin solid #888;
-            box-shadow: 1px 1px 1px grey;
-            white-space: nowrap;
-            border-radius: 0;
-            padding: 5px 20px 5px 10px;
-            font-weight: bold;
-            text-align: left;
-        }
-
-        .btn-social img {
-            margin-right: 10px;
-            vertical-align: bottom;
-        }
-
-
-        .btn-social.facebook {
-            background-color: #4267b2 !important;
-            color: #fff !important;
-        }
-
-        .btn-social.google {
-            background: white;
-            color: #444;
-        }
     </style>
 </head>
 <body bgcolor="#f6f6f6">
@@ -177,31 +145,29 @@
                     </p>
                     <#if linkGoogle??>
                         <p>
-                            However your account was created using google account, and there is no password associated
+                            However your account was created using Google account, and there is no password associated
                             with it.<br>
                             Please go to login page and Sign in using Google, or click button below
                         </p>
-                        <p class="text-center">
-                            <a class="btn-social google" href="${linkGoogle}">
-                                <img src="cid:logoGoogle.png" height="25px">
-                                Sign in with Google
+                        <p>
+                            <a href="${linkGoogle}">
+                                <img src="cid:signInGoogle.png" height="25px" alt="Sign in with Google">
                             </a>
                         </p>
                     <#elseif linkFacebook??>
                         <p>
-                            However your account was created using facebook account, and there is no password associated
+                            However your account was created using Facebook account, and there is no password associated
                             with it.<br>
                             Please go to login page and Login using Facebook, or click button below
                         </p>
                         <p>
-                            <a class="btn-social facebook" href="${linkFacebook}">
-                                <img src="cid:logoFacebook.png" height="25px">
-                                Sign in with Google
+                            <a href="${linkFacebook}">
+                                <img src="cid:signInFacebook.png" height="25px" alt="Login with Facebook">
                             </a>
                         </p>
                     <#else>
                         <p>Click link below, or copy and paste it in browser to start reseting your password</p>
-                        <p>This password reset is only valid for the next 24 hours</p>
+                        <p>This password reset is only valid for the next 12 hours</p>
                         <p>
                             <a href="${confirmLink}">${confirmLink}</a>
                         </p>

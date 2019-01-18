@@ -415,9 +415,19 @@
       }
     },
     "password": {
+      "change": {
+        "expired": "Token zmiany hasła wygasł.<br>\nProszę rozpocznij restowanie hasła od nowa",
+        "new": "Nowe hasło",
+        "success": "Z powodzeniem zmieniono hasło<br>\nMożna sie teraz zalogować używająć nowego hasła",
+        "text": "Zmień hasło",
+        "title": "Rozpocząłeś proces resetowania hasła.<br>\nWprowadz swoje nowe hasło poniżej"
+      },
       "reset": {
         "email": "Wprowadz adres email",
         "emailhint": "Wprowadz adres email twojego konta. Otrzymasz na niego link do zresetowania hasła",
+        "error": {
+          "mailSrv": "Wystąpił bład podczas wysyłania emaila z linkiem do resetowaniem Skontaktuj się proszę z administratorem"
+        },
         "forgot": "Zapomniałeś hasła ? Kliknij",
         "sent": "Jeżeli email jest przypisany do konta otrzymasz instrukcje dotyczące zresetowania hasła.",
         "text": "Zresetuj hasło",

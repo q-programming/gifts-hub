@@ -12,6 +12,7 @@ import {ManageComponent} from "./components/manage/manage.component";
 import {AdminGuard} from "./guards/admin.guard";
 import {ConfirmComponent} from "./components/confirm/confirm.component";
 import {ResetPasswordComponent} from "./components/login/reset-password/reset-password.component";
+import {ChangePasswordComponent} from "./components/login/change-password/change-password.component";
 
 const routes: Routes = [
   {path: '', component: GiftsComponent, canActivate: [AuthGuard]},
@@ -25,7 +26,7 @@ const routes: Routes = [
   {path: 'confirm/:token', component: ConfirmComponent},
   {path: 'register', component: RegisterComponent},
   {path: 'reset', component: ResetPasswordComponent},
-  {path: 'reset/:token', component: ResetPasswordComponent},
+  {path: 'password-change/:token', component: ChangePasswordComponent},
   {path: 'error', component: ErrorComponent},
   // otherwise redirect to home
   {path: '**', redirectTo: '/error?type=404'}

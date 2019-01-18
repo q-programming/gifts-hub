@@ -1,9 +1,6 @@
 package com.qprogramming.gifts.api.user;
 
-import com.qprogramming.gifts.account.Account;
-import com.qprogramming.gifts.account.AccountService;
-import com.qprogramming.gifts.account.AccountType;
-import com.qprogramming.gifts.account.RegisterForm;
+import com.qprogramming.gifts.account.*;
 import com.qprogramming.gifts.account.event.AccountEvent;
 import com.qprogramming.gifts.account.event.AccountEventType;
 import com.qprogramming.gifts.account.group.Group;
@@ -141,6 +138,30 @@ public class UserRestController {
             }
         }
         return ResponseEntity.ok().build();
+    }
+
+    @Transactional
+    @RequestMapping(value = "/password-change", method = RequestMethod.POST)
+    public ResponseEntity<?> changePassword(@RequestBody PasswordForm form) {
+        UUID uuid = UUID.fromString(form.getToken());
+        Optional<AccountEvent> eventOptional = _accountService.findEvent(form.getToken());
+        if (!eventOptional.isPresent()) {
+            return new ResultData.ResultBuilder().notFound().build();
+        }
+        AccountEvent event = eventOptional.get();
+        DateTime date = new DateTime(Utils.getTimeFromUUID(uuid));
+        if (new DateTime().isAfter(date.plusHours(12))) {
+            _accountService.removeEvent(event);
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("expired");
+        }
+        Account account = event.getAccount();
+        account.setPassword(form.getPassword());
+        _accountService.encodePassword(account);
+        _accountService.update(account);
+        _accountService.eventConfirmed(event);
+        HashMap<String, String> model = new HashMap<>();
+        model.put("result", "changed");
+        return ResponseEntity.ok(model);
     }
 
 
@@ -376,6 +397,12 @@ public class UserRestController {
             case GROUP_ADMIN:
                 return handleBecomeGroupAdmin(event);
             case ACCOUNT_CONFIRM:
+                return handleConfirmAccount(event);
+            case PASSWORD_RESET:
+                if (new DateTime().isAfter(date.plusHours(12))) {
+                    _accountService.removeEvent(event);
+                    return ResponseEntity.status(HttpStatus.CONFLICT).body("expired");
+                }
                 return handleConfirmAccount(event);
         }
         return new ResultData.ResultBuilder().badReqest().build();

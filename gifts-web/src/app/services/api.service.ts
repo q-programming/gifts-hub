@@ -75,10 +75,9 @@ export class ApiService {
       headers: new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded')
     };
     return this.http.post(path, body.toString(), header)
-      .filter(response => response instanceof HttpResponse)
       .map((response: HttpResponse<any>) => {
         this.progress.complete();
-        return response.body
+        return response
       })
   }
 

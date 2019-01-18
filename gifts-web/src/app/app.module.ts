@@ -54,6 +54,7 @@ import {GroupDialogComponent} from './components/user-list/group-dialog/group-di
 import {PermissionComponent} from './components/user-list/permission/permission.component';
 import {ConfirmComponent} from './components/confirm/confirm.component';
 import {ResetPasswordComponent} from './components/login/reset-password/reset-password.component';
+import { ChangePasswordComponent } from './components/login/change-password/change-password.component';
 
 
 @NgModule({
@@ -87,7 +88,8 @@ import {ResetPasswordComponent} from './components/login/reset-password/reset-pa
     GroupDialogComponent,
     PermissionComponent,
     ConfirmComponent,
-    ResetPasswordComponent
+    ResetPasswordComponent,
+    ChangePasswordComponent
   ],
   entryComponents: [
     AvatarUploadComponent,

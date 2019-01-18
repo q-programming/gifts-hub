@@ -415,9 +415,19 @@
       }
     },
     "password": {
+      "change": {
+        "expired": "Password reset token has expired<br>\nPlease start reseting your password  from begining.",
+        "new": "New password",
+        "success": "Successfully changed your password.<br>\nYou can now login using your new password",
+        "text": "Change password",
+        "title": "You began proccess of reseting password<br>\nEnter your new password below"
+      },
       "reset": {
         "email": "Enter email address",
         "emailhint": "Enter email address assosiated with your account. On it, you will recieve link to reset your password",
+        "error": {
+          "mailSrv": "There was error while sending reset link  via e-mail. Please contact administration"
+        },
         "forgot": "Forgot your password? Click",
         "sent": "If email was assosiated with account, you will recieve password reset instructions",
         "text": "Reset password",

@@ -83,7 +83,7 @@ public class AccountService implements UserDetailsService {
     @Transactional
     public Account createLocalAccount(Account account) {
         account.setId(generateID());
-        account.setPassword(_accountPasswordEncoder.encode(account.getPassword()));
+        encodePassword(account);
         account.setUuid(Generators.timeBasedGenerator().generate().toString());
         account.setType(AccountType.LOCAL);
         setLocale(account);
@@ -105,8 +105,9 @@ public class AccountService implements UserDetailsService {
         //generate password if needed
         return _accountRepository.save(account);
     }
+
     public void setLocale(Account account) {
-        setLocale(account,null);
+        setLocale(account, null);
     }
 
     public void setLocale(Account account, String locale) {
@@ -116,6 +117,15 @@ public class AccountService implements UserDetailsService {
             locale = _propertyService.getDefaultLang();
             setLocale(account, locale);
         }
+    }
+
+    /**
+     * Encodes password passed in plain text in Account
+     *
+     * @param account Account for which password will be encoded
+     */
+    public void encodePassword(Account account) {
+        account.setPassword(_accountPasswordEncoder.encode(account.getPassword()));
     }
 
 
@@ -440,6 +450,7 @@ public class AccountService implements UserDetailsService {
         event.setToken(generateToken());
         return _accountEventRepository.save(event);
     }
+
     public AccountEvent createPasswordResetEvent(Account newAccount) {
         AccountEvent event = new AccountEvent();
         event.setAccount(newAccount);

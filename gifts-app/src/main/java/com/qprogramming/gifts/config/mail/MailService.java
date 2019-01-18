@@ -314,45 +314,63 @@ public class MailService {
         String familyName;
         switch (event.getType()) {
             case GROUP_MEMEBER:
-                familyName = event.getGroup().getName();
-                mimeMessageHelper.setSubject(msgSrv.getMessage("user.group.invite", new Object[]{familyName}, "", locale));
-                mail.addToModel(GROUP_NAME, familyName);
-                mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/groupInvite.ftl"));
+                templateGroup(mail, event, mimeMessageHelper, locale, "user.group.invite", "/groupInvite.ftl");
                 break;
             case GROUP_ADMIN:
-                familyName = event.getGroup().getName();
-                mimeMessageHelper.setSubject(msgSrv.getMessage("user.group.admin", new Object[]{familyName}, "", locale));
-                mail.addToModel(GROUP_NAME, familyName);
-                mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/groupAdmin.ftl"));
+                templateGroup(mail, event, mimeMessageHelper, locale, "user.group.admin", "/groupAdmin.ftl");
                 break;
             case GROUP_REMOVE:
                 break;
             case ACCOUNT_CONFIRM:
-                mimeMessageHelper.setSubject(msgSrv.getMessage("user.register.confirm", null, "", locale));
-                mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/confirmAccount.ftl"));
+                templateAccountConfirm(mail, mimeMessageHelper, locale);
                 break;
             case PASSWORD_RESET:
-                if (event.getAccount().getType().equals(AccountType.GOOGLE)) {
-                    mail.addToModel("linkGoogle", mail.getModel().get(APPLICATION) + "login/google");
-                    mimeMessageHelper.addInline("logoGoogle.png", new ClassPathResource("static/images/logo_google.png"));
-                } else if (event.getAccount().getType().equals(AccountType.FACEBOOK)) {
-                    mail.addToModel("linkFacebook", mail.getModel().get(APPLICATION) + "login/facebook");
-                    mimeMessageHelper.addInline("logoFacebook.png", new ClassPathResource("static/images/logo_facebook.png"));
-                }
-                mimeMessageHelper.setSubject(msgSrv.getMessage("user.login.reset", null, "", locale));
-                mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/passwordReset.ftl"));
+                templatePasswordReset(mail, event, mimeMessageHelper, locale);
                 break;
         }
-        mimeMessageHelper.setText(mail.getMailContent(), true);
         if (Utils.getCurrentAccount() != null) {
             File avatarTempFile = getUserAvatar(Utils.getCurrentAccount());
             mimeMessageHelper.addInline(USER_AVATAR_PNG, avatarTempFile);
-        }else{
+        } else {
             mimeMessageHelper.addInline(USER_AVATAR_PNG, getUserAvatar(event.getAccount()));
         }
         addAppLogo(mimeMessageHelper);
         LOG.info("Sending confirm message to {}", mail.getMailTo());
         mailSender.send(mimeMessageHelper.getMimeMessage());
+    }
+
+    private void templateAccountConfirm(Mail mail, MimeMessageHelper mimeMessageHelper, Locale locale) throws MessagingException {
+        mimeMessageHelper.setSubject(msgSrv.getMessage("user.register.confirm", null, "", locale));
+        mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/confirmAccount.ftl"));
+        mimeMessageHelper.setText(mail.getMailContent(), true);
+    }
+
+    private void templatePasswordReset(Mail mail, AccountEvent event, MimeMessageHelper mimeMessageHelper, Locale locale) throws MessagingException {
+        String confirmLink = mail.getModel().get(APPLICATION) + "#/password-change/" + event.getToken();
+        mail.getModel().put(CONFIRM_LINK, confirmLink);
+        mimeMessageHelper.setSubject(msgSrv.getMessage("user.login.reset", null, "", locale));
+        if (event.getAccount().getType().equals(AccountType.GOOGLE)) {
+            mail.addToModel("linkGoogle", mail.getModel().get(APPLICATION) + "login/google");
+        } else if (event.getAccount().getType().equals(AccountType.FACEBOOK)) {
+            mail.addToModel("linkFacebook", mail.getModel().get(APPLICATION) + "login/facebook");
+        }
+        mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/passwordReset.ftl"));
+        mimeMessageHelper.setText(mail.getMailContent(), true);
+        //include buttons
+        if (event.getAccount().getType().equals(AccountType.GOOGLE)) {
+            mimeMessageHelper.addInline("signInGoogle.png", new ClassPathResource("static/images/signin_google_" + locale.toString() + ".png"));
+        } else if (event.getAccount().getType().equals(AccountType.FACEBOOK)) {
+            mimeMessageHelper.addInline("signInFacebook.png", new ClassPathResource("static/images/signin_facebook_" + locale.toString() + ".png"));
+        }
+    }
+
+    private void templateGroup(Mail mail, AccountEvent event, MimeMessageHelper mimeMessageHelper, Locale locale, String subjectKey, String template) throws MessagingException {
+        String familyName;
+        familyName = event.getGroup().getName();
+        mimeMessageHelper.setSubject(msgSrv.getMessage(subjectKey, new Object[]{familyName}, "", locale));
+        mail.addToModel(GROUP_NAME, familyName);
+        mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + template));
+        mimeMessageHelper.setText(mail.getMailContent(), true);
     }
 
     private MimeMessageHelper createBaseMimeMessage(Mail mail) throws MessagingException {

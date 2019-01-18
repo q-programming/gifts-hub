@@ -34,6 +34,8 @@ export class ResetPasswordComponent implements OnInit {
     this.apiSrv.post(`${environment.account_url}/password-reset`, this.emailResetCtrl.value).subscribe(() => {
       this.alertSrv.success('user.password.reset.sent');
       this.router.navigate(['/']);
+    }, error1 => {
+      this.alertSrv.error('user.password.reset.error.mailSrv');
     })
   }
 }

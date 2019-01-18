@@ -126,34 +126,6 @@
         .text-center {
             text-align: center;
         }
-
-        .btn-social {
-            display: inline-block;
-            width: 200px;
-            border: thin solid #888;
-            box-shadow: 1px 1px 1px grey;
-            white-space: nowrap;
-            border-radius: 0;
-            padding: 5px 20px 5px 10px;
-            font-weight: bold;
-            text-align: left;
-        }
-
-        .btn-social img {
-            margin-right: 10px;
-            vertical-align: bottom;
-        }
-
-
-        .btn-social.facebook {
-            background-color: #4267b2 !important;
-            color: #fff !important;
-        }
-
-        .btn-social.google {
-            background: white;
-            color: #444;
-        }
     </style>
 </head>
 <body bgcolor="#f6f6f6">
@@ -176,33 +148,38 @@
                 </p>
                 <#if linkGoogle??>
                     <p>
-                        Twoje konto zosta&#322;o stworzon&#281; przy pomocy zalogowania si&#281; z Google i nie ma &#380;adnego przypisanego
+                        Twoje konto zosta&#322;o stworzon&#281; przy pomocy zalogowania si&#281; z Google i nie ma
+                        &#380;adnego przypisanego
                         has&#322;a<br>
-                        Przejdz prosz&#281; na stron&#281; logowania i uzyj opcji Zaloguj si&#281; z Google, lub kliknij na guzik
+                        Przejdz prosz&#281; na stron&#281; logowania i uzyj opcji Zaloguj si&#281; z Google, lub kliknij
+                        na guzik
                         poni&#380;ej
                     </p>
                     <p>
-                        <a class="btn-social google" href="${linkGoogle}">
-                            <img src="cid:logoGoogle.png" height="25px">
-                            Zaloguj si&#281; z Google
+                        <a href="${linkGoogle}">
+                            <img src="cid:signInGoogle.png" height="25px" alt="Zaloguj si&#281; z Google">
                         </a>
                     </p>
                 <#elseif linkFacebook??>
                     <p>
-                        Twoje konto zosta&#322;o stworzon&#281; przy pomocy zalogowania si&#281; z Facebookiem i nie ma &#380;adnego
+                        Twoje konto zosta&#322;o stworzon&#281; przy pomocy zalogowania si&#281; z Facebookiem i nie ma
+                        &#380;adnego
                         przypisanego has&#322;a<br>
-                        Przejdz prosz&#281; na stron&#281; logowania i uzyj opcji Zaloguj si&#281; z przez Facebooka, lub kliknij na
+                        Przejdz prosz&#281; na stron&#281; logowania i uzyj opcji Zaloguj si&#281; z przez Facebooka,
+                        lub kliknij na
                         guzik poni&#380;ej
                     </p>
-                    <p class="text-center">
-                        <a class="btn-social facebook" href="${linkFacebook}">
-                            <img src="cid:logoFacebook.png" height="25px">
-                            Zaloguj si&#281; z przez Facebooka
+                    <p>
+                        <a href="${linkFacebook}">
+                            <img src="cid:signInFacebook.png" height="25px" alt="Zaloguj si&#281; przez Facebooka">
                         </a>
                     </p>
                 <#else>
-                    <p>Kliknij link poni&#380;ej, lub skopiuj i wklej go w prz&#281;gl&#261;darce aby potwierdzi&#263;
-                        zaproszenie</p>
+                    <p>
+                        Kliknij link poni&#380;ej, lub skopiuj i wklej go w prz&#281;gl&#261;darce aby potwierdzi&#263;
+                        resetowanie i stworzy&#263; nowe has&#322;o
+                    </p>
+                    <p>Link jest wa&#380;ny tylko przez nast&#281;pne 12 godzin</p>
                     <p>
                         <a href="${confirmLink}">${confirmLink}</a>
                     </p>
