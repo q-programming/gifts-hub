@@ -6,6 +6,7 @@ import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.account.AccountType;
 import com.qprogramming.gifts.account.avatar.Avatar;
 import com.qprogramming.gifts.account.event.AccountEvent;
+import com.qprogramming.gifts.account.group.Group;
 import com.qprogramming.gifts.config.property.DataBasePropertySource;
 import com.qprogramming.gifts.config.property.PropertyService;
 import com.qprogramming.gifts.exceptions.AccountNotFoundException;
@@ -410,9 +411,20 @@ public class MailService {
         int mailsSent = 0;
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         String application = propertyService.getProperty(APP_URL);
-        List<Account> allAccounts = accountService.findAllWithNotifications();//TODO has newsletter checked
         Map<Account, List<AppEvent>> eventMap = eventService.getEventsGroupedByAccount();
-        for (Account account : allAccounts) {
+        Set<Group> groups = eventMap
+                .keySet()
+                .stream()
+                .map(Account::getGroups)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toSet());
+        Set<Account> accounts = groups
+                .stream()
+                .map(Group::getMembers)
+                .flatMap(Collection::stream)
+                .filter(Account::getNotifications)
+                .collect(Collectors.toSet());
+        for (Account account : accounts) {
             Map<Account, List<AppEvent>> eventsWithoutAccount = eventMap.entrySet().stream()
                     .filter(entry -> !entry.getKey().equals(account))
                     .collect(Collectors.toMap(Map.Entry::getKey, entry -> new ArrayList<>(entry.getValue())));

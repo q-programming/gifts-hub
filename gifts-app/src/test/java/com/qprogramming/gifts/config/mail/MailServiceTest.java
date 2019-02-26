@@ -165,13 +165,16 @@ public class MailServiceTest {
     @Test
     public void sendEvents() throws MessagingException {
         Account account = TestUtil.createAccount("John", "Doe");
+        account.setNotifications(true);
+        Group group = new Group();
+        group.addMember(testAccount);
+        group.addMember(account);
         AppEvent event1 = TestUtil.createEvent(testAccount);
         AppEvent event2 = TestUtil.createEvent(testAccount);
         AppEvent event3 = TestUtil.createEvent(testAccount);
         Map<Account, List<AppEvent>> events = new HashMap<>();
         events.put(testAccount, Arrays.asList(event1, event2, event3));
         when(eventServiceMock.getEventsGroupedByAccount()).thenReturn(events);
-        when(accountServiceMock.findAllWithNotifications()).thenReturn(Arrays.asList(testAccount, account));
         when(msgSrvMock.getMessage("schedule.event.summary", null, "", locale)).thenReturn(SUBJECT);
         mailService.sendEvents();
         verify(mailSenderMock, times(1)).send(any(MimeMessage.class));

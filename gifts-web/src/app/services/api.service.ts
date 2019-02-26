@@ -70,15 +70,8 @@ export class ApiService {
 
   login(path: string, body: any): Observable<any> {
     this.progress.start();
-    path = environment.context + path;
-    let header = {
-      headers: new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded')
-    };
-    return this.http.post(path, body.toString(), header)
-      .map((response: HttpResponse<any>) => {
-        this.progress.complete();
-        return response
-      })
+    const xformHeader = new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded');
+    return this.request(path,body.toString(),RequestMethod.Post,xformHeader);
   }
 
   /**
@@ -126,13 +119,13 @@ export class ApiService {
         return response.body
       })
       .catch(error => {
-        this.progress.complete();
         return this.checkError(error)
       });
   }
 
   // Display error if logged in, otherwise redirect to IDP
   private checkError(error: any): any {
+    this.progress.complete();
     if (error && error.status === 401) {
       this.alertSrv.error('error.api.unauthorized');
       // this.redirectIfUnauth(error);

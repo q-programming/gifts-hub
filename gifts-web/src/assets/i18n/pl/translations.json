@@ -437,6 +437,7 @@
     },
     "register": {
       "alreadyexists": "już istnieje. Proszę użyć innego",
+      "confirmed": "Konto zostało potwierdzone. Możesz się teraz zalogować uzywająć swojego nowego konta",
       "email": {
         "exists": "Użytkownik z tym emailem już istnieje",
         "hint": "Wprowadz adres email",

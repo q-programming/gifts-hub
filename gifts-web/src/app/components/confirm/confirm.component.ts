@@ -33,6 +33,9 @@ export class ConfirmComponent implements OnInit {
           case 'group_member':
             this.alertSrv.success('user.confirm.group.success');
             break;
+          case 'confirmed':
+            this.alertSrv.success('user.register.confirmed');
+            break;
         }
         this.router.navigate(['/']);
       }, error => {

@@ -373,7 +373,6 @@ public class UserRestController {
 
 
     @Transactional
-    @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping("/confirm")
     public ResponseEntity confirmOperation(@RequestBody String token) {
         UUID uuid = UUID.fromString(token);

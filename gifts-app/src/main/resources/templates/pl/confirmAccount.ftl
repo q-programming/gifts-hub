@@ -128,7 +128,7 @@
         <tr>
             <td>
                 <div>
-                    Ten email został użyty do rejestracji w aplikacji Gifts Hub
+                    Ten email zosta&#322; u&#380;yty do rejestracji w aplikacji Gifts Hub
                 </div>
                 <#if confirmLink??>
                     <p>Kliknij link poni&#380;ej, lub skopiuj i wklej go w prz&#281;gl&#261;darce aby potwierdzi&#263; i aktywować swoje konto</p>
