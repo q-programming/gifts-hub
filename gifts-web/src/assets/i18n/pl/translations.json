@@ -3,6 +3,7 @@
     "general": {
       "cancel": "Anuluj",
       "delete": "Usuń",
+      "return": "Powróć na stronę główną",
       "undo": "Cofnij"
     },
     "manage": {
@@ -79,6 +80,8 @@
     }
   },
   "error": {
+    "403": "Brak uprawnień do tego zasobu",
+    "404": "404 Prezent nie znaleziony",
     "account": {
       "notFound": "Nie znaleziono konta"
     },
@@ -98,7 +101,12 @@
     "page": {
       "notfound": "Nie znaleziono strony"
     },
-    "required": "To pole jest wymagane"
+    "required": "To pole jest wymagane",
+    "text": "Oh nie! Coś poszło nie tak",
+    "token": {
+      "expired": "Token wygasł",
+      "invalid": "Niepoprawny token"
+    }
   },
   "gift": {
     "add": {

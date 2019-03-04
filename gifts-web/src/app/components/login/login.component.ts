@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {environment} from "@env/environment";
-import {AuthenticationService} from "@services/authentication.service";
+import {AuthenticationService} from "@core-services/authentication.service";
 import {Router} from "@angular/router";
 import {FormControl, Validators} from "@angular/forms";
 

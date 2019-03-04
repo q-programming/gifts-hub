@@ -2,9 +2,9 @@ import {Component, OnInit} from '@angular/core';
 import {AbstractControl, FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {MyErrorStateMatcher} from "../register/register.component";
 import {ActivatedRoute, Router} from "@angular/router";
-import {ApiService} from "@services/api.service";
-import {AlertService} from "@services/alert.service";
-import {AuthenticationService} from "@services/authentication.service";
+import {ApiService} from "@core-services/api.service";
+import {AlertService} from "@core-services/alert.service";
+import {AuthenticationService} from "@core-services/authentication.service";
 import {environment} from "@env/environment";
 
 @Component({

@@ -1,64 +1,70 @@
-<mat-card class="text-center">
-  <mat-card-title>
-    <h4 class="stylish">
-      <img src="assets/images/logo.svg" height="50px" class="ml-2 v-middle">
-      {{'user.login.welcome.text'|translate}}
-    </h4>
-  </mat-card-title>
-  <mat-card-subtitle>
-    <span class="font-larger">{{'user.login.welcome.sub'|translate}}</span>
-  </mat-card-subtitle>
-  <div fxLayout="row wrap" fxLayoutAlign="center start">
-    <div fxFlex.xs="100%" fxFlex.gt-xs class="social-form pr-5">
-      <h4 class="mb-5">{{'user.login.using.social'|translate}}</h4>
-      <div>
-        <a class="btn-social facebook" href="{{login_url}}/facebook">
-          <img src="assets/images/btn_facebook.svg" height="25px">
-          {{'user.login.facebook'|translate}}
-        </a>
-      </div>
-      <div class="mt-1">
-        <a class="btn-social google" href="{{login_url}}/google">
-          <img src="assets/images/btn_google.svg" height="25px">
-          {{'user.login.google'|translate}}
-        </a>
-      </div>
-      <div class="mt-5" [innerHTML]="'user.login.register.social'|translate">
-      </div>
-    </div>
-    <div fxFlex.xs="100%" fxFlex.gt-xs class="username-form ml-5">
-      <h4>{{'user.login.using.logpass'|translate}}</h4>
-      <form>
-        <div>
-          <mat-form-field>
-            <input matInput placeholder="{{'user.username'|translate}}" name="username"
-                   [formControl]="usernameCtrl">
-            <mat-icon matPrefix="">person</mat-icon>
-          </mat-form-field>
+<navigation-unauthenticated></navigation-unauthenticated>
+<main class="container" fxLayout="row wrap" fxLayout.xs="column" fxLayoutGap="0.5%"
+      fxLayoutAlign="center">
+  <div fxFlex="80%">
+    <mat-card class="text-center">
+      <mat-card-title>
+        <h4 class="stylish">
+          <img src="assets/images/logo.svg" height="50px" class="ml-2 v-middle">
+          {{'user.login.welcome.text'|translate}}
+        </h4>
+      </mat-card-title>
+      <mat-card-subtitle>
+        <span class="font-larger">{{'user.login.welcome.sub'|translate}}</span>
+      </mat-card-subtitle>
+      <div fxLayout="row wrap" fxLayoutAlign="center start">
+        <div fxFlex.xs="100%" fxFlex.gt-xs class="social-form pr-5">
+          <h4 class="mb-5">{{'user.login.using.social'|translate}}</h4>
+          <div>
+            <a class="btn-social facebook" href="{{login_url}}/facebook">
+              <img src="assets/images/btn_facebook.svg" height="25px">
+              {{'user.login.facebook'|translate}}
+            </a>
+          </div>
+          <div class="mt-1">
+            <a class="btn-social google" href="{{login_url}}/google">
+              <img src="assets/images/btn_google.svg" height="25px">
+              {{'user.login.google'|translate}}
+            </a>
+          </div>
+          <div class="mt-5" [innerHTML]="'user.login.register.social'|translate">
+          </div>
         </div>
-        <div>
-          <mat-form-field>
-            <input matInput type="password" placeholder="{{'user.password.text'|translate}}"
-                   name="password"
-                   [formControl]="passwordCtrl">
-            <mat-icon matPrefix>vpn_key</mat-icon>
-          </mat-form-field>
+        <div fxFlex.xs="100%" fxFlex.gt-xs class="username-form ml-5">
+          <h4>{{'user.login.using.logpass'|translate}}</h4>
+          <form>
+            <div>
+              <mat-form-field>
+                <input matInput placeholder="{{'user.username'|translate}}" name="username"
+                       [formControl]="usernameCtrl">
+                <mat-icon matPrefix="">person</mat-icon>
+              </mat-form-field>
+            </div>
+            <div>
+              <mat-form-field>
+                <input matInput type="password" placeholder="{{'user.password.text'|translate}}"
+                       name="password"
+                       [formControl]="passwordCtrl">
+                <mat-icon matPrefix>vpn_key</mat-icon>
+              </mat-form-field>
+            </div>
+            <div>
+              <button mat-flat-button (click)="login()" color="primary">{{'user.login.text'|translate}}
+              </button>
+            </div>
+          </form>
+          <div class="mt-2">
+            {{'user.login.register.newhere'|translate}} <a
+            routerLink="/register">{{'user.login.here'|translate}}</a>
+          </div>
+          <div class="mt-2">
+            {{'user.password.reset.forgot'|translate}}
+            <a
+              routerLink="/reset">{{'user.login.here'|translate}}</a>
+          </div>
         </div>
-        <div>
-          <button mat-flat-button (click)="login()" color="primary">{{'user.login.text'|translate}}
-          </button>
-        </div>
-      </form>
-      <div class="mt-2">
-        {{'user.login.register.newhere'|translate}} <a
-        routerLink="/register">{{'user.login.here'|translate}}</a>
-      </div>
-      <div class="mt-2">
-        {{'user.password.reset.forgot'|translate}}
-        <a
-          routerLink="/reset">{{'user.login.here'|translate}}</a>
-      </div>
-    </div>
 
+      </div>
+    </mat-card>
   </div>
-</mat-card>
+</main>

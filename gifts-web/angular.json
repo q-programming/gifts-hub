@@ -48,6 +48,8 @@
             "assets": [
               "src/environments",
               "src/app/services",
+              "src/app/core/services",
+              "src/app/services",
               "src/app/model",
               "src/favicon.ico",
               "src/assets"

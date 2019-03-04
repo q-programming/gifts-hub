@@ -3,6 +3,7 @@
     "general": {
       "cancel": "Cancel",
       "delete": "Delete",
+      "return": "Return to home page",
       "undo": "Undo"
     },
     "manage": {
@@ -79,6 +80,8 @@
     }
   },
   "error": {
+    "403": "No permission to this resource",
+    "404": "4040 Gift not found",
     "account": {
       "notFound": "Account not found"
     },
@@ -98,7 +101,12 @@
     "page": {
       "notfound": "Page was not found"
     },
-    "required": "This is required field"
+    "required": "This is required field",
+    "text": "Oh no! Something went wrong",
+    "token": {
+      "expired": "Token expired",
+      "invalid": "Token is invalid"
+    }
   },
   "gift": {
     "add": {

@@ -2,8 +2,11 @@
   "compileOnSave": false,
   "compilerOptions": {
     "paths": {
+      "@core-services/*": [
+        "app/core/services/*"
+      ],
       "@services/*": [
-        "app/services/*"
+        "app/main/services/*"
       ],
       "@model/*": [
         "app/model/*"

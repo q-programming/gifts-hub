@@ -13,6 +13,11 @@
     border-right: none;
     border-bottom: 1px solid gray;
     padding-bottom: 20px;
+    text-align: center;
+    padding-right:0 !important;
+  }
+  main {
+    margin-top: 5px;
   }
 }
 

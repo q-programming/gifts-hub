@@ -11,9 +11,9 @@ import {
 } from "@angular/forms";
 import {ErrorStateMatcher} from "@angular/material";
 import {Router} from "@angular/router";
-import {ApiService} from "../../../services/api.service";
-import {AlertService} from "../../../services/alert.service";
-import {AuthenticationService} from "../../../services/authentication.service";
+import {ApiService} from "../../../core/services/api.service";
+import {AlertService} from "../../../core/services/alert.service";
+import {AuthenticationService} from "../../../core/services/authentication.service";
 
 @Component({
     selector: 'app-register',
