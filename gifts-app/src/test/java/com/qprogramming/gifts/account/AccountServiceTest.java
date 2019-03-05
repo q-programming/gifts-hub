@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.test.web.servlet.MvcResult;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -26,11 +27,14 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.*;
 
+import static com.qprogramming.gifts.TestUtil.convertJsonToSet;
 import static com.qprogramming.gifts.TestUtil.createAccountList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.*;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class AccountServiceTest extends MockedAccountTestBase {
 
@@ -278,5 +282,24 @@ public class AccountServiceTest extends MockedAccountTestBase {
         result.contains(testAccount);
     }
 
+    @Test
+    public void getGroupsTest() throws Exception {
+        Group group1 = new Group();
+        group1.setId(1L);
+        group1.setName(testAccount.getSurname());
+        group1.addMember(testAccount);
+        Group group2 = new Group();
+        group2.setId(1L);
+        group2.setName(testAccount.getName());
+        group2.addMember(testAccount);
+        when(giftServiceMock.countAllByAccountId(testAccount.getId())).thenReturn(3);
+        Set<Group> groupsForAccount = accountService.getGroupsForAccount(testAccount);
+        Group resultGroup1 = groupsForAccount.iterator().next();
+        Group resultGroup2 = groupsForAccount.iterator().next();
+        assertTrue(resultGroup1.getMembers().contains(testAccount));
+        assertTrue(resultGroup2.getMembers().contains(testAccount));
+        assertEquals(3, (int) resultGroup1.getMembers().iterator().next().getGiftsCount());
+        verify(giftServiceMock, times(1)).countAllByAccountId(testAccount.getId());
+    }
 
 }

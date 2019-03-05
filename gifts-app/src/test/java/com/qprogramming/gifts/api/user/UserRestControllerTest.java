@@ -673,29 +673,6 @@ public class UserRestControllerTest extends MockedAccountTestBase {
     }
 
     @Test
-    public void getGroupsTest() throws Exception {
-        Group group1 = new Group();
-        group1.setId(1L);
-        group1.setName(testAccount.getSurname());
-        group1.addMember(testAccount);
-        Group group2 = new Group();
-        group2.setId(1L);
-        group2.setName(testAccount.getName());
-        group2.addMember(testAccount);
-        when(accSrvMock.getCurrentAccount()).thenReturn(testAccount);
-        when(giftServiceMock.countAllByAccountId(testAccount.getId())).thenReturn(3);
-        MvcResult mvcResult = userRestCtrl.perform(get(API_USER_GROUP_FETCH)).andExpect(status().isOk()).andReturn();
-        String contentAsString = mvcResult.getResponse().getContentAsString();
-        Set<Group> result = convertJsonToSet(contentAsString, Set.class, Group.class);
-        Group resultGroup1 = result.iterator().next();
-        Group resultGroup2 = result.iterator().next();
-        assertTrue(resultGroup1.getMembers().contains(testAccount));
-        assertTrue(resultGroup2.getMembers().contains(testAccount));
-        assertEquals(3, (int) resultGroup1.getMembers().iterator().next().getGiftsCount());
-        verify(giftServiceMock, times(1)).countAllByAccountId(testAccount.getId());
-    }
-
-    @Test
     public void getAdminsTest() throws Exception {
         testAccount.addAuthority(TestUtil.createAdminAuthority());
         when(accSrvMock.findAdmins()).thenReturn(Collections.singletonList(testAccount));
