@@ -169,6 +169,8 @@ public class GiftService {
             Days giftDays = Days.daysBetween(new LocalDate(gift.getCreated()), new LocalDate());
             if (giftDays.getDays() < giftAge) {
                 gift.setStatus(GiftStatus.NEW);
+            }else{
+                gift.setStatus(null);
             }
         } else if (GiftStatus.REALISED.equals(gift.getStatus())) {
             Category category = new Category(Category.REALISED);

@@ -157,7 +157,7 @@
     "gift": "Gift",
     "gifts": "gifts",
     "hidden": {
-      "help": "Special option for family admin.<br>\nIf gift is added to family member whish list as hidden , it won't be visibile for that user<br>\n( but visible for all application users)",
+      "help": "If gift is added to group member whish list as hidden , it won't be visibile for that user<br>\n( but visible for all application users)",
       "text": "Hidden gift"
     },
     "import": {

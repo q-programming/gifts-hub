@@ -24,6 +24,7 @@ logging:
     org.springframework.security: ERROR
     org.springframework.web.filter.CommonsRequestLoggingFilter: ERROR
     org.springframework.web.socket.config.WebSocketMessageBrokerStats: ERROR
+    org.springframework.cache: ERROR
 spring:
   mail:
     host: localhost

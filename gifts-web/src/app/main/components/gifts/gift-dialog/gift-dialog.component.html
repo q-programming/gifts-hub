@@ -6,12 +6,6 @@
   <form [formGroup]="form">
     <!--GIFT DETAIL-->
     <div fxLayout="row wrap" fxLayoutAlign="center center">
-      <div fxFlex="80%" class="mb-2">
-        <strong>
-          <i class="fa fa-gift mr-1"></i>
-          {{'gift.gift'|translate}}
-        </strong>
-      </div>
       <div fxFlex="80%">
         <mat-form-field fxFlex="100%">
           <input matInput placeholder=" {{'gift.name'|translate}}" formControlName="name" required>

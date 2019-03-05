@@ -19,6 +19,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.http.MediaType;
@@ -58,7 +60,7 @@ public class AccountService implements UserDetailsService {
     private GroupService _groupService;
     private PropertyService _propertyService;
     private AccountEventRepository _accountEventRepository;
-    private GiftService giftService;
+    private GiftService _giftService;
     private AuthorityService _authorityService;
 
 
@@ -70,7 +72,7 @@ public class AccountService implements UserDetailsService {
         this._groupService = groupService;
         this._propertyService = propertyService;
         this._accountEventRepository = accountEventRepository;
-        this.giftService = giftService;
+        this._giftService = giftService;
         this._authorityService = authorityService;
     }
 
@@ -81,6 +83,7 @@ public class AccountService implements UserDetailsService {
     }
 
     @Transactional
+    @CacheEvict(value = { "accounts", "groups" }, allEntries = true)
     public Account createLocalAccount(Account account) {
         account.setId(generateID());
         encodePassword(account);
@@ -142,7 +145,7 @@ public class AccountService implements UserDetailsService {
         return _accountRepository.save(account);
     }
 
-
+    @CacheEvict(cacheNames = "accounts", allEntries = true)
     public Account createKidAccount(Account account) {
         account.setId(generateID());
         account.setType(AccountType.KID);
@@ -235,7 +238,6 @@ public class AccountService implements UserDetailsService {
      * @param account Account for which avatar is created
      * @param bytes   bytes containing avatar
      * @return new {@link Avatar}
-     * @throws IOException
      */
     public Avatar createAvatar(Account account, byte[] bytes) {
         Avatar avatar = new Avatar();
@@ -285,6 +287,7 @@ public class AccountService implements UserDetailsService {
      * @param account account to be saved
      * @return updated account
      */
+    @CacheEvict(value = { "accounts", "groups" }, allEntries = true)
     public Account update(Account account) {
         return _accountRepository.save(account);
     }
@@ -312,6 +315,7 @@ public class AccountService implements UserDetailsService {
      * @param account account for which group will be used to fetch all member
      * @return list of all sorted users
      */
+    @Cacheable("accounts")
     public Set<Account> findAllFromGroups(Account account) {
         Set<Account> accounts = _accountRepository.findByGroupsIn(account.getGroups());
         TreeSet<Account> result = new TreeSet<>(ACCOUNT_COMPARATOR);
@@ -466,5 +470,20 @@ public class AccountService implements UserDetailsService {
             token = Generators.timeBasedGenerator().generate().toString();
         }
         return token;
+    }
+
+    @Cacheable("groups")
+    public Set<Group> getGroupsForAccount(Account account) {
+        Map<Account, Integer> counts = new HashMap<>();
+        Set<Group> groups = account.getGroups();
+        groups.forEach(group -> group.getMembers().forEach(acc -> {
+            Integer count = counts.computeIfAbsent(acc, this::getGiftCount);
+            acc.setGiftsCount(count);
+        }));
+        return groups;
+    }
+
+    private Integer getGiftCount(Account account) {
+        return _giftService.countAllByAccountId(account.getId());
     }
 }

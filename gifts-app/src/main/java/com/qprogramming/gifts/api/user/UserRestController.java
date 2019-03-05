@@ -252,21 +252,12 @@ public class UserRestController {
     @Transactional
     public ResponseEntity<?> groupList() {
         try {
-            Map<Account, Integer> counts = new HashMap<>();
             Account currentAccount = _accountService.getCurrentAccount();
-            Set<Group> groups = currentAccount.getGroups();
-            groups.forEach(group -> group.getMembers().forEach(account -> {
-                Integer count = counts.computeIfAbsent(account, this::getGiftCount);
-                account.setGiftsCount(count);
-            }));
+            Set<Group> groups  = _accountService.getGroupsForAccount(currentAccount);
             return ResponseEntity.ok(groups);
         } catch (AccountNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
-    }
-
-    private Integer getGiftCount(Account account) {
-        return _giftService.countAllByAccountId(account.getId());
     }
 
     private void addGiftCounts(Set<Account> list) {

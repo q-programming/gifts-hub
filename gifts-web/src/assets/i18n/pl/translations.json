@@ -157,7 +157,7 @@
     "gift": "Prezent",
     "gifts": "prez.",
     "hidden": {
-      "help": "Specjalna opcja dla administratora rodziny<br>\nKiedy prezent zostanie dodany do listy życzeń członkowi rodziny jako ukryty, osoba której dodajemy ten prezent nie będize go widzieć\n(ale wszyscy użytkownicy aplikacji go będą widzieć )",
+      "help": "Kiedy prezent zostanie dodany do listy życzeń członkowi grupy jako ukryty, osoba której dodajemy ten prezent nie będzie go widzieć\n(ale wszyscy użytkownicy aplikacji go będą widzieć )",
       "text": "Ukryty prezent"
     },
     "import": {
