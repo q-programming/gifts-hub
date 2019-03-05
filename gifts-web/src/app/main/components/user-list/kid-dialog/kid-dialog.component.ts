@@ -1,12 +1,12 @@
 import {Component, Inject, OnInit, ViewChild} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material";
-import {CropperSettings, ImageCropperComponent} from "ngx-img-cropper";
-import {Account} from "../../../../model/Account";
 import {DOCUMENT} from "@angular/common";
-import {AlertService} from "../../../../core/services/alert.service";
+import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
-import {ApiService} from "../../../../core/services/api.service";
-import {environment} from "../../../../../environments/environment";
+import {CropperSettings, ImageCropperComponent} from "ngx-img-cropper";
+import {Account} from "@model/Account";
+import {AlertService} from "@core-services/alert.service";
+import {ApiService} from "@core-services/api.service";
+import {environment} from "@env/environment";
 import {getBase64Image} from "../../../../utils/utils";
 
 @Component({

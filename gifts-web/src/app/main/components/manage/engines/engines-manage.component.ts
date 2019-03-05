@@ -1,11 +1,11 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {AlertService} from "../../../../core/services/alert.service";
-import {ApiService} from "../../../../core/services/api.service";
-import {AppSettings} from "../../../../model/AppSettings";
-import {environment} from "../../../../../environments/environment";
-import {FormArray, FormBuilder, FormControl, FormGroup} from "@angular/forms";
+import {AlertService} from "@core-services/alert.service";
+import {ApiService} from "@core-services/api.service";
+import {AppSettings} from "@model/AppSettings";
+import {environment} from "@env/environment";
+import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {DOCUMENT} from "@angular/common";
-import {SearchEngine} from "../../../../model/SearchEngine";
+import {SearchEngine} from "@model/SearchEngine";
 import * as _ from "lodash";
 
 @Component({
@@ -80,10 +80,10 @@ export class EngineManageComponent implements OnInit {
 
   addEngine(engine: SearchEngine) {
     return this.formBuilder.group({
-      name: [engine.name],
+      name: [engine.name,Validators.required],
       id: [engine.id],
-      icon: [engine.icon],
-      searchString: [engine.searchString]
+      icon: [engine.icon,Validators.required],
+      searchString: [engine.searchString,Validators.required]
     });
   }
 }

@@ -1,12 +1,12 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {AlertService} from "../../../../core/services/alert.service";
-import {ApiService} from "../../../../core/services/api.service";
+import {AlertService} from "@core-services/alert.service";
+import {ApiService} from "@core-services/api.service";
 import {languages} from "../../../../../assets/i18n/languages";
-import {AppSettings} from "../../../../model/AppSettings";
-import {environment} from "../../../../../environments/environment";
+import {AppSettings} from "@model/AppSettings";
+import {environment} from "@env/environment";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {DOCUMENT} from "@angular/common";
-import {SortBy} from "../../../../model/Settings";
+import {SortBy} from "@model/Settings";
 
 @Component({
     selector: 'manage-app',

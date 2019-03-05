@@ -18,7 +18,6 @@ import {CategoryListComponent} from "./components/gifts/category-list/category-l
 import {ConfirmDialogComponent} from "./components/dialogs/confirm/confirm-dialog.component";
 import {GroupDialogComponent} from "./components/user-list/group-dialog/group-dialog.component";
 import {PermissionComponent} from "./components/user-list/permission/permission.component";
-import {AvatarComponent} from "./components/avatar/avatar.component";
 import {ImageCropperModule} from "ngx-img-cropper";
 import {NgxMatSelectSearchModule} from "ngx-mat-select-search";
 import {MainRoutingModule} from "./main-routing.module";
@@ -28,7 +27,6 @@ import {MainComponent} from './main.component';
   declarations: [
     UserListComponent,
     GiftsComponent,
-    AvatarComponent,
     GiftComponent,
     AccountListComponent,
     UserComponent,

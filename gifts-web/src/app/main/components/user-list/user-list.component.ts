@@ -1,15 +1,15 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {UserService} from "../../services/user.service";
-import {SortBy} from "../../../model/Settings";
+import {UserService} from "@services/user.service";
 import {MatButtonToggleGroup, MatDialog, MatMenuTrigger} from "@angular/material";
 import {NGXLogger} from "ngx-logger";
-import {Group} from "../../../model/Group";
-import {Account} from "../../../model/Account";
+import {Group} from "@model/Group";
+import {Account} from "@model/Account";
+import {SortBy} from "@model/Settings";
+import {AlertService} from "@core-services/alert.service";
+import {AvatarService} from "@core-services/avatar.service";
+import {AuthenticationService} from "@core-services/authentication.service";
 import {KidDialogComponent} from "./kid-dialog/kid-dialog.component";
-import {AlertService} from "../../../core/services/alert.service";
-import {AvatarService} from "../../../core/services/avatar.service";
 import {GroupDialogComponent} from "./group-dialog/group-dialog.component";
-import {AuthenticationService} from "../../../core/services/authentication.service";
 import * as _ from "lodash";
 
 @Component({

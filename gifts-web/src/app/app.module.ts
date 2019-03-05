@@ -4,7 +4,7 @@ import {AppComponent} from './app.component';
 import {LoginComponent} from './components/login/login.component';
 import {RegisterComponent} from "./components/login/register/register.component";
 import {PasswordStrengthBarModule} from "ng2-password-strength-bar";
-import {GiftsPublicComponent} from './main/components/gifts/gifts-public.component';
+import {GiftsPublicComponent} from './components/gifts-public/gifts-public.component';
 import {ResetPasswordComponent} from './components/login/reset-password/reset-password.component';
 import {ChangePasswordComponent} from './components/login/change-password/change-password.component';
 import {CoreModule} from "./core";

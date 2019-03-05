@@ -1,9 +1,9 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Gift, GiftStatus} from "../../../../model/Gift";
-import {AuthenticationService} from "../../../../core/services/authentication.service";
-import {Account} from "../../../../model/Account";
-import {GiftService} from "../../../services/gift.service";
-import {AlertService} from "../../../../core/services/alert.service";
+import {Gift, GiftStatus} from "@model/Gift";
+import {AuthenticationService} from "@core-services/authentication.service";
+import {Account} from "@model/Account";
+import {GiftService} from "@services/gift.service";
+import {AlertService} from "@core-services/alert.service";
 import {NGXLogger} from "ngx-logger";
 
 @Component({

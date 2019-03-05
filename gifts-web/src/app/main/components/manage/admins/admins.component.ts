@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-import {AlertService} from "../../../../core/services/alert.service";
-import {UserService} from "../../../services/user.service";
-import {Account} from "../../../../model/Account";
+import {AlertService} from "@core-services/alert.service";
+import {UserService} from "@services/user.service";
+import {Account} from "@model/Account";
 import {isAdmin} from "../../../../utils/utils";
 
 @Component({

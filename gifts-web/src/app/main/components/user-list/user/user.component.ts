@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Account, AccountType} from "../../../../model/Account";
+import {Account, AccountType} from "@model/Account";
 
 @Component({
   selector: 'user',

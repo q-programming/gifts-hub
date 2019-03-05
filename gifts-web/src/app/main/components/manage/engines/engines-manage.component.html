@@ -8,34 +8,42 @@
   <div fxFlex="60" fxFlex.xs="100">
     <form [formGroup]="form">
       <div formArrayName="engines">
-        <mat-card *ngFor="let ctrl of EnginesControls;let i=index" fxLayout="column">
-          <mat-form-field fxFlex="100%">
-            <input matInput [formControl]="ctrl.get('name')" placeholder="{{'app.manage.search.name'|translate}}"
-                   autocomplete="off">
-          </mat-form-field>
-          <mat-form-field fxFlex="100%">
-            <input matInput [formControl]="ctrl.get('icon')" placeholder="{{'app.manage.search.icon.text'|translate}}"
-                   autocomplete="fa-icons">
-            <i matSuffix class="fa {{ctrl.get('icon').value}}"></i>
-          </mat-form-field>
-          <mat-hint>
-            <span [innerHTML]="'app.manage.search.icon.help'|translate"></span></mat-hint>
-          <mat-form-field fxFlex="100%">
-            <input matInput [formControl]="ctrl.get('searchString')"
-                   placeholder="{{'app.manage.search.link'|translate}}" autocomplete="url">
-          </mat-form-field>
-          <div>
-            <button mat-flat-button (click)="removeEngine()" class="pull-right mb-2"
-                    color="warn">
-              <mat-icon>remove</mat-icon>
-              {{'app.manage.search.remove'|translate}}</button>
+        <mat-expansion-panel *ngFor="let ctrl of EnginesControls;let i=index" [expanded]="true">
+          <mat-expansion-panel-header>
+            <mat-panel-title class="font-weight-bold">
+              <i class="fa {{ctrl.get('icon').value}} mr-2"></i> {{ctrl.get('name').value}}
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <div fxLayout="column">
+            <mat-form-field fxFlex="100%">
+              <input matInput [formControl]="ctrl.get('name')" placeholder="{{'app.manage.search.name'|translate}}"
+                     autocomplete="off" required>
+            </mat-form-field>
+            <mat-form-field fxFlex="100%">
+              <input matInput [formControl]="ctrl.get('icon')" placeholder="{{'app.manage.search.icon.text'|translate}}"
+                     autocomplete="fa-icons" required>
+              <i matSuffix class="fa {{ctrl.get('icon').value}}"></i>
+            </mat-form-field>
+            <mat-hint>
+              <span [innerHTML]="'app.manage.search.icon.help'|translate"></span></mat-hint>
+            <mat-form-field fxFlex="100%">
+              <input matInput [formControl]="ctrl.get('searchString')"
+                     placeholder="{{'app.manage.search.link'|translate}}" autocomplete="url" required>
+            </mat-form-field>
+            <div>
+              <button mat-flat-button (click)="removeEngine(i)" class="pull-right mb-2"
+                      color="warn">
+                <mat-icon>remove</mat-icon>
+                {{'app.manage.search.remove'|translate}}</button>
+            </div>
+
           </div>
-        </mat-card>
+        </mat-expansion-panel>
       </div>
     </form>
   </div>
   <div fxFlex="60" fxFlex.xs="100" class="mt-2">
-    <button mat-raised-button class="success-button pull-right"
+    <button mat-raised-button class="success-button pull-right" [disabled]="form.invalid"
             (click)="saveConfiguration()">{{'app.manage.app.save'|translate}}
     </button>
   </div>

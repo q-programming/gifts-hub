@@ -21,9 +21,11 @@ import {HighlightPipe} from "./pipes/highlight.directive";
 import {NavigationComponent} from "./navigation/authenticated/navigation.component";
 import {NavigationUnauthenticatedComponent} from "./navigation/unauthenticated/navigation-unauthenticated.component";
 import {RouterModule} from "@angular/router";
+import {AvatarComponent} from "./components/avatar/avatar.component";
 
 @NgModule({
   declarations: [
+    AvatarComponent,
     AlertComponent,
     HighlightPipe,
     NavigationComponent,
@@ -65,6 +67,7 @@ import {RouterModule} from "@angular/router";
   schemas: [NO_ERRORS_SCHEMA],
   exports: [
     AlertComponent,
+    AvatarComponent,
     NavigationComponent,
     NavigationUnauthenticatedComponent,
     FormsModule,

@@ -1,11 +1,11 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material";
-import {Gift} from "../../../../model/Gift";
-import {ApiService} from "../../../../core/services/api.service";
-import {environment} from "../../../../../environments/environment";
-import {SearchEngine} from "../../../../model/SearchEngine";
-import {Category} from "../../../../model/Category";
+import {Gift} from "@model/Gift";
+import {ApiService} from "@core-services/api.service";
+import {environment} from "@env/environment";
+import {SearchEngine} from "@model/SearchEngine";
+import {Category} from "@model/Category";
 import {Observable} from "rxjs";
 import {map, startWith} from "rxjs/operators";
 import * as _ from "lodash";

@@ -1,12 +1,12 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material";
-import {Group, GroupForm} from "../../../../model/Group";
 import {FormControl} from "@angular/forms";
 import * as _ from "lodash";
-import {Account, AccountType} from "../../../../model/Account";
-import {AuthenticationService} from "../../../../core/services/authentication.service";
-import {UserService} from "../../../services/user.service";
-import {AlertService} from "../../../../core/services/alert.service";
+import {Group, GroupForm} from "@model/Group";
+import {Account, AccountType} from "@model/Account";
+import {AuthenticationService} from "@core-services/authentication.service";
+import {UserService} from "@services/user.service";
+import {AlertService} from "@core-services/alert.service";
 
 @Component({
   selector: 'app-family-dialog',

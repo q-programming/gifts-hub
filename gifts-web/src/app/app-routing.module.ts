@@ -4,7 +4,7 @@ import {AuthGuard} from "./core/guards/auth.guard";
 import {LoginComponent} from "./components/login/login.component";
 import {ErrorComponent} from "./components/error/error.component";
 import {RegisterComponent} from "./components/login/register/register.component";
-import {GiftsPublicComponent} from "./main/components/gifts/gifts-public.component";
+import {GiftsPublicComponent} from "./components/gifts-public/gifts-public.component";
 import {ResetPasswordComponent} from "./components/login/reset-password/reset-password.component";
 import {ChangePasswordComponent} from "./components/login/change-password/change-password.component";
 import {ConfirmComponent} from "./components/confirm/confirm.component";

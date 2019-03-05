@@ -1,19 +1,19 @@
 import {Component, Inject, OnInit, ViewChild} from '@angular/core';
-import {AuthenticationService} from "../../../core/services/authentication.service";
-import {Account} from "../../../model/Account";
-import {languages} from "../../../../assets/i18n/languages";
-import {ApiService} from "../../../core/services/api.service";
-import {environment} from "../../../../environments/environment.prod";
-import {AlertService} from "../../../core/services/alert.service";
+import {Router} from "@angular/router";
 import {NGXLogger} from "ngx-logger";
 import {TranslateService} from "@ngx-translate/core";
-import {DOCUMENT} from "@angular/common";
 import {MAT_DIALOG_DATA, MatDialog, MatDialogConfig} from "@angular/material";
+import {DOCUMENT} from "@angular/common";
 import {CropperSettings, ImageCropperComponent} from "ngx-img-cropper";
-import {AvatarService} from "../../../core/services/avatar.service";
+import {AuthenticationService} from "@core-services/authentication.service";
+import {languages} from "../../../../assets/i18n/languages";
+import {Account} from "@model/Account";
+import {environment} from "@env/environment.prod";
+import {ApiService} from "@core-services/api.service";
+import {AlertService} from "@core-services/alert.service";
+import {AvatarService} from "@core-services/avatar.service";
 import {getBase64Image} from "../../../utils/utils";
 import {ConfirmDialog, ConfirmDialogComponent} from "../dialogs/confirm/confirm-dialog.component";
-import {Router} from "@angular/router";
 
 
 @Component({
