@@ -1,0 +1,98 @@
+<mat-card class="pb-1 pt-1 fixed-container header">
+  <div fxLayout="row" fxLayoutAlign="end center" class="mt-2">
+    <div fxFlex="10%">
+      <mat-button-toggle-group #sortBy="matButtonToggleGroup">
+        <mat-button-toggle [value]="SortBy.GROUP" matTooltip="{{'user.sort.group'|translate}}">
+          <i class="fa fa-users"></i>
+        </mat-button-toggle>
+        <mat-button-toggle [value]="SortBy.NAME" matTooltip="{{'user.sort.name'|translate}}">
+          <i class="fa fa-sort-alpha-asc"></i>
+        </mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
+    <div fxFlex>
+      <button mat-flat-button class="success-button pull-right mr-1 font-smaller header-button" *ngIf="!group"
+              (click)="createGroupDailog()">
+        <mat-icon>add</mat-icon>
+        <span fxShow.lt-md="false">
+        {{'user.group.create.text'|translate}}
+        </span>
+      </button>
+    </div>
+  </div>
+  <!--Names header-->
+  <div fxLayout="row" fxShow.lt-sm="false" class="mt-2">
+    <div fxFlex>
+      {{'user.fullname'|translate}}
+    </div>
+    <div fxFlex>
+      {{'user.email'|translate}}
+    </div>
+    <div fxFlex="10%">
+      {{'main.action'|translate}}
+    </div>
+  </div>
+</mat-card>
+<div class="content">
+  <ng-container *ngIf="sortBy.value === SortBy.GROUP">
+    <div fxLayout="column" fxLayoutAlign="center center" class="full-page" *ngIf="!loaded">
+      <mat-spinner [strokeWidth]="15"></mat-spinner>
+    </div>
+    <mat-card *ngIf="loaded && groups.length === 0 ">
+      <div class="text-center">
+        <h4 [innerHTML]="'user.group.nogroups'|translate"></h4>
+      </div>
+    </mat-card>
+    <mat-expansion-panel *ngFor="let group of groups" expanded="true">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <h3 class="stylish-header">{{group.name}}</h3>
+        </mat-panel-title>
+        <mat-panel-description fxLayout="row" fxFlex fxLayoutAlign="end center" fxLayoutGap="10px">
+          <div class="pull-right">
+            <button mat-icon-button [matMenuTriggerFor]="groupMenu" (click)="menuClick($event)">
+                 <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #groupMenu="matMenu">
+              <ng-container *ngIf="isGroupAdmin(group)">
+                <button mat-menu-item (click)="addKidDialog(group)" *ngIf="group"
+                        matTooltip="{{'user.group.add.kid.text'|translate}}">
+                  <i class="fa fa-plus"></i><i class="fa fa-1_5x fa-child"></i>
+                  {{'user.group.add.kid.text'|translate}}
+                </button>
+                <button mat-menu-item (click)="editGroupDialog(group)"
+                        matTooltip="{{'user.group.edit.text'|translate}}">
+                  <i class="fa fa-1_5x fa-pencil"></i>
+                  {{'user.group.edit.text'|translate}}
+                </button>
+              </ng-container>
+              <button mat-menu-item (click)="leaveFamily(group)"
+                      matTooltip="{{'user.group.leave.text'|translate}}">
+                <i class="fa fa-1_5x fa-sign-out"></i>
+                {{'user.group.leave.text'|translate}}
+              </button>
+            </mat-menu>
+          </div>
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+      <div *ngFor="let user of group.members;let even=even;trackBy: trackByFn">
+        <user [user]="user"
+              [even]="even"
+              [isGroupAdmin]="isGroupAdmin(group)"
+              (kid)="editKidDialog(user)">
+        </user>
+      </div>
+    </mat-expansion-panel>
+  </ng-container>
+  <ng-container *ngIf="sortBy.value === SortBy.NAME">
+    <mat-card>
+      <div *ngFor="let user of usersByName;let even=even;trackBy: trackByFn">
+        <user [user]="user"
+              [even]="even"
+              (kid)="editKidDialog(user)">
+        </user>
+      </div>
+    </mat-card>
+  </ng-container>
+</div>
+

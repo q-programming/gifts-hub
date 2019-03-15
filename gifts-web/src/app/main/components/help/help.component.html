@@ -1,0 +1,21 @@
+<mat-card id="top">
+  <div class="text-center shopper-font">
+    <h1 class="v-middle stylish">
+      <img src="assets/images/logo.svg" height="50px" class="ml-2">
+      Gifts hub
+    </h1>
+    <strong>{{'app.general.version'|translate}} 1.0.0</strong>
+  </div>
+  <div *ngIf="toc">
+    <h2 class="help-title">{{'app.help.contents'|translate}}</h2>
+    <ng-container *ngFor="let el of toc">
+      <div>
+        <a routerLink="." [fragment]="el.id" [ngClass]="{'ml-4':el.tagName === 'H4'}">{{el.textContent}}</a>
+      </div>
+    </ng-container>
+  </div>
+  <ng-container [ngSwitch]="lang">
+    <en-help *ngSwitchCase="'en'" [admins]="admins" [user]="user" [isAdmin]="isAdmin"></en-help>
+    <pl-help *ngSwitchCase="'pl'" [admins]="admins" [user]="user" [isAdmin]="isAdmin"></pl-help>
+  </ng-container>
+</mat-card>

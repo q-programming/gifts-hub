@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="19.049999mm"
+   height="19.049999mm"
+   viewBox="0 0 19.049999 19.049999"
+   version="1.1"
+   id="svg8"
+   inkscape:version="0.92.2 (5c3e80d, 2017-08-06)"
+   sodipodi:docname="btn_facebook.svg">
+  <defs
+     id="defs2" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.7"
+     inkscape:cx="330.96138"
+     inkscape:cy="-237.68158"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-77.409524,-61.823215)">
+    <path
+       id="path831"
+       d="M 94.342857,61.823215 H 79.526191 c -1.169458,0 -2.116667,0.947209 -2.116667,2.116667 v 14.816666 c 0,1.169459 0.947209,2.116667 2.116667,2.116667 h 8.065558 v -7.367058 h -2.479675 v -2.883959 h 2.479675 V 68.50024 c 0,-2.459567 1.503892,-3.800475 3.698875,-3.800475 0.739775,-0.0021 1.478492,0.03598 2.214033,0.111125 v 2.57175 h -1.5113 c -1.195916,0 -1.42875,0.56515 -1.42875,1.399117 v 1.836208 h 2.8575 l -0.371475,2.883958 h -2.502958 v 7.371292 h 3.795183 c 1.169459,0 2.116667,-0.947208 2.116667,-2.116667 V 63.939882 c 0,-1.169458 -0.947208,-2.116667 -2.116667,-2.116667 z"
+       inkscape:connector-curvature="0"
+       style="fill:#ffffff;stroke-width:1.05833328" />
+  </g>
+</svg>

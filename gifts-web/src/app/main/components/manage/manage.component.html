@@ -1,0 +1,40 @@
+<mat-card class="pt-0">
+  <mat-tab-group mat-stretch-tabs>
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon>build</mat-icon>
+        <span fxShow.xs="false" class="ml-1">{{'app.manage.app.text'|translate}}</span>
+      </ng-template>
+      <ng-template matTabContent>
+        <manage-app></manage-app>
+      </ng-template>
+    </mat-tab>
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon>search</mat-icon>
+        <span fxShow.xs="false" class="ml-1">{{'app.manage.search.engine'|translate}}</span>
+      </ng-template>
+      <ng-template matTabContent>
+        <manage-engines></manage-engines>
+      </ng-template>
+    </mat-tab>
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon>email</mat-icon>
+        <span fxShow.xs="false" class="ml-1">{{'app.manage.email.text'|translate}}</span>
+      </ng-template>
+      <ng-template matTabContent>
+        <manage-email></manage-email>
+      </ng-template>
+    </mat-tab>
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon>folder_shared</mat-icon>
+        <span fxShow.xs="false" class="ml-1">{{'app.manage.admin.text'|translate}}</span>
+      </ng-template>
+      <ng-template matTabContent>
+        <manage-admins></manage-admins>
+      </ng-template>
+    </mat-tab>
+  </mat-tab-group>
+</mat-card>

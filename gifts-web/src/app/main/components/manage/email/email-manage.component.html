@@ -1,0 +1,45 @@
+<div fxLayout="row" fxLayoutAlign="center">
+  <div fxFlex="60" fxFlex.xs="100">
+    <form [formGroup]="form">
+      <p>{{'app.manage.email.header'|translate}}</p>
+      <div fxLayout="row" fxLayoutGap="10px">
+        <mat-form-field fxFlex="80">
+          <input matInput formControlName="host" placeholder="{{'app.manage.email.host.text'|translate}}">
+          <mat-hint>{{'app.manage.email.host.help'|translate}}</mat-hint>
+        </mat-form-field>
+        <mat-form-field fxFlex="20">
+          <input type="number" matInput formControlName="port"
+                 placeholder="{{'app.manage.email.port'|translate}}">
+        </mat-form-field>
+      </div>
+      <div fxLayout="column">
+        <mat-form-field>
+          <input type="text" matInput formControlName="username"
+                 placeholder="{{'app.manage.email.username.text'|translate}}">
+          <mat-hint>{{'app.manage.email.username.help'|translate}}</mat-hint>
+        </mat-form-field>
+        <mat-form-field>
+          <input matInput type="password" formControlName="password"
+                 placeholder="{{'app.manage.email.password'|translate}}">
+        </mat-form-field>
+        <mat-form-field>
+          <input matInput type="email" formControlName="from"
+                 placeholder="{{'app.manage.email.from'|translate}}">
+          <mat-error *ngIf="form.controls['from'].hasError('email') && !form.controls['from'].hasError('required')">
+            {{'error.email.invalid'|translate}}
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field fxFlex="40">
+          <mat-select placeholder="{{'app.manage.email.encoding'|translate}}" formControlName="encoding">
+            <mat-option *ngFor="let encoding of encodings" [value]="encoding">
+              {{encoding}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <button mat-raised-button class="success-button pull-right" (click)="saveConfiguration()"
+              [disabled]="form.invalid || !form.touched ">{{'app.manage.email.save'|translate}}
+      </button>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,13 @@
+<mat-toolbar color="primary" class="fixed-top">
+  <span class="clickable" routerLink="/">
+    <img src="assets/images/logo_white.svg" height="50px" class="mr-2 v-middle">
+    <span class="stylish" fxShow.lt-sm="false">Gifts Hub</span>
+  </span>
+  <span class="fill-remaining-space"></span>
+  <button mat-button class="pull-right login-btn" *ngIf="!currentAccount && !isLoginPage">
+    <mat-icon class="pr-2">
+      exit_to_app
+    </mat-icon>
+    <a routerLink="/login" class="text-white">{{'user.login.text'|translate}}</a>
+  </button>
+</mat-toolbar>

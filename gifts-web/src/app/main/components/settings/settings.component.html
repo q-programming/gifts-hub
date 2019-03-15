@@ -1,0 +1,135 @@
+<mat-card class="pt-0">
+  <div fxLayout="row" fxLayoutAlign="center">
+    <div fxFlex="60" fxFlex.xs="100">
+      <h3 class="underlined">
+        <mat-icon>assignment_ind</mat-icon>
+        {{'user.settings.avatar.text'|translate}}
+      </h3>
+    </div>
+  </div>
+  <div fxLayout="row" fxLayoutAlign="center">
+    <div fxFlex="60" fxFlex.xs="100" fxLayoutAlign="center">
+      <img [src]="account.avatar" height="100px">
+    </div>
+  </div>
+  <div fxLayout="row" fxLayoutAlign="center">
+    <div fxFlex="60" fxFlex.xs="100" fxLayoutAlign="center">
+      <button mat-raised-button (click)="openAvatarDialog()" class="mt-2">{{'user.settings.avatar.change'|translate}}
+      </button>
+    </div>
+  </div>
+  <!--LANGUAGE-->
+  <div fxLayout="row" fxLayoutAlign="center">
+    <div fxFlex="60" fxFlex.xs="100">
+      <h3 class="underlined">
+        <mat-icon>language</mat-icon>
+        {{'user.settings.language'|translate}}
+      </h3>
+    </div>
+  </div>
+  <div fxLayout="row" fxLayoutAlign="center">
+    <div fxFlex="60" fxFlex.xs="100" fxLayoutAlign="center">
+      <mat-form-field>
+        <mat-select [(value)]="account.language" (selectionChange)="changeLanguage()">
+          <mat-option *ngFor="let lang of languages" [value]="lang.id">{{lang.name}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </div>
+  <!--NEWSLETTER-->
+  <div fxLayout="row" fxLayoutAlign="center">
+    <div fxFlex="60" fxFlex.xs="100">
+      <h3 class="underlined">
+        <mat-icon>speaker_notes</mat-icon>
+        {{'user.settings.notifications.text'|translate}}
+      </h3>
+    </div>
+  </div>
+  <div fxLayout="row wrap" fxLayoutAlign="center">
+    <div fxFlex="60" fxFlex.xs="100">
+      <div class="mb-2">
+        <mat-slide-toggle
+          [(ngModel)]="account.notifications"
+          (change)="updateSettings()">
+          {{'user.settings.notifications.recieve'|translate}}
+        </mat-slide-toggle>
+      </div>
+      <div [innerHTML]="'user.settings.notifications.help'|translate" class="help">
+      </div>
+    </div>
+  </div>
+  <!--PUBLIC LIST-->
+  <div fxLayout="row" fxLayoutAlign="center">
+    <div fxFlex="60" fxFlex.xs="100">
+      <h3 class="underlined">
+        <mat-icon>lock_open</mat-icon>
+        {{'user.settings.public.text'|translate}}
+      </h3>
+    </div>
+  </div>
+  <div fxLayout="row wrap" fxLayoutAlign="center">
+    <div fxFlex="60" fxFlex.xs="100">
+      <div class="mb-2">
+        <mat-slide-toggle
+          [(ngModel)]="account.publicList"
+          (change)="updateSettings()">
+          {{'user.settings.public.text'|translate}}
+        </mat-slide-toggle>
+      </div>
+      <div [innerHTML]="'user.settings.public.help'|translate" class="help">
+      </div>
+      <div fxLayout="row" fxLayoutAlign="center center" *ngIf="account.publicList">
+        <mat-form-field fxFlex="80%">
+          <input matInput [value]="publicUrl" #publicLink disabled>
+          <button matSuffix mat-stroked-button matTooltip="{{'user.settings.public.copy.text'|translate}}"
+                  (click)="copyLink(publicLink)">
+            <mat-icon>link</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+    </div>
+  </div>
+  <!--SHARE-->
+  <ng-container *ngIf="account.publicList">
+    <div fxLayout="row" fxLayoutAlign="center">
+      <div fxFlex="60" fxFlex.xs="100">
+        <h3 class="underlined">
+          <mat-icon>email</mat-icon>
+          {{'gift.share.text'|translate}}
+        </h3>
+      </div>
+    </div>
+    <div fxLayout="row wrap" fxLayoutAlign="center">
+      <div fxFlex="60" fxFlex.xs="100">
+        <div fxLayout="row" fxLayoutAlign="center center">
+          <mat-form-field fxFlex="80%">
+            <input matInput [(ngModel)]="emailList" autocomplete="off">
+            <button matSuffix mat-stroked-button matTooltip="{{'gift.share.text'|translate}}"
+                    (click)="shareList()">
+              <mat-icon>email</mat-icon>
+            </button>
+          </mat-form-field>
+        </div>
+        <div [innerHTML]="'gift.share.help'|translate" class="help">
+        </div>
+      </div>
+    </div>
+  </ng-container>
+  <!--DELETE ACCOUNT-->
+  <div fxLayout="row" fxLayoutAlign="center">
+    <div fxFlex="60" fxFlex.xs="100">
+      <h3 class="underlined">
+        <mat-icon>
+          report_problem</mat-icon>
+        {{'user.delete.text'|translate}}
+      </h3>
+    </div>
+  </div>
+  <div fxLayout="row" fxLayoutAlign="center">
+    <div fxFlex="60" fxFlex.xs="100" fxLayoutAlign="center" class="delete-account-div">
+      <button mat-flat-button color="warn" (click)="deleteAccount()">
+        {{'user.delete.text'|translate}}
+      </button>
+    </div>
+  </div>
+</mat-card>

@@ -1,0 +1,38 @@
+<div [ngClass]="{even:even}" fxLayout="row wrap" fxLayoutAlign="center center" class="pl-1 pr-1">
+  <div fxFlex="10" fxFlex.lt-sm="15">
+    <img matCardAvatar [src]="user.avatar" class="avatar">
+  </div>
+  <div fxFlex="" [fxFlex.lt-sm]="30">
+    <span *ngIf="user.type === AccountType.KID" matTooltip="{{'user.group.kid'|translate}}">
+      <i class="fa fa-child"></i>
+    </span>
+    <span *ngIf="user.groupAdmin" matTooltip="{{'user.group.administrator'|translate}}">
+      <i class="fa fa-address-card-o"></i>
+    </span>
+    {{user.fullname}} ({{user.username}})
+  </div>
+  <div fxFlex="30" fxFlex.lt-md="10">
+    <a href="mailto:{{user.email}}" *ngIf="user.email">
+      <mat-icon class="v-middle">email</mat-icon>
+      <span fxShow.lt-md="false">
+        {{user.email}}
+      </span>
+    </a>
+  </div>
+  <div fxFlex="30" fxFlex.lt-sm="40" class="text-right">
+    <a mat-icon-button routerLink="/public/{{user.username}}" *ngIf="user.publicList"
+       matTooltip="{{'user.group.public'|translate}}" class="mr-1 black">
+      <i class="fa fa-link"></i>
+    </a>
+    <button mat-stroked-button *ngIf="user.type === AccountType.KID && isGroupAdmin" class="white-button"
+            (click)="editKid()" matTooltip="{{'user.group.edit.kid.text'|translate}}">
+      <i class="fa fa-pencil"></i>
+    </button>
+    <button mat-stroked-button routerLink="/list/{{user.username}}" class="white-button"
+            matTooltip="{{'user.group.list'|translate}}">
+      <span *ngIf="user.giftsCount>0" class="mr-1">{{user.giftsCount}}</span>
+      <i class="fa fa-fw fa-gift"></i>
+      <span fxShow.lt-md="false">{{'gift.list.short'|translate}}</span>
+    </button>
+  </div>
+</div>

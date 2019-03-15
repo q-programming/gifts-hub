@@ -1,0 +1,190 @@
+@import '~@angular/material/theming';
+@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Kalam');
+
+@include mat-core();
+$primary: mat-palette($mat-indigo, 500);
+$accent: mat-palette($mat-blue, 900);
+$theme: mat-light-theme($primary, $accent);
+@include angular-material-theme($theme);
+
+$general-typography: mat-typography-config(
+  $font-family: '"Roboto", sans-serif',
+  $body-2: mat-typography-level(14px, 24px, 600)
+);
+
+@include mat-core($general-typography);
+
+body {
+  font-family: 'Roboto', cursive;
+  font-weight: 300;
+  min-height: 100vh;
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #212529;
+  text-align: left;
+  background-color: #567bb3;
+}
+
+.active-link {
+  color: #08182f;
+}
+
+.navbar {
+  background-color: #2c5aa0 !important;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .16), 0 2px 10px 0 rgba(0, 0, 0, .12);
+  font-weight: 300;
+}
+
+.nav-modal {
+  background-color: #2c5aa0 !important;
+  color: white;
+  box-shadow: none !important;
+}
+
+.mat-toolbar.mat-primary {
+  background: #567bb3;
+}
+
+.mat-form-field-full-width {
+  width: 100%;
+}
+
+.mat-toolbar-row, .mat-toolbar-single-row {
+  //height: 60px !important;
+}
+
+.gifts-dialog-modal > mat-dialog-container {
+  padding: 0 0 24px 0;
+}
+
+.modal-content-m-0{
+  margin: 0 !important;
+}
+
+.modal-header {
+  background: #2c5aa0;
+  color: white;
+  padding: 20px;
+  margin-top: 0;
+}
+
+.modal-header > mat-icon {
+  float: left;
+  font-size: 30px;
+}
+
+.modal-header.warn {
+  background: #f44336;
+}
+
+
+.success-button {
+  background: #43b05c;
+  color: white;
+}
+
+.white-button {
+  background: #ffffff;
+}
+
+.underlined {
+  border-bottom: 1px solid;
+}
+
+.mat-card {
+  border-radius: 0 !important;
+}
+
+.mat-button, .mat-flat-button {
+  border-radius: 0 !important;
+}
+
+.mat-button-toggle-appearance-standard .mat-button-toggle-label-content {
+  line-height: initial !important;
+}
+
+@media (max-width: 768px) {
+  .gifts-modal-normal {
+    max-width: 100% !important;
+  }
+
+  .gifts-modal {
+    max-width: 100% !important;
+  }
+
+  .mat-card {
+    margin: 0 5px;
+  }
+
+  .m-plr-5 {
+    padding: 0 5px;
+  }
+}
+
+.mat-progress-spinner circle, .mat-spinner circle {
+  stroke: #ffffff;
+}
+
+.mat-select-search-input {
+  width: 100%;
+  margin-bottom: 1px;
+}
+
+.mat-form-field-full-width {
+  width: 100%;
+}
+
+.cdk-overlay-container {
+  z-index: 2000 !important;
+}
+
+.mat-tooltip {
+  font-size: 17px; // current default is 10px :-/
+  word-wrap: break-word !important;
+  white-space: pre-line!important;
+  text-align: center;
+}
+
+.mat-expansion-panel-body {
+  padding: 0 24px 0 !important;
+  margin-bottom: 5px;
+}
+
+a {
+  color: #337ab7;
+  text-decoration: none;
+}
+
+a.black {
+  color: black;
+}
+
+.fixed-container {
+  background-color: #ffffff;
+  position: fixed !important;
+  padding: 0.1em 2em !important;
+  left: 50%;
+  top: 65px;
+  flex: 1 1 80%;
+  box-sizing: border-box;
+  max-width: 80%;
+  width: 100%;
+  transform: translateX(-50%);
+  z-index: 1;
+  margin: 0;
+}
+
+@media (max-width: 598px) {
+  .fixed-container {
+    top: 56px;
+    max-width: 100%;
+    padding: 0.1em 1em !important;
+  }
+  .mat-expansion-panel-body {
+    padding: 0 1px 0 !important;
+  }
+  .mat-card {
+    margin: 0;
+  }
+}

@@ -1,0 +1,20 @@
+<h2 mat-dialog-title>{{'user.settings.avatar.change'|translate}}</h2>
+<mat-dialog-content class="mat-typography text-center">
+  <div>
+    <input #fileInput type="file" (change)="fileChangeListener($event)" style="display:none;">
+    <div><span>{{fileInput.value}}</span></div>
+    <img-cropper #cropper [image]="avatarData" [settings]="cropperSettings" *ngIf="uploadInProgress"></img-cropper>
+    <img *ngIf="avatarData.image && !uploadInProgress" [src]="avatarData.image" [width]="cropperSettings.croppedWidth" [height]="cropperSettings.croppedHeight">
+  </div>
+  <div>
+    <button mat-raised-button (click)="fileInput.click()" class="mb-1">
+      <mat-icon>insert_drive_file</mat-icon>
+      {{'user.settings.avatar.upload' |translate}}
+    </button>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-raised-button mat-dialog-close>{{'app.general.cancel'|translate}}</button>
+  <button mat-raised-button [mat-dialog-close]="true" cdkFocusInitial
+          class="success-button">{{'user.settings.avatar.save'|translate}}</button>
+</mat-dialog-actions>
