@@ -48,7 +48,7 @@
       <div fxFlex="80%">
         <mat-form-field fxFlex="100%">
           <input matInput placeholder=" {{'gift.category.choose' | translate}}" formControlName="category"
-                 [matAutocomplete]="catAutocomplete">
+                 [matAutocomplete]="catAutocomplete" autocomplete="off">
           <mat-autocomplete #catAutocomplete="matAutocomplete" [displayWith]="categoryDisplay">
             <mat-option *ngFor="let category of filteredCategories | async" [value]="category">
               <span [innerHTML]="category.name | highlight:filterTerm"></span>

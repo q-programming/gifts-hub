@@ -103,6 +103,10 @@ export class AuthenticationService {
         });
     }
 
+    admins():Observable<Account[]>{
+      return this.apiSrv.get(`${environment.account_url}/admins`)
+    }
+
     setLanguage(){
       if(this.currentAccount){
         this.translate.use(this.currentAccount.language);

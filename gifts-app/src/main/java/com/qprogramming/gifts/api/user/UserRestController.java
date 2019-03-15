@@ -24,6 +24,7 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -267,6 +268,7 @@ public class UserRestController {
     @Transactional
     @RequestMapping(value = "/group/create", method = RequestMethod.POST)
     @PreAuthorize("hasRole('ROLE_USER')")
+    @CacheEvict(value = { "accounts", "groups" }, allEntries = true)
     public ResponseEntity<?> createGroup(@RequestBody GroupForm form) {
         try {
             Account currentAccount = _accountService.getCurrentAccount();
@@ -296,6 +298,7 @@ public class UserRestController {
 
     @Transactional
     @PreAuthorize("hasRole('ROLE_USER')")
+    @CacheEvict(value = { "groups" }, allEntries = true)
     @RequestMapping(value = "/group/{id}/update", method = RequestMethod.PUT)
     public ResponseEntity<?> updateGroup(@PathVariable Long id, @RequestBody GroupForm form) {
         try {
@@ -346,6 +349,7 @@ public class UserRestController {
 
     @Transactional
     @PreAuthorize("hasRole('ROLE_USER')")
+    @CacheEvict(value = { "groups" }, allEntries = true)
     @RequestMapping(value = "/group/{id}/leave", method = RequestMethod.PUT)
     public ResponseEntity<?> leaveGroup(@PathVariable Long id) {
         try {
@@ -466,6 +470,7 @@ public class UserRestController {
 
     @Transactional
     @PreAuthorize("hasRole('ROLE_USER')")
+    @CacheEvict(value = { "accounts", "groups" }, allEntries = true)
     @RequestMapping("/kid-add")
     public ResponseEntity<?> addKid(@RequestBody @Valid KidForm form) {
         Optional<Account> optionalAccount = _accountService.findByUsername(form.getUsername());
@@ -494,6 +499,7 @@ public class UserRestController {
     //    @JsonView(MappingConfiguration.Members.class)
     @Transactional
     @PreAuthorize("hasRole('ROLE_USER')")
+    @CacheEvict(value = { "accounts", "groups" }, allEntries = true)
     @RequestMapping("/kid-update")
     public ResponseEntity<?> updateKid(@RequestBody @Valid KidForm form) {
         try {
@@ -616,6 +622,7 @@ public class UserRestController {
 
     @Transactional
     @PreAuthorize("hasRole('ROLE_USER')")
+    @CacheEvict(value = { "accounts", "groups" }, allEntries = true)
     @RequestMapping(value = "/delete/{userID}", method = RequestMethod.DELETE)
     public ResponseEntity deleteAccount(HttpServletRequest requ, HttpServletResponse
             resp, @PathVariable(value = "userID") String id) {

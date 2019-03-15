@@ -4,7 +4,11 @@
       "cancel": "Cancel",
       "delete": "Delete",
       "return": "Return to home page",
-      "undo": "Undo"
+      "undo": "Undo",
+      "version": "version"
+    },
+    "help": {
+      "contents": "Contents:"
     },
     "manage": {
       "admin": {
@@ -386,6 +390,7 @@
         "text": "Leave group"
       },
       "left": "You have left group",
+      "list": "Click to go to users wish list",
       "members": "Members",
       "name": "Group name",
       "nogroups": "You don't have any groups yet.<br>\nAsk somebody to invite you to one, or create new one by cliking button in uper right corner",
@@ -394,6 +399,7 @@
         "help": "Set up who can view your group's wish lists",
         "text": "Permission"
       },
+      "public": "Public wish list. Click to go to public URL",
       "select": {
         "notfound": "Searched user was not found",
         "text": "Find other users"

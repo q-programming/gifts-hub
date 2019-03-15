@@ -10,7 +10,7 @@ export class Account {
   role?: Role;
   authorities?: Authority[];
   avatar?: any;
-  token: string;
+  token?: string;
   fullname?: string;
   groupAdmin?: boolean;
   type: AccountType;
@@ -18,8 +18,8 @@ export class Account {
   publicList?: boolean;
   notifications?: boolean;
   seenChangelog?: boolean;
-  admin:boolean;
-  groups:Group[];
+  admin?:boolean;
+  groups?:Group[];
 }
 
 export class Authority {

@@ -21,19 +21,18 @@
   </div>
   <div fxFlex="30" fxFlex.lt-sm="40" class="text-right">
     <a mat-icon-button routerLink="/public/{{user.username}}" *ngIf="user.publicList"
-       matTooltip="{{'user.settings.public.text'|translate}}" class="mr-1 black">
+       matTooltip="{{'user.group.public'|translate}}" class="mr-1 black">
       <i class="fa fa-link"></i>
     </a>
     <button mat-stroked-button *ngIf="user.type === AccountType.KID && isGroupAdmin" class="white-button"
             (click)="editKid()" matTooltip="{{'user.group.edit.kid.text'|translate}}">
       <i class="fa fa-pencil"></i>
     </button>
-    <button mat-stroked-button routerLink="/list/{{user.username}}" class="white-button">
+    <button mat-stroked-button routerLink="/list/{{user.username}}" class="white-button"
+            matTooltip="{{'user.group.list'|translate}}">
       <span *ngIf="user.giftsCount>0" class="mr-1">{{user.giftsCount}}</span>
       <i class="fa fa-fw fa-gift"></i>
       <span fxShow.lt-md="false">{{'gift.list.short'|translate}}</span>
     </button>
   </div>
 </div>
-<p>
-</p>

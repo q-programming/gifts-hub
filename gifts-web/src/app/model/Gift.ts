@@ -6,16 +6,16 @@ export class Gift {
   id: number;
   name: string;
   description: string;
-  links: string[] = [];
-  userId: string;
-  createdBy: string;
-  engines: SearchEngine[] = [];
-  category: Category;
-  claimed: Account;
-  created: Date;
-  realised: Date;
-  status: GiftStatus;
-  hidden: boolean;
+  links?: string[] = [];
+  userId?: string;
+  createdBy?: string;
+  engines?: SearchEngine[] = [];
+  category?: Category;
+  claimed?: Account;
+  created?: Date;
+  realised?: Date;
+  status?: GiftStatus;
+  hidden?: boolean;
 }
 
 export enum GiftStatus {

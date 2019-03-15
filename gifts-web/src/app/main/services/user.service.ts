@@ -7,8 +7,8 @@ import {environment} from "@env/environment.prod";
 import {AvatarService} from "@core-services/avatar.service";
 import {SortBy} from "@model/Settings";
 import {MatDialog, MatDialogConfig} from "@angular/material";
-import {ConfirmDialog, ConfirmDialogComponent} from "../components/dialogs/confirm/confirm-dialog.component";
 import * as _ from "lodash";
+import {ConfirmDialog, ConfirmDialogComponent} from "../../components/dialogs/confirm/confirm-dialog.component";
 
 @Injectable({
   providedIn: 'root'
@@ -121,7 +121,7 @@ export class UserService {
     return this.apiSrv.get(`${environment.account_url}/allowed`, {username: identification})
   }
 
-  getUser(identification: string):Observable<Account> {
+  getUser(identification: string): Observable<Account> {
     return this.apiSrv.get(`${environment.account_url}/get/${identification}`).map(user => {
       return this.fetchAvatars(user as Account);
     })

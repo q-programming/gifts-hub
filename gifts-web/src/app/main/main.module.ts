@@ -15,13 +15,17 @@ import {EmailManageComponent} from "./components/manage/email/email-manage.compo
 import {EngineManageComponent} from "./components/manage/engines/engines-manage.component";
 import {AdminsComponent} from "./components/manage/admins/admins.component";
 import {CategoryListComponent} from "./components/gifts/category-list/category-list.component";
-import {ConfirmDialogComponent} from "./components/dialogs/confirm/confirm-dialog.component";
 import {GroupDialogComponent} from "./components/user-list/group-dialog/group-dialog.component";
 import {PermissionComponent} from "./components/user-list/permission/permission.component";
 import {ImageCropperModule} from "ngx-img-cropper";
 import {NgxMatSelectSearchModule} from "ngx-mat-select-search";
 import {MainRoutingModule} from "./main-routing.module";
 import {MainComponent} from './main.component';
+import {HelpComponent} from "./components/help/help.component";
+import {EnHelpComponent} from "./components/help/en/en-help.component";
+import {PlHelpComponent} from "./components/help/pl/pl-help.component";
+import {ScrollToModule} from "@nicky-lenaers/ngx-scroll-to";
+import { HelpListComponent } from './components/help/help-list/help-list.component';
 
 @NgModule({
   declarations: [
@@ -40,23 +44,26 @@ import {MainComponent} from './main.component';
     EngineManageComponent,
     AdminsComponent,
     CategoryListComponent,
-    ConfirmDialogComponent,
     GroupDialogComponent,
     PermissionComponent,
     MainComponent,
+    HelpComponent,
+    PlHelpComponent,
+    EnHelpComponent,
+    HelpListComponent,
   ],
   imports: [
     CommonModule,
     CoreModule,
     ImageCropperModule,
     NgxMatSelectSearchModule,
-    MainRoutingModule
+    MainRoutingModule,
+    ScrollToModule.forRoot(),
   ],
   entryComponents: [
     AvatarUploadComponent,
     KidDialogComponent,
     GiftDialogComponent,
-    ConfirmDialogComponent,
     GroupDialogComponent
   ],
   schemas: [NO_ERRORS_SCHEMA],

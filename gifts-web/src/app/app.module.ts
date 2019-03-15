@@ -18,6 +18,7 @@ import {TranslateLoader, TranslateModule} from "@ngx-translate/core";
 import {HttpClient} from "@angular/common/http";
 import {TranslateHttpLoader} from "@ngx-translate/http-loader";
 import {ErrorComponent} from "./components/error/error.component";
+import {ConfirmDialogComponent} from "./components/dialogs/confirm/confirm-dialog.component";
 
 
 @NgModule({
@@ -29,17 +30,21 @@ import {ErrorComponent} from "./components/error/error.component";
     GiftsPublicComponent,
     ResetPasswordComponent,
     ChangePasswordComponent,
+    ConfirmDialogComponent,
     ConfirmComponent
-  ],
 
+  ],
+  entryComponents: [
+    ConfirmDialogComponent
+  ],
   imports: [
     CommonModule,
     CoreModule.forRoot(),
     BrowserModule,
     BrowserAnimationsModule,
     AppRoutingModule,
-    NgProgressModule.forRoot(),
-    NgProgressRouterModule.forRoot(),
+    NgProgressModule,
+    NgProgressRouterModule,
     PasswordStrengthBarModule,
     TranslateModule.forRoot({
       loader: {

@@ -6,6 +6,7 @@ import {AdminGuard} from "../core/guards/admin.guard";
 import {SettingsComponent} from "./components/settings/settings.component";
 import {NgModule} from "@angular/core";
 import {MainComponent} from "./main.component";
+import {HelpComponent} from "./components/help/help.component";
 
 const routes: Routes = [
   {
@@ -16,6 +17,7 @@ const routes: Routes = [
       {path: 'list/:user', component: GiftsComponent},
       {path: 'manage', component: ManageComponent, canActivate: [AdminGuard]},
       {path: 'settings', component: SettingsComponent},
+      {path: 'help', component: HelpComponent},
     ]
   }
 ];

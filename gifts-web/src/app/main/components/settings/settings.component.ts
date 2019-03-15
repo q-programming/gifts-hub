@@ -13,7 +13,7 @@ import {ApiService} from "@core-services/api.service";
 import {AlertService} from "@core-services/alert.service";
 import {AvatarService} from "@core-services/avatar.service";
 import {getBase64Image} from "../../../utils/utils";
-import {ConfirmDialog, ConfirmDialogComponent} from "../dialogs/confirm/confirm-dialog.component";
+import {ConfirmDialog, ConfirmDialogComponent} from "../../../components/dialogs/confirm/confirm-dialog.component";
 
 
 @Component({

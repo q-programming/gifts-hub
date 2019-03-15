@@ -1,0 +1,592 @@
+<div class="help-body">
+  <h3 class="underlined help-title" id="about">
+    <img src="assets/images/logo.svg" height="25px" class="ml-2">
+    O Aplikacji</h3>
+  <p class="text-center stylish font-larger">
+    Witaj w Gifts Hub </p>
+  <p class="text-center">
+    Gifts hub to miejsce gdzie możesz się podzielić swoją listą życzeń ze swoją rodziną i przyjaciółmi. Każdy
+    użytkownik ma swoją listę , na której możę łątwo dodać, eydtować lub usunąć prezenty jakie chciałby
+    otrzymać.<br>
+    Istnieje możliwośc logowania się po założeniu konta, lub logując się bezpośrednio za pomocą facebook'a lub
+    google.<br>
+    W przypadku uzycia portali społecznościowych, w aplikacji tworzone jest konto z danymi i zdjęciem. </p>
+
+  <p class="text-center mt-2">
+    W przypadku problemów lub sugesti skontaktuj się ze mną :
+    <mat-icon>email</mat-icon>
+    <a href="mailto:jakub.romaniszyn@gmail.com">jakub.romaniszyn@gmail.com</a>
+  </p>
+  <p class="text-center">
+    Twoi administratorzy aplikacji :
+  </p>
+  <div *ngFor="let admin of admins" class="text-center">
+    {{admin.fullname}} <a href="mailto:{{admin.email}}"><i class="fa fa-envelope"></i></a>
+  </div>
+  <!--MENU-->
+  <div>
+    <mat-icon class="help-title-icon">menu</mat-icon>
+    <h3 class="underlined help-title" id="navigation-menu">
+      Menu nawigacji
+    </h3>
+    <p>Zależnie od tego czy użytkownik używa aplikacji na komórce czy urządzeniu stacjonarnym, różne wersje menu
+      będą widoczne.
+    </p>
+    <div fxLayout="row wrap" fxLayoutGap="20px" class="mt-2">
+      <div fxFlex="15" class="text-center">
+        <button mat-flat-button routerLink="." fragment="users">
+          <i class="fa fa-gift ml-1" fxShow.lt-sm="false"></i>
+          <i class="fa fa-2x fa-user"></i>
+          <div class="nav-caption" fxShow.lt-sm="false">
+            {{'menu.users'|translate}}
+          </div>
+        </button>
+      </div>
+      <div fxFlex="75">
+        Lista wszystkich użytkowników aplikacji
+      </div>
+    </div>
+  </div>
+  <div fxLayout="row wrap" fxLayoutGap="20px" class="mt-2">
+    <div fxFlex="15" class="text-center">
+      <button mat-flat-button routerLink="." fragment="list">
+        <i class="fa fa-list ml-1" fxShow.lt-sm="false"></i>
+        <i class="fa fa-2x fa-gift"></i>
+        <div class="nav-caption" fxShow.lt-sm="false">
+          {{'menu.wishlist'|translate}}
+        </div>
+      </button>
+    </div>
+    <div fxFlex="75">
+      Listy życzeń użytkowników. Na tej stronie można dodawac, edytować lub oglądać listy życzeń
+    </div>
+  </div>
+  <div fxLayout="row wrap" fxLayoutGap="20px" class="mt-2" *ngIf="isAdmin">
+    <div fxFlex="15" class="text-center">
+      <button mat-flat-button routerLink="." fragment="manage">
+        <i class="fa fa-columns" fxShow.lt-sm="false"></i>
+        <i class="fa fa-2x fa-wrench"></i>
+        <div class="nav-caption" fxShow.lt-sm="false">
+          {{'menu.manage'|translate}}
+        </div>
+      </button>
+    </div>
+    <div fxFlex="75">
+      Zarządzanie aplikacją. Ta strona jest widoczna tylko dla administratora aplikacji
+    </div>
+  </div>
+  <div fxLayout="row wrap" fxLayoutGap="20px" class="mt-2">
+    <div fxFlex="15" class="text-center">
+      <button mat-flat-button>
+        <i class="fa fa-2x fa-question-circle"></i>
+        <div class="nav-caption" fxShow.lt-sm="false">
+          {{'menu.help'|translate}}
+        </div>
+      </button>
+    </div>
+    <div fxFlex="75">
+      Strona pomocy ( ta strona )
+    </div>
+  </div>
+  <div fxLayout="row wrap" fxLayoutGap="20px" class="mt-2">
+    <div fxFlex="15" class="text-center">
+      <button mat-button fxShow.lt-md="false" [matMenuTriggerFor]="helpAppMenu">
+        <span class="nav-smaller">
+          {{user.fullname}}
+        </span>
+        <avatar classes="avatar nav-avatar v-middle" [avatar]="user.avatar"></avatar>
+        <!--<img *ngIf="account.avatar" [src]="account.avatar" class="avatar nav-avatar"/>-->
+        <mat-icon>more_vert</mat-icon>
+      </button>
+      <button mat-icon-button fxShow.gt-sm="false" [matMenuTriggerFor]="helpAppMenu">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <mat-menu #helpAppMenu="matMenu">
+        <button mat-menu-item routerLink="." fragment="settings" matTooltip="Link do strony z ustawieniami konta">
+          <mat-icon>settings</mat-icon>
+          {{'menu.settings'|translate}}
+        </button>
+        <button mat-menu-item fxShow.gt-sm="false" routerLink="." fragment="manage" *ngIf="isAdmin"
+                matTooltip="Kliknij aby przejść do strony zarządzania całą aplikacją">
+          <mat-icon>build</mat-icon>
+          {{'menu.manage'|translate}}
+        </button>
+        <button mat-menu-item matTooltip="Wyloguj sie z aplikacji">
+          <mat-icon>logout</mat-icon>
+          {{'menu.logout'|translate}}
+        </button>
+      </mat-menu>
+    </div>
+    <div fxFlex="70">
+      <span fxShow.lt-sm="false">Twój awatar. </span>Kliknij aby otworzyć dodatkowe menu aplikacji
+    </div>
+  </div>
+</div>
+<!--USERS-->
+<div>
+  <h3 class="underlined help-title" id="users">
+    <i class="fa fa-fw fa-user"></i>
+    Użytkownicy
+  </h3>
+  <p>
+    Wszyscy użytkownicy aplikacji, którzy należą do jednej z twoich grup są tutaj wylistowani, posortowani alfabetycznie
+    lub pogrupowani po grupach.<br>
+    Aby przełączyć sortowanie wybierz
+    <button mat-stroked-button matTooltip="{{'user.sort.group'|translate}}" class="help-btn">
+      <i class="fa fa-users"></i>
+    </button>
+    aby sortować po grupach lub
+    <button mat-stroked-button matTooltip="{{'user.sort.name'|translate}}" class="help-btn">
+      <i class="fa fa-sort-alpha-asc"></i>
+    </button>
+    aby sortować alfabetycznie
+    <br>
+    Domyślne sortowanie może zostać zmienione w ustawieniach aplikacji przez administratora
+  </p>
+  <h3 class="help-title underlined" id="users-groups">
+    <i class="fa fa-fw fa-users"></i> Grupy</h3>
+  <p>
+    Uprawnienia w aplikacji bazowane są na grupach - tylko ludzie z danej grupy moga oglądać listy życzeń członków
+    grupy. Oczywiście jest możliwe należenie do wielu grup na raz<br>
+    Dzięki temu, można o wiele szybciej przeglądać prezenty oraz zarządać listami członków grupy.<br>
+    Tworząć nową grupę, można dowolnie ją nazwać (w przypadku kiedy pozostawione puste, zostanie użyte twoje
+    nazwisko).
+    Podczas tworzenia, lub potem podczas edycji, możesz dodać innych użytkowników aplikacji, wpisująć ich adresy email
+    lub loginy<br>
+    Każdy nowo zaproszony użytkownik otrzyma wiadomość e-mail z linkiem,
+    który należy otworzyć aby potwierdzić chęć należęnia do grupy.
+    <br>
+    Aby stworzyć grupę, na ekranie listy użytkowników, kliknij guzik
+    <button mat-flat-button class="success-button mr-1 font-smaller header-button">
+      <mat-icon>add</mat-icon>
+      <span fxShow.lt-md="false">
+        {{'user.group.create.text'|translate}}
+        </span>
+    </button>
+  </p>
+  <p>
+    Najedź kursorem myszki na elementy poniżej aby wyświetlić pomoc do poszczególnych elementów. Kliknij w guziki akcji
+    aby dowiedzieć się więcej o niej.
+  </p>
+  <mat-expansion-panel expanded="true">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        <span class="help-cursor font-weight-bold font-larger" matTooltip="Nazwa grupy, kliknięcie w nią ją zwinie">Moja grupa</span>
+      </mat-panel-title>
+      <mat-panel-description fxLayout="row" fxFlex fxLayoutAlign="end center" fxLayoutGap="10px">
+        <div class="pull-right">
+          <button mat-icon-button [matMenuTriggerFor]="groupMenu" (click)="menuClick($event)" class="help-cursor"
+                  matTooltip="Menu grupy (kliknij aby rozwinąć)">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #groupMenu="matMenu">
+            <ng-container>
+              <button mat-menu-item
+                      matTooltip="Otwiera okno dialogowe tworzenia konta dziecka. Utworzone tak dziecko zostanie automatycznie dodane do tej grupy"
+                      routerLink="." fragment="users-group-kid">
+                <i class="fa fa-plus"></i><i class="fa fa-1_5x fa-child"></i>
+                {{'user.group.add.kid.text'|translate}}
+              </button>
+              <button mat-menu-item matTooltip="Edytuj grupę , modyfikując jej nazwę i/lub dodająć usuwająć członków"
+                      routerLink="." fragment="users-groups-edit">
+                <i class="fa fa-1_5x fa-pencil"></i>
+                {{'user.group.edit.text'|translate}}
+              </button>
+            </ng-container>
+            <button mat-menu-item routerLink="." fragment="users-group-leave"
+                    matTooltip="Opuść grupę. Jeżeli jesteś ostatnim członkiem tej grupy, zostanie ona usunięta">
+              <i class="fa fa-1_5x fa-sign-out"></i>
+              {{'user.group.leave.text'|translate}}
+            </button>
+          </mat-menu>
+        </div>
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+    <div>
+      <div fxLayout="row wrap" fxLayoutAlign="center center" class="pl-1 pr-1">
+        <div fxFlex="10" fxFlex.lt-sm="15">
+          <img matCardAvatar [src]="user.avatar" class="avatar" matTooltip="Awatar użytkownika">
+        </div>
+        <div fxFlex="">
+          <span matTooltip="Ikona widoczna kiedy konto jest typu dziecko" class="help-cursor">
+            <i class="fa fa-child"></i>
+          </span>
+          <span matTooltip="Ikona widoczna kiedy użytkownik jest administratorem grupy" class="help-cursor">
+             <i class="fa fa-address-card-o"></i>
+          </span>
+          <span class="help-cursor" matTooltip="Imie i nazwisko uzytkownika (oraz jego login w nawiasie)">
+          {{user.fullname}} ({{user.username}})
+          </span>
+        </div>
+        <div fxFlex="30" fxFlex.lt-md="10" matTooltip="Email użytkownika">
+          <a href="mailto:{{user.email}}" *ngIf="user.email">
+            <mat-icon class="v-middle">email</mat-icon>
+            <span fxShow.lt-md="false">
+        {{user.email}}
+      </span>
+          </a>
+        </div>
+        <div fxFlex="30" fxFlex.lt-sm="40" class="text-right">
+          <a mat-icon-button routerLink="." fragment="user-public"
+             matTooltip="{{'user.group.public'|translate}}" class="mr-1 black">
+            <i class="fa fa-link"></i>
+          </a>
+          <button mat-stroked-button class="white-button" routerLink="." fragment="users-group-kid"
+                  matTooltip="Jeżeli konto jest typu dziecko i jesteś administratorem grupy, możesz edytkować konto dziecka">
+            <i class="fa fa-pencil"></i>
+          </button>
+          <button mat-stroked-button routerLink="." fragment="list" class="white-button"
+                  matTooltip="{{'user.group.list'|translate}}">
+            <i class="fa fa-fw fa-gift"></i>
+            <span fxShow.lt-md="false">{{'gift.list.short'|translate}}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </mat-expansion-panel>
+  <!--GROUP EDIT-->
+  <h4 class="help-title underlined" id="users-groups-edit">Edycja grupy</h4>
+  <p>
+    Aby edytować grupę, wybierz opcję {{'user.group.edit.text'|translate}} z menu danej grupy.<br>
+    W ukazanym oknie dialogowym, można zmienić nazwę grupy oraz zaprosić nowych członków.<br>
+    Aby zaprosić nowych członków należy podać ich loginy lub adresy email. Jeżeli własciciel adresu email , nie posiada
+    jeszcze konta , zostanie zaproszony do rejestracji w aplikacji
+  </p>
+  <p>
+    Podczas edycji grupy, można tez oznaczyć jednego z jej członków jako administratora grupy. Administrator może
+    dodawać kolejnych administratorów oraz wyrzucać/dodawać uzytkowników do grupy<br>
+    Nie jest możlie usunięcie ostatniego administratora
+  </p>
+  <h4 class="help-title underlined" id="users-group-kid">Konto dziecka</h4>
+  <p>
+    Po stworzeniu grupy, jako jej administrator będziesz mógł stworzyć konto dziecka, po kliknięciu na
+    opcję
+    <button mat-stroked-button class="help-btn">
+      <i class="fa fa-plus"></i><i class="fa fa-child"></i>
+      {{'user.group.add.kid.text'|translate}}
+    </button>
+    z menu opcji grupy
+    <br>
+    Konto dziecka to specjny rodzaj konta w aplikacji, na które nie można się zalogować.
+    <br>Tworząc konto dziecka , proszę okreś imię nazwisko oraz unikalny login ( aplikacja sprawdzi , czy
+    jest wolny) . Ustaw również awatar konta ( opcjonalnie )
+  </p>
+  <p>
+    Po stworzeniu, konto dziecka można edytować po kliknięciu guzika
+    <button mat-stroked-button class="help-btn">
+      <i class="fa fa-pencil"></i>
+    </button>
+    w wierszu konta dziecka na ekranie listy użytkowników.
+  </p>
+  <h4 class="help-title underlined" id="users-group-leave">Opuszczanie grup</h4>
+  <p>
+    Jeżeli chcemy opusicić grupę ,nalezy wybrać
+    <button mat-stroked-button class="help-btn">
+      <i class="fa fa-1_5x fa-sign-out"></i>
+      {{'user.group.leave.text'|translate}}
+    </button>
+    .
+    W przypadku kiedy opuszczamy grupę , a został tam conajmniej jeden użytkownik ( nie będący kontem dziecka )
+    zostanie on automatycznie mianowany administratorem grupy. W przypadku kiedy nie ma już żadnego takiego konta, grupa
+    zostanie usunięta
+  </p>
+</div>
+
+<!--LISTS-->
+<div>
+  <h3 class="underlined help-title" id="list">
+    <i class="fa fa-fw fa-gift"></i>
+    Listy życzeń
+  </h3>
+  <p>
+    Główy ekran z twoją listą życzeń, widoczny zaraz po zalogowaniu się<br>
+    Znajdują się tutaj twoje wszystkie prezenty dodane przez Ciebie, wraz z opisem, linkami, silnikami wyszukiwania
+    oraz akcjami dla każdego z prezentów<br>
+    Z tego ekranu możesz też przełączyć się na
+    listę
+    innego uzytkownika, który jest w twojej grupie i podejrzeć i/lub
+    zarezerować z niej prezent
+  </p>
+  <p>To switch to other user select it from drop down list next to your avatar</p>
+  <mat-card class="help-example-blue-bg">
+    <mat-card fxLayout="row wrap" fxLayoutGap="10px">
+      <div fxFlex="5" fxFlex.lt-sm="15">
+        <img matCardAvatar [src]="user.avatar" class="avatar">
+      </div>
+      <div fxFlex="80" fxFlex.lt-sm="60">
+        <mat-form-field class="pr-2 mat-form-field-full-width" appearance="standard" style="margin-top: -20px;">
+          <mat-select required [value]="user">
+            <!--<input matInput (keyup)="_filter($event.target.value)" placeholder="Filter">-->
+            <mat-option *ngFor="let account of [user]" [value]="account">
+                        <span matSuffix>
+                            <avatar [avatar]="account.avatar" classes="avatar small v-middle mr-1"></avatar>
+                        </span>
+              <span [innerHTML]="account.fullname + '(' + account.username + ')'"></span>
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div fxFlex="10">
+        <button class="header-button success-button" mat-flat-button>
+          <mat-icon>add</mat-icon>
+          <span fxShow.lt-sm="false">{{'gift.new.add'|translate}}</span>
+        </button>
+      </div>
+    </mat-card>
+  </mat-card>
+  <p>
+    Więcej informacji w <a class="help-cursor" routerLink="." fragment="gift-add">dodawanie prezentu</a>
+  </p>
+  <p>
+    Prezenty są pogrupowane po kategoriach i srotowane po datach. Najnowszy prezent na samej górze, starsze na
+    dole.
+    Kazdy wiersz zawiera informację o nazwie, opisie , link oraz dostępne dla tego prezentu silniki
+    wyszukiwania.
+    <br><br>Prezenty, które zostały zarezerwowane są dodatkowo pokolorowane na pomarańczowo z informacją kto
+    zarezerwował widoczną po najechaniu kursorem na ikonę prezentu
+    <br>(właściciel prezentu nie zobaczy tej informacji).
+    <br><br>Prezenty zarezerwowane są dodatkowo pokazane na dole listy w swojej kategorii.<br>
+  </p>
+  <p>
+    Przykładowy wygląd listy prezentów
+  </p>
+  <mat-card class="help-example-blue-bg">
+    <mat-expansion-panel expanded="true">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <span class="font-larger font-weight-bold">{{gift.category.name}}</span>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div>
+        <gift [gift]="gift"
+              [even]="false"
+              [canEdit]="true"></gift>
+        <gift [gift]="gift_claimed"
+              [even]="false"
+              [canEdit]="true"></gift>
+      </div>
+    </mat-expansion-panel>
+    <mat-expansion-panel expanded="true">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <span class="font-larger font-weight-bold">{{'gift.category.realised'|translate}}</span>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div>
+        <gift [gift]="gift_realized"
+              [even]="false"
+              [canEdit]="true"></gift>
+      </div>
+    </mat-expansion-panel>
+  </mat-card>
+  <!--GIFTS ADD-->
+  <h4 id="gift-add" class="help-title underlined">Dodawanie prezentu</h4>
+  <p>
+    Podstawową funkcjonalnością aplikacji jest dodawanie prezentu do swojej listy życzeń. Oprócz tego, każdy
+    użytkownik grupy może dodać prezent każdemu użytkownikowi w tej samej grupie<br>
+    Po stworzeniu konta w aplikacji, nie ma jeszcze żadnyc prezentów,
+    Aby stworzyć nowy prezent wystarczy kliknąć guzik
+    <button class="header-button success-button" mat-flat-button>
+      <mat-icon>add</mat-icon>
+    </button>
+    Tworząć nowy prezent , tylko pole <strong>nazwa</strong> jest wymagane,<br>Określając nazwę prezentu
+    postaraj sie aby była ona jednocześnie słowem klucz , który będzie uzywany przez silniki wyszukiwarki.
+    <br><br>Inne pola są opcjonalne, ale pomocne.<br><br>Dobrze tez jest dodać prezent do którejś kategori
+    (również tworząć nową) i wybrać dostępne silniki wyszkuwarki
+  </p>
+  <h4 id="gift-properties" class="help-title underlined">Właściwości prezentu</h4>
+  <help-list name="Nazwa">
+    Krótka nazwa prezentu. Będzie ona też uzyta podczas wyszukiwaniu za pomocą silników
+    wyszukiwania
+  </help-list>
+  <help-list name="Opis">
+    Opis prezentu, w który możemy doprecyzować jaki dokładnie ma być, kolor opis etc.
+  </help-list>
+  <help-list name="Linki" icon="fa-link">
+    Linki do strony z prezentem. Aby dodać więcej niż jeden , naciśnij guzik
+    <button mat-stroked-button>
+      <mat-icon>add</mat-icon>
+    </button>
+  </help-list>
+  <help-list name="Kategoria" icon="fa-archive">
+    Kategoria prezentu . Wszystkie prezenty z danej kategorii będą zgrupowane w jedną zakładkę.
+    Można wybrać jedną z kategorii stworzonych przez innych użytkowinków, lub wprowadzić nową.<br>
+    Jeżeli nie zostanie podana żadna kategoria, prezent zostanie umieszczony w kategorii "inne"
+  </help-list>
+  <help-list name="Ukryty prezent" icon="fa-user-secret" id="gift-hidden">
+    Opcja dostępna gdy jesteśmy na liscie życzeń innego użytkownika.<br>Tak oznaczony prezent będzie
+    widoczny dla wszystkich użytkowników z grupy, ale nie widoczny dla właściciela listy. Użytkownik który doda
+    ukryty prezent będzie jako jedyny mógł go edytować , usunąć i oznaczyć jako gotowy
+  </help-list>
+  <help-list name="Silniki wyszukiwania" icon="fa-search">
+    Które silniki wyszukiwania mają być dostępne dla tego prezentu. Trochę więcej informacji o silnikach wyszukiwania <a
+    routerLink="." fragment="gift-seach-engines">tutaj</a>
+  </help-list>
+  <!--GIFTS ACTIONS-->
+  <h4 class="help-title underlined" id="gift-actions">Dostępne akcje na prezencie</h4>
+  <p>
+    Na prezentach dostępne są następujące akcje ( niektóre nie są widoczne kiedy jestesmy na koncie innego użytkownika )
+    <help-list name="Zarezerwuj" icon="fa-hand-paper-o">
+      Jeżeli prezent jeszcze nie jest zarezerwowany , można go zaklepać klikająć w ten guzik i poinformować innych użytkowników, że chcemy go zrealizować. W przypadku kiedy my
+      zarezerwowaliśmy prezent, zamiast tej ikonki będzie widoczne
+      <span class="fa-stack">
+          <i class="fa fa-times fa-stack-1x"></i>
+          <i class="fa fa-lg fa-hand-paper-o fa-stack-1x"></i>
+        </span>
+    </help-list>
+    <help-list name="Edytuj" icon="fa-pencil">
+      Jeżeli jesteśmy autorem tego prezentu, możemy go edytować
+    </help-list>
+    <help-list name="Oznacz jako gotowy" icon="fa-check-circle-o">
+      W przypadku kiedy jest to nasza lista , jestesmy autorem tego prezentu ( np jeżeli jest to prezent ukryty dodany
+      przez nas ) możemy wtedy oznaczyć prezent jako gotowy. Zostanie on wtedy oznaczony na szaro i przesunięty do
+      kategorii "Zrealizowane". Można cofnąć oznaczenie prezentu poprzez kliknięcie akcji <i
+      class="fa fa-fw fa-lg fa-circle-o"></i> widocznej w tym samym miejscu
+    </help-list>
+    <help-list name="Usuń" icon="fa-trash">
+      Usuwanie prezentu. Jeżeli ktoś miał już rezerwację na tym prezencie, zostanie o tym poinformowany emailem
+    </help-list>
+  </p>
+  <!--GIFTS FILTERING-->
+  <h4 class="help-title underlined" id="gift-filtering">Filtrowanie prezentów</h4>
+  <p>
+    Możliwe jest filtrowanie po kategoriach wszystkich prezentów dla obecnie
+    wyświetlanego użytkownika.<br>
+    Aby filtrować należy kliknąć ikonę
+    <i class="fa fa-lg fa-filter clickable" matTooltip="{{'gift.category.filter'|translate}}"></i>
+    zlokalizowaną koło ikony akcji w nagłówku listy.<br>Po kliknięciu, dodatkowe pole wyboru zostanie pokazane,
+    gdzie można wybrać jedną z istniejących kategorii
+    <br>Kiedy aktywny jest filtr, ikona zostanie zmieniona na
+    <i class="fa fa-plus-circle filter-active"></i>
+    <i class="fa fa-lg fa-filter clickable" matTooltip="{{'gift.category.filter'|translate}}"></i><br>
+    Aby usunąć filtry, kliknij w przycisk <mat-icon>clear</mat-icon> w polu kategorii filtrów
+  </p>
+  <!--SEARCH ENGINES-->
+  <h4 class="help-title underlined" id="gift-seach-engines">Silniki wyszukiwania</h4>
+  <p>Silniki wyszukiwania mogą być zdefiniowane przez administratora aplikacji . Kiedy dany śilnik zostanie
+    oznaczony podczas tworzenia nowego prezentu, link do tego silnika będzie wyświetlony obok linka prezentu. Po
+    kliknięciu, w nowym oknie zostanie wyświetlony rezultat wyszukiwania w tym silniku po słowie kluczowym (
+    nazwa prezentu).
+    <br> Na przykład, jeżeli zostanie użyty silnik wyszukiwania google, dla nazwy prezentu "MOJA_NAZWA",
+    zostanie
+    wyświetlony rezultat szukania dla <br><u>https://www.google.com/search?q=MOJA_NAZWA</u>
+  </p>
+</div>
+<!--SETTINGS-->
+<div>
+  <mat-icon class="help-title-icon">settings</mat-icon>
+  <h3 class="help-title underlined" id="settings">Ustawienia</h3>
+  <p>
+    Twoje ustawienia konta znajdują się w menu pod twoim awatarem
+  </p>
+  <p>
+    Na tym ekranie możesz dodać swój niestandardowy awatar, zmienić język w którym wyświetlana jest aplikacja i
+    okreslić czy twoja lista będzie publiczna
+  </p>
+  <h4 class="help-title underlined" id="settings-newsletter">Powiadomienia email</h4>
+  <p>
+    Aby otrzymywać powiadomienia email z informacjami o nowych lub zrealizowanych prezentach w aplikacji lub usuniętych
+    zarezerwowanych prezentach nalezy zaznaczyć chęc otrzymywania tych wiadomości<br>
+    Newsletter będzie wysyłany w każdy poniedziałek (o ile wystąpiły jakieś wydarzenia) na email powiązany z kontem (
+    przy rejestracji , lub podany facebook/google )
+  </p>
+  <h4 class="help-title underlined" id="user-public">Lista Publiczna</h4>
+  <p>
+    <span [innerHTML]="'user.settings.public.help'|translate"></span>
+    <br>
+    Klikająć na przycisk <span class="btn btn-default">
+            <i class="fa fa-link"></i></span>
+    obok publicznego linka, zostanie on skopiowany do schowka
+  </p>
+  <h4 class="help-title underlined" id="user-delete">Usuwanie konta</h4>
+  <p>Możesz permametnie usunąć swoje konto z aplikacji. Tej operacji nie da się cofnąć, wszystkie twoje prezenty i
+    rezerwacje zostaną usunięte wraz z twoim kontem<br>
+    <strong>Pamiętaj, że tej operacji nie da się cofnąć , dlatego proszę używać jej z rozwagą!</strong>
+  </p>
+</div>
+<!--MANAGE-->
+<div *ngIf="isAdmin">
+  <h3 class="help-title underlined" id="manage"><i class="fa fa-wrench"></i>Zarządzanie aplikacją</h3>
+  <p>
+    Zakładając , że użytkownicy będa używać aplikacji zgodnie z założeniami , praca administratora aplikacji nie jest
+    trudna.
+  </p>
+  <p>
+    Administrator aplikacji ma dodatkową opcję w menu w stacjonarnej wersji aplikacji. Do widok zarządzania
+    aplikacją można dostać się na urządzeniach mobilnych poprzez bezposredni link
+    <br>Proszę pamiętać aby ustawić wszystkie parametry podczas pierwszej wizyty , inaczej aplikacja nie będzie
+    działać poprawnie
+  </p>
+  <h4 class="help-title underlined" id="manage-application">{{'app.manage.app.text'|translate}}</h4>
+  <help-list name="{{'app.manage.language'|translate}}" icon="fa-globe">
+    Określenie domyslnego języka dla aplikacji. Lista będzie wypełniana przez API dynamicznie na podstawie na
+    podstawie języków dodanych do aplikacji.
+    <br>
+    Aby dodać nowy język należy przetłumaczyć zawartość
+    <code>gifts-hub\gifts-app\src\main\resources\templates\XX\</code>
+    Dodać tłumaczenie lang/messages_XX.properties , oraz dodać tłumaczenie portalu <code>gifts-hub\gifts-web\src\assets\i18n\XX</code>
+    <br> po całej operacji <code>mvn package</code> w głównyn katalogu aplikacji zbuduje paczkę , którą trzeba podmienić
+    na serwerze
+  </help-list>
+  <help-list name="{{'app.manage.url.text'|translate}}" icon="fa-link">
+    To jest link aplikacji, który będzie używany w wysyłaniu wiadomości e-mail i innych form komunikacji.
+    Rekomendowane jest ustawienie tego parametru podczas pierwszej wizity
+  </help-list>
+  <help-list name="{{'app.manage.gift.age.text'|translate}}" icon="fa-clock-o">
+    {{'app.manage.gift.age.help'|translate}}
+  </help-list>
+  <help-list name="{{'user.sort.default'|translate}}" icon="fa-sort-amount-desc">
+    Jak domyślnie będą sortowani użytkownicy na widoku listy użytkowników
+  </help-list>
+  <h4 class="help-title underlined" id="manage-search-engines">{{'app.manage.search.engine'|translate}}</h4>
+  <p>Tutaj możesz określić silniki wyszukiwania jakie uzytkownicy będą mogli użyć na swoich prezentach<br>Definiując
+    nowy silnik wyszukiwania istotne jest aby poprawnie okreslić wszystkie pola
+    <br>
+    <help-list name="{{'app.manage.search.name'|translate}}">
+      nazwa jaka będzie wyświetlana podczas tworzenia
+      nowego prezentu oraz po najechaniu kursorem na ikonę wyszukiwarki
+    </help-list>
+    <help-list name="{{'app.manage.search.link'|translate}}">
+      link wyszukiwarki. Nazwa prezentu zostanie
+      doklejona na koniec tego linku.
+      Najczęsciej link ma format :
+      <code>http://google.com/search?q=</code><br>
+    </help-list>
+    <help-list name="{{'app.manage.search.icon.text'|translate}}">
+      <span [innerHTML]="'app.manage.search.icon.help'|translate"></span>
+    </help-list>
+  </p>
+  <h4 class="help-title underlined" id="manage-email">{{'app.manage.email.text'|translate}}</h4>
+  <p>
+    Podstawowe ustawienia serwera mailowego. Serwer ten będzie używany do wysyłania podstawowych wiadomości
+    e-mail do użytkowników aplikacji
+    <br>
+    Po ustawieniu detali i zapisaniu, poprawność konfiguracji SMTP zostanie automatycznie sprawdzona
+  </p>
+  <h4 class="help-title underlined" id="manage-admins">{{'app.manage.admin.text'|translate}}</h4>
+  <p>
+    Tutaj wylistowani są wszyscy użytkownicy aplikacji. Na tym ekranie można nadać uprawnienia administratora całej
+    aplikacji.<br>
+    Aby nadać uprawnienia administratora kliknij w guzik
+    <button mat-stroked-button matTooltip="{{'app.manage.admin.add'|translate}}" class="help-btn">
+      <mat-icon>build</mat-icon>
+    </button>
+    lub guzik
+    <button mat-stroked-button matTooltip="{{'app.manage.admin.remove'|translate}}" class="help-btn">
+      <mat-icon>clear</mat-icon>
+    </button>
+    aby te uprawnienia usunąć.
+    <br>
+    Jeżeli jest tylko jeden administrator aplikacji, nie można usunąc mu uprawnień
+  </p>
+</div>
+<div>
+  <h3 class="underlined help-title" id="license">
+    Licencja
+  </h3>
+  Aplikacja została stworzona tylko przezemnie, jeżeli chciałbyś dokonać jakiś zmian , proszę o informację. Z
+  wielką chęcią chciałbym to zobaczyć :)
+  <p>
+    Aplikacja jest pod licencją GNU GPL License i uzywa niektórych komponentów na bazie licencji Apache License
+  </p>
+</div>

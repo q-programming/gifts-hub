@@ -4,7 +4,11 @@
       "cancel": "Anuluj",
       "delete": "Usuń",
       "return": "Powróć na stronę główną",
-      "undo": "Cofnij"
+      "undo": "Cofnij",
+      "version": "wersja"
+    },
+    "help": {
+      "contents": "Spis treści:"
     },
     "manage": {
       "admin": {
@@ -386,6 +390,7 @@
         "text": "Opuść grupę"
       },
       "left": "Opuściłeś grupę",
+      "list": "Kliknij aby przejść do listy życzeń użytkownika",
       "members": "Członkowie",
       "name": "Nazwa grupy",
       "nogroups": "Nie jesteś członkiem żadnej grupy.<br>\nPoproś kogoś aby Cię zaprosił , lub stwórz nową klikająć guzik w prawym górynym rogu",
@@ -394,6 +399,7 @@
         "help": "Ustaw kto może oglądać listy zyczeń twojej grupy",
         "text": "Uprawnienia"
       },
+      "public": "Publiczna lista życzeń. Kliknij aby przejść do publicznego adresu URL",
       "select": {
         "notfound": "Nie znaleziono poszukiwanego użytkownika",
         "text": "Wyszukaj innych użytkowników"

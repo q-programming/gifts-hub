@@ -1,0 +1,574 @@
+<div class="help-body">
+  <h3 class="underlined help-title" id="about">
+    <img src="assets/images/logo.svg" height="25px" class="ml-2">
+    About application</h3>
+  <p class="text-center stylish font-larger">
+    Welcome in Gifts Hub </p>
+  <p class="text-center">
+    Gifts hub is a place where you can share your gifts wish list with your friends and family. Every application member
+    has his own list, to which can easily add, edit or remove gifts which he/she would like to receive<br>
+    Application accounts can be created either with login password, or login using social media : facebook or google<br>
+    In case of social media created account, all data like name, surname and photo will be automatically created</p>
+
+  <p class="text-center mt-2">
+    In case some issues or suggestions , feel free to contact me :
+    <mat-icon>email</mat-icon>
+    <a href="mailto:jakub.romaniszyn@gmail.com">jakub.romaniszyn@gmail.com</a>
+  </p>
+  <p class="text-center">
+    Your application administrators:
+  </p>
+  <div *ngFor="let admin of admins" class="text-center">
+    {{admin.fullname}} <a href="mailto:{{admin.email}}"><i class="fa fa-envelope"></i></a>
+  </div>
+  <!--MENU-->
+  <div>
+    <mat-icon class="help-title-icon">menu</mat-icon>
+    <h3 class="underlined help-title" id="navigation-menu">
+      Navigation menu
+    </h3>
+    <p>Depending on if user is using mobile devices or dekstop pc , different menu variations will be shown
+    </p>
+    <div fxLayout="row wrap" fxLayoutGap="20px" class="mt-2">
+      <div fxFlex="15" class="text-center">
+        <button mat-flat-button routerLink="." fragment="users">
+          <i class="fa fa-gift ml-1" fxShow.lt-sm="false"></i>
+          <i class="fa fa-2x fa-user"></i>
+          <div class="nav-caption" fxShow.lt-sm="false">
+            {{'menu.users'|translate}}
+          </div>
+        </button>
+      </div>
+      <div fxFlex="75">
+        List of all application users ( in your groups)
+      </div>
+    </div>
+  </div>
+  <div fxLayout="row wrap" fxLayoutGap="20px" class="mt-2">
+    <div fxFlex="15" class="text-center">
+      <button mat-flat-button routerLink="." fragment="list">
+        <i class="fa fa-list ml-1" fxShow.lt-sm="false"></i>
+        <i class="fa fa-2x fa-gift"></i>
+        <div class="nav-caption" fxShow.lt-sm="false">
+          {{'menu.wishlist'|translate}}
+        </div>
+      </button>
+    </div>
+    <div fxFlex="75">
+      User gift wish list. On this page you can add, edit and browse wish lists
+    </div>
+  </div>
+  <div fxLayout="row wrap" fxLayoutGap="20px" class="mt-2" *ngIf="isAdmin">
+    <div fxFlex="15" class="text-center">
+      <button mat-flat-button routerLink="." fragment="manage">
+        <i class="fa fa-columns" fxShow.lt-sm="false"></i>
+        <i class="fa fa-2x fa-wrench"></i>
+        <div class="nav-caption" fxShow.lt-sm="false">
+          {{'menu.manage'|translate}}
+        </div>
+      </button>
+    </div>
+    <div fxFlex="75">
+      Manage application. This page is visible only to application administrators.
+    </div>
+  </div>
+  <div fxLayout="row wrap" fxLayoutGap="20px" class="mt-2">
+    <div fxFlex="15" class="text-center">
+      <button mat-flat-button>
+        <i class="fa fa-2x fa-question-circle"></i>
+        <div class="nav-caption" fxShow.lt-sm="false">
+          {{'menu.help'|translate}}
+        </div>
+      </button>
+    </div>
+    <div fxFlex="75">
+      Help page ( this page )
+    </div>
+  </div>
+  <div fxLayout="row wrap" fxLayoutGap="20px" class="mt-2">
+    <div fxFlex="15" class="text-center">
+      <button mat-button fxShow.lt-md="false" [matMenuTriggerFor]="helpAppMenu">
+        <span class="nav-smaller">
+          {{user.fullname}}
+        </span>
+        <avatar classes="avatar nav-avatar v-middle" [avatar]="user.avatar"></avatar>
+        <!--<img *ngIf="account.avatar" [src]="account.avatar" class="avatar nav-avatar"/>-->
+        <mat-icon>more_vert</mat-icon>
+      </button>
+      <button mat-icon-button fxShow.gt-sm="false" [matMenuTriggerFor]="helpAppMenu">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <mat-menu #helpAppMenu="matMenu">
+        <button mat-menu-item routerLink="." fragment="settings" matTooltip="Link to account settings page">
+          <mat-icon>settings</mat-icon>
+          {{'menu.settings'|translate}}
+        </button>
+        <button mat-menu-item fxShow.gt-sm="false" routerLink="." fragment="manage" *ngIf="isAdmin"
+                matTooltip="Click to go to application management page">
+          <mat-icon>build</mat-icon>
+          {{'menu.manage'|translate}}
+        </button>
+        <button mat-menu-item matTooltip="Log out from application">
+          <mat-icon>logout</mat-icon>
+          {{'menu.logout'|translate}}
+        </button>
+      </mat-menu>
+    </div>
+    <div fxFlex="70">
+      <span fxShow.lt-sm="false">Your avatar. </span>Click to open extra application menu
+    </div>
+  </div>
+</div>
+<!--USERS-->
+<div>
+  <h3 class="underlined help-title" id="users">
+    <i class="fa fa-fw fa-user"></i>
+    Users
+  </h3>
+  <p>
+    All application users, which are part of one of your groups, are listed here, sorted alphabetically or sorted by
+    groups .<br>
+    To switch sorting, click
+    <button mat-stroked-button matTooltip="{{'user.sort.group'|translate}}" class="help-btn">
+      <i class="fa fa-users"></i>
+    </button>
+    to sort per groups, or
+    <button mat-stroked-button matTooltip="{{'user.sort.name'|translate}}" class="help-btn">
+      <i class="fa fa-sort-alpha-asc"></i>
+    </button>
+    to sort alphabetically
+    <br>
+    Default sorting can be changed in application management by administrator
+  </p>
+  <h3 class="help-title underlined" id="users-groups">
+    <i class="fa fa-fw fa-users"></i> Groups</h3>
+  <p>
+    Application permissions are based on groups - only people within group can view eachothers wish lists.
+    Of corse you can be member of many groups at once<br>
+    Thanks to this, you can very quickly browse and manage through other users wish lists.<br>
+    When creating new group, you can name it as you want ( in case of empty name, your surname will be used ).
+    While creating ( or while editing ) you can add other application users, by entering theirs email address or
+    login<br>
+    Every newly invited member will receive e-mail with link to confirm invitation.
+    <br>
+    To create new group on user list screen , click
+    <button mat-flat-button class="success-button mr-1 font-smaller header-button">
+      <mat-icon>add</mat-icon>
+      <span fxShow.lt-md="false">
+        {{'user.group.create.text'|translate}}
+        </span>
+    </button>
+    button
+  </p>
+  <p>
+    Hover with mouse cursor over elements below, to show help about each element. Click action button to learn more
+    about it
+  </p>
+  <mat-expansion-panel expanded="true">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        <span class="help-cursor font-weight-bold font-larger"
+              matTooltip="Group name, clicking it will colapse whole tab">My group</span>
+      </mat-panel-title>
+      <mat-panel-description fxLayout="row" fxFlex fxLayoutAlign="end center" fxLayoutGap="10px">
+        <div class="pull-right">
+          <button mat-icon-button [matMenuTriggerFor]="groupMenu" (click)="menuClick($event)" class="help-cursor"
+                  matTooltip="Group menu ( click to expand)">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #groupMenu="matMenu">
+            <ng-container>
+              <button mat-menu-item
+                      matTooltip="Opens create kid dialog. Newly created kid account will be automatically added to selected group"
+                      routerLink="." fragment="users-group-kid">
+                <i class="fa fa-plus"></i><i class="fa fa-1_5x fa-child"></i>
+                {{'user.group.add.kid.text'|translate}}
+              </button>
+              <button mat-menu-item matTooltip="Edit group, modifing it's name and/or adding/removing group members"
+                      routerLink="." fragment="users-groups-edit">
+                <i class="fa fa-1_5x fa-pencil"></i>
+                {{'user.group.edit.text'|translate}}
+              </button>
+            </ng-container>
+            <button mat-menu-item routerLink="." fragment="users-group-leave"
+                    matTooltip="Leave group. If you are last group member, it will be removed">
+              <i class="fa fa-1_5x fa-sign-out"></i>
+              {{'user.group.leave.text'|translate}}
+            </button>
+          </mat-menu>
+        </div>
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+    <div>
+      <div fxLayout="row wrap" fxLayoutAlign="center center" class="pl-1 pr-1">
+        <div fxFlex="10" fxFlex.lt-sm="15">
+          <img matCardAvatar [src]="user.avatar" class="avatar" matTooltip="Users avatar">
+        </div>
+        <div fxFlex="">
+          <span matTooltip="Icon visible if it's kids account type" class="help-cursor">
+            <i class="fa fa-child"></i>
+          </span>
+          <span matTooltip="Icon visible if user is group administrator" class="help-cursor">
+             <i class="fa fa-address-card-o"></i>
+          </span>
+          <span class="help-cursor" matTooltip="Name and surname of user ( and his/hers login in brackets)">
+          {{user.fullname}} ({{user.username}})
+          </span>
+        </div>
+        <div fxFlex="30" fxFlex.lt-md="10" matTooltip="Users email">
+          <a href="mailto:{{user.email}}" *ngIf="user.email">
+            <mat-icon class="v-middle">email</mat-icon>
+            <span fxShow.lt-md="false">
+        {{user.email}}
+      </span>
+          </a>
+        </div>
+        <div fxFlex="30" fxFlex.lt-sm="40" class="text-right">
+          <a mat-icon-button routerLink="." fragment="user-public"
+             matTooltip="{{'user.group.public'|translate}}" class="mr-1 black">
+            <i class="fa fa-link"></i>
+          </a>
+          <button mat-stroked-button class="white-button" routerLink="." fragment="users-group-kid"
+                  matTooltip="If it's kid account , and you are group admin, you can edit kids account details">
+            <i class="fa fa-pencil"></i>
+          </button>
+          <button mat-stroked-button routerLink="." fragment="list" class="white-button"
+                  matTooltip="{{'user.group.list'|translate}}">
+            <i class="fa fa-fw fa-gift"></i>
+            <span fxShow.lt-md="false">{{'gift.list.short'|translate}}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </mat-expansion-panel>
+  <!--GROUP EDIT-->
+  <h4 class="help-title underlined" id="users-groups-edit">Editing group</h4>
+  <p>
+    To edit group, choose  {{'user.group.edit.text'|translate}} from group menu.<br>
+    In shown dialog , you can change group name and invite new members<br>
+    To invite new memebrs , enter their logins or email addresses. If email owner doesn't have account in application ,
+    he will be invited to create one.
+  </p>
+  <p>
+    While editing group , you can also mark one members as group administrator. Group administrator can set other users
+    as group admins, edit kids accounts and invite or kick users from group
+    <br>It's not possible to remove last administrator
+  </p>
+  <h4 class="help-title underlined" id="users-group-kid">Kid account</h4>
+  <p>
+    After creating group, as it's administrator you can create kid account, after clicking
+    <button mat-stroked-button class="help-btn">
+      <i class="fa fa-plus"></i><i class="fa fa-child"></i>
+      {{'user.group.add.kid.text'|translate}}
+    </button>
+    option from group menu
+    <br>
+    Kid account is a special account type to which you cannot sign in ( and it doesn't has email assigned to it)
+    <br>When creating kid account, defin name, surname and choose unique login ( application will check if it's
+    unique).Set up avatar ( which is optional ) and it's ready
+  </p>
+  <p>
+    After creation, you can edit it by clicking
+    <button mat-stroked-button class="help-btn">
+      <i class="fa fa-pencil"></i>
+    </button>
+    button in kids row
+  </p>
+  <h4 class="help-title underlined" id="users-group-leave">Leaving group</h4>
+  <p>
+    If you wan to leave group, click
+    <button mat-stroked-button class="help-btn">
+      <i class="fa fa-1_5x fa-sign-out"></i>
+      {{'user.group.leave.text'|translate}}
+    </button>
+    button.
+    When group admin is leaving group, and there is at least one group member ( which is not a kid ), the account will
+    be automatically granted group admin
+    In case when there are no valid accounts , group will be removed permamently
+  </p>
+</div>
+
+<!--LISTS-->
+<div>
+  <h3 class="underlined help-title" id="list">
+    <i class="fa fa-fw fa-gift"></i>
+    Gifts wish list
+  </h3>
+  <p>
+    Main screen with your gifts wish lists, shown just after loggin in<br>
+    In here are all gifts added by you ( or your group members) , with description, links, search engines and gifts
+    action<br>
+    From this screen you can also switch to other user who is in one of your groups, and view or claim gift from
+    his/hers list.
+  </p>
+  <p>To switch to other user select it from drop down list next to your avatar</p>
+  <mat-card class="help-example-blue-bg">
+    <mat-card fxLayout="row wrap" fxLayoutGap="10px">
+      <div fxFlex="5" fxFlex.lt-sm="15">
+        <img matCardAvatar [src]="user.avatar" class="avatar">
+      </div>
+      <div fxFlex="80" fxFlex.lt-sm="60">
+        <mat-form-field class="pr-2 mat-form-field-full-width" appearance="standard" style="margin-top: -20px;">
+          <mat-select required [value]="user">
+            <!--<input matInput (keyup)="_filter($event.target.value)" placeholder="Filter">-->
+            <mat-option *ngFor="let account of [user]" [value]="account">
+                        <span matSuffix>
+                            <avatar [avatar]="account.avatar" classes="avatar small v-middle mr-1"></avatar>
+                        </span>
+              <span [innerHTML]="account.fullname + '(' + account.username + ')'"></span>
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div fxFlex="10">
+        <button class="header-button success-button" mat-flat-button>
+          <mat-icon>add</mat-icon>
+          <span fxShow.lt-sm="false">{{'gift.new.add'|translate}}</span>
+        </button>
+      </div>
+    </mat-card>
+  </mat-card>
+  <p>
+    More information about adding in <a class="help-cursor" routerLink="." fragment="gift-add">Adding gift</a>
+  </p>
+  <p>
+    Gifts are grouped in categories and sorted by dates. Newest gifts is alwyas on top, older at the bottom. Each row
+    contains information about name, description, links and selected search engines for it.
+    <br><br>Gift which was claimed, is colored in orange with information who claimed visible on mouse hover
+    <br>(gift owner won't see this information
+    <br><br>Claimed gifts are additionally at the bottom of theirs category
+  </p>
+  <p>
+    Sample look of gift list
+  </p>
+  <mat-card class="help-example-blue-bg">
+    <mat-expansion-panel expanded="true">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <span class="font-larger font-weight-bold">{{gift.category.name}}</span>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div>
+        <gift [gift]="gift"
+              [even]="false"
+              [canEdit]="true"></gift>
+        <gift [gift]="gift_claimed"
+              [even]="false"
+              [canEdit]="true"></gift>
+      </div>
+    </mat-expansion-panel>
+    <mat-expansion-panel expanded="true">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <span class="font-larger font-weight-bold">{{'gift.category.realised'|translate}}</span>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div>
+        <gift [gift]="gift_realized"
+              [even]="false"
+              [canEdit]="true"></gift>
+      </div>
+    </mat-expansion-panel>
+  </mat-card>
+  <!--GIFTS ADD-->
+  <h4 id="gift-add" class="help-title underlined">Adding gifts</h4>
+  <p>
+    Basing application functionality is adding gifts to your wish list. Apart from that any group member can add each
+    other gifts to theirs list
+    <br>
+    After creating account there are no gifts. They can be added by clicking
+    <button class="header-button success-button" mat-flat-button>
+      <mat-icon>add</mat-icon>
+    </button>
+    button. <br>
+    When creating new gift , only field <strong>name</strong> is mandatory<br>
+    Creating name of gift, try to make it a keyword, as it will be used in search engines.
+    <br><br>Other fields are optional , but very helpfull.<br><br>It's also good to add gift to one of categories ( or
+    create new one ) and choose search engine
+  </p>
+  <h4 id="gift-properties" class="help-title underlined">Gift properties</h4>
+  <help-list name="Name">
+    Short gift name. It will be used by search engines as keyword
+  </help-list>
+  <help-list name="Description">
+    Gift description, where we can describe what kind of ift, color etc.
+  </help-list>
+  <help-list name="Links" icon="fa-link">
+    Links to pages with gift. To add more links , click
+    <button mat-stroked-button>
+      <mat-icon>add</mat-icon>
+    </button>
+    button
+  </help-list>
+  <help-list name="Category" icon="fa-archive">
+    Gift category. All gifts in that category will be shown together in one tab.
+    You can choose one of categories,previously created by other users, or enter new one<br>
+    If no category is given , gift will be placed in "Other" category
+  </help-list>
+  <help-list name="Hidden gift" icon="fa-user-secret" id="gift-hidden">
+    Option available if we are on other users list.<br>When gift marked as hidden, it will be visible to all other users
+    but list owner.
+    User which added this gift , will be the only one who will be able to edit it, delete or mark as complete.
+  </help-list>
+  <help-list name="Search engines" icon="fa-search">
+    Which search engines will be available for this gift. A bit more information about search engines <a
+    routerLink="." fragment="gift-seach-engines">here</a>
+  </help-list>
+  <!--GIFTS ACTIONS-->
+  <h4 class="help-title underlined" id="gift-actions">Actions available on gifts</h4>
+  <p>
+    On gifts there are following actions available ( some options are not visible on other users lists)
+    <help-list name="Claim gift" icon="fa-hand-paper-o">
+      If gift is not yet claimed, you can claim it clicking this button, to notify other users that you want to realize
+      this gift.
+      In case we claimed gift, instead of this icon there will be this visible
+      <span class="fa-stack">
+          <i class="fa fa-times fa-stack-1x"></i>
+          <i class="fa fa-lg fa-hand-paper-o fa-stack-1x"></i>
+        </span>
+    </help-list>
+    <help-list name="Edit" icon="fa-pencil">
+      If we are author of gits, we can edit it here.
+    </help-list>
+    <help-list name="Mark as done" icon="fa-check-circle-o">
+      In case we are on our list ( or we are author of normal or hidden gift )we can mark gift as realized.It will be
+      then colored in gray and moved to "Realised" category .You can undo marking as done, by clicking action <i
+      class="fa fa-fw fa-lg fa-circle-o"></i> visible in same place
+    </help-list>
+    <help-list name="Remove" icon="fa-trash">
+      Removing gift. If somebody already have reservatiot on this gift, he/she will be notified by gift removal by email
+    </help-list>
+  </p>
+  <!--GIFTS FILTERING-->
+  <h4 class="help-title underlined" id="gift-filtering">Filtering gifts</h4>
+  <p>
+    It's possible to filter gifts based on theirs categories for currently shown user.<br>
+    To filter , click icon
+    <i class="fa fa-lg fa-filter clickable" matTooltip="{{'gift.category.filter'|translate}}"></i>
+    located in list header .<br>After clicking, extra select list will be shown , where you can choose one of existing
+    categories.
+    <br>If filter is active, icon will be changed to
+    <i class="fa fa-plus-circle filter-active"></i>
+    <i class="fa fa-lg fa-filter clickable" matTooltip="{{'gift.category.filter'|translate}}"></i><br>
+    To remove filtering , click
+    <mat-icon>clear</mat-icon>
+    button in filter category field.
+  </p>
+  <!--SEARCH ENGINES-->
+  <h4 class="help-title underlined" id="gift-seach-engines">Search engines</h4>
+  <p>Search engines are defined by application administrator. When search engine will be marked while creating/editing
+    gift, link to it will be then shown in gift row, next to any gifts links.
+    After clicking, in new window search result will be shown using gift name as keyword
+    <br> For example , if we use google search engine for gift with name "MY_NAME" , search result for
+    <br><u>https://www.google.com/search?q=MY_NAME</u> will be opened in new window.
+  </p>
+</div>
+<!--SETTINGS-->
+<div>
+  <mat-icon class="help-title-icon">settings</mat-icon>
+  <h3 class="help-title underlined" id="settings">Settings</h3>
+  <p>
+    Your account settings are located in menu under your avatar
+  </p>
+  <p>
+    On this screen you can add your unique avatar, change application display language and define if your list will be
+    publicly visible.
+  </p>
+  <h4 class="help-title underlined" id="settings-newsletter">Email notifications</h4>
+  <p>
+    To recieve email notifications with new and realised gifts you have to select to receive those. This setting will
+    also be used to notify of any claimed deleted gifts<br>
+    Newsletter will be sent every monday ( if there were any events concerning your account ) to email linked with your
+    account (given while registering or shared with facebook/google accounts)
+  </p>
+  <h4 class="help-title underlined" id="user-public">Public wish list</h4>
+  <p>
+    <span [innerHTML]="'user.settings.public.help'|translate"></span>
+    <br>
+    By clicking <span class="btn btn-default">
+            <i class="fa fa-link"></i></span>
+    next to your public link, it will be copied to clipboard
+  </p>
+  <h4 class="help-title underlined" id="user-delete">Deleting account</h4>
+  <p>You can permently remove your application account. This operation cannot be undone, all your gifts and claims will
+    be removed together with your account<br>
+    <strong>Remeber, this operation cannot be undone, so please use it with caution!</strong>
+  </p>
+</div>
+<!--MANAGE-->
+<div *ngIf="isAdmin">
+  <h3 class="help-title underlined" id="manage"><i class="fa fa-wrench"></i>Application management</h3>
+  <p>
+    Presuming that users will use application according to its assumptions, administrator jobs shoudn't be hard
+  </p>
+  <p>
+    Application administrator have an extra option in menu.
+    <br>Please remember to setup everything on first visit, or application might not work correctly
+  </p>
+  <h4 class="help-title underlined" id="manage-application">{{'app.manage.app.text'|translate}}</h4>
+  <help-list name="{{'app.manage.language'|translate}}" icon="fa-globe">
+    Define default application language. List will be automatically filled in according to all available languages
+    installed
+    <br>
+    To add new application language , there are couple steps needed. First translate cotnents of
+    <code>gifts-hub\gifts-app\src\main\resources\templates\XX\</code>
+    Add translations to <code>lang/messages_XX.properties</code> , and add portal translations <code>gifts-hub\gifts-web\src\assets\i18n\XX</code>
+    <br> After whole operation build application <code>mvn package</code> in main application directory, and replace
+    package on server
+  </help-list>
+  <help-list name="{{'app.manage.url.text'|translate}}" icon="fa-link">
+    Application link, which will be used to send email messages and other communications.
+    It's recommended to set this parameter on first visit
+  </help-list>
+  <help-list name="{{'app.manage.gift.age.text'|translate}}" icon="fa-clock-o">
+    {{'app.manage.gift.age.help'|translate}}
+  </help-list>
+  <help-list name="{{'user.sort.default'|translate}}" icon="fa-sort-amount-desc">
+    How users are sorted by default on user list view
+  </help-list>
+  <h4 class="help-title underlined" id="manage-search-engines">{{'app.manage.search.engine'|translate}}</h4>
+  <p>Here you can define all search engines, that users will be able to set on their gifts<br>
+    When defining new search engine, it's vitial to correctly set up all fields
+    <br>
+    <help-list name="{{'app.manage.search.name'|translate}}">
+      name that will be shown while creating new gift, and after hovering with mouse cursor over search engine icon
+    </help-list>
+    <help-list name="{{'app.manage.search.link'|translate}}">
+      search engine link. Name of gift will be pasted at the end of that link. Ussually the link is in format :
+      <code>http://google.com/search?q=</code><br>
+    </help-list>
+    <help-list name="{{'app.manage.search.icon.text'|translate}}">
+      <span [innerHTML]="'app.manage.search.icon.help'|translate"></span>
+    </help-list>
+  </p>
+  <h4 class="help-title underlined" id="manage-email">{{'app.manage.email.text'|translate}}</h4>
+  <p>
+    Base email server settings. Server will be used to send all basic communication emails to application users
+    <br>
+    After setting up and saving, validity of configuration will be validated automatically
+  </p>
+  <h4 class="help-title underlined" id="manage-admins">{{'app.manage.admin.text'|translate}}</h4>
+  <p>
+    Here listed are all application users. On this screen you can set up administrator privileges for whole application
+    <br>
+    To grant administrator privileges, click on
+    <button mat-stroked-button matTooltip="{{'app.manage.admin.add'|translate}}" class="help-btn">
+      <mat-icon>build</mat-icon>
+    </button> button or
+    <button mat-stroked-button matTooltip="{{'app.manage.admin.remove'|translate}}" class="help-btn">
+      <mat-icon>clear</mat-icon>
+    </button> to remove those privileges
+    <br>
+    If there is only one administrator, you cannot remove administrator privileges
+  </p>
+</div>
+<div>
+  <h3 class="underlined help-title" id="license">
+    License
+  </h3>
+  This application was created only be me , if you would like to change something , please notify me. I would love
+  to see it :)
+  <p>
+    All application is under GNU GPL License and uses some components under Apache License
+  </p>
+</div>

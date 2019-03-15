@@ -21,7 +21,12 @@ img.avatar.large {
 }
 
 .stylish {
-  font-family: 'Pacifico', cursive;
+  font-family: 'Kaushan Script', cursive;
+}
+.stylish-header{
+  font-family: 'Kalam', cursive;
+  font-weight: normal;
+  font-size: 1.3rem;
 }
 
 .even {
@@ -43,4 +48,21 @@ img.avatar.large {
 
 .full-page {
   height: 90vh;
+}
+
+.go-to-top-custom {
+  height: 40px;
+  width: 40px;
+  background-color: pink;
+  z-index: 999;
+  right: 5px;
+  bottom: 5px;
+  top:initial;
+  line-height: 20px;
+}
+
+@media (max-width: 768px) {
+  .go-top-button {
+    z-index: 999 !important;
+  }
 }
