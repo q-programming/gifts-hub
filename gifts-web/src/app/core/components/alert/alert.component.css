@@ -1,0 +1,78 @@
+/**
+Messages
+ */
+.alert {
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+    margin-bottom: 0 !important;
+    -webkit-box-shadow: 0 5px 11px 0 rgba(0, 0, 0, .6), 0 4px 15px 0 rgba(0, 0, 0, .5);
+    box-shadow: 0 5px 11px 0 rgba(0, 0, 0, .6), 0 4px 15px 0 rgba(0, 0, 0, .5);
+    border: 0;
+    -webkit-border-radius: .125rem;
+    border-radius: .125rem;
+}
+
+#message-container {
+    position: fixed;
+    z-index: 999999;
+    top: 60px;
+    /*bottom: 15px;*/
+    right: 12px
+}
+
+#message-container * {
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box
+}
+
+#message-container > div {
+    -webkit-box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .16), 0 2px 10px 0 rgba(0, 0, 0, .12);
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .16), 0 2px 10px 0 rgba(0, 0, 0, .12);
+    position: relative;
+    overflow: hidden;
+    margin: 0 0 6px;
+    padding: 15px 15px 15px 25px;
+    color: #fff;
+}
+
+#message-container > :hover {
+    -webkit-box-shadow: 0 8px 17px 0 rgba(0, 0, 0, .2), 0 6px 20px 0 rgba(0, 0, 0, .19);
+    box-shadow: 0 8px 17px 0 rgba(0, 0, 0, .2), 0 6px 20px 0 rgba(0, 0, 0, .19);
+    -o-transition: .5s;
+    -webkit-transition: .5s;
+    transition: .5s;
+    opacity: 1;
+    cursor: pointer
+}
+
+.message-text {
+    font-family: 'Kalam', cursive;
+    word-wrap: break-word
+}
+
+.message {
+    background-color: #010101
+}
+
+.message-success {
+    background-color: #43b05c;
+}
+
+.message-error {
+    background-color: #db2f2e;
+}
+
+.message-info {
+    background-color: #34b8e0;
+}
+
+.message-warning {
+    background-color: #f4ab27;
+}
+
+.message-undo {
+    color: #103444;
+    vertical-align: sub;
+    /*font-weight: bold;*/
+}

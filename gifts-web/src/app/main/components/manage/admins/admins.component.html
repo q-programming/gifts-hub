@@ -1,0 +1,35 @@
+<div fxLayout="row" fxLayoutAlign="center" class="mt-5">
+  <div fxFlex="80" fxFlex.lt-md="100">
+    <div fxLayout="column">
+      <div *ngFor="let user of users;let even=even" class="mt-2" [ngClass]="{even:even}" fxLayout="row">
+        <div fxFlex="10">
+          <avatar [avatar]="user.avatar" classes="avatar small v-middle mr-1"></avatar>
+        </div>
+        <div fxFlex="40" fxFlex.lt-sm="60">
+          <span *ngIf="user.admin">
+            <i class="fa fa-wrench" matTooltip="{{'user.administrator'|translate}}"></i>
+          </span>
+          {{user.fullname}} ({{user.username}})
+        </div>
+        <div fxFlex="40" fxFlex.lt-md="10">
+          <a href="mailto:{{user.email}}" *ngIf="user.email">
+            <mat-icon class="v-middle">email</mat-icon>
+            <span fxShow.lt-md="false">
+            {{user.email}}
+          </span>
+          </a>
+        </div>
+        <div fxFlex="5" class="text-right">
+          <button mat-stroked-button matTooltip="{{'app.manage.admin.add'|translate}}" *ngIf="!user.admin"
+                  (click)="addAdmin(user)">
+            <mat-icon>build</mat-icon>
+          </button>
+          <button mat-stroked-button matTooltip="{{'app.manage.admin.remove'|translate}}" (click)="removeAdmin(user)"
+                  *ngIf="user.admin && admins > 1">
+            <mat-icon>clear</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

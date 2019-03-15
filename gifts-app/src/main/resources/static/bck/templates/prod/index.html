@@ -1,0 +1,206 @@
+<!doctype html>
+<html>
+<head>
+    <title>Gifts hub</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="icon" type="image/png" href="favicon.ico"/>
+    <style type="text/css">
+        [ng\:cloak], [ng-cloak], .ng-cloak {
+            display: none !important;
+        }
+    </style>
+</head>
+<!--CSS-->
+<link rel="stylesheet" href="css/style.min.css"/>
+<link rel="stylesheet" href="webjars/bootstrap/3.3.7-1/css/bootstrap.css"/>
+<link rel="stylesheet" href="webjars/font-awesome/4.7.0/css/font-awesome.min.css"/>
+<link rel="stylesheet" href="webjars/angular-ui-select/0.19.6/select.min.css"/>
+<link rel="stylesheet" href="webjars/angular-tour/0.2.5/dist/angular-tour.css"/>
+<link href="https://fonts.googleapis.com/css?family=Pacifico" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+<!--BODY-->
+<body ng-app="app" ng-cloak="" class="ng-cloak">
+
+
+<!--NAVBAR-->
+<nav class="navbar theme navbar-fixed-top hidden-print" ng-controller="navigation" id="menu-nav">
+    <div class="container-fluid">
+        <!--MOBILE MENU-->
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#/"><img src="images/logo-white.png" width="40px" height="40px"/></a>
+            <span class="stylish brand pull-left" style="font-size: xx-large">Gifts hub</span>
+            <div id="navbar-mobile" ng-if="isMobile()">
+                <ul class="nav navbar-nav navbar-right nav-stacked">
+                    <li ng-if="!authenticated" ng-class="{active:tab('navigation')}" class="white">
+                        <a href="#/login">
+                            <i class="fa fa-2x fa-sign-in margin-top10"></i><br/>
+                            <span translate="menu.login"></span>
+                        </a>
+                    </li>
+                    <li ng-if="authenticated" ng-class="{active:tab('userlist')}" class="white">
+                        <a href="#/users" id="menu-users-mobile">
+                            <span>
+                                <i class="fa fa-2x fa-user"></i><br/>
+                            </span>
+                        </a>
+                    </li>
+                    <li ng-if="authenticated" ng-class="{active:tab('gift')}" class="white">
+                        <a href="#/list" id="menu-gifts-mobile">
+                            <span>
+                            <i class="fa fa-2x fa-gift"></i><br/>
+                            </span>
+                        </a>
+                    </li>
+                    <li ng-if="authenticated" class="white" ng-class="{active:tab('help')}">
+                        <a ng-href="#/help/{{principal.language}}" class="menu-help">
+                            <span>
+                                <i class="fa fa-2x fa-question-circle"></i><br/>
+                            </span>
+                        </a>
+                    </li>
+                    <li ng-if="authenticated" ng-class="{active:tab('settings')}" class="white">
+                        <a href="#/settings" id="menu-settings-mobile">
+                            <span>
+                                <i class="fa fa-2x fa-bars"></i><br/>
+                            </span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <!--DESKTOP MENU-->
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right" ng-if="!isMobile()">
+                <li ng-if="authenticated" ng-class="{active:tab('userlist')}" class="text-center side-menu">
+                    <a href="#/users" id="menu-users">
+                        <span>
+                            <i class="fa fa-gift"></i>
+                            <i class="fa fa-2x fa-user"></i><br/>
+                            <span translate="menu.users"></span>
+                        </span>
+                    </a>
+                </li>
+                <li ng-if="authenticated" ng-class="{active:tab('gift')}" class="text-center">
+                    <a href="#/list" id="menu-gifts">
+                        <span>
+                            <i class="fa fa-list"></i>&nbsp;
+                            <i class="fa fa-2x fa-gift"></i><br/>
+                            <span translate="menu.wishlist"></span>
+                        </span>
+                    </a>
+                </li>
+                <li ng-if="authenticated &amp;&amp; principal.role === 'ROLE_ADMIN'" ng-class="{active:tab('manage')}"
+                    class="text-center">
+                    <a href="#/manage">
+                        <span>
+                            <i class="fa fa-columns"></i>&nbsp;
+                            <i class="fa fa-2x fa-wrench"></i><br/>
+                            <span translate="menu.manage"></span>
+                        </span>
+                    </a>
+                </li>
+                <li ng-class="{active:tab('help')}" class="text-center">
+                    <a ng-href="#/help/{{principal.language}}" id="menu-help">
+                        <span>
+                            <i class="fa fa-2x fa-question-circle"></i><br/>
+                            <span translate="menu.help"></span>
+                        </span>
+                    </a>
+                </li>
+                <li ng-if="authenticated" uib-dropdown="" is-open="status.isopen" class="clickable" id="menu-settings">
+                    <a class="white nav-username" uib-dropdown-toggle="">
+                        {{principal.fullname}}<span class="caret"></span>
+                        <img ng-if="principal.avatar && principal.avatar !== 'NaN'" ng-src="{{principal.avatar}}"
+                             class="avatar nav-avatar"/>
+                        <img ng-if="!principal.avatar || principal.avatar ==='NaN'" src='images/avatar-placeholder.png'
+                             class="avatar nav-avatar"/>
+                    </a>
+                    <ul class="dropdown-menu" uib-dropdown-menu="" role="menu" aria-labelledby="single-button">
+                        <li ng-if="authenticated" ng-class="{active:tab('settings')}">
+                            <a href="#/settings">
+                                <i class="fa fa-cog"></i>&nbsp;<span
+                                    translate="menu.settings"></span>
+                            </a>
+                        </li>
+                        <li ng-if="authenticated">
+                            <a href="" ng-click="logout()">
+                                <i class="fa fa-power-off"></i>&nbsp;<span
+                                    translate="menu.logout"></span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li ng-if="!authenticated" ng-class="{active:tab('navigation')}">
+                    <a href="#/login">
+                        <i class="fa fa-2x fa-sign-in"></i><br/>
+                        <span translate="menu.login"></span>
+                    </a>
+                </li>
+                <li class="nav-avatar" ng-if="authenticated">
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="container-fluid">
+    <!--ALERTS-->
+    <div class="row alert-row" ng-controller="alert">
+        <div class="col-sm-10 col-md-11 col-md-offset-1 col-sm-offset-2">
+            <div ng-repeat="alert in alerts" ng-class="'alert alert-' + (alert.type || 'warning')">
+                <button class="close theme-close" ng-click="dismissAlert($index)">&times;</button>
+                <span ng-bind-html="alert.msg"></span>
+            </div>
+        </div>
+    </div>
+    <div class="row" id="main-ccontent">
+        <div class="col-sm-10 col-md-10 col-lg-offset-1 main">
+            <div ng-view="" class="container main-container">
+            </div>
+        </div>
+    </div>
+    <div ng-http-loader ttl="0.4" template="loader.tpl.html"></div>
+</div>
+<tour ng-if="principal && !principal.tourComplete" ng-controller="tour" ng-include="'tour/tourSteps.html'"
+      step="currentStep" nextLabel="{{'main.next'|translate}}">
+</tour>
+<div ng-if="principal && !principal.seenChangelog" ng-controller="changelog">
+</div>
+<back-to-top></back-to-top>
+<script id="tour/tour.tpl.html" type="text/ng-template">
+    <div class="tour-tip">
+        <span class="tour-arrow t-{{ ttPlacement }}" ng-hide="centered"></span>
+        <div class="tour-content-wrapper">
+            <p ng-bind-html="ttContent"></p>
+            <a ng-click="closeTour()" class="tour-close">&times;</a>
+            <div class="tour-button-wrapper">
+                <a ng-click="proceed()" ng-bind="ttNextLabel" class="btn btn-primary"></a>
+            </div>
+        </div>
+    </div>
+</script>
+<script type="text/ng-template" id="loader.tpl.html">
+    <div class="loader-backdrop animate">
+        <div class="loader-mid">
+            <div class="loader-div">
+                <div class="loader"></div>
+            </div>
+        </div>
+    </div>
+</script>
+<script src="webjars/jquery/1.11.1/jquery.min.js"></script>
+<script src="webjars/angularjs/1.6.4/angular.min.js"></script>
+<script src="webjars/angularjs/1.6.4/angular-animate.min.js"></script>
+<script src="webjars/angularjs/1.6.4/angular-cookies.min.js"></script>
+<script src="webjars/angularjs/1.6.4/angular-route.min.js"></script>
+<script src="webjars/angularjs/1.6.4/angular-resource.min.js"></script>
+<script src="webjars/angularjs/1.6.4/angular-sanitize.min.js"></script>
+<script src="webjars/angular-local-storage/0.5.2/dist/angular-local-storage.min.js"></script>
+<script src="webjars/angular-translate/2.13.1/angular-translate.min.js"></script>
+<script src="webjars/angular-translate-loader-url/2.13.1/angular-translate-loader-url.min.js"></script>
+<script src="webjars/github-com-alexk111-ngImgCrop/0.3.2/minified/ng-img-crop.js"></script>
+<script src="webjars/angular-ui-bootstrap/2.2.0/ui-bootstrap-tpls.min.js"></script>
+<script src="webjars/angular-ui-select/0.19.6/select.min.js"></script>
+<!--APP JS-->
+<script src="js/app.min.js?v081"></script>
+</body>
+</html>

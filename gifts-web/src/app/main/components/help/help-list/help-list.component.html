@@ -1,0 +1,8 @@
+<div fxLayout="row wrap" fxLayoutGap="20px" class="mt-2">
+  <div fxFlex="20" fxFlex.lt-sm="30" class="font-weight-bold">
+    <i *ngIf="icon" class="fa {{icon}} mr-1"></i>
+    {{name}}</div>
+  <div fxFlex>
+    <ng-content></ng-content>
+  </div>
+</div>

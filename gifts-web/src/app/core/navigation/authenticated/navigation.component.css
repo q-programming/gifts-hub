@@ -1,0 +1,45 @@
+.app-title {
+  font-size: 1.5rem;
+}
+
+.fixed-top {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 1030;
+}
+
+
+
+.nav-avatar {
+  margin-bottom: -10px;
+  margin-top: -10px;
+}
+
+.nav-menu {
+  padding: 19px;
+}
+
+
+
+.mat-toolbar-button {
+  padding: 12px 16px !important;
+}
+
+.nav-smaller {
+  font-size: 0.8rem;
+}
+
+.nav-caption {
+  margin-top: -20px;
+  text-align: center;
+  font-size: x-small;
+}
+
+
+@media (max-width: 598px) {
+  .nav-button {
+    margin-top: 10px;
+  }
+}

@@ -1,0 +1,402 @@
+{
+  "app": {
+    "manage": {
+      "url": {
+        "0": "Link aplikacji",
+        "get": "Pobierz link"
+      },
+      "0": "Zarządzanie aplikacją",
+      "email": {
+        "0": "Ustawienia e-mail",
+        "encoding": "Kodowanie e-maili",
+        "host": {
+          "0": "Adres url serwera SMTP",
+          "help": "Wprowadz adres url oraz port serwera SMTP"
+        },
+        "password": "Hasło",
+        "port": "Port",
+        "smtpauth": "Używaj autoryzacji SMTP",
+        "startttls": "Uzywaj enkrypcji TLS",
+        "username": {
+          "0": "Login",
+          "help": "Wprowadz login i hasło serwera SMTP"
+        },
+        "save": "Zapisz konfigurację e-mail",
+        "error": "Nie poprawna konfiguracja SMTP. Odpowiedź z serwera:",
+        "from": "Email używany jako nadawca"
+      },
+      "gift": {
+        "age": {
+          "0": "Wiek prezentu",
+          "days": "dni",
+          "help": "Jak długo w dniach nowy prezent będzie oznaczony jako nowy. Po minięciu tych dni, będzie oznaczony poprostu jako prezent. Rezerwacja lub zrelizowanie prezentu nadpisuje ten status"
+        }
+      },
+      "language": "Domyślny język aplikacji",
+      "saved": "Ustawienia aplikacji zostały zapisane",
+      "search": {
+        "engine": "Silniki wyszukiwania",
+        "icon": {
+          "0": "Ikona wyszukiwarki",
+          "help": "Wstaw nazwe klasy z font awesome. Na przykład fa-google dla google. Po więcej informacji na temat dostępnych ikon, zobacz http:\/\/fontawesome.io\/"
+        },
+        "link": "Link wyszukiwarki",
+        "name": "Nazwa silnika wyszukiwania"
+      },
+      "setup": "Witaj w Gifts Hub. Jako administrator ustaw proszę podstawowe parametry aplikacji jak link, silniki wyszukiwania etc.",
+      "categories": {
+        "0": "Kategorie",
+        "count": "# U\\u017cy\\u0107",
+        "priority": {
+          "0": "Priorytet",
+          "save": "Aktualizuj priorytety",
+          "up": "Zwiększ",
+          "down": "Zmniejsz"
+        },
+        "removed": "Kategoria została usunięta",
+        "updated": "Kategoria zaktualizowana"
+      },
+      "admin": {
+        "add": "Nadaj uprawnienia administratora",
+        "remove": "Usuń uprawnienia administratora",
+        "added": "Administrator aplikacji został dodany",
+        "removed": "Usunięto prawa administratora aplikacji uzytkownikowi"
+      }
+    }
+  },
+  "error": {
+    "edit": {
+      "gift": "Nie możesz edytować nie swojego prezentu"
+    },
+    "general": "Coś poszło nie tak",
+    "page": {
+      "notfound": "Nie znaleziono strony"
+    },
+    "fileIO": "Bład podczas czytania pliku {0}",
+    "lastAdmin": "Nie można usunąc ostatniego administratora aplikacji"
+  },
+  "gift": {
+    "0": "Prezent",
+    "add": {
+      "date": "Dodano"
+    },
+    "category": {
+      "0": "Kategoria",
+      "other": "Inne",
+      "realised": "Zrealizowane",
+      "choose": "Wybierz kategorię lub stwórz nową...",
+      "prohibited": "Kategoria <strong>{0}<\/strong> nie jest dozwolona, proszę wybrać inną",
+      "filter": {
+        "0": "Filtruj po kategorii",
+        "choose": "Wybierz kategorię do filtrowania"
+      }
+    },
+    "claim": {
+      "0": "Zarezerwuj prezent",
+      "same": "Nie możesz zarezerwować własnego prezentu",
+      "success": "Zarezerwowano prezent {0}"
+    },
+    "complete": {
+      "0": "Oznacz prezent jako zrealizowany",
+      "error": "Nie można oznaczyć jako zrealizowanego nie swojego prezentu",
+      "success": "Prezent {0} został oznaczony jako zrealizowany",
+      "undo": {
+        "0": "Cofnij oznaczenie zrealizowanego prezentu",
+        "success": "Cofnięto oznaczenie zrealizowanego prezentu"
+      }
+    },
+    "create": "Stwórz prezent",
+    "delete": {
+      "0": "Usuń prezent",
+      "confirm": "Jesteś pewień, że chcesz usunąć ten prezent?",
+      "error": "Nie można usunąc nie swojego prezentu, lub nie masz wystarczająco uprawnień aby to zrobić",
+      "success": "Usunięto prezent {0}"
+    },
+    "description": "Opis",
+    "edit": {
+      "0": "Edytuj prezent",
+      "success": "Prezent został zaktualizowany"
+    },
+    "link": {
+      "0": "Linki",
+      "error": "Zły format adresu url. Proszę użyć pełnego adresu wraz z http:\/\/",
+      "add": "Dodaj więcej linków",
+      "remove": "Usuń link"
+    },
+    "list": {
+      "0": "Lista życzeń  użytkownika",
+      "short": "Lista życzeń",
+      "mine": "Moja list życzeń",
+      "public": {
+        "error": "Szukana lista nie jest publiczna"
+      }
+    },
+    "gift": "prezent",
+    "gifts": "prez.",
+    "name": "Nazwa",
+    "new": {
+      "add": "Dodaj nowy",
+      "added": "Nowy prezent został dodany do listy życzeń"
+    },
+    "search": {
+      "0": "Szukaj z",
+      "help": "Wybierz które wyszukiwarki mają być wyświetlone obok tego prezętu. Wszyscy będą mogli szybko wyszukać ten prezent, klikając na ikonę"
+    },
+    "status": {
+      "claimed": "Prezent zarezerwowany",
+      "new": "Nowy prezent",
+      "realised": "Prezent zrealizowany"
+    },
+    "unclaim": {
+      "0": "Usuń rezerwację",
+      "error": "Nie można usunąć rezerwacji z prezentu, który nie był wcześniej zarezerwowany.",
+      "success": "Usunięto rezerwację z prezentu {0}"
+    },
+    "share": {
+      "0": "Podziel się listą prezentów",
+      "help": "Podziel się swoją listą życzeń przez email. Wprowadz adresy e-mail wszystkich odbiorców, rodzielonych średnikami (;). Wszyscy otrzymąją publiczny link do twojej listy życzeń.",
+      "subject": "{0} podzielił się z Tobą swoją listą życzeń",
+      "success": "Wiadomość z publicznym linkiem została wysłana do poprawnych odbiorców: {0}"
+    },
+    "import": {
+      "0": "Importuj prezenty",
+      "chooseFile": "Proszę wybrać plik",
+      "importFile": "Importuj",
+      "wrongType": "Wybrany plik nie był poprawnym plikiem excel",
+      "nameEmpty": "<strong>[Wiersz {0}]<\/strong> Nazwa prezentu nie może być pusta w komórce <strong>{1}<\/strong>. Wiersz pominięty",
+      "wrongLink": "<strong>[Wiersz {0}]<\/strong> Nie poprawny format linku w komórce <strong>{1}<\/strong>. Użyto pustej wartości",
+      "category": {
+        "prohibited": "<strong>[Wiersz {0}]<\/strong> Kategoria <strong>{1}<\/strong> nie jest dozwolona. Użyto pustej wartości"
+      },
+      "added": "<strong>[Wiersz {0}]<\/strong> Prezent <strong>{1}<\/strong> dodany",
+      "template": "Pobierz szablon tutaj",
+      "done": "Import zakończony. Poniżej logi z operacji"
+    }
+  },
+  "main": {
+    "action": "Akcje",
+    "cancel": "Anuluj",
+    "confirm": {
+      "0": "Potwierdź",
+      "no": "Nie",
+      "sure": "Jesteś pewien?",
+      "yes": "Tak"
+    },
+    "close": "Zamknij",
+    "create": "Stwórz",
+    "delete": {
+      "0": "Usuń",
+      "confirm": "Jesteś pewień, że chcesz usunąć?"
+    },
+    "edit": "Edytuj",
+    "here": "Tutaj",
+    "language": {
+      "name": "Polski"
+    },
+    "save": "Zapisz",
+    "test": "Testujemy PL",
+    "next": "Dalej"
+  },
+  "menu": {
+    "login": "Zaloguj",
+    "logout": "Wyloguj",
+    "manage": "Zarządzaj",
+    "settings": "Ustawienia",
+    "users": "Użytkownicy",
+    "wishlist": "Lista życzeń",
+    "help": "Pomoc"
+  },
+  "user": {
+    "delete": {
+      "0": "Usuń swoje konto",
+      "confirm": "Jesteś pewień, że chcesz usunąc swoje konto? Tej operacji nie można cofnąć. Wszystkie twoje prezenty i rezerwację zostaną usunięte wraz z twoim kontem",
+      "error": "Nie możesz usunąć innego konta, które nie jest dzieckiem z twojej rodziny",
+      "help": "Permametnie usuń swoje konto z aplikacji. Tej operacji nie da się cofnąć, wszystkie twoje prezenty i rezerwacje zostaną usunięte wraz z twoim kontem",
+      "success": "Twoje konto zostało usunięte. Szkoda :("
+    },
+    "email": "E-mail",
+    "family": {
+      "0": "Rodzina",
+      "add": {
+        "kid": {
+          "0": "Dodaj dziecko",
+          "error": "Proszę najpierw stworzyć rodzinę",
+          "help": "Dodaj konto typu dziecko. To specjalny rodzaj konta, na które nie można się zalogować. Tylko administrator rodziny może edytować i dodawać prezenty dla tego konta",
+          "success": "Nowe dziecko zostało dodane do twojej rodziny"
+        }
+      },
+      "admin": {
+        "error": "Aby wykonać tą operację musisz być administratorem rodziny",
+        "0": "Administrator rodziny {0}"
+      },
+      "administrator": "Administrator rodziny",
+      "leave": {
+        "0": "Opuść rodzinę",
+        "confirm": "Czy jesteś pewien, że chcesz opuścić twoją obecną rodzinę? Aby dołaczyć do niej ponownie, będziesz musiał poprosić jej administratora aby Cię zaprosił."
+      },
+      "admins": "Administratorzy",
+      "create": {
+        "0": "Stwórz rodzinę",
+        "admin": {
+          "help": "Dodaj administratorów sposród członków rodziny. Domyślnie twórca rodziny jest oznaczany jako administrator"
+        },
+        "help": "Stwórz swoją rodzinę. Dodaj do niej użytkowników, którzy mają już konto w aplikacji. Można należeć tylko do jednej rodziny.",
+        "success": {
+          "0": "Nowa rodzina została utworzona",
+          "invites": "Nowa rodzina została utworzona. Wiadomości e-mail z linkiem potwierdzającym zostały wysłane do zaproszonych użytkowników"
+        }
+      },
+      "delete": {
+        "error": "Nie możesz usunąć konta dziecka ponieważ nie jesteś administratorem rodziny",
+        "kid": {
+          "0": "Usuń konto dziecka",
+          "confirm": "Jesteś pewień, że chcesz usunąć to konto dziecka? Operacja jest nie odwracalna i wraz z kontem zostaną usunięte wszystkie prezenty oraz rezerwacje na nich",
+          "success": "Konto dziecka zostało usunięte"
+        }
+      },
+      "edit": {
+        "0": "Edytuj rodzinę",
+        "help": "Edytuj członków rodziny. Dodaj lub usuń użytkowników, którzy mają już konto w aplikacji.",
+        "kid": {
+          "0": "Edytuj dziecko",
+          "success": "Dane dziecka zostały zaktualizowane"
+        },
+        "success": {
+          "0": "Rodzina została zaktualizowana",
+          "invites": "Rodzina została zaktualizowana. Wiadomości e-mail z linkiem potwierdzającym zostały wysłane do zaproszonych użytkowników"
+        }
+      },
+      "exists": {
+        "error": "Należysz już do jednej rodziny i nie możesz stworzyć nowej."
+      },
+      "kid": "Dziecko",
+      "members": "Członkowie",
+      "name": "Nazwa rodziny",
+      "other": "Inni",
+      "select": {
+        "0": "Wybierz użytkowników",
+        "other": "Wybierz innego członka rodziny"
+      },
+      "invite": {
+        "0": "Zaproszenie do rodziny {0}",
+        "mailError": "Wystąpił bład poczas wysyłania zaproszenia. Proszę skontaktować się z administratorem."
+      },
+      "left": "Opuściłeś rodzinę"
+    },
+    "confirm": {
+      "family": {
+        "success": "Dołączyłeś do rodziny {0}",
+        "admin": {
+          "success": "Zostałeś administratorem rodziny {0}"
+        },
+        "exists": "Należysz już do rodziny {0} i nie możesz dołączyć do innej"
+      },
+      "token": {
+        "tryagain": "Zaloguj się i spróbuj proszę jeszcze raz",
+        "error": {
+          "missing": "Zły lub brakujący token"
+        },
+        "errro": {
+          "time": "Token wygasł"
+        }
+      }
+    },
+    "firstname": "Imię",
+    "fullname": "Imię i nazwisko",
+    "list": "Lista użytkowników",
+    "login": {
+      "existing": "Już posiadasz konto? Kliknij Tutaj aby się zalogować",
+      "facebook": "Zaloguj się z Facebook'iem",
+      "failed": "Wystąpił błąd podczas logowania. Proszę sprobować ponownie",
+      "google": "Zaloguj się z Google+",
+      "newhere": "Nowy użytkownik? Zarejestruj się",
+      "remember": "Zapamiętaj mnie"
+    },
+    "password": "Hasło",
+    "register": {
+      "0": "Zarejestruj",
+      "alreadyexists": "już istnieje. Proszę użyć innego",
+      "email": {
+        "exists": "Użytkownik z emailem",
+        "invalid": "Niepoprawny adres e-mail"
+      },
+      "errors": "Wystąpiły błędy podczas próby rejestracji:",
+      "failed": "Wystąpił bład poczas rejestracji. Proszę sprobować ponownie",
+      "password": {
+        "confirm": "Potwierdź hasło",
+        "nomatch": "Hasła się nie zgadzają",
+        "tooweak": "Zbyt słabe hasło. Powinno być długie na 8 znaków i składać się z kombinacji małych i dużych liter oraz cyfr"
+      },
+      "success": "<strong>Zarejestrowana się pomyślnie<\/strong> Prozę sprawdzć e-mail aby potwierdzić Twoje konto",
+      "username": {
+        "exists": "Użytkownik z loginem",
+        "chars": "Proszę używać tylko małych dużych liter, cyfr i lub podkreślenia"
+      }
+    },
+    "settings": {
+      "avatar": {
+        "0": "Awatar",
+        "save": "Zapisz awatar",
+        "success": "Awatar został zmnienony",
+        "upload": "Wybierz plik",
+        "wronguser": "Bład podczas zmiany awatara. Złe zapytanie"
+      },
+      "language": "Język",
+      "public": {
+        "0": "Publiczna lista życzeń",
+        "copy": {
+          "0": "Kopiuj link publiczny",
+          "success": "Link został skopiowany do schowka"
+        },
+        "help": "Jeżeli lista życzeń zostanie oznaczona jako publiczna, osoba posiadająca link do twojej listy, będzie mogła ją ogladać bez potrzeby logowania się. Anonimowi użytkownicy nie będą jednak widzieć rezerwacji, ani móc zarezerwować prezent"
+      },
+      "updated": {
+        "0": "Ustawienia zostały pomyślnie zmienione",
+        "error": "Zmiana nie powiodła się"
+      },
+      "newsletter": {
+        "0": "Otrzymuj newsletter",
+        "help": "Zaznacz aby otrzymywać powiadomienia email z informacjami o nowych lub zrealizowanych prezentach w aplikacji. Newsletter będzie wysyłany w każdy poniedziałek o ile wystąpiły jakieś wydarzenia"
+      }
+    },
+    "sort": {
+      "default": "Domyślne sortowanie",
+      "family": "Pokazuj zgrupowane po rodzinach",
+      "name": "Pokazuj sortowane po nazwiskach i imionach"
+    },
+    "surname": "Nazwisko",
+    "username": "Login",
+    "administrator": "Administrator aplikacji"
+  },
+  "tour": {
+    "step": {
+      "1": "Witaj w Gifts Hub <\/br> Miejsce gdzie możesz podzielić się swoją listą życzeń z przyjaciółmi i rodziną<\/br>Ten krótki przewodnik pokaże Ci główne funkcje aplikacji i pokaże jak dodać i dzielić się listą.",
+      "2": "<strong>Lista życzeń<\/strong><\/br>Tutaj jest twoja lista życzeń, strona gdzie możesz dodawać, przeglądać i edytować swoją listę.",
+      "3": "Aby dodać nowy prezent kliknij przycisk <span class=\"btn btn-success\"><i class=\"fa fa-plus\"><\/i>Dodaj nowy<\/span> na ekranie listy życzeń.<\/br><\/br>W przypadku kiedy jesteś administratorem rodziny, możesz dodawać prezenty na liscie życzeń innych członków rodziny",
+      "4": "Tworząc nowy prezent, wymagane jest tylko pole <strong>nazwa<\/strong>.<\/br>Postaraj się aby tworząc nowy prezent nazwa była jednoczesnie słowem kluczem, które może być użyte przez wyszukiwarki.<\/br><\/br>Reszta pól jest opcjonalna , ale mile widziana.<\/br><\/br>Nowo tworzony prezent dobrze jest dodać do kategorii , oraz oznaczyć które silniki wyszukiwania będą uzywane<\/br><\/br><strong>Stwórz proszę teraz dowolny prezent (bez obaw można go potem usunąć), aby tutorial miał jak Ci za chwilę pokazać więcej informacji na temat prezentów.<\/strong>",
+      "5": "Możliwe jest też zaimportowanie wielu prezentów na raz klikająć na przycisk <span class=\"btn btn-success\"><i class=\"fa fa-upload\"><\/i><\/span>",
+      "6": "Wybierz wcześniej wypełniony plik excel ( używając szablonu który może być pobrany ), i kliknij importuj.<\/br><\/br>Wszystkie poprawnie zdefiniowane prezenty w pliku zostaną zaimportowane dla obecnego użytkownika<\/br>(lub członka rodziny którego prezenty w danej chwili przeglądaliśmy)",
+      "7": "Wszystkie prezenty są pogrupowane w kategorie i sortowane po dacie. Nowe prezenty na samej górze, stare na dole.<\/br><\/br>Zarezerwowane prezenty są dodatkowo zaznaczone na pomarańczowo z informacją kto zarezerwował po najechaniu kursorem na ikone rezerwacji( właściciel prezentu nie będzie widział rezerwacji ). Zarezerwowane prezenty będą wyświetlany jako ostatnie w danej kategori.",
+      "8": "<strong>Link prezentu<\/strong><\/br>Jeżeli link został podany podczas tworzenia prezentu, można otworzyć go klikająć na niego",
+      "9": "<strong>Akcje<\/strong><\/br>Tutaj dostępne są różne akcje dotyczące danego prezentu. Zależnie czy jesteśmy na swojej czy czyjejś liście prezentów, będziemy mieć dostępne różne akcje.<\/br><\/br><i class=\"fa fa-fw fa-lg fa-check-circle-o\"><\/i> - Oznacz przent jako już zrealizowany<\/br><i class=\"fa fa-fw fa-lg fa-pencil\"><\/i> - Edytuj prezent<\/br><i class=\"fa fa-fw fa-lg fa-trash\"><\/i> - Usuń prezent<\/br><i class=\"fa fa-fw fa-lg fa-hand-paper-o\"><\/i> - zarezerwuj prezent(lub usuń rezerwację)",
+      "filter": "<strong>Filtrowanie<\/strong><br>Kliknij aby filtrować po kategorii<br>Po kliknięciu, dodatkowe pole wyboru zostanie pokazane, gdzie można wybrać jedną z istniejących kategorii<br>Kiedy aktywny jest filtr, ikona zostanie zmieniona na <i class=\"fa fa-plus-circle filter-active\"><\/i><i class=\"fa fa-lg fa-filter clickable\"><\/i>",
+      "10": "<strong>Użytkownik<\/strong><\/br>Tutaj wyświetlany jest użytkownik, którego prezenty oglądamy. Jeżeli należy on do rodziny, można szybko wybrać innych członków tej rodziny.",
+      "11": "<strong>Lista użytkowników<\/strong><\/br>Lista wszystkich użytkowników aplikacji.",
+      "12": "<strong>Sortowanie<\/strong><\/br>Jak uzytkownicy są sortowani - alfabetycznie, lub pogrupowani w rodziny.<\/br><\/br>Domyślne sortowanie może być ustawione przez administratora aplikacji.",
+      "13": "<strong>Stwórz edytuj rodzinę<\/strong><\/br>Jedną z podstawowych ideii aplikacji, to grupowanie użytkowników w rodziny.<\/br>Dzięki posiadaniu rodziny szybciej możemy przeglądać prezenty, oraz łatwiej zarządzać prezentami innych członków rodziny.",
+      "14": "Tworząć nową rodzinę, możesz ją niestandardowo nazwać (domyślnie to nazwisko osoby tworzącej rodzinę) , oraz dodać członków spośród wszystkich użytkowników aplikacji, którzy jeszcze nie należą do rodziny.<\/br><\/br>Można też zdefiniować administratora rodziny.<\/br>Będzie to osoba, która może dodawać\/edytować\/usuwać prezenty od każego z członków rodziny",
+      "15": "Kiedy będziemy już posiadać rodzinę, możemy stworzyć konto dziecka klikają przycisk <span class=\"btn btn-success btn-sm \"><i class=\"fa fa-plus\"><\/i><i class=\"fa fa-child\"><\/i>&nbsp;Dodaj dziecko<\/span>",
+      "16": "Konto dziecka to specjalny rodzaj konta, na które nie można się zalogować. Tylko administrator rodziny może edytować i dodawać prezenty dla tego konta.<\/br><\/br>Dodająć konto koniecznie określ imię, nazwisko i unikalny login (aplikacja sprawdzi czy jest wolny) oraz opcjonalnie awatar.",
+      "17": "<strong>Ustawienia konta<\/strong><\/br>Ustawienia twojego konta są w menu pod twoimi awatarem",
+      "18": "Na tym ekranie możesz określić swój niestandardowy awatar, wybrać język w jakim ma być wyświetlana aplikacja i określić czy twoja lista będzie publiczna",
+      "19": "Więcej informacji zawsze możesz znaleść na stronie z pomocą. Tam też w razie czego możesz uruchomić jeszcze raz tutorial od samego początku",
+      "final": "To koniec tego krótkiego przewodnika. Mam nadzieje, że będzie Ci się miło używać aplikacji.<\/br><\/br>W przypadku błędów lub pomysłów możesz zawsze skontaktować się ze mną poprzez email:<\/br><a href=\"mailto:jakub.romaniszyn@gmail.com\">jakub.romaniszyn@gmail.com<\/a>",
+      "end": "Zakończ"
+    }
+  },
+  "schedule": {
+    "event": {
+      "summary": "Podsumowanie ostatniego tygodnia"
+    }
+  }
+}

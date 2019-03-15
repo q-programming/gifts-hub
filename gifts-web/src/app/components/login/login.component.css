@@ -1,0 +1,50 @@
+.username-form {
+  text-align: left;
+}
+
+
+.social-form {
+  border-right: 1px solid gray;
+  text-align: right;
+}
+
+@media (max-width: 768px) {
+  .social-form {
+    border-right: none;
+    border-bottom: 1px solid gray;
+    padding-bottom: 20px;
+    text-align: center;
+    padding-right:0 !important;
+  }
+  main {
+    margin-top: 5px;
+  }
+}
+
+.btn-social {
+  display: inline-block;
+  width: 250px;
+  border: thin solid #888;
+  box-shadow: 1px 1px 1px grey;
+  white-space: nowrap;
+  border-radius: 0;
+  padding: 5px 20px 5px 10px;
+  font-weight: bold;
+  text-align: left;
+}
+
+.btn-social img {
+  margin-right: 10px;
+  vertical-align: bottom;
+}
+
+
+.btn-social.facebook {
+  background-color: #4267b2 !important;
+  color: #fff !important;
+}
+
+.btn-social.google {
+  background: white;
+  color: #444;
+}

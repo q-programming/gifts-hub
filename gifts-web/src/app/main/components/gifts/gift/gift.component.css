@@ -1,0 +1,34 @@
+.fa-spacer {
+  color: transparent;
+}
+
+.gift-status {
+  font-size: xx-small;
+}
+
+.gift-realised {
+  color: gray;
+  text-decoration: line-through;
+}
+
+.gift-claimed {
+  color: #c58104cc;
+}
+
+.gift-claimed > .gift-status {
+  color: orange !important;
+}
+
+.new-gift {
+  color: green;
+}
+
+.action-button {
+  width: 25px !important;
+  height: 25px !important;
+  max-width: 25px!important;
+  line-height: initial !important;
+}
+.gift-tooltip{
+  white-space: pre-line;
+}

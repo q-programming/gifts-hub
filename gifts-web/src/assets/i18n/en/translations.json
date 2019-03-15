@@ -1,0 +1,518 @@
+{
+  "app": {
+    "general": {
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "return": "Return to home page",
+      "undo": "Undo",
+      "version": "version"
+    },
+    "help": {
+      "contents": "Contents:"
+    },
+    "manage": {
+      "admin": {
+        "add": "Add application administrator privileges",
+        "added": "Application administrator was successfully added",
+        "remove": "Remove administrator privileges",
+        "removed": "Users application administrator privileges were revoked",
+        "text": "Application administrators"
+      },
+      "app": {
+        "save": "Save settings",
+        "text": "Application settings"
+      },
+      "categories": {
+        "count": "# Used",
+        "priority": {
+          "0": "Priority",
+          "down": "Decrease",
+          "save": "Update priority",
+          "up": "Increase"
+        },
+        "removed": "Category was removed",
+        "text": "Categories",
+        "updated": "Category was updated"
+      },
+      "email": {
+        "encoding": "Email encoding",
+        "error": "Invalid SMTP configuration.<br>Error was : {{error}}",
+        "from": "Email used as sender",
+        "header": "Enter your mailing server details",
+        "host": {
+          "help": "Enter your SMTP server url address and port",
+          "text": "SMTP server url"
+        },
+        "password": "Password",
+        "port": "Port",
+        "save": "Save email configuration",
+        "smtpauth": "Use SMTP authorization",
+        "startttls": "Use TSL encryption",
+        "text": "Email settings",
+        "username": {
+          "help": "Input your SMTP server username and password",
+          "text": "Username"
+        }
+      },
+      "error": "There were errors while trying to save application settings",
+      "gift": {
+        "age": {
+          "days": "days",
+          "help": "How long in days, new gifts will be marked as new. After being older than set days, they will be marked as just gifts. Calming or realising gifts overrides this",
+          "text": "Gift age"
+        }
+      },
+      "language": "Default application language",
+      "saved": "Application settings were saved",
+      "search": {
+        "add": "Add new search engine",
+        "engine": "Search engines",
+        "icon": {
+          "help": "Input font awesome class name.<br>\nFor example fa-google for google icon.Fore more info about available fontawesome icons please go to \n<a href=\"https://fontawesome.com/v4.7.0/icons/\" target=\"_blank\">http://fontawesome.io/</a>",
+          "text": "Search icon"
+        },
+        "link": "Search link",
+        "name": "Search engine name",
+        "remove": "Remove search engine"
+      },
+      "setup": "Welcome to Gifts Hub. As application administrator, please setup application with basic parameters like page url, search engines etc.",
+      "text": "Application management",
+      "url": {
+        "get": "Get app link",
+        "text": "Application url"
+      }
+    }
+  },
+  "error": {
+    "403": "No permission to this resource",
+    "404": "4040 Gift not found",
+    "account": {
+      "notFound": "Account not found"
+    },
+    "api": {
+      "notfound": "Api call was made to not existing resource",
+      "unauthorized": "You are not authorised to execute that action"
+    },
+    "edit": {
+      "gift": "You cannot edit not your gift"
+    },
+    "email": {
+      "invalid": "Invalid e-mail address"
+    },
+    "fileIO": "Unable to read file {0}",
+    "general": "Something went wrong. Please check logs for more details",
+    "lastAdmin": "Unable to remove last application admin",
+    "page": {
+      "notfound": "Page was not found"
+    },
+    "required": "This is required field",
+    "text": "Oh no! Something went wrong",
+    "token": {
+      "expired": "Token expired",
+      "invalid": "Token is invalid"
+    }
+  },
+  "gift": {
+    "add": {
+      "date": "Added on",
+      "success": "New gift \"{{name}}\" was added to wish list"
+    },
+    "category": {
+      "choose": "Select category or add new one...",
+      "filter": {
+        "choose": "Select category to filter",
+        "clear": "Clear filtering per {{name}} category",
+        "filteringBy": "Filtering gifts by category \"{{name}}\"",
+        "notfound": "Category not found",
+        "text": "Filter by category"
+      },
+      "new": "New category (press enter to create)",
+      "other": "Other",
+      "prohibited": "Category <strong>{0}</strong> is not permitted, please choose other",
+      "realised": "Realised",
+      "text": "Category"
+    },
+    "claim": {
+      "error": "You cannot claim your gift",
+      "success": "Gift \"{{name}}\" has been clamed",
+      "text": "Claim gift"
+    },
+    "complete": {
+      "error": "Unable to complete not yours gift, or you don't have enough privileges to do so",
+      "success": "Gift \"{{name}}\" has been marked as realised",
+      "text": "Mark gift as realised",
+      "undo": {
+        "success": "Gift is no longer marked as realised",
+        "text": "Undo marking of realised gift"
+      }
+    },
+    "create": "Create gift",
+    "delete": {
+      "confirm": "Are you sure you want to delete this gift?",
+      "error": "Unable to delete not yours gift, or you don't have enough privileges to do so .",
+      "success": "Gift {{name}} was deleted",
+      "text": "Delete gift"
+    },
+    "description": "Description",
+    "edit": {
+      "success": "Gift successfully updated",
+      "text": "Edit gift"
+    },
+    "gift": "Gift",
+    "gifts": "gifts",
+    "hidden": {
+      "help": "If gift is added to group member whish list as hidden , it won't be visibile for that user<br>\n( but visible for all application users)",
+      "text": "Hidden gift"
+    },
+    "import": {
+      "0": "Import gifts",
+      "added": "<strong>[Row {0}]</strong> Gift <strong>{1}</strong> added",
+      "category": {
+        "prohibited": "<strong>[Row {0}]</strong> category <strong>{1}</strong> is not allowed.Empty used instead"
+      },
+      "chooseFile": "Please choose file",
+      "done": "Import done. Operation logs below",
+      "importFile": "Import",
+      "nameEmpty": "<strong>[Row {0}]</strong> Gift name cannot be empty in cell <strong>{1}</strong>. Row skipped",
+      "template": "Get template here",
+      "wrongLink": "<strong>[Row {0}]</strong> Link format was invalid in cell <strong>{1}</strong>.Empty used instead",
+      "wrongType": "Uploaded file was not valid excel file"
+    },
+    "link": {
+      "add": "Add more links",
+      "error": "Wrong url format. Please remember to use full address including http://",
+      "remove": "Remove link",
+      "text": "Links",
+      "url": "LInk URL"
+    },
+    "list": {
+      "0": "Gift list of",
+      "mine": "My wish list",
+      "public": {
+        "error": "User list is not public",
+        "text": "Public list"
+      },
+      "short": "Gift list"
+    },
+    "name": "Name",
+    "new": {
+      "add": "Add new",
+      "added": "New gift added to wish list"
+    },
+    "search": {
+      "help": "Select which search engines should be shown next to this gift.<br>Everyone will be able to quickly search using them by just clicking that icon",
+      "with": "Search with"
+    },
+    "share": {
+      "help": "Share your gift lists via email message. Input all emails recipients delimited with semicolon (;), which should receive your gift list public link.",
+      "subject": "{0} has shared his gift list with you",
+      "success": "Message with public link was sent to valid senders {{emails}}",
+      "text": "Share your gifts list"
+    },
+    "status": {
+      "claimed": "Claimed gift by",
+      "new": "New gift",
+      "realised": "Realised gift"
+    },
+    "text": "Gift",
+    "unclaim": {
+      "error": "You cannot remove claim on gift you have not previously claimed",
+      "success": "Claim on gift \"{{name}}\" was removed",
+      "text": "Remove claim"
+    }
+  },
+  "main": {
+    "action": "Actions",
+    "cancel": "Cancel",
+    "close": "Close",
+    "confirm": {
+      "0": "Confirm",
+      "no": "No",
+      "sure": "Are you sure?",
+      "yes": "Yes"
+    },
+    "create": "Create",
+    "delete": {
+      "0": "Delete",
+      "confirm": "Are you sure you want to delete?"
+    },
+    "edit": "Edit",
+    "here": "Here",
+    "language": {
+      "name": "English"
+    },
+    "next": "Next",
+    "save": "Save",
+    "test": "Testing EN"
+  },
+  "menu": {
+    "help": "Help",
+    "login": "Login",
+    "logout": "Logout",
+    "manage": "Manage",
+    "settings": "Settings",
+    "users": "Users",
+    "wishlist": "Wish list"
+  },
+  "schedule": {
+    "event": {
+      "summary": "Summary of last week"
+    }
+  },
+  "tour": {
+    "step": {
+      "1": "Welcome to GIfts Hub</br>Place where you can share your wish list with your friends and family</br>This short guide will show you basic functions of application and show you how to add gifts, families and share your list",
+      "10": "<strong>User</strong></br>Here user which gifts are currently shown. If that user is part of family, we can quickly switch to other family members.",
+      "11": "<strong>User list</strong></br>List of all application users.",
+      "12": "<strong>Sorting</strong></br>How users are sorted - alphabetical or grouped in families.</br></br>Default sorting can be set by application administrator",
+      "13": "<strong>Create/edit family</strong></br>One of main application functionalities is grouping users in families.</br>Thanks to this , we can browse gifts quicker and manage them faster by family administrators",
+      "14": "When creating family you can name it with custom name (if left empty , your surname will be used), and you can add other application users that are not yet part of family.</br></br>You can also designate family administrator, who will be able to add and edit other family members gifts list.",
+      "15": "After creating family we will be able to create kid account by clicking <span class=\"btn btn-success btn-sm \"><i class=\"fa fa-plus\"></i><i class=\"fa fa-child\"></i>&nbsp;Add kid</span> button",
+      "16": "Kid account is a special type of account, which cannot be logged into. Only family administrator will be able to add and edit gifts to this account.</br></br>While creating new kid account please set name and surname, unique login ( application will check if it is free) and optional avatar",
+      "17": "<strong>Account settings</strong></br>Your account settings are in menu under your avatar",
+      "18": "On this screen you can set your custom avatar, change application display language and define if your list can be public",
+      "19": "Most of information are on help page. There you can also reset tutorial and start it from beginning.",
+      "2": "<strong>Wish list</strong></br>Here is your wish list, page where you can add, browse and edit your list",
+      "3": "To add new gift, click <span class=\"btn btn-success\"><i class=\"fa fa-plus\"></i>Add new</span>button on wish list view</br></br>If you are family administrator, you can add gifts on wish list of other family members",
+      "4": "While creating new gift, only <strong>name</strong> field is required.</br>When adding gift, try to make it as a keyword, which will be used by search engines.</br></br>Other fields are optional but helpfull.</br></br>It's good to add new gift to category, and select which search engines will be visible for it</br></br><strong>Please create now new gift (do not worry , you can delete it afterwards), so that tutorial will be able to show you more information about gifts</strong>",
+      "5": "It is also possible to import many gifts at once. Start by clicking <span class=\"btn btn-success\"><i class=\"fa fa-upload\"></i></span> button",
+      "6": "Select previously filled in excel file (created based on downloaded template), and click Import</br></br>All valid gifts from file will be imported for current user</br>(or family member, which gifts were currently browsed)",
+      "7": "All gifts are grouped in categories and sorted by date. Newest gifts at top, old at the bottom.</br></br>Claimed gifts are additionally colored in orange with information who claimed on mouse over on claimed icon</br>(gift owner will not see this information).</br>Claimed gifts are shown at the bottom in their category",
+      "8": "<strong>Gift link</strong></br>If link was created during gift creation, you can open it from here",
+      "9": "<strong>Actions</strong></br>Here are all actions available for gift. Depending if you are on your list or other users list, different actions are available.</br></br><i class=\"fa fa-fw fa-lg fa-check-circle-o\"></i> - Mark gift as realised</br><i class=\"fa fa-fw fa-lg fa-pencil\"></i> - Edit gift</br><i class=\"fa fa-fw fa-lg fa-trash\"></i> - Delete gift</br><i class=\"fa fa-fw fa-lg fa-hand-paper-o\"></i> - claim gift ( or remove claim)",
+      "end": "End",
+      "filter": "<strong>Filtering</strong><br>Click here to filter by category.<br>When clicked, extra dropdown will be shown where you can either type or choose one of existing categories.<br>When there is active filter, icon will be changed to <i class=\"fa fa-plus-circle filter-active\"></i><i class=\"fa fa-lg fa-filter clickable\"></i>",
+      "final": "This concludes this short tutorial. <br>I hope that you will enjoy using this application.</br></br>In case of any bugs or ideas, You can always try to contact me under my email: </br><a href=\"mailto:jakub.romaniszyn@gmail.com\">jakub.romaniszyn@gmail.com</a>"
+    }
+  },
+  "user": {
+    "administrator": "Application administrator",
+    "confirm": {
+      "group": {
+        "admin": {
+          "success": "You have become administrator of family"
+        },
+        "exists": "You are already a member of family and cannot join other",
+        "success": "You have been successfully joined to group"
+      },
+      "token": {
+        "error": {
+          "missing": "Wrong or missing confirmation token",
+          "time": "Confirmation token has expired"
+        },
+        "tryagain": "Please login and try again"
+      }
+    },
+    "delete": {
+      "confirm": "Are you sure you want to delete your account?<br><u>This operation cannot be undone.</u><br>All your gifts, claims will be deleted together with your account.",
+      "error": "You cannot delete other accounts that are not kids from your family",
+      "help": "Permanently remove your account from application. Please note that this operation cannot be undone, and all your gifts, claims will be deleted together with your account.",
+      "success": "Your account was removed. Sorry to see you go :(",
+      "text": "Delete your account"
+    },
+    "email": "Email",
+    "firstname": {
+      "hint": "Enter your name",
+      "text": "Name"
+    },
+    "fullname": "Name and surname",
+    "group": {
+      "add": {
+        "kid": {
+          "error": "Please create group first",
+          "help": "Add new account of type kid. It is a special type of account, on which you cannot login. <br>\nOnly group administrator is able to edit and add gifts for that account",
+          "success": "New kid was added to your group",
+          "text": "Add kid"
+        }
+      },
+      "admin": {
+        "add": {
+          "success": "{{name}} was set as group administrator.<br>\nConfirm operation by clicking \"Edit group\".",
+          "text": "Set as group administrator"
+        },
+        "error": "You have to be grup admin to perform that operation",
+        "remove": {
+          "success": "{{name}} was removed from group administrator.<br>\nConfirm operation by clicking \"Edit group\".",
+          "text": "Remove group administrator rights from that group member"
+        },
+        "text": "Admin"
+      },
+      "administrator": "Group administrator",
+      "admins": "Administrators",
+      "create": {
+        "admin": {
+          "help": "Add group administrators from group members. By default creator of group is made administrator"
+        },
+        "error": "There were errors while trying to create new grup. Please contact application administrator and enclose browser log",
+        "help": "Create your group. Add users, who are already registered in application",
+        "success": {
+          "invites": "New group was created.<br>Emails with confirmation links were sent to invited application users",
+          "text": "New group was created"
+        },
+        "text": "Create group"
+      },
+      "delete": {
+        "error": "You cannot remove kid's account because you are not group administrator",
+        "kid": {
+          "confirm": "Are you sure you want to delete this kid's account? This operation cannot be undone and together with account all gifts and theirs reservation will be removed",
+          "success": "Kid's account has was removed",
+          "text": "Delete kid account"
+        }
+      },
+      "edit": {
+        "error": "There were errors while trying to update group. Please contact application administrator and enclose browser log",
+        "help": "Edit your group members. Add or remove existing application users.",
+        "kid": {
+          "success": "Kid data was updated",
+          "text": "Edit kid"
+        },
+        "success": {
+          "invites": "Group has been updated.<br>\nEmails with confirmation links were sent to invited application users",
+          "text": "Group has been updated"
+        },
+        "text": "Edit group"
+      },
+      "exists": {
+        "error": "You are already member of other family, and cannot create new one."
+      },
+      "invite": {
+        "mailError": "There was error while sending invite via e-mail. Please contact administration",
+        "new": "Invite new group member by email or their username",
+        "text": "Invite to group"
+      },
+      "kick": {
+        "success": "You have kicked out user {{name}} out of group.<br>\nConfirm operation by clicking \"Edit group\"",
+        "text": "Kick out user out of group"
+      },
+      "kid": "Kid",
+      "leave": {
+        "confirm": "Are you sure you want to leave your curent group?<br>In order to rejoin it , you will have to ask group administrator to invite you.",
+        "text": "Leave group"
+      },
+      "left": "You have left group",
+      "list": "Click to go to users wish list",
+      "members": "Members",
+      "name": "Group name",
+      "nogroups": "You don't have any groups yet.<br>\nAsk somebody to invite you to one, or create new one by cliking button in uper right corner",
+      "other": "Other",
+      "permision": {
+        "help": "Set up who can view your group's wish lists",
+        "text": "Permission"
+      },
+      "public": "Public wish list. Click to go to public URL",
+      "select": {
+        "notfound": "Searched user was not found",
+        "text": "Find other users"
+      },
+      "text": "Group"
+    },
+    "list": "User lists",
+    "login": {
+      "existing": "Already have account?",
+      "facebook": "Log in with Facebook",
+      "failed": "There was a problem logging in. Please try again.",
+      "google": "Sign in with Google",
+      "here": "here",
+      "register": {
+        "newhere": "New user? Register",
+        "social": "If you don't have account,<br>it will be automatically created for you"
+      },
+      "remember": "Remember me",
+      "text": "Login",
+      "using": {
+        "logpass": "Login using username and password",
+        "social": "Login using:"
+      },
+      "welcome": {
+        "sub": "Application to share gifts wish list with your family and friends",
+        "text": "Welcome to Gifts Hub"
+      }
+    },
+    "password": {
+      "change": {
+        "expired": "Password reset token has expired<br>\nPlease start reseting your password  from begining.",
+        "new": "New password",
+        "success": "Successfully changed your password.<br>\nYou can now login using your new password",
+        "text": "Change password",
+        "title": "You began proccess of reseting password<br>\nEnter your new password below"
+      },
+      "reset": {
+        "email": "Enter email address",
+        "emailhint": "Enter email address assosiated with your account. On it, you will recieve link to reset your password",
+        "error": {
+          "mailSrv": "There was error while sending reset link  via e-mail. Please contact administration"
+        },
+        "forgot": "Forgot your password? Click",
+        "sent": "If email was assosiated with account, you will recieve password reset instructions",
+        "text": "Reset password",
+        "title": "Forgot your password?<br>No worries - Just enter your email address below and press reset.<br>You will recieve reset link to your emal"
+      },
+      "text": "Password"
+    },
+    "register": {
+      "alreadyexists": "already exists. Please use another",
+      "confirmed": "Your account was confirmed. You can now sign in using your new account",
+      "email": {
+        "exists": "User with that email already exists",
+        "hint": "Enter e-mail address",
+        "invalid": "Not valid email",
+        "required": "E-mail address is required"
+      },
+      "errors": "There were errors while trying to register:",
+      "failed": "There was a problem registering. Please try again.",
+      "password": {
+        "confirm": "Confirm password",
+        "hint": "Password should be secure ( observe password strenght meter below) and should be at least 8 chars long",
+        "nomatch": "Passwords do not match",
+        "required": "Password is required",
+        "strength": "Password strenght",
+        "tooweak": "Password is too weak. It should be at least 8 chars long"
+      },
+      "progress": "Registration of new user",
+      "success": "<strong>Successfully registered.</strong> Please check your email for confirmation.",
+      "text": "Register",
+      "username": {
+        "chars": "Please use only small/large letters numbers and/or underscore",
+        "exists": "User with that username already exists"
+      }
+    },
+    "settings": {
+      "avatar": {
+        "change": "Change avatar",
+        "save": "Save avatar",
+        "success": "Avatar was successfully updated",
+        "text": "Avatar",
+        "upload": "Choose file",
+        "wronguser": "Error while uploading avatar. Wrong request"
+      },
+      "language": "Language",
+      "notifications": {
+        "help": "Select to receive email notifications with information about removed claimed gifts and what was added or marked as completed in application.<br>Newsletter will be sent every monday if there actually will be some events",
+        "recieve": "Receive email notifications",
+        "text": "Email notifications"
+      },
+      "public": {
+        "copy": {
+          "success": "Link has been copied to clipboard",
+          "text": "Copy public link"
+        },
+        "help": "When selected, anyone accessing your public url will be able to see gifts, without need of creating account.<br>Anonymous users however cannot see claimed status or claim gifts.",
+        "text": "Public wish list"
+      },
+      "updated": {
+        "error": "Failed to update user settings",
+        "success": "Settings successfully updated"
+      }
+    },
+    "sort": {
+      "default": "Default sorting",
+      "group": "Show grouped in groups",
+      "name": "Show sorted by surnames and names"
+    },
+    "surname": {
+      "hint": "Enter surname",
+      "text": "Surname"
+    },
+    "username": "Username"
+  }
+}

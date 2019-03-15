@@ -1,0 +1,518 @@
+{
+  "app": {
+    "general": {
+      "cancel": "Anuluj",
+      "delete": "Usuń",
+      "return": "Powróć na stronę główną",
+      "undo": "Cofnij",
+      "version": "wersja"
+    },
+    "help": {
+      "contents": "Spis treści:"
+    },
+    "manage": {
+      "admin": {
+        "add": "Nadaj uprawnienia administratora",
+        "added": "Administrator aplikacji został dodany",
+        "remove": "Usuń uprawnienia administratora",
+        "removed": "Usunięto prawa administratora aplikacji uzytkownikowi",
+        "text": "Administratorzy aplikacji"
+      },
+      "app": {
+        "save": "Zapisz ustawienia",
+        "text": "Ustawienia aplikacji"
+      },
+      "categories": {
+        "count": "# Użyć",
+        "priority": {
+          "0": "Priorytet",
+          "down": "Zmniejsz",
+          "save": "Aktualizuj priorytety",
+          "up": "Zwiększ"
+        },
+        "removed": "Kategoria została usunięta",
+        "text": "Kategorie",
+        "updated": "Kategoria zaktualizowana"
+      },
+      "email": {
+        "encoding": "Kodowanie e-maili",
+        "error": "Nie poprawna konfiguracja SMTP.<br>Bład: {{error}}",
+        "from": "Email używany jako nadawca",
+        "header": "Wprowadz ustawienia serwera pocztowego email",
+        "host": {
+          "help": "Wprowadz adres url oraz port serwera SMTP",
+          "text": "Adres url serwera SMTP"
+        },
+        "password": "Hasło",
+        "port": "Port",
+        "save": "Zapisz konfigurację e-mail",
+        "smtpauth": "Używaj autoryzacji SMTP",
+        "startttls": "Uzywaj enkrypcji TLS",
+        "text": "Ustawienia e-mail",
+        "username": {
+          "help": "Wprowadz login i hasło serwera SMTP",
+          "text": "Login"
+        }
+      },
+      "error": "Wystąpił bład podczas próby zapisania ustawień aplikacji",
+      "gift": {
+        "age": {
+          "days": "dni",
+          "help": "Jak długo w dniach nowy prezent będzie oznaczony jako nowy. Po minięciu tych dni, będzie oznaczony poprostu jako prezent. Rezerwacja lub zrelizowanie prezentu nadpisuje ten status",
+          "text": "Wiek prezentu"
+        }
+      },
+      "language": "Domyślny język aplikacji",
+      "saved": "Ustawienia aplikacji zostały zapisane",
+      "search": {
+        "add": "Dodaj nowy silnik wyszukiwania",
+        "engine": "Silniki wyszukiwania",
+        "icon": {
+          "help": "Wstaw nazwe klasy z font awesome.<br>\nNa przykład fa-google dla google. Po więcej informacji na temat dostępnych ikon, zobacz: \n<a href=\"https://fontawesome.com/v4.7.0/icons/\" target=\"_blank\">http://fontawesome.io/</a>",
+          "text": "Ikona wyszukiwarki"
+        },
+        "link": "Link wyszukiwarki",
+        "name": "Nazwa silnika wyszukiwania",
+        "remove": "Usuń silnik wyszukiwania"
+      },
+      "setup": "Witaj w Gifts Hub. Jako administrator ustaw proszę podstawowe parametry aplikacji jak link, silniki wyszukiwania etc.",
+      "text": "Zarządzanie aplikacją",
+      "url": {
+        "get": "Pobierz link",
+        "text": "Link aplikacji"
+      }
+    }
+  },
+  "error": {
+    "403": "Brak uprawnień do tego zasobu",
+    "404": "404 Prezent nie znaleziony",
+    "account": {
+      "notFound": "Nie znaleziono konta"
+    },
+    "api": {
+      "notfound": "Wykonano zapytanie API do nie istniejącego zasobu",
+      "unauthorized": "Brak wymagających uprawnień do wykonania akcji"
+    },
+    "edit": {
+      "gift": "Nie możesz edytować nie swojego prezentu"
+    },
+    "email": {
+      "invalid": "Niepoprawny adres e-mail"
+    },
+    "fileIO": "Bład podczas czytania pliku {0}",
+    "general": "Coś poszło nie tak",
+    "lastAdmin": "Nie można usunąc ostatniego administratora aplikacji",
+    "page": {
+      "notfound": "Nie znaleziono strony"
+    },
+    "required": "To pole jest wymagane",
+    "text": "Oh nie! Coś poszło nie tak",
+    "token": {
+      "expired": "Token wygasł",
+      "invalid": "Niepoprawny token"
+    }
+  },
+  "gift": {
+    "add": {
+      "date": "Dodano",
+      "success": "Nowy prezent \"{{name}}\" został dodany do listy życzeń"
+    },
+    "category": {
+      "choose": "Wybierz kategorię lub stwórz nową...",
+      "filter": {
+        "choose": "Wybierz kategorię do filtrowania",
+        "clear": "Wyczyść filtrowanie po kategorii {{name}}",
+        "filteringBy": "Filtrowanie po kategorii \"{{name}}\"",
+        "notfound": "Kategoria nie znaleziona",
+        "text": "Filtruj po kategorii"
+      },
+      "new": "Nowa kategoria ( naciśnij enter aby stworzyć)",
+      "other": "Inne",
+      "prohibited": "Kategoria <strong>{0}</strong> nie jest dozwolona, proszę wybrać inną",
+      "realised": "Zrealizowane",
+      "text": "Kategoria"
+    },
+    "claim": {
+      "error": "Nie możesz zarezerwować własnego prezentu",
+      "success": "Zarezerwowano prezent \"{{name}}\"",
+      "text": "Zarezerwuj prezent"
+    },
+    "complete": {
+      "error": "Nie można oznaczyć jako zrealizowanego nie swojego prezentu",
+      "success": "Prezent \"{{name}}\" został oznaczony jako zrealizowany",
+      "text": "Oznacz prezent jako zrealizowany",
+      "undo": {
+        "success": "Cofnięto oznaczenie zrealizowanego prezentu",
+        "text": "Cofnij oznaczenie zrealizowanego prezentu"
+      }
+    },
+    "create": "Stwórz prezent",
+    "delete": {
+      "confirm": "Jesteś pewień, że chcesz usunąć ten prezent?",
+      "error": "Nie można usunąc nie swojego prezentu, lub nie masz wystarczająco uprawnień aby to zrobić",
+      "success": "Usunięto prezent {{name}}",
+      "text": "Usuń prezent"
+    },
+    "description": "Opis",
+    "edit": {
+      "success": "Prezent został zaktualizowany",
+      "text": "Edytuj prezent"
+    },
+    "gift": "Prezent",
+    "gifts": "prez.",
+    "hidden": {
+      "help": "Kiedy prezent zostanie dodany do listy życzeń członkowi grupy jako ukryty, osoba której dodajemy ten prezent nie będzie go widzieć\n(ale wszyscy użytkownicy aplikacji go będą widzieć )",
+      "text": "Ukryty prezent"
+    },
+    "import": {
+      "0": "Importuj prezenty",
+      "added": "<strong>[Wiersz {0}]</strong> Prezent <strong>{1}</strong> dodany",
+      "category": {
+        "prohibited": "<strong>[Wiersz {0}]</strong> Kategoria <strong>{1}</strong> nie jest dozwolona. Użyto pustej wartości"
+      },
+      "chooseFile": "Proszę wybrać plik",
+      "done": "Import zakończony. Poniżej logi z operacji",
+      "importFile": "Importuj",
+      "nameEmpty": "<strong>[Wiersz {0}]</strong> Nazwa prezentu nie może być pusta w komórce <strong>{1}</strong>. Wiersz pominięty",
+      "template": "Pobierz szablon tutaj",
+      "wrongLink": "<strong>[Wiersz {0}]</strong> Nie poprawny format linku w komórce <strong>{1}</strong>. Użyto pustej wartości",
+      "wrongType": "Wybrany plik nie był poprawnym plikiem excel"
+    },
+    "link": {
+      "add": "Dodaj więcej linków",
+      "error": "Zły format adresu url. Proszę użyć pełnego adresu wraz z http://",
+      "remove": "Usuń link",
+      "text": "Linki",
+      "url": "URL linka"
+    },
+    "list": {
+      "0": "Lista życzeń  użytkownika",
+      "mine": "Moja list życzeń",
+      "public": {
+        "error": "Szukana lista nie jest publiczna",
+        "text": "Lista publiczna"
+      },
+      "short": "Lista życzeń"
+    },
+    "name": "Nazwa",
+    "new": {
+      "add": "Dodaj nowy",
+      "added": "Nowy prezent został dodany do listy życzeń"
+    },
+    "search": {
+      "help": "Wybierz które wyszukiwarki mają być wyświetlone obok tego prezętu.<br>Wszyscy będą mogli szybko wyszukać ten prezent, klikając na ikonę",
+      "with": "Szukaj z"
+    },
+    "share": {
+      "help": "Podziel się swoją listą życzeń przez email. Wprowadz adresy e-mail wszystkich odbiorców, rodzielonych średnikami (;). Wszyscy otrzymąją publiczny link do twojej listy życzeń.",
+      "subject": "{0} podzielił się z Tobą swoją listą życzeń",
+      "success": "Wiadomość z publicznym linkiem została wysłana do poprawnych odbiorców: {{emails}}",
+      "text": "Podziel się listą prezentów"
+    },
+    "status": {
+      "claimed": "Prezent zarezerwowany przez",
+      "new": "Nowy prezent",
+      "realised": "Prezent zrealizowany"
+    },
+    "text": "Prezent",
+    "unclaim": {
+      "error": "Nie można usunąć rezerwacji z prezentu, który nie był wcześniej zarezerwowany.",
+      "success": "Usunięto rezerwację z prezentu \"{{name}}\"",
+      "text": "Usuń rezerwację"
+    }
+  },
+  "main": {
+    "action": "Akcje",
+    "cancel": "Anuluj",
+    "close": "Zamknij",
+    "confirm": {
+      "0": "Potwierdź",
+      "no": "Nie",
+      "sure": "Jesteś pewien?",
+      "yes": "Tak"
+    },
+    "create": "Stwórz",
+    "delete": {
+      "0": "Usuń",
+      "confirm": "Jesteś pewień, że chcesz usunąć?"
+    },
+    "edit": "Edytuj",
+    "here": "Tutaj",
+    "language": {
+      "name": "Polski"
+    },
+    "next": "Dalej",
+    "save": "Zapisz",
+    "test": "Testujemy PL"
+  },
+  "menu": {
+    "help": "Pomoc",
+    "login": "Zaloguj",
+    "logout": "Wyloguj",
+    "manage": "Zarządzaj",
+    "settings": "Ustawienia",
+    "users": "Użytkownicy",
+    "wishlist": "Lista życzeń"
+  },
+  "schedule": {
+    "event": {
+      "summary": "Podsumowanie ostatniego tygodnia"
+    }
+  },
+  "tour": {
+    "step": {
+      "1": "Witaj w Gifts Hub </br> Miejsce gdzie możesz podzielić się swoją listą życzeń z przyjaciółmi i rodziną</br>Ten krótki przewodnik pokaże Ci główne funkcje aplikacji i pokaże jak dodać i dzielić się listą.",
+      "10": "<strong>Użytkownik</strong></br>Tutaj wyświetlany jest użytkownik, którego prezenty oglądamy. Jeżeli należy on do rodziny, można szybko wybrać innych członków tej rodziny.",
+      "11": "<strong>Lista użytkowników</strong></br>Lista wszystkich użytkowników aplikacji.",
+      "12": "<strong>Sortowanie</strong></br>Jak uzytkownicy są sortowani - alfabetycznie, lub pogrupowani w rodziny.</br></br>Domyślne sortowanie może być ustawione przez administratora aplikacji.",
+      "13": "<strong>Stwórz edytuj rodzinę</strong></br>Jedną z podstawowych ideii aplikacji, to grupowanie użytkowników w rodziny.</br>Dzięki posiadaniu rodziny szybciej możemy przeglądać prezenty, oraz łatwiej zarządzać prezentami innych członków rodziny.",
+      "14": "Tworząć nową rodzinę, możesz ją niestandardowo nazwać (domyślnie to nazwisko osoby tworzącej rodzinę) , oraz dodać członków spośród wszystkich użytkowników aplikacji, którzy jeszcze nie należą do rodziny.</br></br>Można też zdefiniować administratora rodziny.</br>Będzie to osoba, która może dodawać/edytować/usuwać prezenty od każego z członków rodziny",
+      "15": "Kiedy będziemy już posiadać rodzinę, możemy stworzyć konto dziecka klikają przycisk <span class=\"btn btn-success btn-sm \"><i class=\"fa fa-plus\"></i><i class=\"fa fa-child\"></i>&nbsp;Dodaj dziecko</span>",
+      "16": "Konto dziecka to specjalny rodzaj konta, na które nie można się zalogować. Tylko administrator rodziny może edytować i dodawać prezenty dla tego konta.</br></br>Dodająć konto koniecznie określ imię, nazwisko i unikalny login (aplikacja sprawdzi czy jest wolny) oraz opcjonalnie awatar.",
+      "17": "<strong>Ustawienia konta</strong></br>Ustawienia twojego konta są w menu pod twoimi awatarem",
+      "18": "Na tym ekranie możesz określić swój niestandardowy awatar, wybrać język w jakim ma być wyświetlana aplikacja i określić czy twoja lista będzie publiczna",
+      "19": "Więcej informacji zawsze możesz znaleść na stronie z pomocą. Tam też w razie czego możesz uruchomić jeszcze raz tutorial od samego początku",
+      "2": "<strong>Lista życzeń</strong></br>Tutaj jest twoja lista życzeń, strona gdzie możesz dodawać, przeglądać i edytować swoją listę.",
+      "3": "Aby dodać nowy prezent kliknij przycisk <span class=\"btn btn-success\"><i class=\"fa fa-plus\"></i>Dodaj nowy</span> na ekranie listy życzeń.</br></br>W przypadku kiedy jesteś administratorem rodziny, możesz dodawać prezenty na liscie życzeń innych członków rodziny",
+      "4": "Tworząc nowy prezent, wymagane jest tylko pole <strong>nazwa</strong>.</br>Postaraj się aby tworząc nowy prezent nazwa była jednoczesnie słowem kluczem, które może być użyte przez wyszukiwarki.</br></br>Reszta pól jest opcjonalna , ale mile widziana.</br></br>Nowo tworzony prezent dobrze jest dodać do kategorii , oraz oznaczyć które silniki wyszukiwania będą uzywane</br></br><strong>Stwórz proszę teraz dowolny prezent (bez obaw można go potem usunąć), aby tutorial miał jak Ci za chwilę pokazać więcej informacji na temat prezentów.</strong>",
+      "5": "Możliwe jest też zaimportowanie wielu prezentów na raz klikająć na przycisk <span class=\"btn btn-success\"><i class=\"fa fa-upload\"></i></span>",
+      "6": "Wybierz wcześniej wypełniony plik excel ( używając szablonu który może być pobrany ), i kliknij importuj.</br></br>Wszystkie poprawnie zdefiniowane prezenty w pliku zostaną zaimportowane dla obecnego użytkownika</br>(lub członka rodziny którego prezenty w danej chwili przeglądaliśmy)",
+      "7": "Wszystkie prezenty są pogrupowane w kategorie i sortowane po dacie. Nowe prezenty na samej górze, stare na dole.</br></br>Zarezerwowane prezenty są dodatkowo zaznaczone na pomarańczowo z informacją kto zarezerwował po najechaniu kursorem na ikone rezerwacji( właściciel prezentu nie będzie widział rezerwacji ). Zarezerwowane prezenty będą wyświetlany jako ostatnie w danej kategori.",
+      "8": "<strong>Link prezentu</strong></br>Jeżeli link został podany podczas tworzenia prezentu, można otworzyć go klikająć na niego",
+      "9": "<strong>Akcje</strong></br>Tutaj dostępne są różne akcje dotyczące danego prezentu. Zależnie czy jesteśmy na swojej czy czyjejś liście prezentów, będziemy mieć dostępne różne akcje.</br></br><i class=\"fa fa-fw fa-lg fa-check-circle-o\"></i> - Oznacz przent jako już zrealizowany</br><i class=\"fa fa-fw fa-lg fa-pencil\"></i> - Edytuj prezent</br><i class=\"fa fa-fw fa-lg fa-trash\"></i> - Usuń prezent</br><i class=\"fa fa-fw fa-lg fa-hand-paper-o\"></i> - zarezerwuj prezent(lub usuń rezerwację)",
+      "end": "Zakończ",
+      "filter": "<strong>Filtrowanie</strong><br>Kliknij aby filtrować po kategorii<br>Po kliknięciu, dodatkowe pole wyboru zostanie pokazane, gdzie można wybrać jedną z istniejących kategorii<br>Kiedy aktywny jest filtr, ikona zostanie zmieniona na <i class=\"fa fa-plus-circle filter-active\"></i><i class=\"fa fa-lg fa-filter clickable\"></i>",
+      "final": "To koniec tego krótkiego przewodnika. Mam nadzieje, że będzie Ci się miło używać aplikacji.</br></br>W przypadku błędów lub pomysłów możesz zawsze skontaktować się ze mną poprzez email:</br><a href=\"mailto:jakub.romaniszyn@gmail.com\">jakub.romaniszyn@gmail.com</a>"
+    }
+  },
+  "user": {
+    "administrator": "Administrator aplikacji",
+    "confirm": {
+      "group": {
+        "admin": {
+          "success": "Zostałeś administratorem rodziny"
+        },
+        "exists": "Należysz już do rodziny i nie możesz dołączyć do innej",
+        "success": "Dołączyłeś do groupy"
+      },
+      "token": {
+        "error": {
+          "missing": "Zły lub brakujący token",
+          "time": "Token wygasł"
+        },
+        "tryagain": "Zaloguj się i spróbuj proszę jeszcze raz"
+      }
+    },
+    "delete": {
+      "confirm": "Jesteś pewień, że chcesz usunąc swoje konto?<br><u>Tej operacji nie można cofnąć.</u><br>Wszystkie twoje prezenty i rezerwację zostaną usunięte wraz z twoim kontem",
+      "error": "Nie możesz usunąć innego konta, które nie jest dzieckiem z twojej rodziny",
+      "help": "Permametnie usuń swoje konto z aplikacji. Tej operacji nie da się cofnąć, wszystkie twoje prezenty i rezerwacje zostaną usunięte wraz z twoim kontem",
+      "success": "Twoje konto zostało usunięte. Szkoda :(",
+      "text": "Usuń swoje konto"
+    },
+    "email": "E-mail",
+    "firstname": {
+      "hint": "Wprowdz imię",
+      "text": "Imię"
+    },
+    "fullname": "Imię i nazwisko",
+    "group": {
+      "add": {
+        "kid": {
+          "error": "Proszę najpierw stworzyć grupę",
+          "help": "Dodaj konto typu dziecko. To specjalny rodzaj konta, na które nie można się zalogować.<br> Tylko administrator grupy może edytować i dodawać prezenty dla tego konta",
+          "success": "Nowe dziecko zostało dodane do twojej group",
+          "text": "Dodaj dziecko"
+        }
+      },
+      "admin": {
+        "add": {
+          "success": "{{name}} ustawiony administratorem grupy.<br>\nPotwierdz operację klikająć \"Edytuj groupę\"",
+          "text": "Ustaw jako administratora grupy"
+        },
+        "error": "Aby wykonać tą operację musisz być administratorem grupy",
+        "remove": {
+          "success": "{{name}} został usunięty z  administratorów grupy.<br>\nPotwierdz operację klikająć \"Edytuj group\"",
+          "text": "Usuń uprawnienia administratora grupy temu członkowi"
+        },
+        "text": "Admin"
+      },
+      "administrator": "Administrator grupy",
+      "admins": "Administratorzy",
+      "create": {
+        "admin": {
+          "help": "Dodaj administratorów sposród członków grupy. Domyślnie twórca grupy jest oznaczany jako administrator"
+        },
+        "error": "Wystąpił bład podczas tworzenia grupy. Proszę skontaktuj się z administratorem załączająć logi z przeglądarki",
+        "help": "Stwórz swoją grupę. Dodaj do niej użytkowników, którzy mają już konto w aplikacji.",
+        "success": {
+          "invites": "Nowa grupa została utworzona.<br>Wiadomości e-mail z linkiem potwierdzającym zostały wysłane do zaproszonych użytkowników",
+          "text": "Nowa grupa została utworzona"
+        },
+        "text": "Stwórz grupę"
+      },
+      "delete": {
+        "error": "Nie możesz usunąć konta dziecka ponieważ nie jesteś administratorem grupy",
+        "kid": {
+          "confirm": "Jesteś pewień, że chcesz usunąć to konto dziecka? Operacja jest nie odwracalna i wraz z kontem zostaną usunięte wszystkie prezenty oraz rezerwacje na nich",
+          "success": "Konto dziecka zostało usunięte",
+          "text": "Usuń konto dziecka"
+        }
+      },
+      "edit": {
+        "error": "Wystąpił bład podczas aktualizowania grupy. Proszę skontaktuj się z administratorem załączająć logi z przeglądarki",
+        "help": "Edytuj członków grupy. Dodaj lub usuń użytkowników, którzy mają już konto w aplikacji.",
+        "kid": {
+          "success": "Dane dziecka zostały zaktualizowane",
+          "text": "Edytuj dziecko"
+        },
+        "success": {
+          "invites": "Grupa została zaktualizowana.<br>\nWiadomości e-mail z linkiem potwierdzającym zostały wysłane do zaproszonych użytkowników",
+          "text": "Grupa została zaktualizowana"
+        },
+        "text": "Edytuj grupę"
+      },
+      "exists": {
+        "error": "Należysz już do jednej rodziny i nie możesz stworzyć nowej."
+      },
+      "invite": {
+        "mailError": "Wystąpił bład poczas wysyłania zaproszenia. Proszę skontaktować się z administratorem.",
+        "new": "Zaproś do grupy wpisując email lub login",
+        "text": "Zaproś do grupy"
+      },
+      "kick": {
+        "success": "Wyrzuciłeś z grupy użytkownika {{name}}.<br>\nPotwierdz operację klikająć \"Edytuj grupę\"",
+        "text": "Wyrzuć uzytkownika z grupy"
+      },
+      "kid": "Dziecko",
+      "leave": {
+        "confirm": "Czy jesteś pewien, że chcesz opuścić twoją obecną grupę?<br>Aby dołaczyć do niej ponownie, będziesz musiał poprosić jej administratora aby Cię zaprosił.",
+        "text": "Opuść grupę"
+      },
+      "left": "Opuściłeś grupę",
+      "list": "Kliknij aby przejść do listy życzeń użytkownika",
+      "members": "Członkowie",
+      "name": "Nazwa grupy",
+      "nogroups": "Nie jesteś członkiem żadnej grupy.<br>\nPoproś kogoś aby Cię zaprosił , lub stwórz nową klikająć guzik w prawym górynym rogu",
+      "other": "Inni",
+      "permision": {
+        "help": "Ustaw kto może oglądać listy zyczeń twojej grupy",
+        "text": "Uprawnienia"
+      },
+      "public": "Publiczna lista życzeń. Kliknij aby przejść do publicznego adresu URL",
+      "select": {
+        "notfound": "Nie znaleziono poszukiwanego użytkownika",
+        "text": "Wyszukaj innych użytkowników"
+      },
+      "text": "Grupa"
+    },
+    "list": "Lista użytkowników",
+    "login": {
+      "existing": "Już posiadasz konto?",
+      "facebook": "Zaloguj się z przez Facebooka",
+      "failed": "Wystąpił błąd podczas logowania. Proszę sprobować ponownie",
+      "google": "Zaloguj się z Google",
+      "here": "tutaj",
+      "register": {
+        "newhere": "Nowy użytkownik? Zarejestruj się",
+        "social": "Jeżeli nie posiadasz jeszcze konta,<br>zostanie ono dla Ciebie automatycznie stworzone"
+      },
+      "remember": "Zapamiętaj mnie",
+      "text": "Zaloguj się",
+      "using": {
+        "logpass": "Zaloguj się używająć loginu i hasła",
+        "social": "Zaloguj się używająć:"
+      },
+      "welcome": {
+        "sub": "Aplikacji do dzielenia się listami życzeń prezentów  z rodziną i przyjaciómi",
+        "text": "Witaj w Gifts Hub"
+      }
+    },
+    "password": {
+      "change": {
+        "expired": "Token zmiany hasła wygasł.<br>\nProszę rozpocznij restowanie hasła od nowa",
+        "new": "Nowe hasło",
+        "success": "Z powodzeniem zmieniono hasło<br>\nMożna sie teraz zalogować używająć nowego hasła",
+        "text": "Zmień hasło",
+        "title": "Rozpocząłeś proces resetowania hasła.<br>\nWprowadz swoje nowe hasło poniżej"
+      },
+      "reset": {
+        "email": "Wprowadz adres email",
+        "emailhint": "Wprowadz adres email twojego konta. Otrzymasz na niego link do zresetowania hasła",
+        "error": {
+          "mailSrv": "Wystąpił bład podczas wysyłania emaila z linkiem do resetowaniem Skontaktuj się proszę z administratorem"
+        },
+        "forgot": "Zapomniałeś hasła ? Kliknij",
+        "sent": "Jeżeli email jest przypisany do konta otrzymasz instrukcje dotyczące zresetowania hasła.",
+        "text": "Zresetuj hasło",
+        "title": "Zapomniałeś hasło?<br>\nNie przejmuj się - wprowadz adres email twojego konta poniżej.<br>Otrzymasz na niego link do zresetowania hasła"
+      },
+      "text": "Hasło"
+    },
+    "register": {
+      "alreadyexists": "już istnieje. Proszę użyć innego",
+      "confirmed": "Konto zostało potwierdzone. Możesz się teraz zalogować uzywająć swojego nowego konta",
+      "email": {
+        "exists": "Użytkownik z tym emailem już istnieje",
+        "hint": "Wprowadz adres email",
+        "invalid": "Niepoprawny adres e-mail",
+        "required": "Adres e-mail jest wymagany"
+      },
+      "errors": "Wystąpiły błędy podczas próby rejestracji:",
+      "failed": "Wystąpił bład poczas rejestracji. Proszę sprobować ponownie",
+      "password": {
+        "confirm": "Potwierdź hasło",
+        "hint": "Hasło powinno być bezpiecznę ( obserwuj miernik silnego hasła poniżej ) i powinno być długie na conajmniej 8 znaków",
+        "nomatch": "Hasła się nie zgadzają",
+        "required": "Wymagane hasło",
+        "strength": "Siła hasła",
+        "tooweak": "Zbyt słabe hasło. Powinno być długie conajmniej na 8 znaków"
+      },
+      "progress": "Rejestracja nowego użytkownika",
+      "success": "<strong>Zarejestrowana się pomyślnie</strong> Prozę sprawdzć e-mail aby potwierdzić Twoje konto",
+      "text": "Zarejestruj",
+      "username": {
+        "chars": "Proszę używać tylko małych dużych liter, cyfr i lub podkreślenia",
+        "exists": "Użytkownik z tym loginem już istnieje"
+      }
+    },
+    "settings": {
+      "avatar": {
+        "change": "Zmień awatar",
+        "save": "Zapisz awatar",
+        "success": "Awatar został zmnienony",
+        "text": "Awatar",
+        "upload": "Wybierz plik",
+        "wronguser": "Bład podczas zmiany awatara. Złe zapytanie"
+      },
+      "language": "Język",
+      "notifications": {
+        "help": "Zaznacz aby otrzymywać powiadomienia email z informacjami o nowych lub zrealizowanych prezentach w aplikacji lub usuniętych zarezerwowanych prezentach.<br>Newsletter będzie wysyłany w każdy poniedziałek o ile wystąpiły jakieś wydarzenia",
+        "recieve": "Otrzymuj powiadomienia email",
+        "text": "Powiadomienia email"
+      },
+      "public": {
+        "copy": {
+          "success": "Link został skopiowany do schowka",
+          "text": "Kopiuj link publiczny"
+        },
+        "help": "Jeżeli lista życzeń zostanie oznaczona jako publiczna, osoba posiadająca link do twojej listy, będzie mogła ją ogladać bez potrzeby logowania się.<br>Anonimowi użytkownicy nie będą jednak widzieć rezerwacji, ani móc zarezerwować prezent",
+        "text": "Publiczna lista życzeń"
+      },
+      "updated": {
+        "error": "Zmiana nie powiodła się",
+        "success": "Ustawienia zostały pomyślnie zmienione"
+      }
+    },
+    "sort": {
+      "default": "Domyślne sortowanie",
+      "group": "Pokazuj zgrupowane po grupach",
+      "name": "Pokazuj sortowane po nazwiskach i imionach"
+    },
+    "surname": {
+      "hint": "Wprowadz nazwisko",
+      "text": "Nazwisko"
+    },
+    "username": "Login"
+  }
+}
