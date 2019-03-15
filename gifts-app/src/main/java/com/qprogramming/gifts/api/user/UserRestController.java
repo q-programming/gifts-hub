@@ -373,7 +373,7 @@ public class UserRestController {
         UUID uuid = UUID.fromString(token);
         Optional<AccountEvent> eventOptional = _accountService.findEvent(token);
         if (!eventOptional.isPresent()) {
-            return new ResultData.ResultBuilder().notFound().build();
+            return ResponseEntity.notFound().build();
         }
         AccountEvent event = eventOptional.get();
         DateTime date = new DateTime(Utils.getTimeFromUUID(uuid));

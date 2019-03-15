@@ -312,7 +312,6 @@ public class MailService {
         Locale locale = getMailLocale(mail);
         String confirmLink = mail.getModel().get(APPLICATION) + "#/confirm/" + event.getToken();
         mail.addToModel(CONFIRM_LINK, confirmLink);
-        String familyName;
         switch (event.getType()) {
             case GROUP_MEMEBER:
                 templateGroup(mail, event, mimeMessageHelper, locale, "user.group.invite", "/groupInvite.ftl");

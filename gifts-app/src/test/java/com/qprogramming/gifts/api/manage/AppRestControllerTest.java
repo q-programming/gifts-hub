@@ -24,10 +24,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -354,7 +351,7 @@ public class AppRestControllerTest extends MockedAccountTestBase {
         account.addAuthority(TestUtil.createAdminAuthority());
         testAccount.addAuthority(TestUtil.createAdminAuthority());
         when(accountServiceMock.findById(account.getId())).thenReturn(account);
-        when(accountServiceMock.findUsers()).thenReturn(Arrays.asList(account, testAccount));
+        when(accountServiceMock.findUsers()).thenReturn(new HashSet<>(Arrays.asList(account, testAccount)));
         manageRestController.perform(
                 put(API_APPLICATION_REMOVE_ADMIN)
                         .contentType(TestUtil.APPLICATION_JSON_UTF8)
@@ -367,7 +364,7 @@ public class AppRestControllerTest extends MockedAccountTestBase {
     public void removeLastAdminTest() throws Exception {
         testAccount.addAuthority(TestUtil.createAdminAuthority());
         when(accountServiceMock.findById(testAccount.getId())).thenReturn(testAccount);
-        when(accountServiceMock.findUsers()).thenReturn(Collections.singletonList(testAccount));
+        when(accountServiceMock.findUsers()).thenReturn(Collections.singleton(testAccount));
         MvcResult mvcResult = manageRestController.perform(
                 put(API_APPLICATION_REMOVE_ADMIN)
                         .contentType(TestUtil.APPLICATION_JSON_UTF8)

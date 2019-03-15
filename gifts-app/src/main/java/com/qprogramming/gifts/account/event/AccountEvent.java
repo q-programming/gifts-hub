@@ -4,6 +4,7 @@ import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.group.Group;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 public class AccountEvent {
@@ -71,11 +72,11 @@ public class AccountEvent {
 
         AccountEvent that = (AccountEvent) o;
 
-        if (id != null ? !id.equals(that.id) : that.id != null) return false;
-        if (account != null ? !account.equals(that.account) : that.account != null) return false;
+        if (!Objects.equals(id, that.id)) return false;
+        if (!Objects.equals(account, that.account)) return false;
         if (type != that.type) return false;
-        if (group != null ? !group.equals(that.group) : that.group != null) return false;
-        return token != null ? token.equals(that.token) : that.token == null;
+        if (!Objects.equals(group, that.group)) return false;
+        return Objects.equals(token, that.token);
     }
 
     @Override

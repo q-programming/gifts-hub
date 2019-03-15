@@ -57,7 +57,7 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
     @JoinTable(name = "user_authority",
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "authority_id", referencedColumnName = "id"))
-    private List<Authority> authorities = new ArrayList<>();
+    private Set<Authority> authorities = new HashSet<>();
 
     @Column
     private String uuid;
@@ -154,7 +154,7 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
     }
 
     public void addAuthority(Authority authority) {
-        List<Authority> auths = new ArrayList<>(getAuthorities());
+        Set<Authority> auths = new HashSet<>(getAuthorities());
         auths.add(authority);
         this.setAuthorities(auths);
     }
@@ -162,12 +162,12 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
     @Override
     public Collection<Authority> getAuthorities() {
         if (Collections.isEmpty(this.authorities)) {
-            this.authorities = new ArrayList<>();
+            this.authorities = new HashSet<>();
         }
         return this.authorities;
     }
 
-    public void setAuthorities(List<Authority> authorities) {
+    public void setAuthorities(Set<Authority> authorities) {
         this.authorities = authorities;
     }
 

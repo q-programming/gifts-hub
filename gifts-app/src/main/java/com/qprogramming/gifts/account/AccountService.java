@@ -83,7 +83,7 @@ public class AccountService implements UserDetailsService {
     }
 
     @Transactional
-    @CacheEvict(value = { "accounts", "groups" }, allEntries = true)
+    @CacheEvict(value = {"accounts", "groups"}, allEntries = true)
     public Account createLocalAccount(Account account) {
         account.setId(generateID());
         encodePassword(account);
@@ -94,7 +94,7 @@ public class AccountService implements UserDetailsService {
     }
 
     public Account createAcount(Account account) {
-        List<Authority> auths = new ArrayList<>();
+        Set<Authority> auths = new HashSet<>();
         Authority role = _authorityService.findByRole(Role.ROLE_USER);
         auths.add(role);
         if (_accountRepository.findAll().size() == 0) {
@@ -138,7 +138,7 @@ public class AccountService implements UserDetailsService {
     }
 
     public Account removeAdministrator(Account account) {
-        List<Authority> auths = new ArrayList<>();
+        Set<Authority> auths = new HashSet<>();
         Authority role = _authorityService.findByRole(Role.ROLE_USER);
         auths.add(role);
         account.setAuthorities(auths);
@@ -174,7 +174,14 @@ public class AccountService implements UserDetailsService {
                 throw new UsernameNotFoundException("user not found");
             }
         }
-        return optionalAccount.get();
+        Account account = optionalAccount.get();
+        //TODO Depreciated part fix. Due to changes in roles if none of authorities were found add them
+        if (account.getAuthorities().isEmpty()) {
+            Authority role = _authorityService.findByRole(Role.ROLE_USER);
+            account.addAuthority(role);
+            account = update(account);
+        }
+        return account;
     }
 
     public void signin(Account account) {
@@ -287,7 +294,7 @@ public class AccountService implements UserDetailsService {
      * @param account account to be saved
      * @return updated account
      */
-    @CacheEvict(value = { "accounts", "groups" }, allEntries = true)
+    @CacheEvict(value = {"accounts", "groups"}, allEntries = true)
     public Account update(Account account) {
         return _accountRepository.save(account);
     }
@@ -300,7 +307,7 @@ public class AccountService implements UserDetailsService {
         return _accountRepository.findOneByEmail(email);
     }
 
-    public List<Account> findAll() {
+    public Set<Account> findAll() {
         return sortedAccounts(_accountRepository.findAll());
     }
 
@@ -330,8 +337,8 @@ public class AccountService implements UserDetailsService {
      * @param list list of accounts to be sorted
      * @return List with accounts sorted by name,surname,username
      */
-    public List<Account> sortedAccounts(List<Account> list) {
-        return list.stream().sorted(ACCOUNT_COMPARATOR).collect(Collectors.toList());
+    public Set<Account> sortedAccounts(List<Account> list) {
+        return list.stream().collect(Collectors.toCollection(() -> new TreeSet<>(ACCOUNT_COMPARATOR)));
     }
 
     public Set<Account> findByIds(Set<String> members) {
@@ -368,11 +375,11 @@ public class AccountService implements UserDetailsService {
         if (avatar != null) {
             _avatarRepository.delete(avatar);
         }
-        account.setAuthorities(new ArrayList<>());
+        account.setAuthorities(new HashSet<>());
         _accountRepository.delete(account);
     }
 
-    public List<Account> findAdmins() {
+    public Set<Account> findAdmins() {
         Authority adminRole = _authorityService.findByRole(Role.ROLE_ADMIN);
         return sortedAccounts(_accountRepository.findByAuthorities(adminRole));
 
@@ -392,7 +399,7 @@ public class AccountService implements UserDetailsService {
      *
      * @return sorted list of all accounts other than KID type
      */
-    public List<Account> findUsers() {
+    public Set<Account> findUsers() {
         return sortedAccounts(_accountRepository.findByTypeNot(AccountType.KID));
 
     }
@@ -476,10 +483,13 @@ public class AccountService implements UserDetailsService {
     public Set<Group> getGroupsForAccount(Account account) {
         Map<Account, Integer> counts = new HashMap<>();
         Set<Group> groups = account.getGroups();
-        groups.forEach(group -> group.getMembers().forEach(acc -> {
-            Integer count = counts.computeIfAbsent(acc, this::getGiftCount);
-            acc.setGiftsCount(count);
-        }));
+        groups.forEach(group -> {
+            group.setMembers(new TreeSet<>(group.getMembers()));
+            group.getMembers().forEach(acc -> {
+                Integer count = counts.computeIfAbsent(acc, this::getGiftCount);
+                acc.setGiftsCount(count);
+            });
+        });
         return groups;
     }
 

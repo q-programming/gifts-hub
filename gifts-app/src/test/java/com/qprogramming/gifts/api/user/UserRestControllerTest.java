@@ -675,7 +675,7 @@ public class UserRestControllerTest extends MockedAccountTestBase {
     @Test
     public void getAdminsTest() throws Exception {
         testAccount.addAuthority(TestUtil.createAdminAuthority());
-        when(accSrvMock.findAdmins()).thenReturn(Collections.singletonList(testAccount));
+        when(accSrvMock.findAdmins()).thenReturn(Collections.singleton(testAccount));
         MvcResult mvcResult = userRestCtrl.perform(get(API_USER_ADMINS)).andExpect(status().isOk()).andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
         List<Account> result = convertJsonToList(contentAsString, List.class, Account.class);

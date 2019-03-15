@@ -6,9 +6,9 @@ import com.qprogramming.gifts.config.MappingConfiguration;
 import org.springframework.util.CollectionUtils;
 
 import javax.persistence.*;
-import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TreeSet;
 
 //@JsonIdentityInfo(
 //        generator = ObjectIdGenerators.PropertyGenerator.class,
@@ -44,7 +44,7 @@ public class Group {
 
     public Set<Account> getAdmins() {
         if (CollectionUtils.isEmpty(admins)) {
-            admins = new HashSet<>();
+            admins = new TreeSet<>();
         }
         return admins;
     }
@@ -55,7 +55,7 @@ public class Group {
 
     public Set<Account> getMembers() {
         if (CollectionUtils.isEmpty(members)) {
-            members = new HashSet<>();
+            members = new TreeSet<>();
         }
         return members;
     }

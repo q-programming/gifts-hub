@@ -76,7 +76,7 @@ public class TestUtil {
 
     public static Account createAccount() {
         Account testAccount = new Account(USERNAME, EMAIL, "password");
-        testAccount.setAuthorities(Collections.singletonList(createUserAuthority()));
+        testAccount.setAuthorities(Collections.singleton(createUserAuthority()));
         return createAccount("name", "surname");
     }
 
@@ -86,13 +86,13 @@ public class TestUtil {
         account.setSurname(surname);
         account.setLanguage("en");
         account.setId(USER_RANDOM_ID);
-        account.setAuthorities(Collections.singletonList(createUserAuthority()));
+        account.setAuthorities(Collections.singleton(createUserAuthority()));
         return account;
     }
 
     public static Account createAdminAccount() {
         Account account = createAccount("name", "surname");
-        account.setAuthorities(Collections.singletonList(createAdminAuthority()));
+        account.setAuthorities(Collections.singleton(createAdminAuthority()));
         account.setUsername(ADMIN_USERNAME);
         account.setEmail(ADMIN_EMAIL);
         account.setId(ADMIN_RANDOM_ID);

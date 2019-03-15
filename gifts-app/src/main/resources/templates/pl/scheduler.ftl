@@ -83,7 +83,7 @@
         }
 
         .header {
-            background-color: #567bb3 !important;
+            background-color: #5b78b1 !important;
             color: white;
             padding: 5px;
             font-weight: bold;

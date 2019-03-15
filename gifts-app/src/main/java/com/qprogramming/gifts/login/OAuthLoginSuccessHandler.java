@@ -6,7 +6,6 @@ import com.qprogramming.gifts.account.AccountType;
 import com.qprogramming.gifts.account.authority.Authority;
 import com.qprogramming.gifts.account.authority.AuthorityService;
 import com.qprogramming.gifts.account.authority.Role;
-import com.qprogramming.gifts.config.property.PropertyService;
 import com.qprogramming.gifts.login.token.TokenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,16 +69,16 @@ public class OAuthLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
         } else {
             throw new BadCredentialsException("Unable to login using OAuth. Response map was neither facebook , nor google");
         }
-        //Depreciated part fix. Due to changes in roles if none of authorities were found add them
+        //TODO Depreciated part fix. Due to changes in roles if none of authorities were found add them
         if (account.getAuthorities().isEmpty()) {
             Authority role = _authorityService.findByRole(Role.ROLE_USER);
             account.addAuthority(role);
         }
-        //TODO remove after first login and DB upgrade
-        if (_accountService.findAdmins().isEmpty()) {
-            Authority role = _authorityService.findByRole(Role.ROLE_ADMIN);
-            account.addAuthority(role);
-        }
+//        //TODO remove after first login and DB upgrade
+//        if (_accountService.findAdmins().isEmpty()) {
+//            Authority role = _authorityService.findByRole(Role.ROLE_ADMIN);
+//            account.addAuthority(role);
+//        }
         _accountService.signin(account);
         //token cookie creation
         _tokenService.createTokenCookies(response, account);

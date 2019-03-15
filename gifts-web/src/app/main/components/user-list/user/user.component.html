@@ -2,7 +2,7 @@
   <div fxFlex="10" fxFlex.lt-sm="15">
     <img matCardAvatar [src]="user.avatar" class="avatar">
   </div>
-  <div fxFlex="">
+  <div fxFlex="" [fxFlex.lt-sm]="30">
     <span *ngIf="user.type === AccountType.KID" matTooltip="{{'user.group.kid'|translate}}">
       <i class="fa fa-child"></i>
     </span>
