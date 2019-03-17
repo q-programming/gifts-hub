@@ -461,6 +461,7 @@ public class UserRestController {
             Account currentAccount = _accountService.getCurrentAccount();
             group.addMember(currentAccount);
             HashMap<String, String> model = new HashMap<>();
+            _groupService.update(group);
             _accountService.eventConfirmed(event);
             model.put(RESULT, "group_member");
             return ResponseEntity.ok(model);

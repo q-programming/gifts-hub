@@ -52,7 +52,7 @@ public class GroupService {
      */
     public Group addAccountToGroupAdmins(Account account, Group group) {
         group.getAdmins().add(account);
-        return groupRepository.save(group);
+        return update(group);
     }
 
     /**
@@ -130,6 +130,7 @@ public class GroupService {
         return groupRepository.findAll(Sort.by("name"));
     }
 
+    @CacheEvict(value = { "groups" }, allEntries = true)
     public Group update(Group group) {
         return groupRepository.save(group);
     }
