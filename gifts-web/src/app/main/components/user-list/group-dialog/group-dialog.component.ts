@@ -106,6 +106,7 @@ export class GroupDialogComponent implements OnInit {
    * Commit any group creation or update
    */
   commit() {
+    this.addToInvites();
     const form = new GroupForm();
     form.id = this.group.id;
     form.members = this.identifications.concat(_.map(this.group.members, (m) => m.username));
