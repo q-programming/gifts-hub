@@ -103,10 +103,18 @@ export class SettingsComponent implements OnInit {
     return `${this.document.location.href.split("#")[0]}#/public/${this.account.username}`;
   }
 
-  copyLink(element) {
-    element.select();
+  copyLink() {
+    let selBox = document.createElement('textarea');
+    selBox.style.position = 'fixed';
+    selBox.style.left = '0';
+    selBox.style.top = '0';
+    selBox.style.opacity = '0';
+    selBox.value = this.publicUrl;
+    document.body.appendChild(selBox);
+    selBox.focus();
+    selBox.select();
     document.execCommand('copy');
-    element.setSelectionRange(0, 0);
+    document.body.removeChild(selBox);
     this.alertSrv.success('user.settings.public.copy.success');
   }
 
