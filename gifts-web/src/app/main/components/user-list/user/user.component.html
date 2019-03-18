@@ -1,8 +1,8 @@
 <div [ngClass]="{even:even}" fxLayout="row wrap" fxLayoutAlign="center center" class="pl-1 pr-1">
-  <div fxFlex="10" fxFlex.lt-sm="15">
+  <div fxFlex="10" fxFlex.lt-sm="15" routerLink="/list/{{user.username}}" class="clickable">
     <img matCardAvatar [src]="user.avatar" class="avatar">
   </div>
-  <div fxFlex="" [fxFlex.lt-sm]="30">
+  <div fxFlex="" [fxFlex.lt-sm]="30" routerLink="/list/{{user.username}}" class="clickable">
     <span *ngIf="user.type === AccountType.KID" matTooltip="{{'user.group.kid'|translate}}">
       <i class="fa fa-child"></i>
     </span>
