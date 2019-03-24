@@ -14,7 +14,7 @@ public class Category implements Comparable<Category> {
     @SequenceGenerator(name = "cat_seq_gen", sequenceName = "cat_id_seq", allocationSize = 1)
     private Long id;
 
-    @Column
+    @Column(columnDefinition = "text")
     private String name;
 
     @Column

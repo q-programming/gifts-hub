@@ -9,17 +9,29 @@
     has his own list, to which can easily add, edit or remove gifts which he/she would like to receive<br>
     Application accounts can be created either with login password, or login using social media : facebook or google<br>
     In case of social media created account, all data like name, surname and photo will be automatically created</p>
+  <p class="text-center">
+    You can also download android application from here :
+    <a mat-stroked-button href="https://q-programming.pl/apps/gifts-hub-1.0.0.apk">
+      <mat-icon>cloud_download</mat-icon>
+      gifts-hub-1.0.0.apk
+    </a>
+    <br>
+    and install it on your phone ( allowing instalation from uknown sources option is requred)
+  </p>
 
   <p class="text-center mt-2">
     In case some issues or suggestions , feel free to contact me :
-    <mat-icon>email</mat-icon>
+    <mat-icon class="mr-1">email</mat-icon>
     <a href="mailto:jakub.romaniszyn@gmail.com">jakub.romaniszyn@gmail.com</a>
   </p>
   <p class="text-center">
     Your application administrators:
   </p>
   <div *ngFor="let admin of admins" class="text-center">
-    {{admin.fullname}} <a href="mailto:{{admin.email}}"><i class="fa fa-envelope"></i></a>
+    {{admin.fullname}}
+    <a href="mailto:{{admin.email}}" mat-icon-button>
+      <i class="fa fa-envelope"></i>
+    </a>
   </div>
   <!--MENU-->
   <div>
@@ -30,7 +42,7 @@
     <p>Depending on if user is using mobile devices or dekstop pc , different menu variations will be shown
     </p>
     <div fxLayout="row wrap" fxLayoutGap="20px" class="mt-2">
-      <div fxFlex="15" class="text-center">
+      <div fxFlex="30" fxFlex.gt-lg="20" class="text-center">
         <button mat-flat-button routerLink="." fragment="users">
           <i class="fa fa-gift ml-1" fxShow.lt-sm="false"></i>
           <i class="fa fa-2x fa-user"></i>
@@ -39,13 +51,13 @@
           </div>
         </button>
       </div>
-      <div fxFlex="75">
+      <div fxFlex="60" fxFlex.gt-lg="75">
         List of all application users ( in your groups)
       </div>
     </div>
   </div>
   <div fxLayout="row wrap" fxLayoutGap="20px" class="mt-2">
-    <div fxFlex="15" class="text-center">
+    <div fxFlex="30" fxFlex.gt-lg="20" class="text-center">
       <button mat-flat-button routerLink="." fragment="list">
         <i class="fa fa-list ml-1" fxShow.lt-sm="false"></i>
         <i class="fa fa-2x fa-gift"></i>
@@ -54,12 +66,12 @@
         </div>
       </button>
     </div>
-    <div fxFlex="75">
+    <div fxFlex="60" fxFlex.gt-lg="75">
       User gift wish list. On this page you can add, edit and browse wish lists
     </div>
   </div>
   <div fxLayout="row wrap" fxLayoutGap="20px" class="mt-2" *ngIf="isAdmin">
-    <div fxFlex="15" class="text-center">
+    <div fxFlex="30" fxFlex.gt-lg="20" class="text-center">
       <button mat-flat-button routerLink="." fragment="manage">
         <i class="fa fa-columns" fxShow.lt-sm="false"></i>
         <i class="fa fa-2x fa-wrench"></i>
@@ -68,12 +80,12 @@
         </div>
       </button>
     </div>
-    <div fxFlex="75">
+    <div fxFlex="60" fxFlex.gt-lg="75">
       Manage application. This page is visible only to application administrators.
     </div>
   </div>
   <div fxLayout="row wrap" fxLayoutGap="20px" class="mt-2">
-    <div fxFlex="15" class="text-center">
+    <div fxFlex="30" fxFlex.gt-lg="20" class="text-center">
       <button mat-flat-button>
         <i class="fa fa-2x fa-question-circle"></i>
         <div class="nav-caption" fxShow.lt-sm="false">
@@ -81,12 +93,12 @@
         </div>
       </button>
     </div>
-    <div fxFlex="75">
+    <div fxFlex="60" fxFlex.gt-lg="75">
       Help page ( this page )
     </div>
   </div>
   <div fxLayout="row wrap" fxLayoutGap="20px" class="mt-2">
-    <div fxFlex="15" class="text-center">
+    <div fxFlex="30" fxFlex.gt-lg="20" class="text-center">
       <button mat-button fxShow.lt-md="false" [matMenuTriggerFor]="helpAppMenu">
         <span class="nav-smaller">
           {{user.fullname}}
@@ -114,7 +126,7 @@
         </button>
       </mat-menu>
     </div>
-    <div fxFlex="70">
+    <div fxFlex="60" fxFlex.gt-lg="75">
       <span fxShow.lt-sm="false">Your avatar. </span>Click to open extra application menu
     </div>
   </div>
@@ -150,7 +162,8 @@
     While creating ( or while editing ) you can add other application users, by entering theirs email address or
     login<br>
     Every newly invited member will receive e-mail with link to confirm invitation.
-    <br>
+  </p>
+  <p>
     To create new group on user list screen , click
     <button mat-flat-button class="success-button mr-1 font-smaller header-button">
       <mat-icon>add</mat-icon>
@@ -171,7 +184,7 @@
               matTooltip="Group name, clicking it will colapse whole tab">My group</span>
       </mat-panel-title>
       <mat-panel-description fxLayout="row" fxFlex fxLayoutAlign="end center" fxLayoutGap="10px">
-        <div class="pull-right">
+        <div class="pull-right mr-2">
           <button mat-icon-button [matMenuTriggerFor]="groupMenu" (click)="menuClick($event)" class="help-cursor"
                   matTooltip="Group menu ( click to expand)">
             <mat-icon>more_vert</mat-icon>
@@ -281,7 +294,9 @@
       <i class="fa fa-1_5x fa-sign-out"></i>
       {{'user.group.leave.text'|translate}}
     </button>
-    button.
+    button
+  </p>
+  <p>
     When group admin is leaving group, and there is at least one group member ( which is not a kid ), the account will
     be automatically granted group admin
     In case when there are no valid accounts , group will be removed permamently
@@ -376,11 +391,16 @@
     Basing application functionality is adding gifts to your wish list. Apart from that any group member can add each
     other gifts to theirs list
     <br>
-    After creating account there are no gifts. They can be added by clicking
+    After creating account there are no gifts.
+  </p>
+  <p>
+    They can be added by clicking
     <button class="header-button success-button" mat-flat-button>
       <mat-icon>add</mat-icon>
     </button>
-    button. <br>
+    button.
+  </p>
+  <p>
     When creating new gift , only field <strong>name</strong> is mandatory<br>
     Creating name of gift, try to make it a keyword, as it will be used in search engines.
     <br><br>Other fields are optional , but very helpfull.<br><br>It's also good to add gift to one of categories ( or
@@ -554,10 +574,12 @@
     To grant administrator privileges, click on
     <button mat-stroked-button matTooltip="{{'app.manage.admin.add'|translate}}" class="help-btn">
       <mat-icon>build</mat-icon>
-    </button> button or
+    </button>
+    button or
     <button mat-stroked-button matTooltip="{{'app.manage.admin.remove'|translate}}" class="help-btn">
       <mat-icon>clear</mat-icon>
-    </button> to remove those privileges
+    </button>
+    to remove those privileges
     <br>
     If there is only one administrator, you cannot remove administrator privileges
   </p>

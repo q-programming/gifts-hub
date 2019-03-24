@@ -308,19 +308,19 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Account account = (Account) o;
-        return Objects.equals(id, account.id) &&
-                email.equals(account.email) &&
-                Objects.equals(language, account.language) &&
-                Objects.equals(name, account.name) &&
+        return enabled == account.enabled &&
+                id.equals(account.id) &&
+                Objects.equals(email, account.email) &&
+                name.equals(account.name) &&
                 Objects.equals(surname, account.surname) &&
                 username.equals(account.username) &&
-                Objects.equals(created, account.created) &&
+                created.equals(account.created) &&
                 type == account.type;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, email, language, name, surname, username, created, type);
+        return Objects.hash(id, email, name, surname, username, created, type, enabled);
     }
 
     @Override

@@ -11,17 +11,28 @@
     Istnieje możliwośc logowania się po założeniu konta, lub logując się bezpośrednio za pomocą facebook'a lub
     google.<br>
     W przypadku uzycia portali społecznościowych, w aplikacji tworzone jest konto z danymi i zdjęciem. </p>
-
+  <p class="text-center">
+    Możesz pobrać aplikację na androida z tąd :
+    <a mat-stroked-button href="https://q-programming.pl/apps/gifts-hub-1.0.0.apk">
+      <mat-icon>cloud_download</mat-icon>
+      gifts-hub-1.0.0.apk
+    </a>
+    <br>
+    i zainstalować ją na swoim telefonie (wymagane jest pozwolenie na instalację z nieznanych źródeł )
+  </p>
   <p class="text-center mt-2">
     W przypadku problemów lub sugesti skontaktuj się ze mną :
-    <mat-icon>email</mat-icon>
+    <mat-icon class="mr-1">email</mat-icon>
     <a href="mailto:jakub.romaniszyn@gmail.com">jakub.romaniszyn@gmail.com</a>
   </p>
   <p class="text-center">
     Twoi administratorzy aplikacji :
   </p>
   <div *ngFor="let admin of admins" class="text-center">
-    {{admin.fullname}} <a href="mailto:{{admin.email}}"><i class="fa fa-envelope"></i></a>
+    {{admin.fullname}}
+    <a href="mailto:{{admin.email}}" mat-icon-button>
+      <i class="fa fa-envelope"></i>
+    </a>
   </div>
   <!--MENU-->
   <div>
@@ -33,7 +44,7 @@
       będą widoczne.
     </p>
     <div fxLayout="row wrap" fxLayoutGap="20px" class="mt-2">
-      <div fxFlex="15" class="text-center">
+      <div fxFlex="30" fxFlex.gt-lg="20" class="text-center">
         <button mat-flat-button routerLink="." fragment="users">
           <i class="fa fa-gift ml-1" fxShow.lt-sm="false"></i>
           <i class="fa fa-2x fa-user"></i>
@@ -42,13 +53,13 @@
           </div>
         </button>
       </div>
-      <div fxFlex="75">
+      <div fxFlex="60" fxFlex.gt-lg="75">
         Lista wszystkich użytkowników aplikacji
       </div>
     </div>
   </div>
   <div fxLayout="row wrap" fxLayoutGap="20px" class="mt-2">
-    <div fxFlex="15" class="text-center">
+    <div fxFlex="30" fxFlex.gt-lg="20" class="text-center">
       <button mat-flat-button routerLink="." fragment="list">
         <i class="fa fa-list ml-1" fxShow.lt-sm="false"></i>
         <i class="fa fa-2x fa-gift"></i>
@@ -57,12 +68,12 @@
         </div>
       </button>
     </div>
-    <div fxFlex="75">
+    <div fxFlex="60">
       Listy życzeń użytkowników. Na tej stronie można dodawac, edytować lub oglądać listy życzeń
     </div>
   </div>
   <div fxLayout="row wrap" fxLayoutGap="20px" class="mt-2" *ngIf="isAdmin">
-    <div fxFlex="15" class="text-center">
+    <div fxFlex="30" fxFlex.gt-lg="20" class="text-center">
       <button mat-flat-button routerLink="." fragment="manage">
         <i class="fa fa-columns" fxShow.lt-sm="false"></i>
         <i class="fa fa-2x fa-wrench"></i>
@@ -71,12 +82,12 @@
         </div>
       </button>
     </div>
-    <div fxFlex="75">
+    <div fxFlex="60" fxFlex.gt-lg="75">
       Zarządzanie aplikacją. Ta strona jest widoczna tylko dla administratora aplikacji
     </div>
   </div>
   <div fxLayout="row wrap" fxLayoutGap="20px" class="mt-2">
-    <div fxFlex="15" class="text-center">
+    <div fxFlex="30" fxFlex.gt-lg="20" class="text-center">
       <button mat-flat-button>
         <i class="fa fa-2x fa-question-circle"></i>
         <div class="nav-caption" fxShow.lt-sm="false">
@@ -84,12 +95,12 @@
         </div>
       </button>
     </div>
-    <div fxFlex="75">
+    <div fxFlex="60" fxFlex.gt-lg="75">
       Strona pomocy ( ta strona )
     </div>
   </div>
   <div fxLayout="row wrap" fxLayoutGap="20px" class="mt-2">
-    <div fxFlex="15" class="text-center">
+    <div fxFlex="30" fxFlex.gt-lg="20" class="text-center">
       <button mat-button fxShow.lt-md="false" [matMenuTriggerFor]="helpAppMenu">
         <span class="nav-smaller">
           {{user.fullname}}
@@ -117,7 +128,7 @@
         </button>
       </mat-menu>
     </div>
-    <div fxFlex="70">
+    <div fxFlex="60" fxFlex.gt-lg="75">
       <span fxShow.lt-sm="false">Twój awatar. </span>Kliknij aby otworzyć dodatkowe menu aplikacji
     </div>
   </div>
@@ -155,7 +166,8 @@
     lub loginy<br>
     Każdy nowo zaproszony użytkownik otrzyma wiadomość e-mail z linkiem,
     który należy otworzyć aby potwierdzić chęć należęnia do grupy.
-    <br>
+  </p>
+  <p>
     Aby stworzyć grupę, na ekranie listy użytkowników, kliknij guzik
     <button mat-flat-button class="success-button mr-1 font-smaller header-button">
       <mat-icon>add</mat-icon>
@@ -174,7 +186,7 @@
         <span class="help-cursor font-weight-bold font-larger" matTooltip="Nazwa grupy, kliknięcie w nią ją zwinie">Moja grupa</span>
       </mat-panel-title>
       <mat-panel-description fxLayout="row" fxFlex fxLayoutAlign="end center" fxLayoutGap="10px">
-        <div class="pull-right">
+        <div class="pull-right mr-2">
           <button mat-icon-button [matMenuTriggerFor]="groupMenu" (click)="menuClick($event)" class="help-cursor"
                   matTooltip="Menu grupy (kliknij aby rozwinąć)">
             <mat-icon>more_vert</mat-icon>
@@ -285,7 +297,8 @@
       <i class="fa fa-1_5x fa-sign-out"></i>
       {{'user.group.leave.text'|translate}}
     </button>
-    .
+  </p>
+  <p>
     W przypadku kiedy opuszczamy grupę , a został tam conajmniej jeden użytkownik ( nie będący kontem dziecka )
     zostanie on automatycznie mianowany administratorem grupy. W przypadku kiedy nie ma już żadnego takiego konta, grupa
     zostanie usunięta
@@ -384,10 +397,14 @@
     Podstawową funkcjonalnością aplikacji jest dodawanie prezentu do swojej listy życzeń. Oprócz tego, każdy
     użytkownik grupy może dodać prezent każdemu użytkownikowi w tej samej grupie<br>
     Po stworzeniu konta w aplikacji, nie ma jeszcze żadnyc prezentów,
+  </p>
+  <p>
     Aby stworzyć nowy prezent wystarczy kliknąć guzik
     <button class="header-button success-button" mat-flat-button>
       <mat-icon>add</mat-icon>
     </button>
+  </p>
+  <p>
     Tworząć nowy prezent , tylko pole <strong>nazwa</strong> jest wymagane,<br>Określając nazwę prezentu
     postaraj sie aby była ona jednocześnie słowem klucz , który będzie uzywany przez silniki wyszukiwarki.
     <br><br>Inne pola są opcjonalne, ale pomocne.<br><br>Dobrze tez jest dodać prezent do którejś kategori
@@ -426,7 +443,8 @@
   <p>
     Na prezentach dostępne są następujące akcje ( niektóre nie są widoczne kiedy jestesmy na koncie innego użytkownika )
     <help-list name="Zarezerwuj" icon="fa-hand-paper-o">
-      Jeżeli prezent jeszcze nie jest zarezerwowany , można go zaklepać klikająć w ten guzik i poinformować innych użytkowników, że chcemy go zrealizować. W przypadku kiedy my
+      Jeżeli prezent jeszcze nie jest zarezerwowany , można go zaklepać klikająć w ten guzik i poinformować innych
+      użytkowników, że chcemy go zrealizować. W przypadku kiedy my
       zarezerwowaliśmy prezent, zamiast tej ikonki będzie widoczne
       <span class="fa-stack">
           <i class="fa fa-times fa-stack-1x"></i>
@@ -458,7 +476,9 @@
     <br>Kiedy aktywny jest filtr, ikona zostanie zmieniona na
     <i class="fa fa-plus-circle filter-active"></i>
     <i class="fa fa-lg fa-filter clickable" matTooltip="{{'gift.category.filter'|translate}}"></i><br>
-    Aby usunąć filtry, kliknij w przycisk <mat-icon>clear</mat-icon> w polu kategorii filtrów
+    Aby usunąć filtry, kliknij w przycisk
+    <mat-icon>clear</mat-icon>
+    w polu kategorii filtrów
   </p>
   <!--SEARCH ENGINES-->
   <h4 class="help-title underlined" id="gift-seach-engines">Silniki wyszukiwania</h4>

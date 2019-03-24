@@ -101,6 +101,9 @@
     },
     "fileIO": "Unable to read file {0}",
     "general": "Something went wrong. Please check logs for more details",
+    "gif": {
+      "general": "There was error while trying operate on wishlist. Please contact administrator"
+    },
     "lastAdmin": "Unable to remove last application admin",
     "page": {
       "notfound": "Page was not found"
@@ -115,6 +118,7 @@
   "gift": {
     "add": {
       "date": "Added on",
+      "error": "There was error while trying to add gift. Please contact administrator",
       "success": "New gift \"{{name}}\" was added to wish list"
     },
     "category": {
@@ -290,14 +294,18 @@
     "confirm": {
       "group": {
         "admin": {
-          "success": "You have become administrator of family"
+          "success": "You have become administrator of group"
         },
         "exists": "You are already a member of family and cannot join other",
+        "kid": {
+          "alreadyConfirmed": "Addition to group was already confirmed by other administrator",
+          "success": "Addition to group confirmed"
+        },
         "success": "You have been successfully joined to group"
       },
       "token": {
         "error": {
-          "missing": "Wrong or missing confirmation token",
+          "missing": "Wrong, missing or expired confirmation token",
           "time": "Confirmation token has expired"
         },
         "tryagain": "Please login and try again"

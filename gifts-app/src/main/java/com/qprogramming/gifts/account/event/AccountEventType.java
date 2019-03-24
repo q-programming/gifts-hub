@@ -4,7 +4,7 @@ public enum AccountEventType {
     GROUP_MEMEBER,
     GROUP_ADMIN,
     GROUP_REMOVE,
-    GROUP_ALLOW_GROUP,
+    GROUP_KID,
     ACCOUNT_CONFIRM,
     PASSWORD_RESET
 }

@@ -140,7 +140,7 @@
                     <p>Witaj ${name},</p>
                 </#if>
                 <div>
-                ${owner} oznaczy&#322; Ci&#281; jako administratora rodziny "${groupName}" w aplikacji Gifts Hub
+                ${owner} oznaczy&#322; Ci&#281; jako administratora grupy "${groupName}" w aplikacji Gifts Hub
                 </div>
                 <p>Kliknij link poni&#380;ej, lub skopiuj i wklej go w prz&#281;gl&#261;darce aby potwierdzi&#263;</p>
                 <p>
