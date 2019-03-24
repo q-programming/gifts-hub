@@ -101,6 +101,9 @@
     },
     "fileIO": "Bład podczas czytania pliku {0}",
     "general": "Coś poszło nie tak",
+    "gif": {
+      "general": "Wystąpił bład podczas operowania na liście prezentów. Skontaktuj się proszę z administratorem"
+    },
     "lastAdmin": "Nie można usunąc ostatniego administratora aplikacji",
     "page": {
       "notfound": "Nie znaleziono strony"
@@ -115,6 +118,7 @@
   "gift": {
     "add": {
       "date": "Dodano",
+      "error": "Wystąpił bład podczas dodawania prezentu. Skontaktuj się proszę z administratorem",
       "success": "Nowy prezent \"{{name}}\" został dodany do listy życzeń"
     },
     "category": {
@@ -290,14 +294,18 @@
     "confirm": {
       "group": {
         "admin": {
-          "success": "Zostałeś administratorem rodziny"
+          "success": "Zostałeś administratorem grupy"
         },
         "exists": "Należysz już do rodziny i nie możesz dołączyć do innej",
+        "kid": {
+          "alreadyConfirmed": "Dodanie do grupy zostało już potwierdzone przez innego administratora",
+          "success": "Potwierdzono dodanie do grupy"
+        },
         "success": "Dołączyłeś do groupy"
       },
       "token": {
         "error": {
-          "missing": "Zły lub brakujący token",
+          "missing": "Zły,brakujący lub wygasły token",
           "time": "Token wygasł"
         },
         "tryagain": "Zaloguj się i spróbuj proszę jeszcze raz"

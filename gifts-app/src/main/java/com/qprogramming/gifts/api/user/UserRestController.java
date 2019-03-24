@@ -60,6 +60,8 @@ public class UserRestController {
     public static final String PUBLIC_LIST = "publicList";
     public static final String LANGUAGE = "language";
     private static final Logger LOG = LoggerFactory.getLogger(UserRestController.class);
+    public static final String RESULT = "result";
+    private static final List<AccountEventType> ALLOWED_EVENTS = Arrays.asList(AccountEventType.ACCOUNT_CONFIRM, AccountEventType.GROUP_KID);
     private AccountService _accountService;
     private MessagesService _msgSrv;
     private GroupService _groupService;
@@ -161,7 +163,7 @@ public class UserRestController {
         _accountService.update(account);
         _accountService.eventConfirmed(event);
         HashMap<String, String> model = new HashMap<>();
-        model.put("result", "changed");
+        model.put(RESULT, "changed");
         return ResponseEntity.ok(model);
     }
 
@@ -254,7 +256,7 @@ public class UserRestController {
     public ResponseEntity<?> groupList() {
         try {
             Account currentAccount = _accountService.getCurrentAccount();
-            Set<Group> groups  = _accountService.getGroupsForAccount(currentAccount);
+            Set<Group> groups = _accountService.getGroupsForAccount(currentAccount);
             return ResponseEntity.ok(groups);
         } catch (AccountNotFoundException e) {
             return ResponseEntity.notFound().build();
@@ -268,7 +270,7 @@ public class UserRestController {
     @Transactional
     @RequestMapping(value = "/group/create", method = RequestMethod.POST)
     @PreAuthorize("hasRole('ROLE_USER')")
-    @CacheEvict(value = { "accounts", "groups" }, allEntries = true)
+    @CacheEvict(value = {"accounts", "groups"}, allEntries = true)
     public ResponseEntity<?> createGroup(@RequestBody GroupForm form) {
         try {
             Account currentAccount = _accountService.getCurrentAccount();
@@ -286,9 +288,9 @@ public class UserRestController {
             }
             HashMap<String, String> model = new HashMap<>();
             if (members.size() > 0) {
-                model.put("result", "invites");
+                model.put(RESULT, "invites");
             } else {
-                model.put("result", "ok");
+                model.put(RESULT, "ok");
             }
             return ResponseEntity.ok(model);
         } catch (AccountNotFoundException e) {
@@ -298,7 +300,7 @@ public class UserRestController {
 
     @Transactional
     @PreAuthorize("hasRole('ROLE_USER')")
-    @CacheEvict(value = { "groups" }, allEntries = true)
+    @CacheEvict(value = {"groups"}, allEntries = true)
     @RequestMapping(value = "/group/{id}/update", method = RequestMethod.PUT)
     public ResponseEntity<?> updateGroup(@PathVariable Long id, @RequestBody GroupForm form) {
         try {
@@ -327,9 +329,9 @@ public class UserRestController {
             group.setName(form.getName());
             HashMap<String, String> model = new HashMap<>();
             if (membersToInvite.stream().anyMatch(account -> !account.getType().equals(AccountType.KID)) || adminsToInvite.size() > 0) {
-                model.put("result", "invites");
+                model.put(RESULT, "invites");
             } else {
-                model.put("result", "ok");
+                model.put(RESULT, "ok");
             }
             return ResponseEntity.ok(model);
         } catch (GroupNotFoundException e) {
@@ -349,7 +351,7 @@ public class UserRestController {
 
     @Transactional
     @PreAuthorize("hasRole('ROLE_USER')")
-    @CacheEvict(value = { "groups" }, allEntries = true)
+    @CacheEvict(value = {"groups"}, allEntries = true)
     @RequestMapping(value = "/group/{id}/leave", method = RequestMethod.PUT)
     public ResponseEntity<?> leaveGroup(@PathVariable Long id) {
         try {
@@ -369,6 +371,7 @@ public class UserRestController {
 
     @Transactional
     @RequestMapping("/confirm")
+    @CacheEvict(value = {"accounts", "groups"}, allEntries = true)
     public ResponseEntity confirmOperation(@RequestBody String token) {
         UUID uuid = UUID.fromString(token);
         Optional<AccountEvent> eventOptional = _accountService.findEvent(token);
@@ -376,13 +379,11 @@ public class UserRestController {
             return ResponseEntity.notFound().build();
         }
         AccountEvent event = eventOptional.get();
-        DateTime date = new DateTime(Utils.getTimeFromUUID(uuid));
-        DateTime expireDate = date.plusDays(7);
-        if (new DateTime().isAfter(expireDate)) {
+        if (_accountService.isExpired(event)) {
             _accountService.removeEvent(event);
             return ResponseEntity.status(HttpStatus.CONFLICT).body("expired");
         }
-        if (!event.getType().equals(AccountEventType.ACCOUNT_CONFIRM) && !event.getAccount().equals(Utils.getCurrentAccount())) {
+        if (!ALLOWED_EVENTS.contains(event.getType()) && !event.getAccount().equals(Utils.getCurrentAccount())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         switch (event.getType()) {
@@ -390,16 +391,41 @@ public class UserRestController {
                 return handleBecomeGroupMember(event);
             case GROUP_ADMIN:
                 return handleBecomeGroupAdmin(event);
+            case GROUP_KID:
+                return handleAddKidToGroup(event);
             case ACCOUNT_CONFIRM:
                 return handleConfirmAccount(event);
             case PASSWORD_RESET:
-                if (new DateTime().isAfter(date.plusHours(12))) {
-                    _accountService.removeEvent(event);
-                    return ResponseEntity.status(HttpStatus.CONFLICT).body("expired");
-                }
                 return handleConfirmAccount(event);
         }
         return new ResultData.ResultBuilder().badReqest().build();
+    }
+
+    private ResponseEntity handleAddKidToGroup(AccountEvent event) {
+        try {
+            HashMap<String, String> model = new HashMap<>();
+            Group group = _groupService.getGroupFromEvent(event);
+            Account kidAccount = _accountService.findById(event.getAccount().getId());
+            if (!getKidGroupsAccounts(kidAccount).contains(Utils.getCurrentAccount())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+            //kid was already approved
+            if (kidAccount.getGroups().contains(group)) {
+                model.put(RESULT, "kid_already_confirmed");
+            } else {
+                group.addMember(kidAccount);
+                model.put(RESULT, "kid_confirmed");
+                _groupService.update(group);
+            }
+            _accountService.eventConfirmed(event);
+            return ResponseEntity.ok(model);
+        } catch (GroupNotFoundException e) {
+            LOG.warn(GROUP_NOT_FOUND, event.getClass(), event.getId());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (AccountNotFoundException e) {
+            LOG.warn(ACCOUNT_WITH_ID_WAS_NOT_FOUND, Utils.getCurrentAccountId());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 
     private ResponseEntity handleConfirmAccount(AccountEvent event) {
@@ -408,7 +434,7 @@ public class UserRestController {
         _accountService.update(account);
         _accountService.eventConfirmed(event);
         HashMap<String, String> model = new HashMap<>();
-        model.put("result", "confirmed");
+        model.put(RESULT, "confirmed");
         return ResponseEntity.ok(model);
     }
 
@@ -421,7 +447,7 @@ public class UserRestController {
             HashMap<String, String> model = new HashMap<>();
             _groupService.addAccountToGroupAdmins(Utils.getCurrentAccount(), group);
             _accountService.eventConfirmed(event);
-            model.put("result", "group_admin");
+            model.put(RESULT, "group_admin");
             return ResponseEntity.ok(model);
         } catch (GroupNotFoundException e) {
             LOG.warn(GROUP_NOT_FOUND, event.getClass(), event.getId());
@@ -436,7 +462,7 @@ public class UserRestController {
             group.addMember(currentAccount);
             HashMap<String, String> model = new HashMap<>();
             _accountService.eventConfirmed(event);
-            model.put("result", "group_member");
+            model.put(RESULT, "group_member");
             return ResponseEntity.ok(model);
         } catch (GroupNotFoundException e) {
             LOG.warn(GROUP_NOT_FOUND, event.getClass(), event.getId());
@@ -456,7 +482,7 @@ public class UserRestController {
             MessagingException {
         for (Account account : members) {
             if (AccountType.KID.equals(account.getType())) {
-                group.addMember(account);
+                sendKidAdditionConfirm(group, account);
             } else if (AccountType.TEMP.equals(account.getType())) {
                 Mail mail = Utils.createMail(account, Utils.getCurrentAccount());
                 _mailService.sendInvite(mail, group.getName());
@@ -468,9 +494,30 @@ public class UserRestController {
         }
     }
 
+    private void sendKidAdditionConfirm(Group group, Account kidAccount) throws MessagingException {
+        boolean isKidGroupAdmin = kidAccount.getGroups().stream().anyMatch(g -> g.getAdmins().contains(Utils.getCurrentAccount()));
+        if (isKidGroupAdmin) {
+            group.addMember(kidAccount);
+        } else {
+            Set<Account> admins = getKidGroupsAccounts(kidAccount);
+            if (admins.isEmpty()) {
+                group.addMember(kidAccount);
+            }
+            for (Account admin : admins) {
+                AccountEvent event = _accountService.createGroupAllowKidEvent(kidAccount, group);
+                Mail mail = Utils.createMail(admin, Utils.getCurrentAccount());
+                _mailService.sendConfirmMail(mail, event);
+            }
+        }
+    }
+
+    private Set<Account> getKidGroupsAccounts(Account kidAccount) {
+        return kidAccount.getGroups().stream().map(Group::getAdmins).flatMap(Collection::stream).collect(Collectors.toSet());
+    }
+
     @Transactional
     @PreAuthorize("hasRole('ROLE_USER')")
-    @CacheEvict(value = { "accounts", "groups" }, allEntries = true)
+    @CacheEvict(value = {"accounts", "groups"}, allEntries = true)
     @RequestMapping("/kid-add")
     public ResponseEntity<?> addKid(@RequestBody @Valid KidForm form) {
         Optional<Account> optionalAccount = _accountService.findByUsername(form.getUsername());
@@ -499,7 +546,7 @@ public class UserRestController {
     //    @JsonView(MappingConfiguration.Members.class)
     @Transactional
     @PreAuthorize("hasRole('ROLE_USER')")
-    @CacheEvict(value = { "accounts", "groups" }, allEntries = true)
+    @CacheEvict(value = {"accounts", "groups"}, allEntries = true)
     @RequestMapping("/kid-update")
     public ResponseEntity<?> updateKid(@RequestBody @Valid KidForm form) {
         try {
@@ -622,7 +669,7 @@ public class UserRestController {
 
     @Transactional
     @PreAuthorize("hasRole('ROLE_USER')")
-    @CacheEvict(value = { "accounts", "groups" }, allEntries = true)
+    @CacheEvict(value = {"accounts", "groups"}, allEntries = true)
     @RequestMapping(value = "/delete/{userID}", method = RequestMethod.DELETE)
     public ResponseEntity deleteAccount(HttpServletRequest requ, HttpServletResponse
             resp, @PathVariable(value = "userID") String id) {

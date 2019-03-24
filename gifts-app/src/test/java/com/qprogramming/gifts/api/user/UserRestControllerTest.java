@@ -689,6 +689,7 @@ public class UserRestControllerTest extends MockedAccountTestBase {
         event.setToken(token);
         event.setAccount(testAccount);
         when(accSrvMock.findEvent(token)).thenReturn(Optional.of(event));
+        when(accSrvMock.isExpired(event)).thenCallRealMethod();
         userRestCtrl.perform(post(API_USER_CONFIRM).content(token)).andExpect(status().isConflict());
     }
 

@@ -17,6 +17,7 @@ import com.qprogramming.gifts.schedule.AppEventService;
 import com.qprogramming.gifts.settings.Settings;
 import com.qprogramming.gifts.support.Utils;
 import freemarker.template.Configuration;
+import org.apache.commons.lang3.StringUtils;
 import org.imgscalr.Scalr;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,6 +64,8 @@ public class MailService {
     private static final String PUBLIC_LINK = "publicLink";
     private static final String LIST_LINK = "listLink";
     private static final String GIFT = "gift";
+    public static final String KID_NAME = "kidName";
+    public static final String OWNER = "owner";
     private final Logger LOG = LoggerFactory.getLogger(this.getClass());
     JavaMailSender mailSender;
     private PropertyService propertyService;
@@ -312,6 +315,7 @@ public class MailService {
         Locale locale = getMailLocale(mail);
         String confirmLink = mail.getModel().get(APPLICATION) + "#/confirm/" + event.getToken();
         mail.addToModel(CONFIRM_LINK, confirmLink);
+        mail.addToModel(OWNER, Utils.getCurrentAccount().getFullname());
         switch (event.getType()) {
             case GROUP_MEMEBER:
                 templateGroup(mail, event, mimeMessageHelper, locale, "user.group.invite", "/groupInvite.ftl");
@@ -319,7 +323,8 @@ public class MailService {
             case GROUP_ADMIN:
                 templateGroup(mail, event, mimeMessageHelper, locale, "user.group.admin", "/groupAdmin.ftl");
                 break;
-            case GROUP_REMOVE:
+            case GROUP_KID:
+                templateKidAddGroup(mail, event, mimeMessageHelper, locale);
                 break;
             case ACCOUNT_CONFIRM:
                 templateAccountConfirm(mail, mimeMessageHelper, locale);
@@ -365,11 +370,19 @@ public class MailService {
     }
 
     private void templateGroup(Mail mail, AccountEvent event, MimeMessageHelper mimeMessageHelper, Locale locale, String subjectKey, String template) throws MessagingException {
-        String familyName;
-        familyName = event.getGroup().getName();
-        mimeMessageHelper.setSubject(msgSrv.getMessage(subjectKey, new Object[]{familyName}, "", locale));
-        mail.addToModel(GROUP_NAME, familyName);
+        String groupName = event.getGroup().getName();
+        mimeMessageHelper.setSubject(msgSrv.getMessage(subjectKey, new Object[]{groupName}, "", locale));
+        mail.addToModel(GROUP_NAME, groupName);
         mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + template));
+        mimeMessageHelper.setText(mail.getMailContent(), true);
+    }
+
+    private void templateKidAddGroup(Mail mail, AccountEvent event, MimeMessageHelper mimeMessageHelper, Locale locale) throws MessagingException {
+        String groupName = event.getGroup().getName();
+        mimeMessageHelper.setSubject(msgSrv.getMessage("user.group.kid.add", null, "", locale));
+        mail.addToModel(GROUP_NAME, groupName);
+        mail.addToModel(KID_NAME, event.getAccount().getFullname());
+        mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/groupKidAdd.ftl"));
         mimeMessageHelper.setText(mail.getMailContent(), true);
     }
 
@@ -421,6 +434,7 @@ public class MailService {
                 .stream()
                 .map(Group::getMembers)
                 .flatMap(Collection::stream)
+                .filter(account -> StringUtils.isNotBlank(account.getEmail()))
                 .filter(Account::getNotifications)
                 .collect(Collectors.toSet());
         for (Account account : accounts) {

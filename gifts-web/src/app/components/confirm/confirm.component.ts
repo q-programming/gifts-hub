@@ -33,6 +33,12 @@ export class ConfirmComponent implements OnInit {
           case 'group_member':
             this.alertSrv.success('user.confirm.group.success');
             break;
+          case 'kid_confirmed':
+            this.alertSrv.success('user.confirm.group.kid.success');
+            break;
+          case 'kid_already_confirmed':
+            this.alertSrv.info('user.confirm.group.kid.alreadyConfirmed');
+            break;
           case 'confirmed':
             this.alertSrv.success('user.register.confirmed');
             break;
@@ -52,7 +58,7 @@ export class ConfirmComponent implements OnInit {
         case 'expired':
           this.alertSrv.error('user.confirm.token.error.time');
           break;
-        case 'family_exists':
+        case 'group_exists':
           this.alertSrv.error('user.confirm.group.exists');
           break;
       }

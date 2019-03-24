@@ -1,18 +1,15 @@
 package com.qprogramming.gifts.account.group;
 
-import com.fasterxml.uuid.Generators;
 import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.AccountType;
 import com.qprogramming.gifts.account.event.AccountEvent;
 import com.qprogramming.gifts.account.event.AccountEventRepository;
-import com.qprogramming.gifts.account.event.AccountEventType;
 import com.qprogramming.gifts.exceptions.GroupNotAdminException;
 import com.qprogramming.gifts.exceptions.GroupNotFoundException;
 import com.qprogramming.gifts.support.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -75,8 +72,8 @@ public class GroupService {
      * If account was last member of it, group will be removed.Otherwise first found non kid account will be granted admin.
      * If no non kid accounts were found, group members will be cleared and group removed as well
      *
-     * @param account
-     * @param group
+     * @param account account to be removed
+     * @param group   group from which account is removed
      */
     public Group removeFromGroup(Account account, Group group) {
         group.removeMember(account);
@@ -90,6 +87,7 @@ public class GroupService {
                 group.getAdmins().add(first.get());
                 //TODO add event about granting admin
             } else {
+                group.getMembers().forEach(a -> a.getGroups().remove(group));
                 group.setMembers(new HashSet<>());
                 delete(group);
                 return null;
@@ -141,16 +139,6 @@ public class GroupService {
         accountEventRepository.deleteAll(accountEvents);
         groupRepository.delete(group);
     }
-
-
-    public AccountEvent groupAllowFamilyEvent(Account account, Group target) {
-        AccountEvent event = new AccountEvent();
-        event.setGroup(target);
-        event.setAccount(account);
-        event.setType(AccountEventType.GROUP_ALLOW_GROUP);
-        return accountEventRepository.save(event);
-    }
-
 
 
     public Group getGroupFromEvent(AccountEvent event) throws GroupNotFoundException {

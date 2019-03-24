@@ -49,6 +49,7 @@ public class AppEventService {
     public void addEvent(Gift gift, AppEventType type) throws AccountNotFoundException {
         AppEvent event = new AppEvent();
         event.setAccount(accountService.findById(gift.getUserId()));
+        event.setCreatedBy(accountService.findById(gift.getCreatedBy()));
         event.setGift(gift);
         event.setType(type);
         eventRepo.save(event);

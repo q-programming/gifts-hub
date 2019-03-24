@@ -28,6 +28,7 @@ public class Gift implements Serializable, Comparable<Gift> {
     @Column(columnDefinition = "text")
     private String description;
 
+    @Column(columnDefinition = "text")
     @ElementCollection
     private Set<String> links = new HashSet<>();
 

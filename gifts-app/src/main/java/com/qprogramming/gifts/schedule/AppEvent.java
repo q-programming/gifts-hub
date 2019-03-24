@@ -5,6 +5,7 @@ import com.qprogramming.gifts.gift.Gift;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.Objects;
 
 @Entity
 public class AppEvent {
@@ -20,6 +21,10 @@ public class AppEvent {
 
     @ManyToOne
     private Account account;
+
+    @ManyToOne
+    private Account createdBy;
+
     @ManyToOne
     private Gift gift;
 
@@ -67,5 +72,31 @@ public class AppEvent {
 
     public void setGift(Gift gift) {
         this.gift = gift;
+    }
+
+    public Account getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(Account createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AppEvent appEvent = (AppEvent) o;
+        return Objects.equals(id, appEvent.id) &&
+                Objects.equals(account, appEvent.account) &&
+                Objects.equals(createdBy, appEvent.createdBy) &&
+                Objects.equals(gift, appEvent.gift) &&
+                Objects.equals(time, appEvent.time) &&
+                type == appEvent.type;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, account, createdBy, gift, time, type);
     }
 }

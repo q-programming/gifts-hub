@@ -16,6 +16,7 @@ import com.qprogramming.gifts.exceptions.AccountNotFoundException;
 import com.qprogramming.gifts.gift.GiftService;
 import com.qprogramming.gifts.support.Utils;
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,9 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -470,6 +473,15 @@ public class AccountService implements UserDetailsService {
         return _accountEventRepository.save(event);
     }
 
+    public AccountEvent createGroupAllowKidEvent(Account account, Group target) {
+        AccountEvent event = new AccountEvent();
+        event.setGroup(target);
+        event.setAccount(account);
+        event.setType(AccountEventType.GROUP_KID);
+        event.setToken(generateToken());
+        return _accountEventRepository.save(event);
+    }
+
 
     public String generateToken() {
         String token = Generators.timeBasedGenerator().generate().toString();
@@ -495,5 +507,26 @@ public class AccountService implements UserDetailsService {
 
     private Integer getGiftCount(Account account) {
         return _giftService.countAllByAccountId(account.getId());
+    }
+
+    public void deleteExpiredEvents() {
+        Set<AccountEvent> expiredEvents = _accountEventRepository.findAll().stream().filter(this::isExpired).collect(Collectors.toSet());
+
+    }
+
+    /**
+     * Checks if AccountEvent token is expired ( more than 7 days old )
+     *
+     * @param event event to be checked
+     * @return true if event token has expire
+     */
+    public boolean isExpired(AccountEvent event) {
+        UUID uuid = UUID.fromString(event.getToken());
+        DateTime date = new DateTime(Utils.getTimeFromUUID(uuid));
+        DateTime expireDate = date.plusDays(7);
+        DateTime passExpireDate = date.plusHours(12);
+        return AccountEventType.PASSWORD_RESET.equals(event.getType()) ?
+                new DateTime().isAfter(passExpireDate) :
+                new DateTime().isAfter(expireDate);
     }
 }

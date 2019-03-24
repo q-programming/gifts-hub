@@ -210,6 +210,8 @@ export class GiftsComponent implements OnInit {
       this.alertSrv.error('error.account.notFound')
     } else if (error.status === 409) {
       this.alertSrv.error('user.group.admin.error')
+    } else {
+      this.alertSrv.error('error.gif.general')
     }
   }
 
