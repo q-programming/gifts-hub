@@ -23,7 +23,7 @@ public class AppEventService {
         this.accountService = accountService;
     }
 
-    public List<AppEvent> findAllNotProcessed() {
+    List<AppEvent> findAllNotProcessed() {
         return eventRepo.findAll();
     }
 
@@ -34,16 +34,22 @@ public class AppEventService {
      */
     public Map<Account, List<AppEvent>> getEventsGroupedByAccount() {
         List<AppEvent> allNotProcessed = eventRepo.findAll();
-        return allNotProcessed.stream().collect(Collectors.groupingBy(AppEvent::getAccount));
+        return allNotProcessed
+                .stream()
+                .filter(this::filterEvents)
+                .collect(Collectors.groupingBy(AppEvent::getAccount));
+    }
+
+    private boolean filterEvents(AppEvent appEvent) {
+        return appEvent.getCreatedBy() == null || !appEvent.getAccount().equals(appEvent.getCreatedBy());
     }
 
     /**
      * Deletes all passed events , as they been processed by scheduler
-     *
-     * @param appEvents list of events to be deleted
      */
-    public void processEvents(List<AppEvent> appEvents) {
-        eventRepo.deleteAll(appEvents);
+    public void processEvents() {
+        List<AppEvent> all = eventRepo.findAll();
+        eventRepo.deleteAll(all);
     }
 
     public void addEvent(Gift gift, AppEventType type) throws AccountNotFoundException {
@@ -58,7 +64,7 @@ public class AppEventService {
     /**
      * Tries to find app event regarding this gift , and if it was not yet processed it will be deleted
      *
-     * @param gift
+     * @param gift gift for which app events will be searched for
      */
     public void tryToUndoEvent(Gift gift) throws AccountNotFoundException {
         AppEvent event = eventRepo.findByAccountAndGiftAndType(accountService.findById(gift.getUserId()), gift, AppEventType.REALISED);

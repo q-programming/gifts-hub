@@ -197,10 +197,7 @@ public class AccountService implements UserDetailsService {
 
     public Account findById(String id) throws AccountNotFoundException {
         Optional<Account> optionalAccount = _accountRepository.findOneById(id);
-        if (!optionalAccount.isPresent()) {
-            throw new AccountNotFoundException();
-        }
-        return optionalAccount.get();
+        return optionalAccount.orElseThrow(AccountNotFoundException::new);
     }
 
     //User avatar handling

@@ -440,13 +440,14 @@ public class MailService {
         for (Account account : accounts) {
             Map<Account, List<AppEvent>> eventsWithoutAccount = eventMap.entrySet().stream()
                     .filter(entry -> !entry.getKey().equals(account))
-                    .collect(Collectors.toMap(Map.Entry::getKey, entry -> new ArrayList<>(entry.getValue())));
+                    .collect(Collectors
+                            .toMap(Map.Entry::getKey, entry -> new ArrayList<>(entry.getValue())));
             if (!eventsWithoutAccount.isEmpty()) {
                 sendEventForAccount(mimeMessage, application, eventsWithoutAccount, account);
                 mailsSent++;
             }
         }
-        eventService.processEvents(eventService.findAllNotProcessed());
+        eventService.processEvents();
         LOG.info("Newsletter sent to {} recipients", mailsSent);
     }
 
