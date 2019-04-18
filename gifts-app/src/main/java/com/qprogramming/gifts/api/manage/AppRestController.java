@@ -156,16 +156,6 @@ public class AppRestController {
         propertyService.update(APP_EMAIL_ENCODING, settings.getEncoding());
         propertyService.update(APP_EMAIL_FROM, settings.getFrom());
         mailService.initMailSender();
-        //TODO remove sample
-//        Mail mail = new Mail();
-//        mail.setMailFrom("giftshub@q-programming.pl");
-//        mail.setMailTo("kubarom@gmail.com");
-//        mail.setMailSubject("Mail sending test");
-//        Map<String, Object> model = new HashMap<>();
-//        model.put("firstName", "John");
-//        model.put("lastName", "Doe");
-//        mail.setModel(model);
-//        mailService.sendEmail(mail);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

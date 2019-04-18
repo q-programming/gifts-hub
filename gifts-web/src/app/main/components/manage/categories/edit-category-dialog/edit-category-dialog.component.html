@@ -1,0 +1,22 @@
+<h1 mat-dialog-title>
+  <i class="fa fa-gift mr-1"></i>
+  {{operation|translate}}
+</h1>
+<mat-dialog-content>
+  <form [formGroup]="form">
+    <!--Category DETAIL-->
+    <div fxLayout="row wrap" fxLayoutAlign="center center">
+      <div fxFlex="80%">
+        <mat-form-field fxFlex="100%">
+          <input matInput placeholder=" {{'gift.name'|translate}}" formControlName="name" required>
+        </mat-form-field>
+      </div>
+    </div>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end" class="pr-2 pl-2">
+  <button mat-raised-button mat-dialog-close>{{'app.general.cancel'|translate}}</button>
+  <button mat-raised-button class="success-button" [disabled]="form.invalid" (click)="commitAction()">
+    {{update ? ('app.general.edit'|translate) : ('app.manage.categories.merge.text'|translate)}}
+  </button>
+</mat-dialog-actions>

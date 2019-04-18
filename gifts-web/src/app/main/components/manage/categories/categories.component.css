@@ -1,0 +1,8 @@
+.mat-list-compact {
+  cursor: move !important;
+  padding: 5px;
+  margin: 0 5px 2px 5px;
+}
+.actions{
+  color: gray;
+}

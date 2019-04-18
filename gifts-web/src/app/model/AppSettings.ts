@@ -1,5 +1,5 @@
 import {SearchEngine} from "@model/SearchEngine";
-import {SortBy} from "@model/Settings";
+import {Category} from "@model/Category";
 
 export class AppSettings {
   language: string;
@@ -8,7 +8,7 @@ export class AppSettings {
   giftAge: number;
   searchEngines: SearchEngine[];
   sort: SortBy;
-
+  categories: CategoryDTO[];
   constructor() {
     this.email = new EmailSettings();
   }
@@ -23,4 +23,14 @@ export class EmailSettings {
   encoding: string = '';
   from: string = '';
 }
+
+export enum SortBy {
+  GROUP = "GROUP", NAME = "NAME"
+}
+
+export class CategoryDTO {
+  category: Category;
+  count: number;
+}
+
 

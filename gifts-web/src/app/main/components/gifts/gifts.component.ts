@@ -30,6 +30,7 @@ export class GiftsComponent implements OnInit {
   viewedAccount: Account;
   //gifts
   categorizedGifts: Map<string, Gift[]>;
+  categorizedKeys: string[];
   realizedGifts: Gift[] = [];
   unCategorizedGifts: Gift[] = [];
   GiftStatus = GiftStatus;
@@ -95,6 +96,7 @@ export class GiftsComponent implements OnInit {
     this.unCategorizedGifts = this.categorizedGifts[''];
     delete this.categorizedGifts[GiftStatus.REALISED];
     delete this.categorizedGifts[''];
+    this.categorizedKeys = Object.keys(this.categorizedGifts);
   }
 
   getAvatar(username: string) {

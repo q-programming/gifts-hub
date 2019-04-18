@@ -1,0 +1,29 @@
+<div fxLayout="row wrap" fxLayoutAlign="center" class="mt-5">
+  <div fxFlex="60" fxFlex.xs="100">
+    <h4>{{'app.manage.categories.text'|translate}}</h4>
+    <mat-hint [innerHTML]="'app.manage.categories.hint'|translate"></mat-hint>
+  </div>
+  <div fxFlex="60" fxFlex.xs="100" class="mt-2">
+    <div cdkDropList (cdkDropListDropped)="onDrop($event)" class="pb-3">
+      <mat-card *ngFor="let category of settings.categories" class="mat-list-compact" cdkDrag>
+        <mat-icon matListIcon>more_vert</mat-icon>
+        {{category.category.name}}
+        <span class="pull-right mt-2" matTooltip="{{'app.manage.categories.count'|translate}}">
+          <i class="fa fa-fw fa-gift" aria-hidden="true"></i>
+          {{category.count}}
+        </span>
+        <span class="pull-right actions">
+          <button mat-icon-button (click)="openUpdateCategory(category)">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button (click)="confirmDelete(category)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </span>
+      </mat-card>
+    </div>
+    <button mat-raised-button class="success-button pull-right" (click)="saveConfiguration()">
+      {{'app.manage.app.save'|translate}}
+    </button>
+  </div>
+</div>

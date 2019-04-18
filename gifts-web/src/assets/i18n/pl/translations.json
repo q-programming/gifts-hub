@@ -3,6 +3,7 @@
     "general": {
       "cancel": "Anuluj",
       "delete": "Usuń",
+      "edit": "Edytuj",
       "return": "Powróć na stronę główną",
       "undo": "Cofnij",
       "version": "wersja"
@@ -23,15 +24,25 @@
         "text": "Ustawienia aplikacji"
       },
       "categories": {
-        "count": "# Użyć",
+        "count": "Prezentów w kategorii",
+        "hint": "Edytuj kategorie<br>\nMożesz zmienić priorytet kategorii jak będa wyświetlane na listach zyczeń uzytkowników ( kategoria z najwyższym priorytetem będzie wyświetlana pierwsza ) poprzez podniesienie i przesunięcie <br>\nEdytuj kategorię klikająć guzik edycji , usuń klikająć ikonę kosza",
+        "merge": {
+          "text": "Połącz kategorie"
+        },
         "priority": {
           "0": "Priorytet",
           "down": "Zmniejsz",
           "save": "Aktualizuj priorytety",
+          "text": "Ustaw priorytet kategorii",
           "up": "Zwiększ"
         },
-        "removed": "Kategoria została usunięta",
+        "remove": {
+          "confirm": "Jesteś pewień , że chcesz usunąć tą kategorię?<br>\nWszystkie prezenty z tej kategorii zostaną przeniesionę do kategorii \"Inne\"",
+          "removed": "Kategoria została usunięta",
+          "text": "Usuń kategorię"
+        },
         "text": "Kategorie",
+        "update": "Edytuj kategorię",
         "updated": "Kategoria zaktualizowana"
       },
       "email": {

@@ -1,12 +1,12 @@
 <mat-card class="pt-0">
-  <mat-tab-group mat-stretch-tabs>
+  <mat-tab-group mat-stretch-tabs *ngIf="settings">
     <mat-tab>
       <ng-template mat-tab-label>
         <mat-icon>build</mat-icon>
         <span fxShow.xs="false" class="ml-1">{{'app.manage.app.text'|translate}}</span>
       </ng-template>
       <ng-template matTabContent>
-        <manage-app></manage-app>
+        <manage-app [settings]="settings" (commit)="getSettings()"></manage-app>
       </ng-template>
     </mat-tab>
     <mat-tab>
@@ -15,7 +15,7 @@
         <span fxShow.xs="false" class="ml-1">{{'app.manage.search.engine'|translate}}</span>
       </ng-template>
       <ng-template matTabContent>
-        <manage-engines></manage-engines>
+        <manage-engines [settings]="settings" (commit)="getSettings()"></manage-engines>
       </ng-template>
     </mat-tab>
     <mat-tab>
@@ -34,6 +34,15 @@
       </ng-template>
       <ng-template matTabContent>
         <manage-admins></manage-admins>
+      </ng-template>
+    </mat-tab>
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon>category</mat-icon>
+        <span fxShow.xs="false" class="ml-1">{{'app.manage.categories.text'|translate}}</span>
+      </ng-template>
+      <ng-template matTabContent>
+        <manage-categories [settings]="settings" (commit)="getSettings()"></manage-categories>
       </ng-template>
     </mat-tab>
   </mat-tab-group>

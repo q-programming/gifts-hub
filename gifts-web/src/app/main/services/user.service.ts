@@ -5,10 +5,10 @@ import {Account} from "@model/Account";
 import {Observable} from "rxjs";
 import {environment} from "@env/environment.prod";
 import {AvatarService} from "@core-services/avatar.service";
-import {SortBy} from "@model/Settings";
 import {MatDialog, MatDialogConfig} from "@angular/material";
 import * as _ from "lodash";
-import {ConfirmDialog, ConfirmDialogComponent} from "../../components/dialogs/confirm/confirm-dialog.component";
+import {ConfirmDialogData, ConfirmDialogComponent} from "../../components/dialogs/confirm/confirm-dialog.component";
+import {SortBy} from "@model/AppSettings";
 
 @Injectable({
   providedIn: 'root'
@@ -93,7 +93,7 @@ export class UserService {
   }
 
   confirmGroupLeave(group: any): Observable<boolean> {
-    const data: ConfirmDialog = {
+    const data: ConfirmDialogData = {
       title_key: 'user.group.leave.text',
       message_key: 'user.group.leave.confirm',
       action_key: 'user.group.leave.text',

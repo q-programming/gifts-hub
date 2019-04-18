@@ -4,13 +4,13 @@ import {MatButtonToggleGroup, MatDialog, MatMenuTrigger} from "@angular/material
 import {NGXLogger} from "ngx-logger";
 import {Group} from "@model/Group";
 import {Account} from "@model/Account";
-import {SortBy} from "@model/Settings";
 import {AlertService} from "@core-services/alert.service";
 import {AvatarService} from "@core-services/avatar.service";
 import {AuthenticationService} from "@core-services/authentication.service";
 import {KidDialogComponent} from "./kid-dialog/kid-dialog.component";
 import {GroupDialogComponent} from "./group-dialog/group-dialog.component";
 import * as _ from "lodash";
+import {SortBy} from "@model/AppSettings";
 
 @Component({
   selector: 'user-list',
