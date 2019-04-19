@@ -22,12 +22,13 @@ export class EditCategoryDialogComponent implements OnInit {
               private apiSrv: ApiService,
               private formBuilder: FormBuilder) {
     this.operation = data.operation;
+    this.form = this.formBuilder.group({
+      name: new FormControl('', [Validators.required])
+    });
     if (this.operation == CategoryEditType.UPDATE) {
       this.update = true;
       this.categoryDTO = data.categoryDTO;
-      this.form = this.formBuilder.group({
-        name: new FormControl(this.categoryDTO.category.name, [Validators.required])
-      });
+      this.form.controls['name'].setValue(this.categoryDTO.category.name);
     } else if (this.operation == CategoryEditType.MERGE) {
       this.categories = data.categories;
     }
@@ -37,16 +38,17 @@ export class EditCategoryDialogComponent implements OnInit {
   }
 
   commitAction() {
+    const name = this.form.controls['name'].value;
     if (this.operation == CategoryEditType.UPDATE) {
-      this.categoryDTO.category.name = this.form.controls['name'].value
+      this.categoryDTO.category.name = name;
+      this.dialogRef.close(this.categoryDTO.category);
     } else if (this.operation == CategoryEditType.MERGE) {
-
+      this.dialogRef.close(name);
     }
-    this.dialogRef.close(this.categoryDTO.category);
   }
 }
 
 export enum CategoryEditType {
-  UPDATE = "app.manage.categories.update", MERGE = "app.manage.categories.merge"
+  UPDATE = "app.manage.categories.update", MERGE = "app.manage.categories.merge.text"
 }
 

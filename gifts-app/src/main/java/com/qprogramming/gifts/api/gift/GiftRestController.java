@@ -272,9 +272,6 @@ public class GiftRestController {
     private Gift updateGiftFromForm(Gift gift) {
         if (gift.getCategory() != null && StringUtils.isNotBlank(gift.getCategory().getName())) {
             Category category = categoryService.findByName(gift.getCategory().getName());
-            if (category == null) {
-                category = categoryService.save(gift.getCategory());
-            }
             gift.setCategory(category);
         }
         gift.setEngines(searchEngineService.getSearchEngines(

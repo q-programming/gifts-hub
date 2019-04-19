@@ -5,6 +5,7 @@ import com.qprogramming.gifts.TestUtil;
 import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.config.property.PropertyService;
+import com.qprogramming.gifts.gift.category.CategoriesDTO;
 import com.qprogramming.gifts.gift.category.Category;
 import org.joda.time.LocalDate;
 import org.junit.Before;
@@ -19,6 +20,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import static com.qprogramming.gifts.TestUtil.createCategory;
 import static com.qprogramming.gifts.TestUtil.createGift;
 import static com.qprogramming.gifts.settings.Settings.APP_GIFT_AGE;
 import static org.junit.Assert.*;
@@ -110,8 +112,7 @@ public class GiftServiceTest {
 
     @Test
     public void deleteCategory() {
-        Category category = new Category("category");
-        category.setId(1L);
+        Category category = createCategory("category", 1L, Integer.MAX_VALUE);
         Gift gift1 = createGift(1L, testAccount);
         gift1.setCategory(category);
         Gift gift2 = createGift(2L, testAccount);
@@ -127,6 +128,34 @@ public class GiftServiceTest {
         assertEquals((long) gift2.getCategory().getId(), Integer.MIN_VALUE);
         assertEquals((long) gift3.getCategory().getId(), Integer.MIN_VALUE);
         assertEquals((long) gift4.getCategory().getId(), Integer.MIN_VALUE);
+    }
+
+    @Test
+    public void mergeCategoriesTest() {
+        Category category1 = createCategory("category1", 1L, Integer.MAX_VALUE);
+        Category category2 = createCategory("category2", 2L, Integer.MAX_VALUE);
+        Category category3 = createCategory("category3", 3L, Integer.MAX_VALUE);
+        Category newCategory = createCategory("newCategory", 4L, Integer.MAX_VALUE);
+        CategoriesDTO categories = new CategoriesDTO();
+        List<Category> categoryList = Arrays.asList(category1, category2, category3);
+        categories.setCategories(categoryList);
+        categories.setName(newCategory.getName());
+        Gift gift1 = createGift(1L, testAccount);
+        gift1.setCategory(category1);
+        Gift gift2 = createGift(2L, testAccount);
+        gift2.setCategory(category2);
+        Gift gift3 = createGift(3L, testAccount);
+        gift3.setCategory(category3);
+        Gift gift4 = createGift(4L, testAccount);
+        gift4.setCategory(category3);
+        List<Gift> gifts = Arrays.asList(gift1, gift2, gift3, gift4);
+        when(giftRepositoryMock.findAllByCategoryIsIn(categoryList)).thenReturn(gifts);
+        giftService.mergeCategories(newCategory, categoryList);
+        assertEquals(newCategory, gift1.getCategory());
+        assertEquals(newCategory, gift2.getCategory());
+        assertEquals(newCategory, gift3.getCategory());
+        assertEquals(newCategory, gift4.getCategory());
+        verify(giftRepositoryMock, times(1)).saveAll(gifts);
     }
 
 

@@ -5,6 +5,7 @@ import com.qprogramming.gifts.account.authority.Authority;
 import com.qprogramming.gifts.account.authority.Role;
 import com.qprogramming.gifts.config.MappingConfiguration;
 import com.qprogramming.gifts.gift.Gift;
+import com.qprogramming.gifts.gift.category.Category;
 import com.qprogramming.gifts.schedule.AppEvent;
 import com.qprogramming.gifts.schedule.AppEventType;
 import com.qprogramming.gifts.settings.SearchEngine;
@@ -117,6 +118,13 @@ public class TestUtil {
         gift.addLink("http://google.ocm");
         gift.setUserId(account.getId());
         return gift;
+    }
+    public static Category createCategory(String name, Long id, Integer priority) {
+        Category category = new Category();
+        category.setName(name);
+        category.setId(id);
+        category.setPriority(priority);
+        return category;
     }
 
     public static List<Account> createAccountList() {

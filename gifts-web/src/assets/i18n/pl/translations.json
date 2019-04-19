@@ -4,6 +4,7 @@
       "cancel": "Anuluj",
       "delete": "Usuń",
       "edit": "Edytuj",
+      "name": "Nazwa",
       "return": "Powróć na stronę główną",
       "undo": "Cofnij",
       "version": "wersja"
@@ -25,9 +26,12 @@
       },
       "categories": {
         "count": "Prezentów w kategorii",
-        "hint": "Edytuj kategorie<br>\nMożesz zmienić priorytet kategorii jak będa wyświetlane na listach zyczeń uzytkowników ( kategoria z najwyższym priorytetem będzie wyświetlana pierwsza ) poprzez podniesienie i przesunięcie <br>\nEdytuj kategorię klikająć guzik edycji , usuń klikająć ikonę kosza",
+        "hint": "Możesz zmienić priorytet kategorii jak będa wyświetlane na listach zyczeń uzytkowników ( kategoria z najwyższym priorytetem będzie wyświetlana pierwsza ) poprzez podniesienie i przesunięcie <br>\nEdytuj kategorię klikająć guzik edycji , usuń klikająć ikonę kosza.",
         "merge": {
-          "text": "Połącz kategorie"
+          "hint": "Wprowadz nową nazwę kategorii<br>\nWszystkie prezenty z zaznaczonych kategorii zostaną przypisane do nowej.",
+          "merged": "Kategorie połączone",
+          "start": "Rozpocznij łaczenie kategorii",
+          "text": "Połącz  zaznaczone kategorie"
         },
         "priority": {
           "0": "Priorytet",

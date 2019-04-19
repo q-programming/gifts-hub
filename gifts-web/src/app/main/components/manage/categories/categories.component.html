@@ -1,4 +1,4 @@
-<div fxLayout="row wrap" fxLayoutAlign="center" class="mt-5">
+<div fxLayout="row wrap" fxLayoutAlign="center" class="mt-5 mb-5">
   <div fxFlex="60" fxFlex.xs="100">
     <h4>{{'app.manage.categories.text'|translate}}</h4>
     <mat-hint [innerHTML]="'app.manage.categories.hint'|translate"></mat-hint>
@@ -6,22 +6,31 @@
   <div fxFlex="60" fxFlex.xs="100" class="mt-2">
     <div cdkDropList (cdkDropListDropped)="onDrop($event)" class="pb-3">
       <mat-card *ngFor="let category of settings.categories" class="mat-list-compact" cdkDrag>
-        <mat-icon matListIcon>more_vert</mat-icon>
-        {{category.category.name}}
-        <span class="pull-right mt-2" matTooltip="{{'app.manage.categories.count'|translate}}">
-          <i class="fa fa-fw fa-gift" aria-hidden="true"></i>
-          {{category.count}}
-        </span>
-        <span class="pull-right actions">
-          <button mat-icon-button (click)="openUpdateCategory(category)">
-            <mat-icon>edit</mat-icon>
-          </button>
-          <button mat-icon-button (click)="confirmDelete(category)">
-            <mat-icon>delete</mat-icon>
-          </button>
-        </span>
+        <div fxLayout="row wrap">
+          <div fxFlex="10" class="mt-2">
+            <mat-checkbox *ngIf="merge" [(ngModel)]="category.selected"></mat-checkbox>
+            <mat-icon matListIcon *ngIf="!merge">more_vert</mat-icon>
+          </div>
+          <div fxFlex="60" fxFlex.gt-md="75" class="mt-2">
+            {{category.category.name}}
+          </div>
+          <div fxFlex="30" fxFlex.gt-md="15" class="actions">
+            <button mat-icon-button (click)="openUpdateCategory(category)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button (click)="confirmDelete(category)">
+              <mat-icon>delete</mat-icon>
+            </button>
+            <i class="fa fa-fw fa-gift" aria-hidden="true"></i>
+            {{category.count}}
+          </div>
+        </div>
       </mat-card>
     </div>
+    <button mat-raised-button (click)="mergeClicked()" [ngClass]="{'success-button':merge}">
+      <mat-icon>merge_type</mat-icon>
+      {{(merge ? 'app.manage.categories.merge.text' : 'app.manage.categories.merge.start')| translate }}
+    </button>
     <button mat-raised-button class="success-button pull-right" (click)="saveConfiguration()">
       {{'app.manage.app.save'|translate}}
     </button>

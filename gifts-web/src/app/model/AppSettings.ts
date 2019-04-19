@@ -9,6 +9,7 @@ export class AppSettings {
   searchEngines: SearchEngine[];
   sort: SortBy;
   categories: CategoryDTO[];
+
   constructor() {
     this.email = new EmailSettings();
   }
@@ -30,6 +31,7 @@ export enum SortBy {
 
 export class CategoryDTO {
   category: Category;
+  selected: boolean;
   count: number;
 }
 

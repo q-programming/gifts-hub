@@ -10,6 +10,7 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData
 } from "../../../../components/dialogs/confirm/confirm-dialog.component";
+import * as _ from 'lodash';
 
 @Component({
   selector: 'manage-categories',
@@ -20,6 +21,7 @@ export class CategoriesComponent implements OnInit {
 
   @Input() settings: AppSettings;
   @Output() commit: EventEmitter<boolean> = new EventEmitter();
+  merge: boolean;
 
   constructor(private alertSrv: AlertService, private apiSrv: ApiService, public dialog: MatDialog,) {
   }
@@ -75,7 +77,7 @@ export class CategoriesComponent implements OnInit {
       data: data
     };
 
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, dialogConfig)
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, dialogConfig);
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.apiSrv.delete(`${environment.app_url}/remove-category`, categoryDTO.category).subscribe(() => {
@@ -85,6 +87,47 @@ export class CategoriesComponent implements OnInit {
           this.alertSrv.error('app.manage.error');
         });
       }
+    })
+  }
+
+  mergeClicked() {
+    if (this.merge) {
+      const selected = _.filter(this.settings.categories, (c) => c.selected).map((c) => c.category);
+      console.log(selected);
+      if (selected.length > 0) {
+        this.processMerge(selected);
+      }
+    } else {
+      this.merge = true
+    }
+  }
+
+  private processMerge(selected) {
+    const dialogRef = this.dialog.open(EditCategoryDialogComponent, {
+      panelClass: 'gifts-modal-normal',
+      data: {
+        categories: selected,
+        operation: CategoryEditType.MERGE
+      }
+    });
+    dialogRef.afterClosed().subscribe(value => {
+      if (value) {
+        this.apiSrv.put(`${environment.app_url}/merge-categories`, {
+            name: value,
+            categories: selected
+          }
+        ).subscribe(() => {
+          this.alertSrv.success("app.manage.categories.merge.merged");
+          this.commit.emit(true);
+        }, error1 => {
+          this.alertSrv.error('app.manage.error');
+        });
+      } else {
+        selected.forEach((category) => {
+          category.selected = false;
+        })
+      }
+      this.merge = false;
     })
   }
 }

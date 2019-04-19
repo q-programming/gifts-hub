@@ -4,6 +4,7 @@
       "cancel": "Cancel",
       "delete": "Delete",
       "edit": "Edit",
+      "name": "Name",
       "return": "Return to home page",
       "undo": "Undo",
       "version": "version"
@@ -25,9 +26,12 @@
       },
       "categories": {
         "count": "Gifts in category",
-        "hint": "Edit categories<br>\nYou can change priority of how categories will be shown on user's wish lists (categories with top priority will be shown first)  by drag&droping it<br>\nEdit category by clicking edit button , or remove it by clicking trash icon",
+        "hint": "You can change priority of how categories will be shown on user's wish lists (categories with top priority will be shown first)  by drag&droping it<br>\nEdit category by clicking edit button , or remove it by clicking trash icon.",
         "merge": {
-          "text": "Merge categories"
+          "hint": "Input new name of category<br>\nAll gifts from selected category will be moved to this new one",
+          "merged": "Categories merged",
+          "start": "Begin merging categories",
+          "text": "Merge selected categories"
         },
         "priority": {
           "0": "Priority",
