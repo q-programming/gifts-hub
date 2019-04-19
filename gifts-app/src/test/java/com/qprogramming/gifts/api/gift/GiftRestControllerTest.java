@@ -37,6 +37,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 
+import static com.qprogramming.gifts.TestUtil.createCategory;
 import static com.qprogramming.gifts.TestUtil.createSearchEngine;
 import static org.junit.Assert.*;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
@@ -98,6 +99,7 @@ public class GiftRestControllerTest extends MockedAccountTestBase {
 
     @Test
     public void createGiftSuccess() throws Exception {
+        Category cat = createCategory("cat", 1L, Integer.MAX_VALUE);
         Gift form = new Gift();
         form.setName("Gift");
         form.setDescription("Some sample description");
@@ -105,12 +107,13 @@ public class GiftRestControllerTest extends MockedAccountTestBase {
         form.setUserId(testAccount.getId());
         List<Long> idList = Arrays.asList(1L, 2L);
         form.setEngines(Collections.singleton(createSearchEngine(NAME, "link", "icon")));
-        form.setCategory(new Category("cat2"));
+        form.setCategory(cat);
         when(accSrvMock.findById(testAccount.getId())).thenReturn(testAccount);
+        when(categoryServiceMock.findByName(anyString())).thenReturn(cat);
         giftsRestCtrl.perform(post(API_GIFT_CREATE).contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(form)))
                 .andExpect(status().isCreated());
         verify(giftServiceMock, times(1)).create(any(Gift.class));
-        verify(categoryServiceMock, times(1)).save(any(Category.class));
+        verify(categoryServiceMock, times(1)).findByName(anyString());
     }
 
     @Test
@@ -138,6 +141,7 @@ public class GiftRestControllerTest extends MockedAccountTestBase {
 
     @Test
     public void editGiftSuccess() throws Exception {
+        Category cat = createCategory("cat", 1l, Integer.MAX_VALUE);
         Gift gift = new Gift();
         gift.setId(1L);
         gift.setName("Name");
@@ -149,7 +153,7 @@ public class GiftRestControllerTest extends MockedAccountTestBase {
         form.addLink("http://google.com");
         Set<SearchEngine> idList = Collections.singleton(createSearchEngine(NAME, "link", "icon"));
         form.setEngines(idList);
-        form.setCategory(new Category("cat2"));
+        form.setCategory(cat);
         Set<SearchEngine> engines = new HashSet<>();
         engines.add(createSearchEngine(NAME, "link", "icon"));
         when(giftServiceMock.findById(1L)).thenReturn(gift);
@@ -157,13 +161,14 @@ public class GiftRestControllerTest extends MockedAccountTestBase {
         when(searchEngineServiceMock.getSearchEngines(Collections.singletonList(1L)))
                 .thenReturn(engines);
         when(categoryServiceMock.save(any(Category.class))).then(returnsFirstArg());
+        when(categoryServiceMock.findByName(anyString())).thenReturn(cat);
         when(accSrvMock.findById(testAccount.getId())).thenReturn(testAccount);
         MvcResult mvcResult = giftsRestCtrl.perform(post(API_GIFT_EDIT).contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(form)))
                 .andExpect(status().isOk()).andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
         Gift result = TestUtil.convertJsonToObject(contentAsString, Gift.class);
         verify(giftServiceMock, times(1)).update(any(Gift.class));
-        verify(categoryServiceMock, times(1)).save(any(Category.class));
+        verify(categoryServiceMock, times(1)).findByName(anyString());
         assertEquals(form.getName(), result.getName());
         assertEquals(form.getDescription(), result.getDescription());
         assertTrue(result.getEngines().size() == 1);
@@ -577,10 +582,7 @@ public class GiftRestControllerTest extends MockedAccountTestBase {
 
     @Test
     public void notAllowedCategory() throws Exception {
-        MvcResult mvcResult = giftsRestCtrl.perform(get(API_GIFT_ALLOWED_CATEGORY).param("category", "other")).andReturn();
-        String contentAsString = mvcResult.getResponse().getContentAsString();
-        ResultData resultData = TestUtil.convertJsonToObject(contentAsString, ResultData.class);
-        assertEquals(resultData.code, ResultData.Code.ERROR);
+        giftsRestCtrl.perform(get(API_GIFT_ALLOWED_CATEGORY).param("category", "other")).andExpect(status().isConflict());
     }
 
     //TODO Test links
