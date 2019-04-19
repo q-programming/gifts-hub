@@ -147,7 +147,7 @@
       },
       "new": "New category (press enter to create)",
       "other": "Other",
-      "prohibited": "Category <strong>{0}</strong> is not permitted, please choose other",
+      "prohibited": "Category is not permitted, please choose other",
       "realised": "Realised",
       "text": "Category"
     },

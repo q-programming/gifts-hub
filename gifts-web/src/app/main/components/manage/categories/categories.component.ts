@@ -45,6 +45,7 @@ export class CategoriesComponent implements OnInit {
 
   openUpdateCategory(categoryDTO: CategoryDTO) {
     const dialogRef = this.dialog.open(EditCategoryDialogComponent, {
+      minWidth: '400px',
       panelClass: 'gifts-modal-normal',
       data: {
         categoryDTO: categoryDTO,
@@ -93,10 +94,10 @@ export class CategoriesComponent implements OnInit {
   mergeClicked() {
     if (this.merge) {
       const selected = _.filter(this.settings.categories, (c) => c.selected).map((c) => c.category);
-      console.log(selected);
       if (selected.length > 0) {
         this.processMerge(selected);
       }
+      this.merge = false
     } else {
       this.merge = true
     }
@@ -127,7 +128,6 @@ export class CategoriesComponent implements OnInit {
           category.selected = false;
         })
       }
-      this.merge = false;
     })
   }
 }

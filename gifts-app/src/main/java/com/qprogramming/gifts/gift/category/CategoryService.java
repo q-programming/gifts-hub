@@ -24,7 +24,7 @@ public class CategoryService {
      * @return found Category, or new Category which was just saved
      */
     public Category findByName(String name) {
-        return categoryRepository.findByNameIgnoreCase(name).orElse(save(new Category(name)));
+        return categoryRepository.findByNameIgnoreCase(name).orElseGet(() -> save(new Category(name)));
     }
 
     public Category save(Category category) {

@@ -9,6 +9,9 @@
       <div fxFlex="80%">
         <mat-form-field fxFlex="100%">
           <input matInput placeholder=" {{'app.general.name'|translate}}" formControlName="name" required>
+          <mat-error *ngIf="form.controls['name'].hasError('prohibited')">
+            {{'gift.category.prohibited'|translate}}
+          </mat-error>
         </mat-form-field>
       </div>
       <div fxFlex="80" *ngIf="!update">

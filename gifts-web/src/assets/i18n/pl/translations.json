@@ -147,7 +147,7 @@
       },
       "new": "Nowa kategoria ( naciśnij enter aby stworzyć)",
       "other": "Inne",
-      "prohibited": "Kategoria <strong>{0}</strong> nie jest dozwolona, proszę wybrać inną",
+      "prohibited": "Kategoria nie jest dozwolona, proszę wybrać inną",
       "realised": "Zrealizowane",
       "text": "Kategoria"
     },

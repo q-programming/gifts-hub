@@ -3,6 +3,8 @@ import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material";
 import {ApiService} from "@core-services/api.service";
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {CategoryDTO} from "@model/AppSettings";
+import {debounceTime, distinctUntilChanged} from "rxjs/operators";
+import {environment} from "@env/environment";
 
 @Component({
   selector: 'category-edit-dialog',
@@ -35,6 +37,17 @@ export class EditCategoryDialogComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.form.controls['name'].valueChanges.pipe(
+      debounceTime(500),
+      distinctUntilChanged()
+    ).subscribe(value => {
+      this.apiSrv.get(`${environment.gift_url}/allowed-category`, {category: value}).subscribe(() => {
+        this.form.controls['name'].setErrors(undefined);
+      }, error => {
+        this.form.controls['name'].setErrors({prohibited: true});
+      });
+    })
+
   }
 
   commitAction() {
