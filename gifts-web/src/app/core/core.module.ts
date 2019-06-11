@@ -19,6 +19,7 @@ import {AlertService} from "@core-services/alert.service";
 import {HighlightPipe} from "./pipes/highlight.directive";
 import {NavigationComponent} from "./navigation/authenticated/navigation.component";
 import {NavigationUnauthenticatedComponent} from "./navigation/unauthenticated/navigation-unauthenticated.component";
+import {GoTopButtonModule} from "ng2-go-top-button";
 import {RouterModule} from "@angular/router";
 import {AvatarComponent} from "./components/avatar/avatar.component";
 
@@ -43,7 +44,8 @@ import {AvatarComponent} from "./components/avatar/avatar.component";
       serverLogLevel: NgxLoggerLevel.ERROR
     }),
     TranslateModule.forChild(),
-    LayoutModule
+    LayoutModule,
+    GoTopButtonModule
   ],
   providers: [
     AuthGuard,
@@ -74,7 +76,8 @@ import {AvatarComponent} from "./components/avatar/avatar.component";
     TranslateModule,
     FlexLayoutModule,
     LoggerModule,
-    HighlightPipe
+    HighlightPipe,
+    GoTopButtonModule
   ]
 })
 export class CoreModule {
