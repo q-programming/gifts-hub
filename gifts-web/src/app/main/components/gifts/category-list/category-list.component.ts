@@ -11,7 +11,7 @@ import {
   ViewChild
 } from '@angular/core';
 import {FormControl} from "@angular/forms";
-import {MatSelect} from "@angular/material";
+import { MatSelect } from "@angular/material/select";
 import {ReplaySubject, Subject} from "rxjs";
 import {CategoryOption} from "@model/Category";
 import {take, takeUntil} from "rxjs/operators";
@@ -26,7 +26,7 @@ export class CategoryListComponent implements OnInit, AfterViewInit, AfterViewCh
 
   categoryControl: FormControl = new FormControl();
   categoryFilterControl: FormControl = new FormControl();
-  @ViewChild('categorySelect') categorySelect: MatSelect;
+  @ViewChild('categorySelect',{static:true}) categorySelect: MatSelect;
   filteredCategories: ReplaySubject<CategoryOption[]> = new ReplaySubject<CategoryOption[]>(1);
   filterTerm: string;
   private _onDestroy = new Subject<void>();

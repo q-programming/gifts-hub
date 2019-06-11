@@ -12,7 +12,7 @@ import {ConfirmComponent} from "./components/confirm/confirm.component";
 const routes: Routes = [
   {
     path: '',
-    loadChildren: './main/main.module#MainModule',
+    loadChildren: () => import('./main/main.module').then(m => m.MainModule),
     canActivate:[AuthGuard],
   },
   {path: 'login', component: LoginComponent},

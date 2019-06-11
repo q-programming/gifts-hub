@@ -2,7 +2,7 @@ import {Component, Inject, OnInit, ViewChild} from '@angular/core';
 import {Router} from "@angular/router";
 import {NGXLogger} from "ngx-logger";
 import {TranslateService} from "@ngx-translate/core";
-import {MAT_DIALOG_DATA, MatDialog, MatDialogConfig} from "@angular/material";
+import { MAT_DIALOG_DATA, MatDialog, MatDialogConfig } from "@angular/material/dialog";
 import {DOCUMENT} from "@angular/common";
 import {CropperSettings, ImageCropperComponent} from "ngx-img-cropper";
 import {AuthenticationService} from "@core-services/authentication.service";
@@ -151,7 +151,7 @@ export class SettingsComponent implements OnInit {
 })
 export class AvatarUploadComponent implements OnInit {
 
-  @ViewChild('cropper', undefined)
+  @ViewChild('cropper', {static:true})
   cropper: ImageCropperComponent;
   cropperSettings: CropperSettings;
   account: Account;

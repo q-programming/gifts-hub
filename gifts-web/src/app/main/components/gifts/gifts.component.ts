@@ -10,7 +10,7 @@ import {Account} from "@model/Account";
 import * as _ from "lodash"
 import {AlertService} from "@core-services/alert.service";
 import {NGXLogger} from "ngx-logger";
-import {MatDialog} from "@angular/material";
+import { MatDialog } from "@angular/material/dialog";
 import {GiftDialogComponent} from "./gift-dialog/gift-dialog.component";
 import {TranslateService} from "@ngx-translate/core";
 import {CategoryOption} from "@model/Category";

@@ -1,6 +1,8 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {UserService} from "@services/user.service";
-import {MatButtonToggleGroup, MatDialog, MatMenuTrigger} from "@angular/material";
+import { MatButtonToggleGroup } from "@angular/material/button-toggle";
+import { MatDialog } from "@angular/material/dialog";
+import { MatMenuTrigger } from "@angular/material/menu";
 import {NGXLogger} from "ngx-logger";
 import {Group} from "@model/Group";
 import {Account} from "@model/Account";
@@ -19,8 +21,8 @@ import {SortBy} from "@model/AppSettings";
 })
 export class UserListComponent implements OnInit {
   SortBy = SortBy;
-  @ViewChild("sortBy") sortBy: MatButtonToggleGroup;
-  @ViewChild(MatMenuTrigger) trigger: MatMenuTrigger;
+  @ViewChild("sortBy",{static:true}) sortBy: MatButtonToggleGroup;
+  @ViewChild(MatMenuTrigger, {static:true}) trigger: MatMenuTrigger;
   group: Group;
   groups: Group[] = [];
   withoutFamily: Account[] = [];

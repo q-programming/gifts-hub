@@ -8,7 +8,6 @@ import {LoggerModule, NgxLoggerLevel} from "ngx-logger";
 import {environment} from "@env/environment";
 import {TranslateModule} from "@ngx-translate/core";
 import {LayoutModule} from "@angular/cdk/layout";
-import {GoTopButtonModule} from "ng2-go-top-button";
 import {AuthGuard} from "./guards/auth.guard";
 import {AdminGuard} from "./guards/admin.guard";
 import {AuthenticationService} from "@core-services/authentication.service";
@@ -44,8 +43,7 @@ import {AvatarComponent} from "./components/avatar/avatar.component";
       serverLogLevel: NgxLoggerLevel.ERROR
     }),
     TranslateModule.forChild(),
-    LayoutModule,
-    GoTopButtonModule
+    LayoutModule
   ],
   providers: [
     AuthGuard,
@@ -76,7 +74,6 @@ import {AvatarComponent} from "./components/avatar/avatar.component";
     TranslateModule,
     FlexLayoutModule,
     LoggerModule,
-    GoTopButtonModule,
     HighlightPipe
   ]
 })
