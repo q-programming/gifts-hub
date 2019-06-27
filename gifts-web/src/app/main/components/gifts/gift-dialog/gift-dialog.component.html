@@ -31,7 +31,7 @@
             <button mat-stroked-button matSuffix (click)="addLink()" matTooltip="{{'gift.link.add'|translate}}">
               <mat-icon>add</mat-icon>
             </button>
-            <button *ngIf="form.controls.links.controls.length > 1"
+            <button *ngIf="form.controls['links'].controls.length > 1"
                     mat-stroked-button matSuffix (click)="removeLink(i)" matTooltip="{{'gift.link.remove'|translate}}">
               <mat-icon>remove</mat-icon>
             </button>
@@ -58,6 +58,9 @@
                   (click)="resetCategory()">
             <mat-icon>close</mat-icon>
           </button>
+          <mat-error *ngIf="form.controls['category'].hasError('prohibited')">
+            {{'gift.category.prohibited'|translate}}
+          </mat-error>
         </mat-form-field>
       </div>
       <!--HIDDEN-->

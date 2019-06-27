@@ -1,14 +1,15 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
-import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material";
+import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import {Gift} from "@model/Gift";
 import {ApiService} from "@core-services/api.service";
 import {environment} from "@env/environment";
 import {SearchEngine} from "@model/SearchEngine";
 import {Category} from "@model/Category";
 import {Observable} from "rxjs";
-import {map, startWith} from "rxjs/operators";
+import {debounceTime, map, startWith} from "rxjs/operators";
 import * as _ from "lodash";
+import {distinctUntilChanged} from "rxjs/internal/operators/distinctUntilChanged";
 
 @Component({
   selector: 'app-gift-dialog',
@@ -57,6 +58,16 @@ export class GiftDialogComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.form.controls['category'].valueChanges.pipe(
+      debounceTime(500),
+      distinctUntilChanged()
+    ).subscribe(value => {
+      this.apiSrv.get(`${environment.gift_url}/allowed-category`, {category: value}).subscribe(() => {
+        this.form.controls['category'].setErrors(undefined);
+      }, error => {
+        this.form.controls['category'].setErrors({prohibited: true});
+      });
+    })
   }
 
   // SEARCH ENGINES

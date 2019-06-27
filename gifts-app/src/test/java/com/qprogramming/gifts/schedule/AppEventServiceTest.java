@@ -14,14 +14,10 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.qprogramming.gifts.TestUtil.createEvent;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 public class AppEventServiceTest {
@@ -54,7 +50,7 @@ public class AppEventServiceTest {
         when(eventRepoMock.findAll()).thenReturn(Collections.singletonList(createEvent(testAccount)));
         List<AppEvent> result = eventSrv.findAllNotProcessed();
         assertFalse(result.isEmpty());
-        assertTrue(testAccount.equals(result.get(0).getAccount()));
+        assertEquals(testAccount, result.get(0).getAccount());
     }
 
     @Test
@@ -62,7 +58,8 @@ public class AppEventServiceTest {
         AppEvent event = createEvent(testAccount);
         AppEvent event2 = createEvent(testAccount);
         List<AppEvent> appEvents = Arrays.asList(event, event2);
-        eventSrv.processEvents(appEvents);
+        when(eventRepoMock.findAll()).thenReturn(appEvents);
+        eventSrv.processEvents();
         verify(eventRepoMock, times(1)).deleteAll(anyCollection());
     }
 
@@ -94,6 +91,19 @@ public class AppEventServiceTest {
         when(eventRepoMock.findByAccountAndGiftAndType(Utils.getCurrentAccount(), event.getGift(), AppEventType.REALISED)).thenReturn(event);
         eventSrv.tryToUndoEvent(event.getGift());
         verify(eventRepoMock, times(1)).findByAccountAndGiftAndType(testAccount, event.getGift(), AppEventType.REALISED);
+    }
+
+    @Test
+    public void getEventsGroupedByAccountTest() {
+        AppEvent event1 = TestUtil.createEvent(testAccount);
+        AppEvent event2 = TestUtil.createEvent(testAccount);
+        AppEvent event3 = TestUtil.createEvent(testAccount);
+        AppEvent event4 = TestUtil.createEvent(testAccount);
+        event4.setCreatedBy(testAccount);
+        when(eventRepoMock.findAll()).thenReturn(Arrays.asList(event1, event2, event3, event4));
+        Map<Account, List<AppEvent>> eventsGroupedByAccount = eventSrv.getEventsGroupedByAccount();
+        assertTrue(eventsGroupedByAccount.containsKey(testAccount));
+        assertEquals(3, eventsGroupedByAccount.get(testAccount).size());
     }
 
 }

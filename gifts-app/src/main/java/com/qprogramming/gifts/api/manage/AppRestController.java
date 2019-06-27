@@ -7,6 +7,7 @@ import com.qprogramming.gifts.config.property.PropertyService;
 import com.qprogramming.gifts.exceptions.AccountNotFoundException;
 import com.qprogramming.gifts.gift.Gift;
 import com.qprogramming.gifts.gift.GiftService;
+import com.qprogramming.gifts.gift.category.CategoriesDTO;
 import com.qprogramming.gifts.gift.category.Category;
 import com.qprogramming.gifts.gift.category.CategoryDTO;
 import com.qprogramming.gifts.gift.category.CategoryService;
@@ -29,10 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.security.RolesAllowed;
 import javax.mail.MessagingException;
 import javax.transaction.Transactional;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -135,6 +133,25 @@ public class AppRestController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @RolesAllowed("ROLE_ADMIN")
+    @RequestMapping(value = "/merge-categories", method = RequestMethod.PUT)
+    public ResponseEntity mergeCategories(@RequestBody CategoriesDTO categories) {
+        Account currentAccount = Utils.getCurrentAccount();
+        if (currentAccount == null || !currentAccount.getIsAdmin()) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+        List<Long> ids = categories.getCategories().stream().map(Category::getId).collect(Collectors.toList());
+        List<Category> categoriesList = categoryService.findByIds(ids);
+        if (categoriesList.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        Category newCategory = categoryService.findByName(categories.getName());
+        giftService.mergeCategories(newCategory, categoriesList);
+        categoriesList.remove(newCategory);
+        categoryService.removeAll(categoriesList);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 
     @RolesAllowed("ROLE_ADMIN")
     @RequestMapping(value = "/settings/email", method = RequestMethod.PUT)
@@ -156,16 +173,6 @@ public class AppRestController {
         propertyService.update(APP_EMAIL_ENCODING, settings.getEncoding());
         propertyService.update(APP_EMAIL_FROM, settings.getFrom());
         mailService.initMailSender();
-        //TODO remove sample
-//        Mail mail = new Mail();
-//        mail.setMailFrom("giftshub@q-programming.pl");
-//        mail.setMailTo("kubarom@gmail.com");
-//        mail.setMailSubject("Mail sending test");
-//        Map<String, Object> model = new HashMap<>();
-//        model.put("firstName", "John");
-//        model.put("lastName", "Doe");
-//        mail.setModel(model);
-//        mailService.sendEmail(mail);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

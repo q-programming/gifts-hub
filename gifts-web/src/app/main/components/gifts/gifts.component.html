@@ -72,15 +72,15 @@
   </div>
 </mat-card>
 <!--GIFTS-->
-<div [ngClass]="{'content':!filter,'content-filtered':filter}">
-  <ng-container *ngFor="let gifts of categorizedGifts| keyvalue">
-    <mat-expansion-panel expanded="true" *ngIf="!filteredCategory || gifts.key===filteredCategory">
+<div [ngClass]="{'content':!filter,'content-filtered':filter}" *ngIf="categorizedGifts">
+  <ng-container *ngFor="let key of categorizedKeys">
+    <mat-expansion-panel expanded="true" *ngIf="!filteredCategory || key===filteredCategory">
       <mat-expansion-panel-header>
         <mat-panel-title>
-          <h3 class="stylish-header">{{gifts.key}}</h3>
+          <h3 class="stylish-header">{{key}}</h3>
         </mat-panel-title>
       </mat-expansion-panel-header>
-      <div *ngFor="let gift of gifts.value;let even=even;trackBy: trackByFn">
+      <div *ngFor="let gift of categorizedGifts[key];let even=even;trackBy: trackByFn">
         <gift [gift]="gift"
               [even]="even"
               [canEdit]="canEdit(gift)"

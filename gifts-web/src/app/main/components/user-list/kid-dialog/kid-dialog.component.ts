@@ -1,6 +1,6 @@
 import {Component, Inject, OnInit, ViewChild} from '@angular/core';
 import {DOCUMENT} from "@angular/common";
-import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material";
+import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {CropperSettings, ImageCropperComponent} from "ngx-img-cropper";
 import {Account} from "@model/Account";
@@ -16,7 +16,7 @@ import {getBase64Image} from "../../../../utils/utils";
 })
 export class KidDialogComponent implements OnInit {
 
-  @ViewChild('cropper', undefined)
+  @ViewChild('cropper',{static:true})
   cropper: ImageCropperComponent;
   cropperSettings: CropperSettings;
   kid: Account;

@@ -1,4 +1,4 @@
-import {Component, Inject, OnInit} from '@angular/core';
+import {Component, EventEmitter, Inject, Input, OnInit, Output} from '@angular/core';
 import {AlertService} from "@core-services/alert.service";
 import {ApiService} from "@core-services/api.service";
 import {AppSettings} from "@model/AppSettings";
@@ -16,7 +16,8 @@ import * as _ from "lodash";
 export class EngineManageComponent implements OnInit {
 
   form: FormGroup;
-  settings: AppSettings = new AppSettings();
+  @Input() settings: AppSettings;
+  @Output() commit : EventEmitter<boolean> = new EventEmitter();
 
   constructor(private alertSrv: AlertService, private apiSrv: ApiService, private formBuilder: FormBuilder, @Inject(DOCUMENT) private document: Document) {
     this.form = this.formBuilder.group({
@@ -25,10 +26,7 @@ export class EngineManageComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.apiSrv.getObject<AppSettings>(`${environment.app_url}/settings`).subscribe(result => {
-      this.settings = result;
-      this.setEngines();
-    })
+    this.setEngines();
   }
 
 
@@ -73,17 +71,18 @@ export class EngineManageComponent implements OnInit {
     const enginesForm = <FormArray>this.form.controls['engines'];
     enginesForm.push(this.addEngine(new SearchEngine()));
   }
-  removeEngine(i){
+
+  removeEngine(i) {
     const control = <FormArray>this.form.controls['engines'];
     control.removeAt(i);
   }
 
   addEngine(engine: SearchEngine) {
     return this.formBuilder.group({
-      name: [engine.name,Validators.required],
+      name: [engine.name, Validators.required],
       id: [engine.id],
-      icon: [engine.icon,Validators.required],
-      searchString: [engine.searchString,Validators.required]
+      icon: [engine.icon, Validators.required],
+      searchString: [engine.searchString, Validators.required]
     });
   }
 }

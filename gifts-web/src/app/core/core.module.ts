@@ -8,7 +8,6 @@ import {LoggerModule, NgxLoggerLevel} from "ngx-logger";
 import {environment} from "@env/environment";
 import {TranslateModule} from "@ngx-translate/core";
 import {LayoutModule} from "@angular/cdk/layout";
-import {GoTopButtonModule} from "ng2-go-top-button";
 import {AuthGuard} from "./guards/auth.guard";
 import {AdminGuard} from "./guards/admin.guard";
 import {AuthenticationService} from "@core-services/authentication.service";
@@ -20,6 +19,7 @@ import {AlertService} from "@core-services/alert.service";
 import {HighlightPipe} from "./pipes/highlight.directive";
 import {NavigationComponent} from "./navigation/authenticated/navigation.component";
 import {NavigationUnauthenticatedComponent} from "./navigation/unauthenticated/navigation-unauthenticated.component";
+import {GoTopButtonModule} from "ng2-go-top-button";
 import {RouterModule} from "@angular/router";
 import {AvatarComponent} from "./components/avatar/avatar.component";
 
@@ -76,8 +76,8 @@ import {AvatarComponent} from "./components/avatar/avatar.component";
     TranslateModule,
     FlexLayoutModule,
     LoggerModule,
-    GoTopButtonModule,
-    HighlightPipe
+    HighlightPipe,
+    GoTopButtonModule
   ]
 })
 export class CoreModule {

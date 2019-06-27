@@ -3,6 +3,8 @@
     "general": {
       "cancel": "Anuluj",
       "delete": "Usuń",
+      "edit": "Edytuj",
+      "name": "Nazwa",
       "return": "Powróć na stronę główną",
       "undo": "Cofnij",
       "version": "wersja"
@@ -23,15 +25,28 @@
         "text": "Ustawienia aplikacji"
       },
       "categories": {
-        "count": "# Użyć",
+        "count": "Prezentów w kategorii",
+        "hint": "Możesz zmienić priorytet kategorii jak będa wyświetlane na listach zyczeń uzytkowników ( kategoria z najwyższym priorytetem będzie wyświetlana pierwsza ) poprzez podniesienie i przesunięcie <br>\nEdytuj kategorię klikająć guzik edycji , usuń klikająć ikonę kosza.",
+        "merge": {
+          "hint": "Wprowadz nową nazwę kategorii<br>\nWszystkie prezenty z zaznaczonych kategorii zostaną przypisane do nowej.",
+          "merged": "Kategorie połączone",
+          "start": "Rozpocznij łaczenie kategorii",
+          "text": "Połącz  zaznaczone kategorie"
+        },
         "priority": {
           "0": "Priorytet",
           "down": "Zmniejsz",
           "save": "Aktualizuj priorytety",
+          "text": "Ustaw priorytet kategorii",
           "up": "Zwiększ"
         },
-        "removed": "Kategoria została usunięta",
+        "remove": {
+          "confirm": "Jesteś pewień , że chcesz usunąć tą kategorię?<br>\nWszystkie prezenty z tej kategorii zostaną przeniesionę do kategorii \"Inne\"",
+          "removed": "Kategoria została usunięta",
+          "text": "Usuń kategorię"
+        },
         "text": "Kategorie",
+        "update": "Edytuj kategorię",
         "updated": "Kategoria zaktualizowana"
       },
       "email": {
@@ -132,7 +147,7 @@
       },
       "new": "Nowa kategoria ( naciśnij enter aby stworzyć)",
       "other": "Inne",
-      "prohibited": "Kategoria <strong>{0}</strong> nie jest dozwolona, proszę wybrać inną",
+      "prohibited": "Kategoria nie jest dozwolona, proszę wybrać inną",
       "realised": "Zrealizowane",
       "text": "Kategoria"
     },

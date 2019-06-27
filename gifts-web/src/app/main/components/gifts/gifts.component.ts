@@ -10,7 +10,7 @@ import {Account} from "@model/Account";
 import * as _ from "lodash"
 import {AlertService} from "@core-services/alert.service";
 import {NGXLogger} from "ngx-logger";
-import {MatDialog} from "@angular/material";
+import { MatDialog } from "@angular/material/dialog";
 import {GiftDialogComponent} from "./gift-dialog/gift-dialog.component";
 import {TranslateService} from "@ngx-translate/core";
 import {CategoryOption} from "@model/Category";
@@ -30,6 +30,7 @@ export class GiftsComponent implements OnInit {
   viewedAccount: Account;
   //gifts
   categorizedGifts: Map<string, Gift[]>;
+  categorizedKeys: string[];
   realizedGifts: Gift[] = [];
   unCategorizedGifts: Gift[] = [];
   GiftStatus = GiftStatus;
@@ -95,6 +96,7 @@ export class GiftsComponent implements OnInit {
     this.unCategorizedGifts = this.categorizedGifts[''];
     delete this.categorizedGifts[GiftStatus.REALISED];
     delete this.categorizedGifts[''];
+    this.categorizedKeys = Object.keys(this.categorizedGifts);
   }
 
   getAvatar(username: string) {

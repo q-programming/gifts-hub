@@ -9,6 +9,7 @@ import com.qprogramming.gifts.config.property.PropertyService;
 import com.qprogramming.gifts.exceptions.AccountNotFoundException;
 import com.qprogramming.gifts.gift.Gift;
 import com.qprogramming.gifts.gift.GiftService;
+import com.qprogramming.gifts.gift.category.CategoriesDTO;
 import com.qprogramming.gifts.gift.category.Category;
 import com.qprogramming.gifts.gift.category.CategoryDTO;
 import com.qprogramming.gifts.gift.category.CategoryService;
@@ -28,6 +29,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.qprogramming.gifts.TestUtil.createCategory;
 import static com.qprogramming.gifts.settings.Settings.APP_URL;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -46,6 +48,7 @@ public class AppRestControllerTest extends MockedAccountTestBase {
     private static final String API_APPLICATION_SETUP = "/api/app/setup";
     private static final String API_APPLICATION_SEARCH_ENGINES = "/api/app/search-engines";
     public static final String API_APPLICATION_REMOVE_CATEGORY = "/api/app/remove-category";
+    public static final String API_APPLICATION_MERGE_CATEGORIES = "/api/app/merge-categories";
     public static final String API_APPLICATION_UPDATE_CATEGORY = "/api/app/update-category";
     private MockMvc manageRestController;
     @Mock
@@ -241,6 +244,48 @@ public class AppRestControllerTest extends MockedAccountTestBase {
 
 
     @Test
+    public void mergeCategoriesBadAuthTest() throws Exception {
+        CategoriesDTO categories = new CategoriesDTO();
+        manageRestController.perform(put(API_APPLICATION_MERGE_CATEGORIES)
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(categories))
+        ).andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void mergeCategoriesNotFoundTest() throws Exception {
+        testAccount.addAuthority(TestUtil.createAdminAuthority());
+        Category category1 = createCategory("category1", 1L, Integer.MAX_VALUE);
+        CategoriesDTO categories = new CategoriesDTO();
+        categories.getCategories().add(category1);
+        manageRestController.perform(put(API_APPLICATION_MERGE_CATEGORIES)
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(categories))
+        ).andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void mergeCategoriesTest() throws Exception {
+        testAccount.addAuthority(TestUtil.createAdminAuthority());
+        Category category1 = createCategory("category1", 1L, Integer.MAX_VALUE);
+        Category category2 = createCategory("category2", 2L, Integer.MAX_VALUE - 1);
+        Category newCategory = createCategory("newCategory", 3L, Integer.MAX_VALUE - 3);
+        List<Category> categoryList = Arrays.asList(category1, category2);
+        CategoriesDTO categories = new CategoriesDTO();
+        categories.setCategories(categoryList);
+        categories.setName(newCategory.getName());
+        when(categoryServiceMock.findByIds(anyList())).thenReturn(categoryList);
+        when(categoryServiceMock.findByName(newCategory.getName())).thenReturn(newCategory);
+        manageRestController.perform(put(API_APPLICATION_MERGE_CATEGORIES)
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(categories))
+        ).andExpect(status().isOk());
+        verify(giftServiceMock, times(1)).mergeCategories(newCategory, categoryList);
+        verify(categoryServiceMock, times(1)).removeAll(categoryList);
+    }
+
+
+    @Test
     public void getAllSearchEnginesTest() throws Exception {
         List<SearchEngine> expected = new ArrayList<>();
         expected.add(TestUtil.createSearchEngine("google", "link", "icon"));
@@ -371,14 +416,4 @@ public class AppRestControllerTest extends MockedAccountTestBase {
                         .content(testAccount.getId())).andExpect(status().isForbidden())
                 .andReturn();
     }
-
-    private Category createCategory(String name, Long id, Integer priority) {
-        Category category = new Category();
-        category.setName(name);
-        category.setId(id);
-        category.setPriority(priority);
-        return category;
-    }
-
-
 }

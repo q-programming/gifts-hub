@@ -3,6 +3,8 @@
     "general": {
       "cancel": "Cancel",
       "delete": "Delete",
+      "edit": "Edit",
+      "name": "Name",
       "return": "Return to home page",
       "undo": "Undo",
       "version": "version"
@@ -23,15 +25,28 @@
         "text": "Application settings"
       },
       "categories": {
-        "count": "# Used",
+        "count": "Gifts in category",
+        "hint": "You can change priority of how categories will be shown on user's wish lists (categories with top priority will be shown first)  by drag&droping it<br>\nEdit category by clicking edit button , or remove it by clicking trash icon.",
+        "merge": {
+          "hint": "Input new name of category<br>\nAll gifts from selected category will be moved to this new one",
+          "merged": "Categories merged",
+          "start": "Begin merging categories",
+          "text": "Merge selected categories"
+        },
         "priority": {
           "0": "Priority",
           "down": "Decrease",
           "save": "Update priority",
+          "text": "Set priority of categories",
           "up": "Increase"
         },
-        "removed": "Category was removed",
+        "remove": {
+          "confirm": "Are you sure, you want to delete this category ?<br>\nAll gifts from this category will be moved to \"Other\" category",
+          "removed": "Category was removed",
+          "text": "remove category"
+        },
         "text": "Categories",
+        "update": "Edit category",
         "updated": "Category was updated"
       },
       "email": {
@@ -132,7 +147,7 @@
       },
       "new": "New category (press enter to create)",
       "other": "Other",
-      "prohibited": "Category <strong>{0}</strong> is not permitted, please choose other",
+      "prohibited": "Category is not permitted, please choose other",
       "realised": "Realised",
       "text": "Category"
     },

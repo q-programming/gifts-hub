@@ -19,5 +19,7 @@ public interface GiftRepository extends JpaRepository<Gift, Long> {
 
     List<Gift> findAllByCategory(Category category);
 
+    List<Gift> findAllByCategoryIsIn(List<Category> category);
+
     List<Gift> findByEngines(SearchEngine engines);
 }

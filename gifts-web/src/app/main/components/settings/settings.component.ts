@@ -2,7 +2,7 @@ import {Component, Inject, OnInit, ViewChild} from '@angular/core';
 import {Router} from "@angular/router";
 import {NGXLogger} from "ngx-logger";
 import {TranslateService} from "@ngx-translate/core";
-import {MAT_DIALOG_DATA, MatDialog, MatDialogConfig} from "@angular/material";
+import { MAT_DIALOG_DATA, MatDialog, MatDialogConfig } from "@angular/material/dialog";
 import {DOCUMENT} from "@angular/common";
 import {CropperSettings, ImageCropperComponent} from "ngx-img-cropper";
 import {AuthenticationService} from "@core-services/authentication.service";
@@ -13,7 +13,7 @@ import {ApiService} from "@core-services/api.service";
 import {AlertService} from "@core-services/alert.service";
 import {AvatarService} from "@core-services/avatar.service";
 import {getBase64Image} from "../../../utils/utils";
-import {ConfirmDialog, ConfirmDialogComponent} from "../../../components/dialogs/confirm/confirm-dialog.component";
+import {ConfirmDialogData, ConfirmDialogComponent} from "../../../components/dialogs/confirm/confirm-dialog.component";
 
 
 @Component({
@@ -119,7 +119,7 @@ export class SettingsComponent implements OnInit {
   }
 
   deleteAccount() {
-    const data: ConfirmDialog = {
+    const data: ConfirmDialogData = {
       title_key: 'user.delete.text',
       message_key: 'user.delete.confirm',
       action_key: 'app.general.delete',
@@ -151,7 +151,7 @@ export class SettingsComponent implements OnInit {
 })
 export class AvatarUploadComponent implements OnInit {
 
-  @ViewChild('cropper', undefined)
+  @ViewChild('cropper', {static:true})
   cropper: ImageCropperComponent;
   cropperSettings: CropperSettings;
   account: Account;

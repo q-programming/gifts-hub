@@ -51,6 +51,8 @@ spring:
       app-secret: fb3c3e7ed3b5ffa7db0586c659198424
   jmx:
     default-domain: gifts
+  main:
+    allow-bean-definition-overriding: true
 facebook:
   client:
     clientId: 1750703375258695

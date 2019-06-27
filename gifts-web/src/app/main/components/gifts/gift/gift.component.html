@@ -8,29 +8,29 @@
     <!--STATUS-->
     <span class="gift-status mr-2">
       <ng-container *ngIf="currentAccount">
-         <span *ngIf="gift.status === GiftStatus.NEW && !gift.claimed" matTooltip="{{'gift.status.new'|translate}}"
+         <span *ngIf="gift.status === GiftStatus.NEW && !gift.claimed" matTooltip="{{'gift.status.new'|translate}}" #tooltip="matTooltip" (click)="tooltip.toggle()"
                class="new-gift ">
               <i class="fa fa-fw fa-certificate"></i>
        <i class="fa fa-fw fa-2x fa-gift" aria-hidden="true"></i>
         </span>
       <span *ngIf="gift.status === GiftStatus.REALISED"
             matTooltipClass="gift-tooltip"
-            matTooltip="{{'gift.status.realised'|translate}}&#13;{{gift.realised |date:'dd.MM.yyyy'}}">
+            matTooltip="{{'gift.status.realised'|translate}}&#13;{{gift.realised |date:'dd.MM.yyyy'}}" #tooltip="matTooltip" (click)="tooltip.toggle()">
       <i class="fa fa-fw fa-check"></i>
       <i class="fa fa-fw fa-2x fa-gift" aria-hidden="true"></i>
     </span>
       <span *ngIf="gift.claimed && gift.status !== GiftStatus.REALISED"
-            matTooltip="{{'gift.status.claimed'|translate}}&#13;{{gift.claimed.fullname}}">
+            matTooltip="{{'gift.status.claimed'|translate}}&#13;{{gift.claimed.fullname}}" #tooltip="matTooltip" (click)="tooltip.toggle()">
       <i class="fa fa-fw fa-hand-paper-o"></i>
       <i class="fa fa-fw fa-2x fa-gift" aria-hidden="true"></i>
     </span>
-      <span *ngIf="!gift.status && !gift.claimed" matTooltip="{{'gift.gift'|translate}}">
+      <span *ngIf="!gift.status && !gift.claimed" matTooltip="{{'gift.gift'|translate}}" #tooltip="matTooltip" (click)="tooltip.toggle()">
       <i class="fa fa-fw fa-minus fa-spacer"></i>
       <i class="fa fa-fw fa-2x fa-gift" aria-hidden="true"></i>
     </span>
       </ng-container>
       <ng-container *ngIf="!currentAccount">
-        <span matTooltip="{{'gift.gift'|translate}}">
+        <span matTooltip="{{'gift.gift'|translate}}" #tooltip="matTooltip" (click)="tooltip.toggle()">
              <i class="fa fa-fw fa-minus fa-spacer"></i>
              <i class="fa fa-fw fa-2x fa-gift" aria-hidden="true"></i>
          </span>
@@ -38,7 +38,7 @@
     </span>
     <!--NAME-->
     <span>
-      <i class="fa fa-fw fa-user-secret" *ngIf="gift.hidden" matTooltip="{{'gift.hidden.text'|translate}}"></i>
+      <i class="fa fa-fw fa-user-secret" *ngIf="gift.hidden" matTooltip="{{'gift.hidden.text'|translate}}" #tooltip="matTooltip" (click)="tooltip.toggle()"></i>
       <strong>{{gift.name}}</strong>
     </span>
   </div>

@@ -26,6 +26,9 @@ import {EnHelpComponent} from "./components/help/en/en-help.component";
 import {PlHelpComponent} from "./components/help/pl/pl-help.component";
 import {ScrollToModule} from "@nicky-lenaers/ngx-scroll-to";
 import { HelpListComponent } from './components/help/help-list/help-list.component';
+import { CategoriesComponent } from './components/manage/categories/categories.component';
+import {DragDropModule} from "@angular/cdk/drag-drop";
+import { EditCategoryDialogComponent } from './components/manage/categories/edit-category-dialog/edit-category-dialog.component';
 
 @NgModule({
   declarations: [
@@ -51,6 +54,8 @@ import { HelpListComponent } from './components/help/help-list/help-list.compone
     PlHelpComponent,
     EnHelpComponent,
     HelpListComponent,
+    CategoriesComponent,
+    EditCategoryDialogComponent,
   ],
   imports: [
     CommonModule,
@@ -58,13 +63,15 @@ import { HelpListComponent } from './components/help/help-list/help-list.compone
     ImageCropperModule,
     NgxMatSelectSearchModule,
     MainRoutingModule,
+    DragDropModule,
     ScrollToModule.forRoot(),
   ],
   entryComponents: [
     AvatarUploadComponent,
     KidDialogComponent,
     GiftDialogComponent,
-    GroupDialogComponent
+    GroupDialogComponent,
+    EditCategoryDialogComponent
   ],
   schemas: [NO_ERRORS_SCHEMA],
   providers: []

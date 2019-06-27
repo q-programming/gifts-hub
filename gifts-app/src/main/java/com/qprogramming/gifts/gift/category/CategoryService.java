@@ -17,8 +17,14 @@ public class CategoryService {
         this.categoryRepository = categoryRepository;
     }
 
+    /**
+     * Finds category by name. If it was not found, it will be created and saved
+     *
+     * @param name Name of searched category
+     * @return found Category, or new Category which was just saved
+     */
     public Category findByName(String name) {
-        return categoryRepository.findByNameIgnoreCase(name);
+        return categoryRepository.findByNameIgnoreCase(name).orElseGet(() -> save(new Category(name)));
     }
 
     public Category save(Category category) {
@@ -41,7 +47,26 @@ public class CategoryService {
         return id != null ? categoryRepository.findById(id).orElse(null) : null;
     }
 
+    /**
+     * Find all categories from list by their id
+     *
+     * @param ids list of ids of categories
+     * @return Category list
+     */
+    public List<Category> findByIds(List<Long> ids) {
+        return categoryRepository.findAllById(ids);
+    }
+
     public void remove(Category category) {
         categoryRepository.delete(category);
+    }
+
+    /**
+     * Removes all categories in list
+     *
+     * @param categoriesList list of categories to be removed
+     */
+    public void removeAll(List<Category> categoriesList) {
+        categoryRepository.deleteAll(categoriesList);
     }
 }

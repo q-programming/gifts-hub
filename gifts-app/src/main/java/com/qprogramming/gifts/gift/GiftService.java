@@ -169,7 +169,7 @@ public class GiftService {
             Days giftDays = Days.daysBetween(new LocalDate(gift.getCreated()), new LocalDate());
             if (giftDays.getDays() < giftAge) {
                 gift.setStatus(GiftStatus.NEW);
-            }else{
+            } else {
                 gift.setStatus(null);
             }
         } else if (GiftStatus.REALISED.equals(gift.getStatus())) {
@@ -249,5 +249,11 @@ public class GiftService {
         List<Gift> giftList = giftRepository.findByStatusAndRealisedIsNull(GiftStatus.REALISED);
         giftList.forEach(gift -> gift.setRealised(new Date()));
         return giftRepository.saveAll(giftList);
+    }
+
+    public void mergeCategories(Category newCategory, List<Category> categoriesList) {
+        List<Gift> allInOldCategories = giftRepository.findAllByCategoryIsIn(categoriesList);
+        allInOldCategories.forEach(gift -> gift.setCategory(newCategory));
+        giftRepository.saveAll(allInOldCategories);
     }
 }

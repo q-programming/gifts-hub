@@ -61,7 +61,7 @@ public class GiftRestController {
     private static final int CATEGORY_CELL = 3;
     private static final String COLS = "ABCDEFGHIJKLMNOPRSTUVWXYZ";
     private final Logger LOG = LoggerFactory.getLogger(this.getClass());
-    private List<String> prohibitedCategories = new ArrayList<>();
+    private Set<String> prohibitedCategories = new HashSet<>();
     private AccountService accountService;
     private GiftService giftService;
     private SearchEngineService searchEngineService;
@@ -272,9 +272,6 @@ public class GiftRestController {
     private Gift updateGiftFromForm(Gift gift) {
         if (gift.getCategory() != null && StringUtils.isNotBlank(gift.getCategory().getName())) {
             Category category = categoryService.findByName(gift.getCategory().getName());
-            if (category == null) {
-                category = categoryService.save(gift.getCategory());
-            }
             gift.setCategory(category);
         }
         gift.setEngines(searchEngineService.getSearchEngines(
@@ -339,7 +336,7 @@ public class GiftRestController {
     @RequestMapping(value = "/allowed-category")
     public ResponseEntity checkProhibited(@RequestParam String category) {
         if (!allowedCategoryName(category)) {
-            return new ResultData.ResultBuilder().error().message(msgSrv.getMessage("gift.category.prohibited", new Object[]{category}, "", Utils.getCurrentLocale())).build();
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
