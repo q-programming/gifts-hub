@@ -315,7 +315,9 @@ public class MailService {
         Locale locale = getMailLocale(mail);
         String confirmLink = mail.getModel().get(APPLICATION) + "#/confirm/" + event.getToken();
         mail.addToModel(CONFIRM_LINK, confirmLink);
-        mail.addToModel(OWNER, Utils.getCurrentAccount().getFullname());
+        if (Utils.getCurrentAccount() != null) {
+            mail.addToModel(OWNER, Utils.getCurrentAccount().getFullname());
+        }
         switch (event.getType()) {
             case GROUP_MEMEBER:
                 templateGroup(mail, event, mimeMessageHelper, locale, "user.group.invite", "/groupInvite.ftl");
@@ -430,25 +432,41 @@ public class MailService {
                 .map(Account::getGroups)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toSet());
-        Set<Account> accounts = groups
+        Set<Account> newsletterEnabledAccountsFromGroup = groups
                 .stream()
                 .map(Group::getMembers)
                 .flatMap(Collection::stream)
                 .filter(account -> StringUtils.isNotBlank(account.getEmail()))
                 .filter(Account::getNotifications)
                 .collect(Collectors.toSet());
-        for (Account account : accounts) {
-            Map<Account, List<AppEvent>> eventsWithoutAccount = eventMap.entrySet().stream()
-                    .filter(entry -> !entry.getKey().equals(account))
+
+        for (Account recipientAccount : newsletterEnabledAccountsFromGroup) {
+            Map<Account, List<AppEvent>> eventsWithoutRecipient = eventMap.entrySet().stream()
+                    .filter(eventAccount -> !eventAccount.getKey().equals(recipientAccount))
                     .collect(Collectors
-                            .toMap(Map.Entry::getKey, entry -> new ArrayList<>(entry.getValue())));
-            if (!eventsWithoutAccount.isEmpty()) {
-                sendEventForAccount(mimeMessage, application, eventsWithoutAccount, account);
+                            .toMap(Map.Entry::getKey,
+                                    entry -> new ArrayList<>(filterEventList(entry.getValue(), recipientAccount))));
+            if (!eventsWithoutRecipient.isEmpty()) {
+                sendEventForAccount(mimeMessage, application, eventsWithoutRecipient, recipientAccount);
                 mailsSent++;
             }
         }
         eventService.processEvents();
         LOG.info("Newsletter sent to {} recipients", mailsSent);
+    }
+
+    /**
+     * Filter out all events which belongs to recipient of email
+     *
+     * @param list list of events
+     * @return filtered out list
+     */
+    private List<AppEvent> filterEventList(List<AppEvent> list, Account recipientAccount) {
+        return list.stream().filter(appEvent -> filterEvents(appEvent, recipientAccount)).collect(Collectors.toList());
+    }
+
+    private boolean filterEvents(AppEvent appEvent, Account recipientAccount) {
+        return appEvent.getCreatedBy() == null || !recipientAccount.equals(appEvent.getCreatedBy());
     }
 
     /**

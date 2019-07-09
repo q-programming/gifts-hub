@@ -30,6 +30,7 @@ import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
 import java.util.*;
 
+import static com.qprogramming.gifts.TestUtil.USER_RANDOM_ID;
 import static com.qprogramming.gifts.settings.Settings.*;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -178,5 +179,29 @@ public class MailServiceTest {
         when(msgSrvMock.getMessage("schedule.event.summary", null, "", locale)).thenReturn(SUBJECT);
         mailService.sendEvents();
         verify(mailSenderMock, times(1)).send(any(MimeMessage.class));
+    }
+
+    @Test
+    public void sendEventsWithoutRecipient() throws MessagingException {
+        Account account = TestUtil.createAccount("John", "Doe");
+        account.setNotifications(true);
+        Account account2 = TestUtil.createAccount("Johny", "Doe");
+        account2.setNotifications(true);
+        account2.setId(USER_RANDOM_ID + 1);
+        Group group = new Group();
+        group.addMember(testAccount);
+        group.addMember(account);
+        group.addMember(account2);
+        AppEvent event1 = TestUtil.createEvent(testAccount);
+        AppEvent event2 = TestUtil.createEvent(testAccount);
+        AppEvent event3 = TestUtil.createEvent(testAccount);
+        AppEvent event4 = TestUtil.createEvent(testAccount);
+        event4.setCreatedBy(account2);
+        Map<Account, List<AppEvent>> events = new HashMap<>();
+        events.put(testAccount, Arrays.asList(event1, event2, event3,event4));
+        when(eventServiceMock.getEventsGroupedByAccount()).thenReturn(events);
+        when(msgSrvMock.getMessage("schedule.event.summary", null, "", locale)).thenReturn(SUBJECT);
+        mailService.sendEvents();
+        verify(mailSenderMock, times(2)).send(any(MimeMessage.class));
     }
 }

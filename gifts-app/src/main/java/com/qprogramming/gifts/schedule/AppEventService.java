@@ -36,12 +36,7 @@ public class AppEventService {
         List<AppEvent> allNotProcessed = eventRepo.findAll();
         return allNotProcessed
                 .stream()
-                .filter(this::filterEvents)
                 .collect(Collectors.groupingBy(AppEvent::getAccount));
-    }
-
-    private boolean filterEvents(AppEvent appEvent) {
-        return appEvent.getCreatedBy() == null || !appEvent.getAccount().equals(appEvent.getCreatedBy());
     }
 
     /**
