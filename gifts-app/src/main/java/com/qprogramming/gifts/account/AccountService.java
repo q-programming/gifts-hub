@@ -16,6 +16,7 @@ import com.qprogramming.gifts.exceptions.AccountNotFoundException;
 import com.qprogramming.gifts.gift.GiftService;
 import com.qprogramming.gifts.support.Utils;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.Hibernate;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -325,8 +326,16 @@ public class AccountService implements UserDetailsService {
     @Cacheable("accounts")
     public Set<Account> findAllFromGroups(Account account) {
         Set<Account> accounts = _accountRepository.findByGroupsIn(account.getGroups());
-        TreeSet<Account> result = new TreeSet<>(ACCOUNT_COMPARATOR);
-        result.addAll(accounts);
+        Set<Account> result = accounts
+                .stream()
+                .filter(viewedAccount -> {
+                            Hibernate.initialize(viewedAccount.getGroups());
+                            return viewedAccount.getGroups()
+                                    .stream()
+                                    .anyMatch(group -> group.getMembers().contains(Utils.getCurrentAccount()));
+                        }
+                )
+                .collect(Collectors.toCollection(() -> new TreeSet<>(ACCOUNT_COMPARATOR)));
         result.add(account);
         return result;
     }
