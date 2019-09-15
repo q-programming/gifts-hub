@@ -128,7 +128,6 @@ export class UserListComponent implements OnInit {
    * @param group group to be edited
    */
   editGroupDialog(group: Group) {
-    this.trigger.closeMenu();
     const dialogRef = this.dialog.open(GroupDialogComponent, {
       panelClass: 'gifts-modal-normal',
       disableClose: true,
