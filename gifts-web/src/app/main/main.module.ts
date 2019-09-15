@@ -74,6 +74,9 @@ import { EditCategoryDialogComponent } from './components/manage/categories/edit
     EditCategoryDialogComponent
   ],
   schemas: [NO_ERRORS_SCHEMA],
+  exports: [
+    GiftComponent
+  ],
   providers: []
 })
 export class MainModule {
