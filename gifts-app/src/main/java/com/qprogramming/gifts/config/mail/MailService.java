@@ -14,6 +14,7 @@ import com.qprogramming.gifts.gift.Gift;
 import com.qprogramming.gifts.messages.MessagesService;
 import com.qprogramming.gifts.schedule.AppEvent;
 import com.qprogramming.gifts.schedule.AppEventService;
+import com.qprogramming.gifts.schedule.AppEventType;
 import com.qprogramming.gifts.settings.Settings;
 import com.qprogramming.gifts.support.Utils;
 import freemarker.template.Configuration;
@@ -462,11 +463,24 @@ public class MailService {
      * @return filtered out list
      */
     private List<AppEvent> filterEventList(List<AppEvent> list, Account recipientAccount) {
-        return list.stream().filter(appEvent -> filterEvents(appEvent, recipientAccount)).collect(Collectors.toList());
+        Map<Gift, List<AppEvent>> giftEventsMap = list.stream().collect(Collectors.groupingBy(AppEvent::getGift));
+        return list
+                .stream()
+                .filter(appEvent -> filterCreatedByEvents(appEvent, recipientAccount))
+                .filter(appEvent -> filterSameGiftEvents(appEvent, giftEventsMap.get(appEvent.getGift())))
+                .collect(Collectors.toList());
     }
 
-    private boolean filterEvents(AppEvent appEvent, Account recipientAccount) {
+    private boolean filterCreatedByEvents(AppEvent appEvent, Account recipientAccount) {
         return appEvent.getCreatedBy() == null || !recipientAccount.equals(appEvent.getCreatedBy());
+    }
+
+    private boolean filterSameGiftEvents(AppEvent appEvent, List<AppEvent> list) {
+        Set<AppEventType> giftEvents = list.stream().map(AppEvent::getType).collect(Collectors.toSet());
+        if (giftEvents.size() > 1 && AppEventType.NEW.equals(appEvent.getType())) {
+            return !giftEvents.contains(AppEventType.REALISED);
+        }
+        return true;
     }
 
     /**
@@ -494,6 +508,7 @@ public class MailService {
         addAppLogo(mimeMessageHelper);
         addEventAccountsAvatars(eventMap, mimeMessageHelper);
         LOG.debug("Sending scheduled email to {}", account.getEmail());
+
         mailSender.send(mimeMessageHelper.getMimeMessage());
     }
 
