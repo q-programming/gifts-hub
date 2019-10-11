@@ -14,6 +14,7 @@ import com.qprogramming.gifts.gift.Gift;
 import com.qprogramming.gifts.messages.MessagesService;
 import com.qprogramming.gifts.schedule.AppEvent;
 import com.qprogramming.gifts.schedule.AppEventService;
+import com.qprogramming.gifts.schedule.AppEventType;
 import com.qprogramming.gifts.settings.Settings;
 import com.qprogramming.gifts.support.Utils;
 import freemarker.template.Configuration;
@@ -315,7 +316,9 @@ public class MailService {
         Locale locale = getMailLocale(mail);
         String confirmLink = mail.getModel().get(APPLICATION) + "#/confirm/" + event.getToken();
         mail.addToModel(CONFIRM_LINK, confirmLink);
-        mail.addToModel(OWNER, Utils.getCurrentAccount().getFullname());
+        if (Utils.getCurrentAccount() != null) {
+            mail.addToModel(OWNER, Utils.getCurrentAccount().getFullname());
+        }
         switch (event.getType()) {
             case GROUP_MEMEBER:
                 templateGroup(mail, event, mimeMessageHelper, locale, "user.group.invite", "/groupInvite.ftl");
@@ -430,25 +433,54 @@ public class MailService {
                 .map(Account::getGroups)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toSet());
-        Set<Account> accounts = groups
+        Set<Account> newsletterEnabledAccountsFromGroup = groups
                 .stream()
                 .map(Group::getMembers)
                 .flatMap(Collection::stream)
                 .filter(account -> StringUtils.isNotBlank(account.getEmail()))
                 .filter(Account::getNotifications)
                 .collect(Collectors.toSet());
-        for (Account account : accounts) {
-            Map<Account, List<AppEvent>> eventsWithoutAccount = eventMap.entrySet().stream()
-                    .filter(entry -> !entry.getKey().equals(account))
+
+        for (Account recipientAccount : newsletterEnabledAccountsFromGroup) {
+            Map<Account, List<AppEvent>> eventsWithoutRecipient = eventMap.entrySet().stream()
+                    .filter(eventAccount -> !eventAccount.getKey().equals(recipientAccount))
                     .collect(Collectors
-                            .toMap(Map.Entry::getKey, entry -> new ArrayList<>(entry.getValue())));
-            if (!eventsWithoutAccount.isEmpty()) {
-                sendEventForAccount(mimeMessage, application, eventsWithoutAccount, account);
+                            .toMap(Map.Entry::getKey,
+                                    entry -> new ArrayList<>(filterEventList(entry.getValue(), recipientAccount))));
+            if (!eventsWithoutRecipient.isEmpty()) {
+                sendEventForAccount(mimeMessage, application, eventsWithoutRecipient, recipientAccount);
                 mailsSent++;
             }
         }
         eventService.processEvents();
         LOG.info("Newsletter sent to {} recipients", mailsSent);
+    }
+
+    /**
+     * Filter out all events which belongs to recipient of email
+     *
+     * @param list list of events
+     * @return filtered out list
+     */
+    private List<AppEvent> filterEventList(List<AppEvent> list, Account recipientAccount) {
+        Map<Gift, List<AppEvent>> giftEventsMap = list.stream().collect(Collectors.groupingBy(AppEvent::getGift));
+        return list
+                .stream()
+                .filter(appEvent -> filterCreatedByEvents(appEvent, recipientAccount))
+                .filter(appEvent -> filterSameGiftEvents(appEvent, giftEventsMap.get(appEvent.getGift())))
+                .collect(Collectors.toList());
+    }
+
+    private boolean filterCreatedByEvents(AppEvent appEvent, Account recipientAccount) {
+        return appEvent.getCreatedBy() == null || !recipientAccount.equals(appEvent.getCreatedBy());
+    }
+
+    private boolean filterSameGiftEvents(AppEvent appEvent, List<AppEvent> list) {
+        Set<AppEventType> giftEvents = list.stream().map(AppEvent::getType).collect(Collectors.toSet());
+        if (giftEvents.size() > 1 && AppEventType.NEW.equals(appEvent.getType())) {
+            return !giftEvents.contains(AppEventType.REALISED);
+        }
+        return true;
     }
 
     /**
@@ -476,6 +508,7 @@ public class MailService {
         addAppLogo(mimeMessageHelper);
         addEventAccountsAvatars(eventMap, mimeMessageHelper);
         LOG.debug("Sending scheduled email to {}", account.getEmail());
+
         mailSender.send(mimeMessageHelper.getMimeMessage());
     }
 

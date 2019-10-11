@@ -103,7 +103,7 @@ public class AppEventServiceTest {
         when(eventRepoMock.findAll()).thenReturn(Arrays.asList(event1, event2, event3, event4));
         Map<Account, List<AppEvent>> eventsGroupedByAccount = eventSrv.getEventsGroupedByAccount();
         assertTrue(eventsGroupedByAccount.containsKey(testAccount));
-        assertEquals(3, eventsGroupedByAccount.get(testAccount).size());
+        assertEquals(4, eventsGroupedByAccount.get(testAccount).size());
     }
 
 }

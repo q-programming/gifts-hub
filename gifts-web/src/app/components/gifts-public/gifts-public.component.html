@@ -30,14 +30,14 @@
       </div>
     </mat-card>
     <div class="content">
-      <ng-container *ngFor="let gifts of categorizedGifts| keyvalue">
+      <ng-container *ngFor="let key of categorizedKeys">
         <mat-expansion-panel expanded="true">
           <mat-expansion-panel-header>
             <mat-panel-title>
-              <h3>{{gifts.key}}</h3>
+              <h3>{{key}}</h3>
             </mat-panel-title>
           </mat-expansion-panel-header>
-          <div *ngFor="let gift of gifts.value;let even=even">
+          <div *ngFor="let gift of categorizedGifts[key];let even=even;trackBy: trackByFn">
             <gift [gift]="gift"
                   [even]="even"
             ></gift>

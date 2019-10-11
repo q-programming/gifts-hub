@@ -12,6 +12,7 @@ import com.qprogramming.gifts.config.property.PropertyService;
 import com.qprogramming.gifts.messages.MessagesService;
 import com.qprogramming.gifts.schedule.AppEvent;
 import com.qprogramming.gifts.schedule.AppEventService;
+import com.qprogramming.gifts.schedule.AppEventType;
 import com.qprogramming.gifts.support.Utils;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -30,6 +31,7 @@ import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
 import java.util.*;
 
+import static com.qprogramming.gifts.TestUtil.USER_RANDOM_ID;
 import static com.qprogramming.gifts.settings.Settings.*;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -179,4 +181,53 @@ public class MailServiceTest {
         mailService.sendEvents();
         verify(mailSenderMock, times(1)).send(any(MimeMessage.class));
     }
+
+    @Test
+    public void sendEventsWithoutRecipient() throws MessagingException {
+        Account account = TestUtil.createAccount("John", "Doe");
+        account.setNotifications(true);
+        Account account2 = TestUtil.createAccount("Johny", "Doe");
+        account2.setNotifications(true);
+        account2.setId(USER_RANDOM_ID + 1);
+        Group group = new Group();
+        group.addMember(testAccount);
+        group.addMember(account);
+        group.addMember(account2);
+        AppEvent event1 = TestUtil.createEvent(testAccount);
+        AppEvent event2 = TestUtil.createEvent(testAccount);
+        AppEvent event3 = TestUtil.createEvent(testAccount);
+        AppEvent event4 = TestUtil.createEvent(testAccount);
+        event4.setCreatedBy(account2);
+        Map<Account, List<AppEvent>> events = new HashMap<>();
+        events.put(testAccount, Arrays.asList(event1, event2, event3, event4));
+        when(eventServiceMock.getEventsGroupedByAccount()).thenReturn(events);
+        when(msgSrvMock.getMessage("schedule.event.summary", null, "", locale)).thenReturn(SUBJECT);
+        mailService.sendEvents();
+        verify(mailSenderMock, times(2)).send(any(MimeMessage.class));
+    }
+
+    @Test
+    public void sendEventsForNewAndRealised() throws MessagingException {
+        Account account = TestUtil.createAccount("John", "Doe");
+        account.setNotifications(true);
+        Group group = new Group();
+        group.addMember(testAccount);
+        group.addMember(account);
+        AppEvent new_event1 = TestUtil.createEvent(testAccount);
+        AppEvent new_event2 = TestUtil.createEvent(testAccount);
+        AppEvent realised_event1 = TestUtil.createEvent(testAccount);
+        new_event1.setType(AppEventType.NEW);
+        new_event2.getGift().setId(2L);
+        new_event2.setType(AppEventType.NEW);
+        realised_event1.setGift(new_event1.getGift());
+        realised_event1.setType(AppEventType.REALISED);
+        Map<Account, List<AppEvent>> events = new HashMap<>();
+        events.put(testAccount, Arrays.asList(new_event1, new_event2, realised_event1));
+        when(eventServiceMock.getEventsGroupedByAccount()).thenReturn(events);
+        when(msgSrvMock.getMessage("schedule.event.summary", null, "", locale)).thenReturn(SUBJECT);
+        mailService.sendEvents();
+        verify(mailSenderMock, times(1)).send(any(MimeMessage.class));
+    }
+
+
 }

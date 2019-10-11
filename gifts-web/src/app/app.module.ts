@@ -19,6 +19,7 @@ import {HttpClient} from "@angular/common/http";
 import {TranslateHttpLoader} from "@ngx-translate/http-loader";
 import {ErrorComponent} from "./components/error/error.component";
 import {ConfirmDialogComponent} from "./components/dialogs/confirm/confirm-dialog.component";
+import {MainModule} from "./main/main.module";
 
 
 @NgModule({
@@ -53,6 +54,7 @@ import {ConfirmDialogComponent} from "./components/dialogs/confirm/confirm-dialo
         deps: [HttpClient]
       }
     }),
+    MainModule,
   ],
   schemas: [NO_ERRORS_SCHEMA],
   bootstrap: [AppComponent]

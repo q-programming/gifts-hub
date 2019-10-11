@@ -36,12 +36,7 @@ public class AppEventService {
         List<AppEvent> allNotProcessed = eventRepo.findAll();
         return allNotProcessed
                 .stream()
-                .filter(this::filterEvents)
                 .collect(Collectors.groupingBy(AppEvent::getAccount));
-    }
-
-    private boolean filterEvents(AppEvent appEvent) {
-        return appEvent.getCreatedBy() == null || !appEvent.getAccount().equals(appEvent.getCreatedBy());
     }
 
     /**
@@ -55,7 +50,9 @@ public class AppEventService {
     public void addEvent(Gift gift, AppEventType type) throws AccountNotFoundException {
         AppEvent event = new AppEvent();
         event.setAccount(accountService.findById(gift.getUserId()));
-        event.setCreatedBy(accountService.findById(gift.getCreatedBy()));
+        if (gift.getCreatedBy() != null) {
+            event.setCreatedBy(accountService.findById(gift.getCreatedBy()));
+        }
         event.setGift(gift);
         event.setType(type);
         eventRepo.save(event);

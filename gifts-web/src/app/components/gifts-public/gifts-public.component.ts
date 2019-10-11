@@ -19,6 +19,7 @@ import {environment} from "../../../environments/environment";
 export class GiftsPublicComponent implements OnInit {
   identification: string;
   categorizedGifts: Map<string, Gift[]>;
+  categorizedKeys: string[];
   realizedGifts: Gift[] = [];
   unCategorizedGifts: Gift[] = [];
   GiftStatus = GiftStatus;
@@ -68,6 +69,11 @@ export class GiftsPublicComponent implements OnInit {
     this.unCategorizedGifts = this.categorizedGifts[''];
     delete this.categorizedGifts[GiftStatus.REALISED];
     delete this.categorizedGifts[''];
+    this.categorizedKeys = Object.keys(this.categorizedGifts);
+  }
+
+  trackByFn(index, item) {
+    return item.id;
   }
 
 }
