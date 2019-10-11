@@ -328,16 +328,17 @@ public class AccountService implements UserDetailsService {
         Set<Account> accounts = _accountRepository.findByGroupsIn(account.getGroups());
         Set<Account> result = accounts
                 .stream()
-                .filter(viewedAccount -> {
-                            Hibernate.initialize(viewedAccount.getGroups());
-                            return viewedAccount.getGroups()
-                                    .stream()
-                                    .anyMatch(group -> group.getMembers().contains(Utils.getCurrentAccount()));
-                        }
-                )
+                .filter(this::canBeViewed)
                 .collect(Collectors.toCollection(() -> new TreeSet<>(ACCOUNT_COMPARATOR)));
         result.add(account);
         return result;
+    }
+
+    private boolean canBeViewed(Account viewedAccount) {
+        Hibernate.initialize(viewedAccount.getGroups());
+        return viewedAccount.getGroups()
+                .stream()
+                .anyMatch(group -> group.getMembers().contains(Utils.getCurrentAccount()));
     }
 
     /**

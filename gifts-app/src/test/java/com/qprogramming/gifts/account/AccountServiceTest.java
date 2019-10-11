@@ -252,12 +252,12 @@ public class AccountServiceTest extends MockedAccountTestBase {
     }
 
     @Test
-    public void findAllSortByFamily() throws Exception {
+    public void findAllSortByGroup() throws Exception {
         List<Account> all = createAccountList();
         all.add(testAccount);
         Group group1 = new Group();
-        Account andyAccount = all.get(1);
         Account bobAccount = all.get(0);
+        Account andyAccount = all.get(1);
         group1.addMember(andyAccount);
         group1.addMember(bobAccount);
         group1.addMember(testAccount);
@@ -270,6 +270,35 @@ public class AccountServiceTest extends MockedAccountTestBase {
         assertEquals(ordered[0], andyAccount);
         assertEquals(ordered[1], bobAccount);
         assertEquals(ordered[2], testAccount);
+    }
+
+    @Test
+    public void findAllFromOtherGroups() throws Exception {
+        List<Account> all = createAccountList();
+        all.add(testAccount);
+        Group group1 = new Group();
+        Group group2 = new Group();
+        group1.setId(1L);
+        group1.setName("Group 1");
+        group2.setId(2L);
+        group2.setName("Group 2");
+        Account bobAccount = all.get(0);
+        Account andyAccount = all.get(1);
+        Account johnAccount = all.get(2);
+        group1.addMember(andyAccount);
+        group1.addMember(bobAccount);
+        group1.addMember(testAccount);
+        group2.addMember(andyAccount);
+        group2.addMember(johnAccount);
+        andyAccount.setGroups(new HashSet<>(Arrays.asList(group1, group2)));
+        Set<Account> resultMembers = group1.getMembers();
+        resultMembers.addAll(group2.getMembers());
+        when(accountRepositoryMock.findByGroupsIn(andyAccount.getGroups())).thenReturn(resultMembers);
+//        when(groupServiceMock.findAllAccountGroups(testAccount)).thenReturn(Collections.singleton(group1));
+        Set<Account> result = accountService.findAllFromGroups(andyAccount);
+        //convert result to array to test order
+        Object[] ordered = result.toArray();
+        assertThat(result).doesNotContain(johnAccount);
     }
 
     @Test
