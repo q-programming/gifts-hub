@@ -35,7 +35,7 @@ spring:
 #    url: jdbc:h2:./db/h2databaseFile;AUTO_SERVER=TRUE
 #    username: sa
 #    password:
-    url: jdbc:postgresql://localhost:5432/gifts
+    url: jdbc:postgresql://localhost:5432/gifts-prod
     username: giftshub
     password: 3olQQV7rPLXYqSQYQGWP
   mvc:
