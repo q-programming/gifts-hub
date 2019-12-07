@@ -5,7 +5,7 @@ import {Account} from "@model/Account";
 import {Observable} from "rxjs";
 import {environment} from "@env/environment.prod";
 import {AvatarService} from "@core-services/avatar.service";
-import { MatDialog, MatDialogConfig } from "@angular/material/dialog";
+import {MatDialog, MatDialogConfig} from "@angular/material/dialog";
 import * as _ from "lodash";
 import {ConfirmDialogData, ConfirmDialogComponent} from "../../components/dialogs/confirm/confirm-dialog.component";
 import {SortBy} from "@model/AppSettings";
@@ -54,7 +54,7 @@ export class UserService {
     })
   }
 
-  private fetchAvatars(accounts) {
+  fetchAvatars(accounts) {
     accounts.forEach(account => {
       this.avatarSrv.getUserAvatarByUsername(account.username).subscribe(avatar => {
         account.avatar = avatar;

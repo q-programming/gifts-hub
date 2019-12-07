@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {ApiService} from "@core-services/api.service";
 import {Gift} from "@model/Gift";
+import {Account} from "@model/Account";
 import {Observable} from "rxjs";
 import {environment} from "@env/environment.prod";
 
@@ -19,6 +20,10 @@ export class GiftService {
     } else {
       return this.apiSrv.get(`${environment.gift_url}/mine`);
     }
+  }
+
+  getClaimedGifts(): Observable<any> {
+    return this.apiSrv.get(`${environment.gift_url}/claimed`);
   }
 
   claim(gift: Gift): Observable<Gift> {

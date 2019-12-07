@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 
 import static com.qprogramming.gifts.settings.Settings.APP_GIFT_AGE;
 import static com.qprogramming.gifts.support.Utils.not;
+import static java.util.stream.Collectors.groupingBy;
 
 @Service
 public class GiftService {
@@ -208,6 +209,14 @@ public class GiftService {
         List<Gift> claimedGifts = giftRepository.findByClaimed(account);
         claimedGifts.forEach(gift -> gift.setClaimed(null));
         giftRepository.saveAll(claimedGifts);
+    }
+
+    /**
+     * Finds all gifts that were claimed by current account
+     */
+    public Map<String, List<Gift>> findAllClaimedByCurrentUser() {
+        List<Gift> gifts = giftRepository.findAllByClaimedAndStatusIsNull(Utils.getCurrentAccount());
+        return gifts.stream().collect(groupingBy(Gift::getUserId));
     }
 
     /**

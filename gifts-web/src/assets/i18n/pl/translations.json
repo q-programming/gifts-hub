@@ -152,6 +152,7 @@
       "text": "Kategoria"
     },
     "claim": {
+      "calimed": "Zarezerwowane prezenty",
       "error": "Nie możesz zarezerwować własnego prezentu",
       "success": "Zarezerwowano prezent \"{{name}}\"",
       "text": "Zarezerwuj prezent"
@@ -265,6 +266,7 @@
     "test": "Testujemy PL"
   },
   "menu": {
+    "claimed": "Zarezerwowane",
     "help": "Pomoc",
     "login": "Zaloguj",
     "logout": "Wyloguj",

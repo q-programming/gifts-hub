@@ -1,0 +1,39 @@
+<mat-card class="pb-1 pt-1 fixed-container header">
+  <!--Names header-->
+  <span class="title">
+    <i class="fa fa-lg fa-fw fa-gift"></i>
+    {{'gift.claim.calimed'|translate}}</span>
+  <div fxLayout="row" fxLayoutGap="5px" fxShow.lt-sm="false">
+    <div fxFlex="35">
+      {{'gift.name'|translate}}
+    </div>
+    <div fxFlex="35">
+      {{'gift.description'|translate}}
+    </div>
+    <div fxFlex="5">
+      {{'gift.link.text'|translate}}
+    </div>
+    <div fxFlex="10" class="text-right">
+      {{'gift.add.date'|translate}}
+    </div>
+  </div>
+</mat-card>
+<div class="content">
+  <ng-container *ngFor="let account of accountsList">
+    <mat-expansion-panel expanded="true">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <h3 class="stylish-header">
+            <avatar [avatar]="account.avatar" classes="avatar small v-middle mr-1"></avatar>
+            {{account.fullname}}
+          </h3>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div *ngFor="let gift of gifts[account.id];let even=even;trackBy: trackByFn">
+        <gift [gift]="gift"
+              [even]="even"
+        ></gift>
+      </div>
+    </mat-expansion-panel>
+  </ng-container>
+</div>

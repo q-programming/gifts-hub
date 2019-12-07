@@ -29,6 +29,7 @@ import { HelpListComponent } from './components/help/help-list/help-list.compone
 import { CategoriesComponent } from './components/manage/categories/categories.component';
 import {DragDropModule} from "@angular/cdk/drag-drop";
 import { EditCategoryDialogComponent } from './components/manage/categories/edit-category-dialog/edit-category-dialog.component';
+import { GiftClaimedComponent } from './components/gifts/gift-claimed.component';
 
 @NgModule({
   declarations: [
@@ -56,6 +57,7 @@ import { EditCategoryDialogComponent } from './components/manage/categories/edit
     HelpListComponent,
     CategoriesComponent,
     EditCategoryDialogComponent,
+    GiftClaimedComponent,
   ],
   imports: [
     CommonModule,

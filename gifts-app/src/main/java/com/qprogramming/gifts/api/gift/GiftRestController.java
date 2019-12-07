@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.account.group.GroupService;
+import com.qprogramming.gifts.api.gift.dto.ClaimedGiftsDTO;
 import com.qprogramming.gifts.config.mail.MailService;
 import com.qprogramming.gifts.exceptions.AccountNotFoundException;
 import com.qprogramming.gifts.gift.Gift;
@@ -29,7 +30,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -295,6 +295,24 @@ public class GiftRestController {
             return new ResponseEntity<>(giftService.findAllByCurrentUser(), HttpStatus.OK);
         } else
             return ResponseEntity.ok(Collections.EMPTY_LIST);
+    }
+
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @RequestMapping("/claimed")
+    public ResponseEntity getMineClaimedGifts() {
+        if (Utils.getCurrentAccount() != null) {
+            Map<String, List<Gift>> gifts = giftService.findAllClaimedByCurrentUser();
+            List<Account> accounts = gifts.keySet().stream().map(s -> {
+                try {
+                    return accountService.findById(s);
+                } catch (AccountNotFoundException e) {
+                    LOG.error("Failed to find account with id {}", s);
+                    return null;
+                }
+            }).collect(Collectors.toList());
+            return new ResponseEntity<>(new ClaimedGiftsDTO(accounts, gifts), HttpStatus.OK);
+        } else
+            return ResponseEntity.ok(new ClaimedGiftsDTO());
     }
 
     @RequestMapping("/user/{usernameOrId}")

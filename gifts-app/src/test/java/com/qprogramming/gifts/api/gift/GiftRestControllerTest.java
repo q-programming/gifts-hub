@@ -7,6 +7,7 @@ import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.account.AccountType;
 import com.qprogramming.gifts.account.group.Group;
 import com.qprogramming.gifts.account.group.GroupService;
+import com.qprogramming.gifts.api.gift.dto.ClaimedGiftsDTO;
 import com.qprogramming.gifts.config.mail.MailService;
 import com.qprogramming.gifts.exceptions.AccountNotFoundException;
 import com.qprogramming.gifts.gift.Gift;
@@ -20,14 +21,12 @@ import com.qprogramming.gifts.messages.MessagesService;
 import com.qprogramming.gifts.schedule.AppEventService;
 import com.qprogramming.gifts.settings.SearchEngine;
 import com.qprogramming.gifts.settings.SearchEngineService;
-import com.qprogramming.gifts.support.ResultData;
 import com.qprogramming.gifts.support.Utils;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -36,6 +35,7 @@ import javax.mail.MessagingException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.qprogramming.gifts.TestUtil.createCategory;
 import static com.qprogramming.gifts.TestUtil.createSearchEngine;
@@ -49,6 +49,7 @@ public class GiftRestControllerTest extends MockedAccountTestBase {
     private static final String API_GIFT_CREATE = "/api/gift/create";
     private static final String API_GIFT_EDIT = "/api/gift/edit";
     private static final String API_GIFT_LIST = "/api/gift/user";
+    private static final String API_GIFT_CLAIMED = "/api/gift/claimed";
     private static final String API_GIFT_CLAIM = "/api/gift/claim/";
     private static final String API_GIFT_UNCLAIM = "/api/gift/unclaim/";
     private static final String API_GIFT_COMPLETE = "/api/gift/complete/";
@@ -227,6 +228,25 @@ public class GiftRestControllerTest extends MockedAccountTestBase {
         assertTrue(contentAsString.contains(testAccount.getId()));
         assertTrue(contentAsString.contains(NAME));
     }
+
+    @Test
+    public void getClaimedGiftsAccount() throws Exception {
+        Account account = TestUtil.createAccount();
+        account.setId(account.getId() + 1);
+        Gift gift = TestUtil.createGift(1L, testAccount);
+        Gift gift2 = TestUtil.createGift(2L, account);
+        Gift gift3 = TestUtil.createGift(3L, account);
+        List<Gift> giftList = Arrays.asList(gift, gift2, gift3);
+        Map<String, List<Gift>> giftMap = giftList.stream().collect(Collectors.groupingBy(Gift::getUserId));
+        when(accSrvMock.findByUsername(testAccount.getId())).thenReturn(Optional.of(testAccount));
+        when(accSrvMock.findByUsername(account.getId())).thenReturn(Optional.of(account));
+        when(giftServiceMock.findAllClaimedByCurrentUser()).thenReturn(giftMap);
+        MvcResult mvcResult = giftsRestCtrl.perform(get(API_GIFT_CLAIMED)).andExpect(status().isOk()).andReturn();
+        ClaimedGiftsDTO claimedGiftsDTO = TestUtil.convertJsonToObject(mvcResult.getResponse().getContentAsString(), ClaimedGiftsDTO.class);
+        assertEquals(2, claimedGiftsDTO.getAccounts().size());
+        assertEquals(2, claimedGiftsDTO.getClaimedGifts().get(account.getId()).size());
+    }
+
 
     @Test
     public void getGiftsAccountPublic() throws Exception {

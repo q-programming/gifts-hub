@@ -17,6 +17,8 @@ public interface GiftRepository extends JpaRepository<Gift, Long> {
 
     List<Gift> findByClaimed(Account account);
 
+    List<Gift> findAllByClaimedAndStatusIsNull(Account account);
+
     List<Gift> findAllByCategory(Category category);
 
     List<Gift> findAllByCategoryIsIn(List<Category> category);
