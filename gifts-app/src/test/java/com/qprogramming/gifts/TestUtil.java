@@ -73,6 +73,12 @@ public class TestUtil {
         mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         return mapper.readValue(json, TypeFactory.defaultInstance().constructMapType(TreeMap.class, keyClass, valueClass));
     }
+    public static <T, V> Map<T, V> convertJsonToHashMap(String json, Class<T> keyClass, Class<V> valueClass) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.writerWithView(MappingConfiguration.Members.class);
+        mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        return mapper.readValue(json, TypeFactory.defaultInstance().constructMapType(HashMap.class, keyClass, valueClass));
+    }
 
 
     public static Account createAccount() {

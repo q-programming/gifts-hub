@@ -242,9 +242,9 @@ public class GiftRestControllerTest extends MockedAccountTestBase {
         when(accSrvMock.findByUsername(account.getId())).thenReturn(Optional.of(account));
         when(giftServiceMock.findAllClaimedByCurrentUser()).thenReturn(giftMap);
         MvcResult mvcResult = giftsRestCtrl.perform(get(API_GIFT_CLAIMED)).andExpect(status().isOk()).andReturn();
-        ClaimedGiftsDTO claimedGiftsDTO = TestUtil.convertJsonToObject(mvcResult.getResponse().getContentAsString(), ClaimedGiftsDTO.class);
-        assertEquals(2, claimedGiftsDTO.getAccounts().size());
-        assertEquals(2, claimedGiftsDTO.getClaimedGifts().get(account.getId()).size());
+        Map<String, List> stringListMap = TestUtil.convertJsonToHashMap(mvcResult.getResponse().getContentAsString(), String.class, List.class);
+        assertEquals(2, stringListMap.keySet().size());
+        assertEquals(2, stringListMap.get(account.getId()).size());
     }
 
 
