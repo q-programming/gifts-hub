@@ -7,12 +7,14 @@ import {SettingsComponent} from "./components/settings/settings.component";
 import {NgModule} from "@angular/core";
 import {MainComponent} from "./main.component";
 import {HelpComponent} from "./components/help/help.component";
+import {GiftClaimedComponent} from "./components/gifts/gift-claimed.component";
 
 const routes: Routes = [
   {
     path: '', component: MainComponent, children: [
       {path: '', component: GiftsComponent},
       {path: 'users', component: UserListComponent},
+      {path: 'claimed', component: GiftClaimedComponent},
       {path: 'list', component: GiftsComponent},
       {path: 'list/:user', component: GiftsComponent},
       {path: 'manage', component: ManageComponent, canActivate: [AdminGuard]},

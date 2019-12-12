@@ -44,6 +44,7 @@ export class PlHelpComponent implements OnInit {
       description: 'Najlepiej drewniania, ew metalowa',
       hidden: true,
       links: ['#'],
+      createdBy: this.user.id,
       engines: [
         {
           name: 'google',

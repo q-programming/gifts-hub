@@ -72,6 +72,20 @@
       Listy życzeń użytkowników. Na tej stronie można dodawac, edytować lub oglądać listy życzeń
     </div>
   </div>
+  <div fxLayout="row wrap" fxLayoutGap="20px" class="mt-2">
+    <div fxFlex="30" fxFlex.gt-lg="20" class="text-center">
+      <button mat-flat-button routerLink="." fragment="claimed">
+        <i class="fa fa-gift ml-1" fxShow.lt-sm="false"></i>
+        <i class="fa fa-2x fa-hand-paper-o"></i>
+        <div class="nav-caption" fxShow.lt-sm="false">
+          {{'menu.claimed'|translate}}
+        </div>
+      </button>
+    </div>
+    <div fxFlex="60">
+      Lista zarezerwowanych prezentów. Tutaj pokazane są wszystkie prezenty, które zostały zarezerwowane przez obecnego użytkowika. Można też z tą usunąć rezerwację.
+    </div>
+  </div>
   <div fxLayout="row wrap" fxLayoutGap="20px" class="mt-2" *ngIf="isAdmin">
     <div fxFlex="30" fxFlex.gt-lg="20" class="text-center">
       <button mat-flat-button routerLink="." fragment="manage">
@@ -183,7 +197,7 @@
   <mat-expansion-panel expanded="true">
     <mat-expansion-panel-header>
       <mat-panel-title>
-        <span class="help-cursor font-weight-bold font-larger" matTooltip="Nazwa grupy, kliknięcie w nią ją zwinie">Moja grupa</span>
+        <span class="help-cursor stylish-header" matTooltip="Nazwa grupy, kliknięcie w nią ją zwinie">Moja grupa</span>
       </mat-panel-title>
       <mat-panel-description fxLayout="row" fxFlex fxLayoutAlign="end center" fxLayoutGap="10px">
         <div class="pull-right mr-2">
@@ -304,7 +318,6 @@
     zostanie usunięta
   </p>
 </div>
-
 <!--LISTS-->
 <div>
   <h3 class="underlined help-title" id="list">
@@ -366,7 +379,7 @@
     <mat-expansion-panel expanded="true">
       <mat-expansion-panel-header>
         <mat-panel-title>
-          <span class="font-larger font-weight-bold">{{gift.category.name}}</span>
+          <span class="stylish-header">{{gift.category.name}}</span>
         </mat-panel-title>
       </mat-expansion-panel-header>
       <div>
@@ -381,7 +394,7 @@
     <mat-expansion-panel expanded="true">
       <mat-expansion-panel-header>
         <mat-panel-title>
-          <span class="font-larger font-weight-bold">{{'gift.category.realised'|translate}}</span>
+          <span class="stylish-header">{{'gift.category.realised'|translate}}</span>
         </mat-panel-title>
       </mat-expansion-panel-header>
       <div>
@@ -490,6 +503,43 @@
     zostanie
     wyświetlony rezultat szukania dla <br><u>https://www.google.com/search?q=MOJA_NAZWA</u>
   </p>
+</div>
+<!--CLAIM-->
+<div>
+  <h3 class="underlined help-title" id="claimed">
+    <i class="fa fa-fw fa-hand-paper-o"></i>
+    Zarezerwowane prezenty
+  </h3>
+  <p>
+    Ekran aby podejrzeć swoje rezerwacje na prezentach wszystkich innych użytkowników z twoich grup. Wszystkie prezenty pogrupowane są po użytkownikach<br>
+    Z tego ekranu można też szybko usunąć rezerwację z prezentu klikająć na ikonę
+    <span class="fa-stack">
+          <i class="fa fa-times fa-stack-1x"></i>
+          <i class="fa fa-lg fa-hand-paper-o fa-stack-1x"></i>
+    </span>
+  </p>
+  <mat-card class="help-example-blue-bg">
+    <mat-expansion-panel expanded="true">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <span class="stylish-header" fxFill>
+            <avatar [avatar]="" classes="avatar small v-middle mr-1"></avatar>
+            Jan Nowak
+            <button mat-stroked-button class="pull-right"
+                    matTooltip="{{'user.group.list'|translate}}">
+              <i class="fa fa-fw fa-arrow-right"></i>
+              <i class="fa fa-fw fa-gift"></i>
+            </button>
+          </span>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div>
+        <gift [gift]="gift_claimed"
+              [even]="false"
+              [canEdit]="false"></gift>
+      </div>
+    </mat-expansion-panel>
+  </mat-card>
 </div>
 <!--SETTINGS-->
 <div>

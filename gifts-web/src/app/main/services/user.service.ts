@@ -5,7 +5,7 @@ import {Account} from "@model/Account";
 import {Observable} from "rxjs";
 import {environment} from "@env/environment.prod";
 import {AvatarService} from "@core-services/avatar.service";
-import { MatDialog, MatDialogConfig } from "@angular/material/dialog";
+import {MatDialog, MatDialogConfig} from "@angular/material/dialog";
 import * as _ from "lodash";
 import {ConfirmDialogData, ConfirmDialogComponent} from "../../components/dialogs/confirm/confirm-dialog.component";
 import {SortBy} from "@model/AppSettings";
@@ -48,17 +48,40 @@ export class UserService {
     })
   }
 
+  geUserById(id: string): Observable<Account> {
+    const accountStr = sessionStorage.getItem(id);
+    if (accountStr) {
+      return new Observable((observable) => {
+        let account = JSON.parse(accountStr) as Account;
+        observable.next(account);
+        observable.complete();
+      })
+    }
+    //missing account info , force fetch all
+    return this.apiSrv.get(`${environment.account_url}/users`).map(users => {
+      return this.fetchAvatars(users as Account[]);
+    })
+  }
+
+
   private async markAdmins(group: Group) {
     group.members.forEach((member) => {
       member.groupAdmin = !!_.find(group.admins, (a) => a.id === member.id);
     })
   }
 
-  private fetchAvatars(accounts) {
+  /**
+   * Fetch all avatars for given accounts, while at this , put account information into session storage for future retrieval
+   * @param accounts
+   */
+  fetchAvatars(accounts) {
     accounts.forEach(account => {
-      this.avatarSrv.getUserAvatarByUsername(account.username).subscribe(avatar => {
-        account.avatar = avatar;
-      })
+      if (!account.avatar) {
+        this.avatarSrv.getUserAvatarByUsername(account.username).subscribe(avatar => {
+          account.avatar = avatar;
+          sessionStorage.setItem(account.id, JSON.stringify(account));
+        })
+      }
     });
     return accounts
   }
@@ -110,6 +133,7 @@ export class UserService {
         if (result) {
           this.leaveGroup({id: group.id}).subscribe(() => {
             observable.next(true);
+            observable.complete();
           }, error1 => {
           });
         }

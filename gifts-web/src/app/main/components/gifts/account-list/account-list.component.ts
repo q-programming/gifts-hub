@@ -45,6 +45,7 @@ export class AccountListComponent implements OnInit, AfterViewInit, OnDestroy {
       .valueChanges.subscribe(value => {
       if (value && value !== this.viewedAccount) {
         this.viewedAccount = undefined;
+        this.account.emit(this.viewedAccount);
         this.router.navigate(['/list', value.username])
 
       }

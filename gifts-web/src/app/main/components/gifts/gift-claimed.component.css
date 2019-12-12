@@ -1,0 +1,16 @@
+.content {
+  margin-top: 65px;
+}
+
+
+.title {
+  font-family: 'Kaushan Script', cursive;
+  font-weight: normal;
+  font-size: 1.5rem;
+}
+
+@media (max-width: 598px) {
+  .content {
+    margin-top: 40px;
+  }
+}

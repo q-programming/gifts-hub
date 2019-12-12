@@ -132,6 +132,7 @@
   },
   "gift": {
     "add": {
+      "addedBy": "Dodane przez",
       "date": "Dodano",
       "error": "Wystąpił bład podczas dodawania prezentu. Skontaktuj się proszę z administratorem",
       "success": "Nowy prezent \"{{name}}\" został dodany do listy życzeń"
@@ -152,7 +153,9 @@
       "text": "Kategoria"
     },
     "claim": {
+      "calimed": "Zarezerwowane prezenty",
       "error": "Nie możesz zarezerwować własnego prezentu",
+      "noClaimed": "Nie ma żadnych zarezerwowanych prezentów",
       "success": "Zarezerwowano prezent \"{{name}}\"",
       "text": "Zarezerwuj prezent"
     },
@@ -218,6 +221,7 @@
       "add": "Dodaj nowy",
       "added": "Nowy prezent został dodany do listy życzeń"
     },
+    "noGifts": "Nic tu nie ma, zacznij dodawać prezenty !",
     "search": {
       "help": "Wybierz które wyszukiwarki mają być wyświetlone obok tego prezętu.<br>Wszyscy będą mogli szybko wyszukać ten prezent, klikając na ikonę",
       "with": "Szukaj z"
@@ -265,6 +269,7 @@
     "test": "Testujemy PL"
   },
   "menu": {
+    "claimed": "Zarezerwowane",
     "help": "Pomoc",
     "login": "Zaloguj",
     "logout": "Wyloguj",

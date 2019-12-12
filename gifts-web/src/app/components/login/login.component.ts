@@ -22,6 +22,7 @@ export class LoginComponent implements OnInit {
     if (this.authSrv.currentAccount) {
       this.router.navigate(['/']);
     }
+    sessionStorage.clear();
     this.authSrv.setLanguage();
   }
 

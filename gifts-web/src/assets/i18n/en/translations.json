@@ -132,6 +132,7 @@
   },
   "gift": {
     "add": {
+      "addedBy": "Added by",
       "date": "Added on",
       "error": "There was error while trying to add gift. Please contact administrator",
       "success": "New gift \"{{name}}\" was added to wish list"
@@ -152,7 +153,9 @@
       "text": "Category"
     },
     "claim": {
+      "calimed": "Claimed gifts",
       "error": "You cannot claim your gift",
+      "noClaimed": "There are no claimed gifts",
       "success": "Gift \"{{name}}\" has been clamed",
       "text": "Claim gift"
     },
@@ -218,6 +221,7 @@
       "add": "Add new",
       "added": "New gift added to wish list"
     },
+    "noGifts": "There is nothing here, start adding gifts!",
     "search": {
       "help": "Select which search engines should be shown next to this gift.<br>Everyone will be able to quickly search using them by just clicking that icon",
       "with": "Search with"
@@ -265,6 +269,7 @@
     "test": "Testing EN"
   },
   "menu": {
+    "claimed": "Claimed gifts",
     "help": "Help",
     "login": "Login",
     "logout": "Logout",

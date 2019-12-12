@@ -21,11 +21,11 @@
           <mat-icon>add</mat-icon>
         </button>
       </div>
-      <ng-container >
+      <ng-container>
         <!--TODO import disabled for now-->
         <!--<button fxShow.lt-md="false" mat-flat-button class="success-button pull-right font-smaller"-->
-                <!--*ngIf="isUserList">-->
-          <!--<mat-icon>cloud_upload</mat-icon>-->
+        <!--*ngIf="isUserList">-->
+        <!--<mat-icon>cloud_upload</mat-icon>-->
         <!--</button>-->
         <button fxShow.lt-md="false" mat-flat-button class="success-button pull-right mr-1 font-smaller"
                 (click)="addGiftDialog()">
@@ -127,4 +127,9 @@
       ></gift>
     </div>
   </mat-expansion-panel>
+  <mat-card *ngIf="noGifts">
+    <div class="text-center">
+      <span class="stylish-header stylish">{{'gift.noGifts'|translate}}</span>
+    </div>
+  </mat-card>
 </div>

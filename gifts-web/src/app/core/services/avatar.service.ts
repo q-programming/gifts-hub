@@ -13,30 +13,30 @@ export class AvatarService {
 
     /**
      * Returns Observable with base64 string data of avatar.
-     * Firstly local storage is checked if image was not already wrote there.
-     * If nothing is found in local storage, read avatar from database and persist it on local storage
+     * Firstly session storage is checked if image was not already wrote there.
+     * If nothing is found in session storage, read avatar from database and persist it on local storage
      *
      * @param username user id for which avatar should be read
      */
     getUserAvatarByUsername(username: string): Observable<string> {
         return new Observable((observable) => {
-            let image = localStorage.getItem("avatar:" + username);
+            let image = sessionStorage.getItem("avatar:" + username);
             if (!image) {
                 this.logger.debug(`Getting avatar from DB for user ${username}`);
                 this.api.getObject(environment.account_url + `/${username}${environment.avatar_url}`).subscribe(result => {
                     if (result) {
                         const dataType = "data:" + result.type + ";base64,";
                         image = dataType + result.image;
-                        localStorage.setItem("avatar:" + username, image);
+                        sessionStorage.setItem("avatar:" + username, image);
                     } else {
                         image = 'assets/images/avatar-placeholder.png';
-                        localStorage.setItem("avatar:" + username, image);
+                        sessionStorage.setItem("avatar:" + username, image);
                     }
                     observable.next(image);
                     observable.complete();
                 });
             } else {
-                this.logger.debug(`Fetching avatar from localStorage for account : ${username}`);
+                this.logger.debug(`Fetching avatar from sessionStorage for account : ${username}`);
                 observable.next(image);
                 observable.complete();
             }

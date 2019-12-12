@@ -5,7 +5,7 @@
   </span>
   <span class="fill-remaining-space"></span>
   <span *ngIf="account" fxLayout="row" fxLayoutAlign="end center" fxLayoutGap.gt-xs="30px" fxLayoutGap.lt-sm="10px">
-    <span fxFlex>
+    <div fxFlex>
       <button mat-icon-button routerLink="/users" routerLinkActive="active-link" class="nav-button">
         <div class="v-sub">
           <i class="fa fa-gift ml-1" fxShow.lt-sm="false"></i>
@@ -15,8 +15,8 @@
           {{'menu.users'|translate}}
         </div>
       </button>
-    </span>
-    <span fxFlex>
+    </div>
+    <div fxFlex>
       <button mat-icon-button routerLink="/list" routerLinkActive="active-link" class="nav-button">
         <div class="v-sub">
           <i class="fa fa-list ml-1" fxShow.lt-sm="false"></i>
@@ -26,8 +26,20 @@
           {{'menu.wishlist'|translate}}
         </div>
       </button>
-    </span>
-    <span fxFlex *ngIf="isAdmin" fxShow.lt-sm="false">
+    </div>
+    <div fxFlex class="claimed-menu">
+      <button mat-icon-button routerLink="/claimed" routerLinkActive="active-link" class="nav-button">
+        <div class="v-sub">
+          <i class="fa fa-gift ml-1" fxShow.lt-sm="false"></i>
+          <i class="fa fa-2x fa-hand-paper-o"></i>
+        </div>
+        <div class="nav-caption" fxShow.lt-sm="false">
+          {{'menu.claimed'|translate}}
+        </div>
+      </button>
+    </div>
+
+    <div fxFlex *ngIf="isAdmin" fxShow.lt-sm="false">
       <button mat-icon-button routerLink="/manage" routerLinkActive="active-link" class="nav-button">
         <div class="v-sub">
           <i class="fa fa-columns" fxShow.lt-sm="false"></i>
@@ -37,8 +49,8 @@
           {{'menu.manage'|translate}}
         </div>
       </button>
-    </span>
-    <span fxFlex>
+    </div>
+    <div fxFlex>
       <button mat-icon-button routerLink="/help" routerLinkActive="active-link" class="nav-button">
         <div class="v-sub">
           <i class="fa fa-2x fa-question-circle"></i>
@@ -47,8 +59,8 @@
           {{'menu.help'|translate}}
         </div>
       </button>
-    </span>
-    <span fxFlex>
+    </div>
+    <div fxFlex>
       <button mat-button fxShow.lt-md="false" [matMenuTriggerFor]="appMenu">
         <span class="nav-smaller">
           {{account.name}}&nbsp;{{account.surname}}
@@ -60,7 +72,7 @@
       <button mat-icon-button fxShow.gt-sm="false" [matMenuTriggerFor]="appMenu">
         <mat-icon>menu</mat-icon>
       </button>
-    </span>
+    </div>
     <mat-menu #appMenu="matMenu">
       <button mat-menu-item routerLink="/settings">
         <mat-icon>settings</mat-icon>

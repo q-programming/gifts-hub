@@ -158,5 +158,18 @@ public class GiftServiceTest {
         verify(giftRepositoryMock, times(1)).saveAll(gifts);
     }
 
+    @Test
+    public void getClaimedGiftsAccount() throws Exception {
+        Account account = TestUtil.createAccount();
+        account.setId(account.getId() + 1);
+        Gift gift2 = TestUtil.createGift(2L, account);
+        Gift gift3 = TestUtil.createGift(3L, account);
+        List<Gift> giftList = Arrays.asList(gift2, gift3);
+        when(giftRepositoryMock.findAllByClaimedAndStatusIsNull(testAccount)).thenReturn(giftList);
+        Map<String, List<Gift>> allClaimedByCurrentUser = giftService.findAllClaimedByCurrentUser();
+        assertEquals(2, allClaimedByCurrentUser.get(account.getId()).size());
+
+    }
+
 
 }

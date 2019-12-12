@@ -46,6 +46,7 @@ export class EnHelpComponent implements OnInit {
       description: 'Wooden if possible, can be metal',
       hidden: true,
       links: ['#'],
+      createdBy: this.user.id,
       engines: [
         {
           name: 'google',
