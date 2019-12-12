@@ -46,7 +46,9 @@
          #tooltip="matTooltip" (click)="tooltip.toggle()"></i>
       <strong>{{gift.name}}</strong>
       <br>
-      <span *ngIf="createdBy" class="gift-added-by">{{'gift.add.addedBy'|translate}}: {{createdBy.fullname}}</span>
+      <span *ngIf="createdBy && gift.status !== GiftStatus.REALISED" class="gift-added-by">
+        {{'gift.add.addedBy'|translate}}: {{createdBy.fullname}}
+      </span>
     </span>
   </div>
   <!--DESCRIPTION-->
