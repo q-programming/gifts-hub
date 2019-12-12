@@ -3,7 +3,6 @@ import {GiftService} from "@services/gift.service";
 import {Router} from "@angular/router";
 import {Gift} from "@model/Gift";
 import {Account} from "@model/Account";
-import {TranslateService} from "@ngx-translate/core";
 import {UserService} from "@services/user.service";
 
 @Component({
@@ -13,11 +12,8 @@ import {UserService} from "@services/user.service";
 })
 export class GiftClaimedComponent implements OnInit {
 
-  identification: string;
-  gifts: Map<Account, Gift[]>;
-  accountsList: Account[];
-  avatar: string = 'assets/images/avatar-placeholder.png';
-  currentAccount: Account;
+  gifts: Map<string, Gift[]> = new Map();
+  accountsList: Account[] = [];
 
   constructor(private router: Router, private giftSrv: GiftService, private userSrv: UserService) {
   }
@@ -28,12 +24,21 @@ export class GiftClaimedComponent implements OnInit {
 
   private getGifts() {
     this.giftSrv.getClaimedGifts().subscribe(result => {
-      this.gifts = result.claimedGifts;
-      this.accountsList = result.accounts;
-      this.userSrv.fetchAvatars(this.accountsList);
+      let keys = Object.keys(result);
+      for (let accountID of keys) {
+        this.userSrv.geUserById(accountID).subscribe(account => {
+          this.accountsList.push(account);
+          this.gifts.set(account.id, result[accountID]);
+        })
+      }
     }, () => {
       this.router.navigate(['/']);
     });
+  }
+
+  navigateToUser(event: Event, username: string) {
+    event.stopPropagation();
+    this.router.navigate(['/list/' + username])
   }
 
   trackByFn(index, item) {

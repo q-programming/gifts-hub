@@ -10,7 +10,7 @@ import {Account} from "@model/Account";
 import * as _ from "lodash"
 import {AlertService} from "@core-services/alert.service";
 import {NGXLogger} from "ngx-logger";
-import { MatDialog } from "@angular/material/dialog";
+import {MatDialog} from "@angular/material/dialog";
 import {GiftDialogComponent} from "./gift-dialog/gift-dialog.component";
 import {TranslateService} from "@ngx-translate/core";
 import {CategoryOption} from "@model/Category";
@@ -44,6 +44,7 @@ export class GiftsComponent implements OnInit {
   filter: boolean;
   filterTabOpen: string;
   canEditAll: boolean;
+  noGifts: boolean;
 
 
   constructor(private activatedRoute: ActivatedRoute,
@@ -86,6 +87,7 @@ export class GiftsComponent implements OnInit {
 
   private processList(result: Map<string, Gift[]>) {
     this.categorizedGifts = result;
+    this.noGifts = Object.keys(result).length == 0;
     this.categories = Object.keys(result).map(key => {
       return {
         key: key ? key : '####',
@@ -199,6 +201,12 @@ export class GiftsComponent implements OnInit {
   }
 
   changeViewedAccount(account: Account) {
+    if (!account) {
+      this.realizedGifts = [];
+      this.unCategorizedGifts = [];
+      this.categorizedGifts = new Map<string, Gift[]>();
+      this.categorizedKeys = [];
+    }
     this.viewedAccount = account;
   }
 

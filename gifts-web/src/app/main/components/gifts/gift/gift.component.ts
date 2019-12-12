@@ -5,6 +5,7 @@ import {Account} from "@model/Account";
 import {GiftService} from "@services/gift.service";
 import {AlertService} from "@core-services/alert.service";
 import {NGXLogger} from "ngx-logger";
+import {UserService} from "@services/user.service";
 
 @Component({
   selector: 'gift',
@@ -22,14 +23,18 @@ export class GiftComponent implements OnInit {
   @Output() delete = new EventEmitter<Gift>();
   @Output() edit = new EventEmitter<Gift>();
   currentAccount: Account;
+  createdBy: Account;
 
 
-  constructor(private authSrv: AuthenticationService, private giftSrv: GiftService, private alertSrv: AlertService, private logger: NGXLogger) {
+  constructor(private authSrv: AuthenticationService, private giftSrv: GiftService, private alertSrv: AlertService, private userSrv: UserService, private logger: NGXLogger) {
   }
 
 
   ngOnInit() {
     this.currentAccount = this.authSrv.currentAccount;
+    if (this.gift.createdBy && this.gift.userId != this.gift.createdBy) {
+      this.userSrv.geUserById(this.gift.createdBy).subscribe(acc => this.createdBy = acc)
+    }
   }
 
 

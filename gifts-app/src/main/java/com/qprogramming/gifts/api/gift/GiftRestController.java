@@ -301,16 +301,7 @@ public class GiftRestController {
     @RequestMapping("/claimed")
     public ResponseEntity getMineClaimedGifts() {
         if (Utils.getCurrentAccount() != null) {
-            Map<String, List<Gift>> gifts = giftService.findAllClaimedByCurrentUser();
-            List<Account> accounts = gifts.keySet().stream().map(s -> {
-                try {
-                    return accountService.findById(s);
-                } catch (AccountNotFoundException e) {
-                    LOG.error("Failed to find account with id {}", s);
-                    return null;
-                }
-            }).collect(Collectors.toList());
-            return new ResponseEntity<>(new ClaimedGiftsDTO(accounts, gifts), HttpStatus.OK);
+            return new ResponseEntity<>(giftService.findAllClaimedByCurrentUser(), HttpStatus.OK);
         } else
             return ResponseEntity.ok(new ClaimedGiftsDTO());
     }

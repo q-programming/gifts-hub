@@ -22,7 +22,7 @@ export class GiftService {
     }
   }
 
-  getClaimedGifts(): Observable<any> {
+  getClaimedGifts(): Observable<Map<string, Gift[]>> {
     return this.apiSrv.get(`${environment.gift_url}/claimed`);
   }
 

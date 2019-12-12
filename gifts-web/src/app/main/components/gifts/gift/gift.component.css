@@ -32,3 +32,6 @@
 .gift-tooltip{
   white-space: pre-line;
 }
+.gift-added-by{
+  font-size: smaller;
+}

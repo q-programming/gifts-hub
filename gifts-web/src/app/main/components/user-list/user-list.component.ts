@@ -13,6 +13,7 @@ import {KidDialogComponent} from "./kid-dialog/kid-dialog.component";
 import {GroupDialogComponent} from "./group-dialog/group-dialog.component";
 import * as _ from "lodash";
 import {SortBy} from "@model/AppSettings";
+import * as utils from "../../../utils/utils";
 
 @Component({
   selector: 'user-list',
@@ -27,6 +28,7 @@ export class UserListComponent implements OnInit {
   groups: Group[] = [];
   withoutFamily: Account[] = [];
   usersByName: Account[] = [];
+  utils = utils;
   private currentAccount: Account;
   loaded: boolean;
 
@@ -42,6 +44,7 @@ export class UserListComponent implements OnInit {
     this.currentAccount = this.authSrv.currentAccount;
     this.userSrv.getDefaultSorting().subscribe(sorting => {
       this.sortBy.value = sorting;
+
     });
     this.sortBy.valueChange
       .debounceTime(1) //small delay not to trigger multiple times
@@ -172,14 +175,6 @@ export class UserListComponent implements OnInit {
         this.alertSrv.success('user.group.left');
       }
     });
-  }
-
-  /**
-   * Stop propagation of any next event that happens after action
-   * @param event event to stop propagation ( so that mat-expansion-panel won't collapse )
-   */
-  menuClick(event: Event) {
-    event.stopPropagation();
   }
 
   /**

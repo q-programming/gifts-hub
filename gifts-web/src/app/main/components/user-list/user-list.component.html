@@ -40,7 +40,7 @@
     </div>
     <mat-card *ngIf="loaded && groups.length === 0 ">
       <div class="text-center">
-        <h4 [innerHTML]="'user.group.nogroups'|translate"></h4>
+        <span class="stylish-header stylish" [innerHTML]="'user.group.nogroups'|translate"></span>
       </div>
     </mat-card>
     <mat-expansion-panel *ngFor="let group of groups" expanded="true">
@@ -50,8 +50,8 @@
         </mat-panel-title>
         <mat-panel-description fxLayout="row" fxFlex fxLayoutAlign="end center" fxLayoutGap="10px">
           <div class="pull-right mr-2">
-            <button mat-icon-button [matMenuTriggerFor]="groupMenu" (click)="menuClick($event)">
-                 <mat-icon>more_vert</mat-icon>
+            <button mat-icon-button [matMenuTriggerFor]="groupMenu" (click)="utils.menuClick($event)">
+              <mat-icon>more_vert</mat-icon>
             </button>
             <mat-menu #groupMenu="matMenu">
               <ng-container *ngIf="isGroupAdmin(group)">
