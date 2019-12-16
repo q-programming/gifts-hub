@@ -14,6 +14,7 @@ import {MatDialog} from "@angular/material/dialog";
 import {GiftDialogComponent} from "./gift-dialog/gift-dialog.component";
 import {TranslateService} from "@ngx-translate/core";
 import {CategoryOption} from "@model/Category";
+import {NgProgress, NgProgressRef} from "@ngx-progressbar/core";
 
 @Component({
   selector: 'gifts-list',
@@ -46,6 +47,8 @@ export class GiftsComponent implements OnInit {
   canEditAll: boolean;
   noGifts: boolean;
 
+  progress: NgProgressRef;
+
 
   constructor(private activatedRoute: ActivatedRoute,
               private router: Router,
@@ -56,7 +59,9 @@ export class GiftsComponent implements OnInit {
               private alertSrv: AlertService,
               public dialog: MatDialog,
               private logger: NGXLogger,
-              private translate: TranslateService) {
+              private translate: TranslateService,
+              public ngProgress: NgProgress) {
+    this.progress = ngProgress.ref();
   }
 
   ngOnInit() {
@@ -75,6 +80,7 @@ export class GiftsComponent implements OnInit {
 
 
   private getGifts() {
+    this.progress.start();
     this.giftSrv.getUserGifts(this.identification).subscribe(result => {
       if (this.identification) {
         this.userSrv.canEditAll(this.identification).subscribe(result => this.canEditAll = result);
@@ -99,6 +105,7 @@ export class GiftsComponent implements OnInit {
     delete this.categorizedGifts[GiftStatus.REALISED];
     delete this.categorizedGifts[''];
     this.categorizedKeys = Object.keys(this.categorizedGifts);
+    this.progress.complete();
   }
 
   getAvatar(username: string) {

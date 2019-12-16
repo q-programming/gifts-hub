@@ -207,6 +207,25 @@ public class MailServiceTest {
     }
 
     @Test
+    public void sendEventsHiddenGiftWithoutRecipient() throws MessagingException {
+        Account account = TestUtil.createAccount("John", "Doe");
+        account.setNotifications(true);
+        Group group = new Group();
+        group.addMember(testAccount);
+        group.addMember(account);
+        AppEvent event1 = TestUtil.createEvent(testAccount);
+        AppEvent event2 = TestUtil.createEvent(testAccount);
+        event1.setCreatedBy(account);
+        event2.setCreatedBy(account);
+        Map<Account, List<AppEvent>> events = new HashMap<>();
+        events.put(testAccount, Arrays.asList(event1, event2));
+        when(eventServiceMock.getEventsGroupedByAccount()).thenReturn(events);
+        when(msgSrvMock.getMessage("schedule.event.summary", null, "", locale)).thenReturn(SUBJECT);
+        mailService.sendEvents();
+        verify(mailSenderMock, times(0)).send(any(MimeMessage.class));
+    }
+
+    @Test
     public void sendEventsForNewAndRealised() throws MessagingException {
         Account account = TestUtil.createAccount("John", "Doe");
         account.setNotifications(true);

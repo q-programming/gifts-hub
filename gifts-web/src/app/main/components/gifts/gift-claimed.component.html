@@ -22,7 +22,7 @@
 
 </mat-card>
 <div class="content">
-  <mat-card *ngIf="accountsList.length == 0 ">
+  <mat-card *ngIf="accountsList.length == 0 && loading==false">
     <div class="text-center p-1">
       <span class=" stylish-header stylish">{{'gift.claim.noClaimed'|translate}}</span>
     </div>
