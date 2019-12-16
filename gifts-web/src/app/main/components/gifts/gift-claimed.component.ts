@@ -15,8 +15,8 @@ export class GiftClaimedComponent implements OnInit {
 
   gifts: Map<string, Gift[]> = new Map();
   accountsList: Account[] = [];
+  loading = true;
   private progress: NgProgressRef;
-  private loading = true;
 
   constructor(private router: Router, private giftSrv: GiftService, private userSrv: UserService, public ngProgress: NgProgress) {
     this.progress = ngProgress.ref();
