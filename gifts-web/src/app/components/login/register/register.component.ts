@@ -18,10 +18,11 @@ import {AuthenticationService} from "@core-services/authentication.service";
 @Component({
     selector: 'app-register',
     templateUrl: './register.component.html',
-    styles: []
+    styleUrls:['../login.component.css']
 })
 export class RegisterComponent implements OnInit {
 
+    login_url = environment.context + environment.login_url;
     baseForm: FormGroup;
     passwordForm: FormGroup;
     myColors = ['#DD2C00', '#FF6D00', '#FFD600', '#AEEA00', '#00C853'];

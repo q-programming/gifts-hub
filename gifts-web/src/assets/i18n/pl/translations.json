@@ -443,7 +443,8 @@
       "here": "tutaj",
       "register": {
         "newhere": "Nowy użytkownik? Zarejestruj się",
-        "social": "Jeżeli nie posiadasz jeszcze konta,<br>zostanie ono dla Ciebie automatycznie stworzone"
+        "social": "Jeżeli nie posiadasz jeszcze konta,<br>zostanie ono dla Ciebie automatycznie stworzone",
+        "socialsignup": "...lub zarejestruj się za pomocą"
       },
       "remember": "Zapamiętaj mnie",
       "text": "Zaloguj się",

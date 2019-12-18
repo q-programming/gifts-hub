@@ -443,7 +443,8 @@
       "here": "here",
       "register": {
         "newhere": "New user? Register",
-        "social": "If you don't have account,<br>it will be automatically created for you"
+        "social": "If you don't have account,<br>it will be automatically created for you",
+        "socialsignup": "...or sign up using"
       },
       "remember": "Remember me",
       "text": "Login",
