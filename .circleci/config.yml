@@ -1,13 +1,10 @@
 version: 2.1
-executors:
-  mvn-node-executor:
-    docker:
-      - image: khobar/docker-jdk-8-maven-node-ng
-    working_directory: ~/repo
 
 jobs:
   build:
-    executor: mvn-node-executo
+    docker:
+      - image: khobar/docker-jdk-8-maven-node-ng
+      working_directory: ~/repo
     environment:
       MAVEN_OPTS: -Xmx3200m
     steps:
@@ -28,7 +25,9 @@ jobs:
           paths:
             - repo
   test:
-    executor: mvn-node-executo
+    docker:
+      - image: khobar/docker-jdk-8-maven-node-ng
+      working_directory: ~/repo
     environment:
       MAVEN_OPTS: -Xmx3200m
     steps:
@@ -54,7 +53,9 @@ jobs:
       - store_artifacts:
           path: ~/test-results/junit
   deploy:
-    executor: mvn-node-executo
+    docker:
+      - image: khobar/docker-jdk-8-maven-node-ng
+      working_directory: ~/repo
     steps:
       - attach_workspace:
           # Must be absolute path or relative path from working_directory
