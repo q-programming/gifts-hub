@@ -1,9 +1,13 @@
-version: 2
-jobs:
-  build:
+version: 2.1
+executors:
+  mvn-node-executor:
     docker:
       - image: khobar/docker-jdk-8-maven-node-ng
     working_directory: ~/repo
+
+jobs:
+  build:
+    executor: mvn-node-executo
     environment:
       MAVEN_OPTS: -Xmx3200m
     steps:
@@ -19,14 +23,17 @@ jobs:
           paths:
             - ~/.m2
           key: v1-dependencies-{{ checksum "pom.xml" }}
+      - persist_to_workspace:
+          root: /root/repo/
+          paths:
+            - repo
   test:
-    docker:
-      - image: khobar/docker-jdk-8-maven-node-ng
-    working_directory: ~/repo
+    executor: mvn-node-executo
     environment:
       MAVEN_OPTS: -Xmx3200m
     steps:
-      - checkout
+      - attach_workspace:
+          at: /root/repo/
       - restore_cache:
           keys:
           - v1-dependencies-{{ checksum "pom.xml" }}
@@ -46,6 +53,17 @@ jobs:
           path: ~/test-results
       - store_artifacts:
           path: ~/test-results/junit
+  deploy:
+#    executor: mvn-node-executo
+#    environment:
+#      MAVEN_OPTS: -Xmx3200m
+    steps:
+      - attach_workspace:
+          # Must be absolute path or relative path from working_directory
+          at: /root/repo/
+      - store_artifacts:
+          path: /root/repo/gifts-app/target/gifts.war
+
 workflows:
   version: 2
   build_and_test:
