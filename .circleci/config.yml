@@ -54,9 +54,7 @@ jobs:
       - store_artifacts:
           path: ~/test-results/junit
   deploy:
-#    executor: mvn-node-executo
-#    environment:
-#      MAVEN_OPTS: -Xmx3200m
+    executor: mvn-node-executo
     steps:
       - attach_workspace:
           # Must be absolute path or relative path from working_directory
