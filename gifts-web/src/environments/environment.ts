@@ -3,6 +3,7 @@
 // The list of file replacements can be found in `angular.json`.
 
 import {NgxLoggerLevel} from "ngx-logger";
+import {version} from "../../package.json";
 
 export const environment = {
   production: false,
@@ -21,6 +22,7 @@ export const environment = {
   app_url: '/api/app',
   default_lang_url: '/api/app/default-language',
   gift_url: '/api/gift',
+  version: version
 };
 
 /*

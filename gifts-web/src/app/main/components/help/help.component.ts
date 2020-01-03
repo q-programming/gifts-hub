@@ -4,6 +4,7 @@ import {ActivatedRoute} from "@angular/router";
 import {ScrollToService} from "@nicky-lenaers/ngx-scroll-to";
 import {Account} from "@model/Account";
 import {AuthenticationService} from "@core-services/authentication.service";
+import {environment} from "@env/environment";
 
 @Component({
   selector: 'app-help',
@@ -17,6 +18,7 @@ export class HelpComponent implements OnInit, AfterViewInit {
   isAdmin: boolean;
   user: Account;
   admins: Account[];
+  version: string = environment.version;
 
   constructor(private translate: TranslateService,
               private route: ActivatedRoute,
