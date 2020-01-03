@@ -33,12 +33,14 @@
     </div>
   </div>
 </mat-card>
-<div class="content">
+<div class="content" *ngIf="isLoading">
+  <div class="text-center">
+    <inner-loader></inner-loader>
+  </div>
+</div>
+<div class="content" *ngIf="!isLoading">
   <ng-container *ngIf="sortBy.value === SortBy.GROUP">
-    <div fxLayout="column" fxLayoutAlign="center center" class="full-page" *ngIf="!loaded">
-      <mat-spinner [strokeWidth]="15"></mat-spinner>
-    </div>
-    <mat-card *ngIf="loaded && groups.length === 0 ">
+    <mat-card *ngIf="groups.length === 0 ">
       <div class="text-center">
         <span class="stylish-header stylish" [innerHTML]="'user.group.nogroups'|translate"></span>
       </div>

@@ -30,7 +30,7 @@ export class UserListComponent implements OnInit {
   usersByName: Account[] = [];
   utils = utils;
   private currentAccount: Account;
-  loaded: boolean;
+  isLoading: boolean;
 
   constructor(private userSrv: UserService,
               private alertSrv: AlertService,
@@ -75,10 +75,10 @@ export class UserListComponent implements OnInit {
    */
   sortByGroups() {
     if (this.groups.length == 0 && this.withoutFamily.length == 0) {
-      this.loaded = false;
+      this.isLoading = true;
       this.userSrv.getAllGroups().subscribe(groups => {
         this.groups = groups;
-        this.loaded = true;
+        this.isLoading = false;
       });
     }
   }
@@ -88,10 +88,10 @@ export class UserListComponent implements OnInit {
    */
   sortByName() {
     if (this.usersByName.length == 0) {
-      this.loaded = false;
+      this.isLoading = true;
       this.userSrv.getRelatedUsers(undefined, true).subscribe(users => {
         this.usersByName = users;
-        this.loaded = true;
+        this.isLoading = false;
       });
     }
   }
