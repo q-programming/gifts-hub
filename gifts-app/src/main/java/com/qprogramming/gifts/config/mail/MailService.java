@@ -440,13 +440,8 @@ public class MailService {
                 .filter(account -> StringUtils.isNotBlank(account.getEmail()))
                 .filter(Account::getNotifications)
                 .collect(Collectors.toSet());
-
         for (Account recipientAccount : newsletterEnabledAccountsFromGroup) {
-            Map<Account, List<AppEvent>> eventsWithoutRecipient = eventMap.entrySet().stream()
-                    .filter(eventAccount -> !eventAccount.getKey().equals(recipientAccount))
-                    .collect(Collectors
-                            .toMap(Map.Entry::getKey,
-                                    entry -> new ArrayList<>(filterEventList(entry.getValue(), recipientAccount))));
+            Map<Account, List<AppEvent>> eventsWithoutRecipient = filterEventMap(eventMap, recipientAccount);
             if (!eventsWithoutRecipient.isEmpty()) {
                 sendEventForAccount(mimeMessage, application, eventsWithoutRecipient, recipientAccount);
                 mailsSent++;
@@ -454,6 +449,18 @@ public class MailService {
         }
         eventService.processEvents();
         LOG.info("Newsletter sent to {} recipients", mailsSent);
+    }
+
+    private Map<Account, List<AppEvent>> filterEventMap(Map<Account, List<AppEvent>> eventMap, Account recipientAccount) {
+        Map<Account, List<AppEvent>> eventsWithoutRecipient = eventMap.entrySet().stream()
+                .filter(eventAccount -> !eventAccount.getKey().equals(recipientAccount))
+                .collect(Collectors
+                        .toMap(Map.Entry::getKey,
+                                entry -> new ArrayList<>(filterEventList(entry.getValue(), recipientAccount))));
+        return eventsWithoutRecipient.entrySet()
+                .stream()
+                .filter(e -> !e.getValue().isEmpty())
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     /**

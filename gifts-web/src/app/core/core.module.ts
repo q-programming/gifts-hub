@@ -22,6 +22,7 @@ import {NavigationUnauthenticatedComponent} from "./navigation/unauthenticated/n
 import {GoTopButtonModule} from "ng2-go-top-button";
 import {RouterModule} from "@angular/router";
 import {AvatarComponent} from "./components/avatar/avatar.component";
+import { InnerLoaderComponent } from './components/inner-loader/inner-loader.component';
 
 @NgModule({
   declarations: [
@@ -29,7 +30,8 @@ import {AvatarComponent} from "./components/avatar/avatar.component";
     AlertComponent,
     HighlightPipe,
     NavigationComponent,
-    NavigationUnauthenticatedComponent
+    NavigationUnauthenticatedComponent,
+    InnerLoaderComponent
   ],
   imports: [
     RouterModule,
@@ -77,7 +79,8 @@ import {AvatarComponent} from "./components/avatar/avatar.component";
     FlexLayoutModule,
     LoggerModule,
     HighlightPipe,
-    GoTopButtonModule
+    GoTopButtonModule,
+    InnerLoaderComponent
   ]
 })
 export class CoreModule {

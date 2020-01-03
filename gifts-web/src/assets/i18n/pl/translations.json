@@ -149,7 +149,10 @@
       "new": "Nowa kategoria ( naciśnij enter aby stworzyć)",
       "other": "Inne",
       "prohibited": "Kategoria nie jest dozwolona, proszę wybrać inną",
-      "realised": "Zrealizowane",
+      "realised": {
+        "none": "Nie ma jeszcze żadnego zrealizowanego prezentu",
+        "text": "Zrealizowane"
+      },
       "text": "Kategoria"
     },
     "claim": {
@@ -443,7 +446,8 @@
       "here": "tutaj",
       "register": {
         "newhere": "Nowy użytkownik? Zarejestruj się",
-        "social": "Jeżeli nie posiadasz jeszcze konta,<br>zostanie ono dla Ciebie automatycznie stworzone"
+        "social": "Jeżeli nie posiadasz jeszcze konta,<br>zostanie ono dla Ciebie automatycznie stworzone",
+        "socialsignup": "...lub zarejestruj się za pomocą"
       },
       "remember": "Zapamiętaj mnie",
       "text": "Zaloguj się",

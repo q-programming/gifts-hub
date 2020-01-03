@@ -55,5 +55,9 @@
               [disabled]="form.invalid || !form.touched">{{'app.manage.app.save'|translate}}
       </button>
     </form>
+    <div class="mt-3">
+      <h4>Fix realised dates</h4>
+      <button mat-flat-button color="warn" (click)="fixRealisedDates()">Fix it</button>
+    </div>
   </div>
 </div>

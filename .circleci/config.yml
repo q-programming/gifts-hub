@@ -1,4 +1,4 @@
-version: 2
+version: 2.1
 jobs:
   build:
     docker:
@@ -10,8 +10,8 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "pom.xml" }}
-          - v1-dependencies-
+            - v1-dependencies-{{ checksum "pom.xml" }}
+            - v1-dependencies-
       - run:
           name: Build application
           command: mvn clean install -DskipTests=true
@@ -19,6 +19,10 @@ jobs:
           paths:
             - ~/.m2
           key: v1-dependencies-{{ checksum "pom.xml" }}
+      - persist_to_workspace:
+          root: /root/repo
+          paths:
+            - .
   test:
     docker:
       - image: khobar/docker-jdk-8-maven-node-ng
@@ -26,16 +30,17 @@ jobs:
     environment:
       MAVEN_OPTS: -Xmx3200m
     steps:
-      - checkout
+      - attach_workspace:
+          at: /root/repo
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "pom.xml" }}
-          - v1-dependencies-
+            - v1-dependencies-{{ checksum "pom.xml" }}
+            - v1-dependencies-
       - run:
           name: Test
-          command: mvn integration-test
-      - store_artifacts:
-          path: /root/repo/gifts-app/target/gifts.war
+          command: |
+            cd gifts-app
+            mvn integration-test
       - run:
           name: Save test results
           command: |
@@ -46,11 +51,28 @@ jobs:
           path: ~/test-results
       - store_artifacts:
           path: ~/test-results/junit
+      - persist_to_workspace:
+          root: /root/repo
+          paths:
+            - .
+  deploy:
+    docker:
+      - image: khobar/docker-jdk-8-maven-node-ng
+    working_directory: ~/repo
+    steps:
+      - attach_workspace:
+          at: /root/repo
+      - store_artifacts:
+          path: /root/repo/gifts-app/target/gifts.war
+
 workflows:
   version: 2
-  build_and_test:
+  build_test_deploy:
     jobs:
       - build
       - test:
           requires:
             - build
+      - deploy:
+          requires:
+            - test

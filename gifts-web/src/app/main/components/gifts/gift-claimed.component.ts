@@ -4,6 +4,7 @@ import {Router} from "@angular/router";
 import {Gift} from "@model/Gift";
 import {Account} from "@model/Account";
 import {UserService} from "@services/user.service";
+import {NgProgress, NgProgressRef} from "@ngx-progressbar/core";
 
 @Component({
   selector: 'app-gift-claimed',
@@ -14,21 +15,28 @@ export class GiftClaimedComponent implements OnInit {
 
   gifts: Map<string, Gift[]> = new Map();
   accountsList: Account[] = [];
+  isLoading;
+  private progress: NgProgressRef;
 
-  constructor(private router: Router, private giftSrv: GiftService, private userSrv: UserService) {
+  constructor(private router: Router, private giftSrv: GiftService, private userSrv: UserService, public ngProgress: NgProgress) {
+    this.progress = ngProgress.ref();
   }
 
   ngOnInit() {
-    this.getGifts()
+    this.getClaimedGifts()
   }
 
-  private getGifts() {
+  private getClaimedGifts() {
+    this.progress.start();
+    this.isLoading = true;
     this.giftSrv.getClaimedGifts().subscribe(result => {
       let keys = Object.keys(result);
       for (let accountID of keys) {
         this.userSrv.geUserById(accountID).subscribe(account => {
           this.accountsList.push(account);
           this.gifts.set(account.id, result[accountID]);
+          this.progress.complete();
+          this.isLoading = false;
         })
       }
     }, () => {

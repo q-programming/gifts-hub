@@ -290,9 +290,9 @@ public class GiftRestController {
 
     @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping("/mine")
-    public ResponseEntity getMineGifts() {
+    public ResponseEntity getMineGifts(@RequestParam(required = false) boolean realised) {
         if (Utils.getCurrentAccount() != null) {
-            return new ResponseEntity<>(giftService.findAllByCurrentUser(), HttpStatus.OK);
+            return new ResponseEntity<>(giftService.findAllByCurrentUser(realised), HttpStatus.OK);
         } else
             return ResponseEntity.ok(Collections.EMPTY_LIST);
     }
@@ -307,8 +307,8 @@ public class GiftRestController {
     }
 
     @RequestMapping("/user/{usernameOrId}")
-    public ResponseEntity getUserGifts(@PathVariable String usernameOrId) {
-        Account account = null;
+    public ResponseEntity getUserGifts(@PathVariable String usernameOrId, @RequestParam(required = false) boolean realised) {
+        Account account;
         Optional<Account> optionalAccount = accountService.findByUsername(usernameOrId);
         if (optionalAccount.isPresent()) {
             account = optionalAccount.get();
@@ -328,7 +328,7 @@ public class GiftRestController {
         } else if (!accountService.isAccountGroupMember(account)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        return new ResponseEntity<>(giftService.findAllByUser(account.getId()), HttpStatus.OK);
+        return new ResponseEntity<>(giftService.findAllByUser(account.getId(), realised), HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('ROLE_USER')")

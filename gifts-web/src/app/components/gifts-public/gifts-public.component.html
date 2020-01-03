@@ -30,46 +30,53 @@
       </div>
     </mat-card>
     <div class="content">
-      <ng-container *ngFor="let key of categorizedKeys">
-        <mat-expansion-panel expanded="true">
+      <div class="content" *ngIf="isLoading">
+        <div class="text-center">
+          <inner-loader></inner-loader>
+        </div>
+      </div>
+      <ng-container *ngIf="!isLoading">
+        <ng-container *ngFor="let key of categorizedKeys">
+          <mat-expansion-panel expanded="true">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                <h3>{{key}}</h3>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <div *ngFor="let gift of categorizedGifts[key];let even=even;trackBy: trackByFn">
+              <gift [gift]="gift"
+                    [even]="even"
+              ></gift>
+            </div>
+          </mat-expansion-panel>
+        </ng-container>
+        <!--OTHER-->
+        <mat-expansion-panel expanded="true" *ngIf="unCategorizedGifts && unCategorizedGifts.length > 0 ">
           <mat-expansion-panel-header>
             <mat-panel-title>
-              <h3>{{key}}</h3>
+              <h3>{{label_other}}</h3>
             </mat-panel-title>
           </mat-expansion-panel-header>
-          <div *ngFor="let gift of categorizedGifts[key];let even=even;trackBy: trackByFn">
+          <div *ngFor="let gift of unCategorizedGifts;let even=even">
+            <gift [gift]="gift"
+                  [even]="even"
+            ></gift>
+          </div>
+        </mat-expansion-panel>
+        <!--REALISED-->
+        <mat-expansion-panel expanded="true" *ngIf="realizedGifts && realizedGifts.length > 0">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              <h3>{{label_realised}}</h3>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <div *ngFor="let gift of realizedGifts;let even=even">
             <gift [gift]="gift"
                   [even]="even"
             ></gift>
           </div>
         </mat-expansion-panel>
       </ng-container>
-      <!--OTHER-->
-      <mat-expansion-panel expanded="true" *ngIf="unCategorizedGifts && unCategorizedGifts.length > 0 ">
-        <mat-expansion-panel-header>
-          <mat-panel-title>
-            <h3>{{label_other}}</h3>
-          </mat-panel-title>
-        </mat-expansion-panel-header>
-        <div *ngFor="let gift of unCategorizedGifts;let even=even">
-          <gift [gift]="gift"
-                [even]="even"
-          ></gift>
-        </div>
-      </mat-expansion-panel>
-      <!--REALISED-->
-      <mat-expansion-panel expanded="true" *ngIf="realizedGifts && realizedGifts.length > 0">
-        <mat-expansion-panel-header>
-          <mat-panel-title>
-            <h3>{{label_realised}}</h3>
-          </mat-panel-title>
-        </mat-expansion-panel-header>
-        <div *ngFor="let gift of realizedGifts;let even=even">
-          <gift [gift]="gift"
-                [even]="even"
-          ></gift>
-        </div>
-      </mat-expansion-panel>
     </div>
   </div>
 </main>

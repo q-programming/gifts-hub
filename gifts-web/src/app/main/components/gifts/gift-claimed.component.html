@@ -1,4 +1,4 @@
-<mat-card class="pb-1 pt-1 fixed-container header">
+<mat-card class="p-4 fixed-container header">
   <!--Names header-->
   <span class="title">
     <i class="fa fa-lg fa-fw fa-gift"></i>
@@ -21,8 +21,13 @@
   </div>
 
 </mat-card>
+<div class="content" *ngIf="isLoading">
+  <div class="text-center">
+    <inner-loader></inner-loader>
+  </div>
+</div>
 <div class="content">
-  <mat-card *ngIf="accountsList.length == 0 ">
+  <mat-card *ngIf="accountsList.length == 0 && isLoading==false">
     <div class="text-center p-1">
       <span class=" stylish-header stylish">{{'gift.claim.noClaimed'|translate}}</span>
     </div>

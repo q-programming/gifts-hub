@@ -1,5 +1,5 @@
 <!--HEADER-->
-<mat-card class="pb-1 pt-1 fixed-container header">
+<mat-card class="fixed-container header">
   <div fxLayout="row" fxLayoutAlign="center center">
     <div fxFlex="10" fxFlex.lt-sm="15%">
       <img matCardAvatar [src]="avatar" class="avatar">
@@ -71,8 +71,18 @@
     </div>
   </div>
 </mat-card>
+<div class="content" *ngIf="isLoading">
+  <div class="text-center">
+    <inner-loader></inner-loader>
+  </div>
+</div>
 <!--GIFTS-->
-<div [ngClass]="{'content':!filter,'content-filtered':filter}" *ngIf="categorizedGifts">
+<div [ngClass]="{'content':!filter,'content-filtered':filter}" *ngIf="categorizedGifts && !isLoading">
+  <mat-card *ngIf="noGifts">
+    <div class="text-center">
+      <span class="stylish-header stylish">{{'gift.noGifts'|translate}}</span>
+    </div>
+  </mat-card>
   <ng-container *ngFor="let key of categorizedKeys">
     <mat-expansion-panel expanded="true" *ngIf="!filteredCategory || key===filteredCategory">
       <mat-expansion-panel-header>
@@ -96,7 +106,7 @@
                        *ngIf="unCategorizedGifts && unCategorizedGifts.length > 0 && !filteredCategory ||  filteredCategory ==='####'">
     <mat-expansion-panel-header>
       <mat-panel-title>
-        <h3 class="stylish-header">{{label_other}}</h3>
+        <h3 class="stylish-header">{{'gift.category.other'|translate}}</h3>
       </mat-panel-title>
     </mat-expansion-panel-header>
     <div *ngFor="let gift of unCategorizedGifts;let even=even;trackBy: trackByFn">
@@ -110,13 +120,25 @@
     </div>
   </mat-expansion-panel>
   <!--REALISED-->
-  <mat-expansion-panel expanded="true"
-                       *ngIf="realizedGifts && realizedGifts.length > 0 && !filteredCategory ||  filteredCategory === GiftStatus.REALISED">
+  <mat-expansion-panel #realisedPanel id="realisedPanel"
+                       expanded="{{realizedGifts && realizedGifts.length > 0}}"
+                       *ngIf="!isLoading && (!filteredCategory ||  filteredCategory === GiftStatus.REALISED)"
+                       (opened)="getRealisedGifts()">
     <mat-expansion-panel-header>
       <mat-panel-title>
-        <h3 class="stylish-header">{{label_realised}}</h3>
+        <h3 class="stylish-header">{{'gift.category.realised.text'|translate}}</h3>
       </mat-panel-title>
     </mat-expansion-panel-header>
+    <div *ngIf="isRealisedLoading">
+      <div class="text-center">
+        <inner-loader [blue]="true"></inner-loader>
+      </div>
+    </div>
+    <div *ngIf="!isRealisedLoading && (!realizedGifts || realizedGifts.length == 0)" class="text-center">
+      <span class="stylish">
+        {{'gift.category.realised.none'|translate}}
+      </span>
+    </div>
     <div *ngFor="let gift of realizedGifts;let even=even;trackBy: trackByFn">
       <gift [gift]="gift"
             [even]="even"
@@ -127,9 +149,4 @@
       ></gift>
     </div>
   </mat-expansion-panel>
-  <mat-card *ngIf="noGifts">
-    <div class="text-center">
-      <span class="stylish-header stylish">{{'gift.noGifts'|translate}}</span>
-    </div>
-  </mat-card>
 </div>

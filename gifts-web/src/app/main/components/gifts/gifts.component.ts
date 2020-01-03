@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {GiftService} from "@services/gift.service";
 import {Gift, GiftStatus} from "@model/Gift";
@@ -14,6 +14,9 @@ import {MatDialog} from "@angular/material/dialog";
 import {GiftDialogComponent} from "./gift-dialog/gift-dialog.component";
 import {TranslateService} from "@ngx-translate/core";
 import {CategoryOption} from "@model/Category";
+import {NgProgress, NgProgressRef} from "@ngx-progressbar/core";
+import {MatExpansionPanel} from "@angular/material/expansion";
+import {ScrollToConfigOptions, ScrollToService} from "@nicky-lenaers/ngx-scroll-to";
 
 @Component({
   selector: 'gifts-list',
@@ -34,9 +37,7 @@ export class GiftsComponent implements OnInit {
   realizedGifts: Gift[] = [];
   unCategorizedGifts: Gift[] = [];
   GiftStatus = GiftStatus;
-
   avatar: string;
-
   label_realised: string;
   label_other: string;
   categories: CategoryOption[];
@@ -45,7 +46,12 @@ export class GiftsComponent implements OnInit {
   filterTabOpen: string;
   canEditAll: boolean;
   noGifts: boolean;
+  isLoading: boolean;
+  isRealisedLoading: boolean;
 
+  progress: NgProgressRef;
+
+  @ViewChild('realisedPanel', {static: false}) realised: MatExpansionPanel;
 
   constructor(private activatedRoute: ActivatedRoute,
               private router: Router,
@@ -56,18 +62,23 @@ export class GiftsComponent implements OnInit {
               private alertSrv: AlertService,
               public dialog: MatDialog,
               private logger: NGXLogger,
-              private translate: TranslateService) {
+              private translate: TranslateService,
+              public ngProgress: NgProgress,
+              private scrollToService: ScrollToService) {
+    this.progress = ngProgress.ref();
+    this.isLoading = true;
   }
 
   ngOnInit() {
     //get translations
     this.translate.get('gift.category.other').subscribe(value => this.label_other = value);
-    this.translate.get('gift.category.realised').subscribe(value => this.label_realised = value);
+    this.translate.get('gift.category.realised.text').subscribe(value => this.label_realised = value);
     this.currentAccount = this.authSrv.currentAccount;
     this.activatedRoute.params.subscribe(params => {
       this.identification = params['user'];
       //get gift list
       this.isUserList = !this.identification || this.identification === this.currentAccount.username;
+      this.isLoading = true;
       this.getGifts();
       this.getAvatar(this.identification)
     });
@@ -75,6 +86,7 @@ export class GiftsComponent implements OnInit {
 
 
   private getGifts() {
+
     this.giftSrv.getUserGifts(this.identification).subscribe(result => {
       if (this.identification) {
         this.userSrv.canEditAll(this.identification).subscribe(result => this.canEditAll = result);
@@ -83,6 +95,25 @@ export class GiftsComponent implements OnInit {
     }, () => {
       this.router.navigate(['/']);
     });
+  }
+
+  /**
+   * Retrieves list of all already realised gifts for given account. List is fetched only if realisedGifts array is empty or
+   * @param refresh
+   */
+  getRealisedGifts(refresh?: boolean) {
+    if (refresh || !this.realizedGifts || this.realizedGifts.length == 0) {
+      this.isRealisedLoading = !refresh;
+      const config: ScrollToConfigOptions = {
+        target: 'realisedPanel',
+        offset: -165
+      };
+      this.scrollToService.scrollTo(config);
+      this.giftSrv.getRealisedGifts(this.identification).subscribe(result => {
+        this.realizedGifts = result[GiftStatus.REALISED];
+        this.isRealisedLoading = false;
+      })
+    }
   }
 
   private processList(result: Map<string, Gift[]>) {
@@ -94,11 +125,11 @@ export class GiftsComponent implements OnInit {
         name: this.getCategoryName(key)
       }
     });
-    this.realizedGifts = this.categorizedGifts[GiftStatus.REALISED];
     this.unCategorizedGifts = this.categorizedGifts[''];
-    delete this.categorizedGifts[GiftStatus.REALISED];
     delete this.categorizedGifts[''];
     this.categorizedKeys = Object.keys(this.categorizedGifts);
+    this.progress.complete();
+    this.isLoading = false;
   }
 
   getAvatar(username: string) {
@@ -112,6 +143,9 @@ export class GiftsComponent implements OnInit {
   refresh(event: boolean) {
     if (event) {
       this.getGifts();
+      if (this.realised.expanded) {
+        this.getRealisedGifts(true);
+      }
     }
   }
 

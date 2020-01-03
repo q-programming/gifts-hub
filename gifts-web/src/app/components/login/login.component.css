@@ -2,20 +2,24 @@
   text-align: left;
 }
 
-
 .social-form {
   border-right: 1px solid gray;
   text-align: right;
 }
 
 @media (max-width: 768px) {
+  .register-form {
+    border-right: 0!important;
+  }
+
   .social-form {
     border-right: none;
     border-bottom: 1px solid gray;
     padding-bottom: 20px;
     text-align: center;
-    padding-right:0 !important;
+    padding-right: 0 !important;
   }
+
   main {
     margin-top: 5px;
   }
@@ -47,4 +51,8 @@
 .btn-social.google {
   background: white;
   color: #444;
+}
+
+.register-form {
+  border-right: 1px solid gray;
 }
