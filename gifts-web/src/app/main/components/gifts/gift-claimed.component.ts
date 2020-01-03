@@ -15,7 +15,7 @@ export class GiftClaimedComponent implements OnInit {
 
   gifts: Map<string, Gift[]> = new Map();
   accountsList: Account[] = [];
-  loading = true;
+  isLoading;
   private progress: NgProgressRef;
 
   constructor(private router: Router, private giftSrv: GiftService, private userSrv: UserService, public ngProgress: NgProgress) {
@@ -23,11 +23,12 @@ export class GiftClaimedComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.getGifts()
+    this.getClaimedGifts()
   }
 
-  private getGifts() {
+  private getClaimedGifts() {
     this.progress.start();
+    this.isLoading = true;
     this.giftSrv.getClaimedGifts().subscribe(result => {
       let keys = Object.keys(result);
       for (let accountID of keys) {
@@ -35,7 +36,7 @@ export class GiftClaimedComponent implements OnInit {
           this.accountsList.push(account);
           this.gifts.set(account.id, result[accountID]);
           this.progress.complete();
-          this.loading = false;
+          this.isLoading = false;
         })
       }
     }, () => {

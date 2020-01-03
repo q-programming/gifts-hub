@@ -78,8 +78,8 @@ public class GiftServiceTest {
         oldGift.setCreated(new LocalDate().minusDays(14).toDate());
         oldGift.setName("14 days old gift");
         List<Gift> giftList = Arrays.asList(newGift, oldestGift, newButNotNewest, oldGift);
-        when(giftRepositoryMock.findByUserIdOrderByCreatedDesc(TestUtil.USER_RANDOM_ID)).thenReturn(giftList);
-        Map<Category, List<Gift>> result = giftService.findAllByCurrentUser();
+        when(giftRepositoryMock.findByUserIdAndRealisedIsNullOrderByCreatedDesc(TestUtil.USER_RANDOM_ID)).thenReturn(giftList);
+        Map<Category, List<Gift>> result = giftService.findAllByCurrentUser(false);
         assertEquals(2, result.get(newGift.getCategory())
                 .stream()
                 .filter(gift -> gift.getStatus() == GiftStatus.NEW).toArray().length);
@@ -91,8 +91,8 @@ public class GiftServiceTest {
         Gift gift2 = createGift(2L, testAccount);
         gift2.setCreated(new LocalDate().minusMonths(3).toDate());
         List<Gift> giftList = Arrays.asList(gift1, gift2);
-        when(giftRepositoryMock.findByUserIdOrderByCreatedDesc(TestUtil.USER_RANDOM_ID)).thenReturn(giftList);
-        Map<Category, List<Gift>> result = giftService.findAllByUser(testAccount.getId());
+        when(giftRepositoryMock.findByUserIdAndRealisedIsNullOrderByCreatedDesc(TestUtil.USER_RANDOM_ID)).thenReturn(giftList);
+        Map<Category, List<Gift>> result = giftService.findAllByUser(testAccount.getId(),false);
         assertTrue(result.get(gift1.getCategory())
                 .stream()
                 .filter(gift -> gift.getStatus() == GiftStatus.NEW).toArray().length == 1);

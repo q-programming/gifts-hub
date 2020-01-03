@@ -10,7 +10,9 @@ import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.qprogramming.gifts.settings.Settings.APP_GIFT_AGE;
@@ -62,8 +64,8 @@ public class GiftService {
      *
      * @return Map&lt;Category,List&lt;Gift&gt;&gt;
      */
-    public Map<Category, List<Gift>> findAllByCurrentUser() {
-        return findAllByUser(Utils.getCurrentAccountId());
+    public Map<Category, List<Gift>> findAllByCurrentUser(boolean realised) {
+        return findAllByUser(Utils.getCurrentAccountId(), realised);
     }
 
     /**
@@ -71,9 +73,11 @@ public class GiftService {
      *
      * @return List of all users gifts
      */
-    private List<Gift> getCurrentUserGifts() {
+    private List<Gift> getCurrentUserGifts(boolean realised) {
         int giftAge = Integer.valueOf(propertyService.getProperty(APP_GIFT_AGE));
-        return giftRepository.findByUserIdOrderByCreatedDesc(Utils.getCurrentAccountId()).stream().filter(not(Gift::isHidden)).peek(gift -> {
+        String id = Utils.getCurrentAccountId();
+        List<Gift> giftList = realised ? giftRepository.findByUserIdAndRealisedIsNotNullOrderByCreatedDesc(id) : giftRepository.findByUserIdAndRealisedIsNullOrderByCreatedDesc(id);
+        return giftList.stream().filter(not(Gift::isHidden)).peek(gift -> {
             setGiftStatus(gift, giftAge);
             gift.setClaimed(null);//remove claimed as current user shouldn't see it
         }).collect(Collectors.toList());
@@ -86,14 +90,18 @@ public class GiftService {
      * @param id Account id for which gifts will be fetched
      * @return List of all Gifts for Account with ID
      */
-    private List<Gift> getUserGifts(String id) {
+    private List<Gift> getUserGifts(String id, boolean realised) {
         int giftAge = Integer.valueOf(propertyService.getProperty(APP_GIFT_AGE));
-        List<Gift> giftList = giftRepository.findByUserIdOrderByCreatedDesc(id).stream().peek(gift -> setGiftStatus(gift, giftAge)).collect(Collectors.toList());
+        List<Gift> giftList = realised ? giftRepository.findByUserIdAndRealisedIsNotNullOrderByCreatedDesc(id) : giftRepository.findByUserIdAndRealisedIsNullOrderByCreatedDesc(id);
+        List<Gift> gifts = giftList.stream().peek(gift -> setGiftStatus(gift, giftAge)).collect(Collectors.toList());
         if (Utils.getCurrentAccount() == null) {
-            giftList = giftList.stream().filter(not(Gift::isHidden)).collect(Collectors.toList());
-            giftList.forEach(gift -> gift.setClaimed(null));
+            gifts = gifts
+                    .stream()
+                    .filter(not(Gift::isHidden))
+                    .peek(gift -> gift.setClaimed(null))
+                    .collect(Collectors.toList());
         }
-        return giftList;
+        return gifts;
     }
 
 
@@ -103,9 +111,9 @@ public class GiftService {
      * @param id id of user for which gift tree map will be returned
      * @return Map of Category - List of gifts for it
      */
-    public Map<Category, List<Gift>> findAllByUser(String id) {
+    public Map<Category, List<Gift>> findAllByUser(String id, boolean realised) {
         List<Gift> giftList = id.equals(Utils.getCurrentAccountId()) ?
-                getCurrentUserGifts() : getUserGifts(id);
+                getCurrentUserGifts(realised) : getUserGifts(id, realised);
         boolean simple = id.equals(Utils.getCurrentAccountId());
         return toGiftTreeMap(giftList, simple);
     }
@@ -117,7 +125,7 @@ public class GiftService {
      * @return count of all gifts for account
      */
     public int countAllByAccountId(String id) {
-        return (int) giftRepository.findByUserIdOrderByCreatedDesc(id)
+        return (int) giftRepository.findByUserIdAndRealisedIsNullOrderByCreatedDesc(id)
                 .stream()
                 .filter(gift -> gift.getStatus() == null || !GiftStatus.REALISED.equals(gift.getStatus()))
                 .count();
@@ -196,7 +204,7 @@ public class GiftService {
      * @param account account for which gifts will be found and deleted
      */
     public void deleteUserGifts(Account account) {
-        List<Gift> userGifts = giftRepository.findByUserIdOrderByCreatedDesc(account.getId());
+        List<Gift> userGifts = giftRepository.findByUserIdAndRealisedIsNullOrderByCreatedDesc(account.getId());
         giftRepository.deleteAll(userGifts);
     }
 

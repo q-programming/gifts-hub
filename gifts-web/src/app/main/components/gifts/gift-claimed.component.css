@@ -1,5 +1,9 @@
 .content {
-  margin-top: 65px;
+  margin-top: 88px;
+}
+
+.header {
+  padding: 1em 2em !important;
 }
 
 
@@ -11,6 +15,6 @@
 
 @media (max-width: 598px) {
   .content {
-    margin-top: 40px;
+    margin-top: 60px;
   }
 }

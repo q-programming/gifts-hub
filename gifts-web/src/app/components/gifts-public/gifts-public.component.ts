@@ -47,7 +47,7 @@ export class GiftsPublicComponent implements OnInit {
         this.translate.setDefaultLang(lang);
         this.translate.use(lang)
         this.translate.get('gift.category.other').subscribe(value => this.label_other = value);
-        this.translate.get('gift.category.realised').subscribe(value => this.label_realised = value);
+        this.translate.get('gift.category.realised.text').subscribe(value => this.label_realised = value);
       }
     });
     this.activatedRoute.params.subscribe(params => {

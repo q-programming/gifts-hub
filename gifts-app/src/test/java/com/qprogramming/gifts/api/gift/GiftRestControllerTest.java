@@ -220,7 +220,7 @@ public class GiftRestControllerTest extends MockedAccountTestBase {
         List<Gift> giftList = Collections.singletonList(gift);
         Map<Category, List<Gift>> expected = Utils.toGiftTreeMap(giftList);
         when(accSrvMock.findByUsername(testAccount.getId())).thenReturn(Optional.of(testAccount));
-        when(giftServiceMock.findAllByUser(testAccount.getId())).thenReturn(expected);
+        when(giftServiceMock.findAllByUser(testAccount.getId(), false)).thenReturn(expected);
         when(giftServiceMock.toGiftTreeMap(anyList(), anyBoolean())).thenCallRealMethod();
         when(accSrvMock.isAccountGroupMember(testAccount)).thenReturn(true);
         MvcResult mvcResult = giftsRestCtrl.perform(get(API_GIFT_LIST + "/" + testAccount.getId())).andExpect(status().isOk()).andReturn();
@@ -258,7 +258,7 @@ public class GiftRestControllerTest extends MockedAccountTestBase {
         List<Gift> giftList = Collections.singletonList(gift);
         Map<Category, List<Gift>> expected = Utils.toGiftTreeMap(giftList);
         when(accSrvMock.findByUsername(testAccount.getId())).thenReturn(Optional.of(testAccount));
-        when(giftServiceMock.findAllByUser(testAccount.getId())).thenReturn(expected);
+        when(giftServiceMock.findAllByUser(testAccount.getId(), false)).thenReturn(expected);
         when(securityMock.getAuthentication()).thenReturn(annonymousTokenMock);
         MvcResult mvcResult = giftsRestCtrl.perform(get(API_GIFT_LIST + "/" + testAccount.getId())).andExpect(status().isOk()).andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
@@ -275,7 +275,7 @@ public class GiftRestControllerTest extends MockedAccountTestBase {
         List<Gift> giftList = Collections.singletonList(gift);
         Map<Category, List<Gift>> expected = Utils.toGiftTreeMap(giftList);
         when(accSrvMock.findByUsername(testAccount.getId())).thenReturn(Optional.of(testAccount));
-        when(giftServiceMock.findAllByUser(testAccount.getId())).thenReturn(expected);
+        when(giftServiceMock.findAllByUser(testAccount.getId(), false)).thenReturn(expected);
         when(securityMock.getAuthentication()).thenReturn(annonymousTokenMock);
         giftsRestCtrl.perform(get(API_GIFT_LIST + "/" + testAccount.getId())).andExpect(status().is4xxClientError());
     }

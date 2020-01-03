@@ -149,7 +149,10 @@
       "new": "Nowa kategoria ( naciśnij enter aby stworzyć)",
       "other": "Inne",
       "prohibited": "Kategoria nie jest dozwolona, proszę wybrać inną",
-      "realised": "Zrealizowane",
+      "realised": {
+        "none": "Nie ma jeszcze żadnego zrealizowanego prezentu",
+        "text": "Zrealizowane"
+      },
       "text": "Kategoria"
     },
     "claim": {

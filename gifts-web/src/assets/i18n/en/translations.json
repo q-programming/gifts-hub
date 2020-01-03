@@ -149,7 +149,10 @@
       "new": "New category (press enter to create)",
       "other": "Other",
       "prohibited": "Category is not permitted, please choose other",
-      "realised": "Realised",
+      "realised": {
+        "none": "There are no realised gifts yet",
+        "text": "Realised"
+      },
       "text": "Category"
     },
     "claim": {
