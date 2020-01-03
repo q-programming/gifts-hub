@@ -10,6 +10,7 @@ import {TranslateService} from "@ngx-translate/core";
 import {AvatarService} from "../../core/services/avatar.service";
 import {ApiService} from "../../core/services/api.service";
 import {environment} from "../../../environments/environment";
+import {ScrollToConfigOptions} from "@nicky-lenaers/ngx-scroll-to";
 
 @Component({
   selector: 'app-gifts-public',
@@ -27,6 +28,7 @@ export class GiftsPublicComponent implements OnInit {
   label_realised: string;
   avatar: string = 'assets/images/avatar-placeholder.png';
   currentAccount: Account;
+  isLoading:boolean;
 
   constructor(private activatedRoute: ActivatedRoute,
               private router: Router,
@@ -53,7 +55,9 @@ export class GiftsPublicComponent implements OnInit {
     this.activatedRoute.params.subscribe(params => {
       this.identification = params['user'];
       //get gift list
+      this.isLoading = true;
       this.giftSrv.getUserGifts(this.identification).subscribe(result => {
+        this.fetchRealised();
         this.avatarSrv.getUserAvatarByUsername(this.identification).subscribe(avatar => this.avatar = avatar);
         this.processList(result);
       }, () => {
@@ -63,13 +67,18 @@ export class GiftsPublicComponent implements OnInit {
     });
   }
 
+  private fetchRealised() {
+    this.giftSrv.getRealisedGifts(this.identification).subscribe(result => {
+      this.realizedGifts = result[GiftStatus.REALISED];
+    })
+  }
+
   private processList(result: Map<string, Gift[]>) {
     this.categorizedGifts = result;
-    this.realizedGifts = this.categorizedGifts[GiftStatus.REALISED];
     this.unCategorizedGifts = this.categorizedGifts[''];
-    delete this.categorizedGifts[GiftStatus.REALISED];
     delete this.categorizedGifts[''];
     this.categorizedKeys = Object.keys(this.categorizedGifts);
+    this.isLoading = false;
   }
 
   trackByFn(index, item) {
