@@ -11,7 +11,7 @@ public interface GiftRepository extends JpaRepository<Gift, Long> {
 
     List<Gift> findByUserIdAndRealisedIsNullOrderByCreatedDesc(String id);
 
-    List<Gift> findByUserIdAndRealisedIsNotNullOrderByCreatedDesc(String id);
+    List<Gift> findByUserIdAndRealisedIsNotNullOrderByRealisedDesc(String id);
 
     List<Gift> findByStatusAndRealisedIsNull(GiftStatus status);
 

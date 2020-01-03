@@ -10,8 +10,8 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "pom.xml" }}
-          - v1-dependencies-
+            - v1-dependencies-{{ checksum "pom.xml" }}
+            - v1-dependencies-
       - run:
           name: Build application
           command: mvn clean install -DskipTests=true
@@ -34,11 +34,13 @@ jobs:
           at: /root/repo
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "pom.xml" }}
-          - v1-dependencies-
+            - v1-dependencies-{{ checksum "pom.xml" }}
+            - v1-dependencies-
       - run:
           name: Test
-          command: mvn integration-test
+          command: |
+            cd gifts-app
+            mvn integration-test
       - run:
           name: Save test results
           command: |

@@ -75,4 +75,10 @@ export class AppManageComponent implements OnInit {
   }
 
 
+  fixRealisedDates() {
+    this.apiSrv.get(`${environment.gift_url}/complete/realised`).subscribe(res => {
+      console.log(res);
+      this.alertSrv.warningMessage('All gifts without realised dates amended! Please check data base manually')
+    })
+  }
 }

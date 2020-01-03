@@ -78,6 +78,11 @@
 </div>
 <!--GIFTS-->
 <div [ngClass]="{'content':!filter,'content-filtered':filter}" *ngIf="categorizedGifts && !isLoading">
+  <mat-card *ngIf="noGifts">
+    <div class="text-center">
+      <span class="stylish-header stylish">{{'gift.noGifts'|translate}}</span>
+    </div>
+  </mat-card>
   <ng-container *ngFor="let key of categorizedKeys">
     <mat-expansion-panel expanded="true" *ngIf="!filteredCategory || key===filteredCategory">
       <mat-expansion-panel-header>
@@ -101,7 +106,7 @@
                        *ngIf="unCategorizedGifts && unCategorizedGifts.length > 0 && !filteredCategory ||  filteredCategory ==='####'">
     <mat-expansion-panel-header>
       <mat-panel-title>
-        <h3 class="stylish-header">{{label_other}}</h3>
+        <h3 class="stylish-header">{{'gift.category.other'|translate}}</h3>
       </mat-panel-title>
     </mat-expansion-panel-header>
     <div *ngFor="let gift of unCategorizedGifts;let even=even;trackBy: trackByFn">
@@ -144,9 +149,4 @@
       ></gift>
     </div>
   </mat-expansion-panel>
-  <mat-card *ngIf="noGifts">
-    <div class="text-center">
-      <span class="stylish-header stylish">{{'gift.noGifts'|translate}}</span>
-    </div>
-  </mat-card>
 </div>

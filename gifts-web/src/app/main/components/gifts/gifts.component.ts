@@ -104,13 +104,14 @@ export class GiftsComponent implements OnInit {
   getRealisedGifts(refresh?: boolean) {
     if (refresh || !this.realizedGifts || this.realizedGifts.length == 0) {
       this.isRealisedLoading = !refresh;
+      const config: ScrollToConfigOptions = {
+        target: 'realisedPanel',
+        offset: -165
+      };
+      this.scrollToService.scrollTo(config);
       this.giftSrv.getRealisedGifts(this.identification).subscribe(result => {
         this.realizedGifts = result[GiftStatus.REALISED];
         this.isRealisedLoading = false;
-        const config: ScrollToConfigOptions = {
-          target: 'realisedPanel'
-        };
-        this.scrollToService.scrollTo(config);
       })
     }
   }
