@@ -14,10 +14,27 @@ Application accounts can be created either with login password, or login using s
 In case of social media created account, all data like name, surname and photo will be automatically used
 
 ## Instalation
+Application settings are stored in `application.yml` (please see sample `db/application.yml properties` to have full set of required properties)
 
-Alter application.yml settings to point to your DB and  change google, facebook API keys as well 
-Build package (or grab latest artefact built by CircleCI to use defaults) and deploy to tomcat container
+Customise following entries : 
+* Point to your database `spring.datasource.*`
+* Facebook `facebook.client.clientId` and app `facebook.client.clientSecret` updated with facebook app values 
+(same value goes to `spring.social.facebook.*` 
+* Google `google.client.clientId`  and app `google.client.clientSecret` updated
+* Default `spring.mail.*` mail server information ( can be then  overwrote with databse based parameter via application ) 
+* Change `jwt.secret` secret token with some random value
+* Default `app.gift.age` for how long gifts are treated as "New" and `gift.newsletter.scheduler` how often newsletter will be sent (cron)
 
+Point to correct properties, using one of methods - order of looking for properties file 
+1. Edit context value . For Apache Tomcat 8.x  `context.xml` adding following parameter: 
+    `<Parameter name="gifts.properties.path" value="MY_PROPERTY_PATH/application.yml" override="true"/>`
+2. Set system property `-Dgifts.properties.path=MY_PROPERTY_PATH/application.yml`
+3. If none above is set, package built in properties from `src/main/resources/application.yml` will be used. 
+    
+Build package (or grab latest artefact built by CircleCI to use defaults) and deploy to Tomcat container
+Create database in your datasource and all tables will be created automatically onb first run
+
+First logged in user will be made administrator
 
 Licence
 ----------
