@@ -5,9 +5,11 @@ import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.filters.TokenAuthenticationFilter;
 import com.qprogramming.gifts.login.*;
 import com.qprogramming.gifts.login.token.TokenService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoTokenServices;
@@ -15,7 +17,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.env.Environment;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -181,6 +187,29 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
+    }
+
+    /**
+     * Retrieves properties for application.
+     * First searches for system property , if not found , searches for container context path variable properties,
+     * and at the very end application path resource
+     */
+    @Bean
+    public static PropertySourcesPlaceholderConfigurer propertySourcePlaceholderConfigurer(Environment environment) {
+        PropertySourcesPlaceholderConfigurer ppc = new PropertySourcesPlaceholderConfigurer();
+        String propertyLocation = System.getProperty("gifts.properties.location");
+        String contextPropertyLocation = environment.getProperty("gifts.properties.path");
+        YamlPropertiesFactoryBean yaml = new YamlPropertiesFactoryBean();
+        if (StringUtils.isNotBlank(propertyLocation)) {
+            yaml.setResources(new FileSystemResource(propertyLocation));
+        } else if (StringUtils.isNotBlank(contextPropertyLocation)) {
+            yaml.setResources(new FileSystemResource(contextPropertyLocation));
+        } else {
+            ppc.setLocations(new ClassPathResource("/application.yml"));
+        }
+        ppc.setProperties(yaml.getObject());
+        ppc.setIgnoreUnresolvablePlaceholders(true);
+        return ppc;
     }
 
 }
