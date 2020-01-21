@@ -7,7 +7,6 @@ import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.account.AccountType;
 import com.qprogramming.gifts.account.group.Group;
 import com.qprogramming.gifts.account.group.GroupService;
-import com.qprogramming.gifts.api.gift.dto.ClaimedGiftsDTO;
 import com.qprogramming.gifts.config.mail.MailService;
 import com.qprogramming.gifts.exceptions.AccountNotFoundException;
 import com.qprogramming.gifts.gift.Gift;
@@ -16,9 +15,11 @@ import com.qprogramming.gifts.gift.GiftService;
 import com.qprogramming.gifts.gift.GiftStatus;
 import com.qprogramming.gifts.gift.category.Category;
 import com.qprogramming.gifts.gift.category.CategoryService;
+import com.qprogramming.gifts.gift.image.GiftImage;
 import com.qprogramming.gifts.login.AnonAuthentication;
 import com.qprogramming.gifts.messages.MessagesService;
 import com.qprogramming.gifts.schedule.AppEventService;
+import com.qprogramming.gifts.schedule.AppEventType;
 import com.qprogramming.gifts.settings.SearchEngine;
 import com.qprogramming.gifts.settings.SearchEngineService;
 import com.qprogramming.gifts.support.Utils;
@@ -58,12 +59,16 @@ public class GiftRestControllerTest extends MockedAccountTestBase {
     private static final String API_GIFT_IMPORT = "/api/gift/import";
     private static final String API_GIFT_TEMPLATE = "/api/gift/get-template";
     private static final String API_GIFT_ALLOWED_CATEGORY = "/api/gift/allowed-category";
+    private static final String API_GIFT_PICTURE = "/api/gift/image/";
     private static final String OTHER_USER = "OTHER_USER";
     private static final String JOHN = "John";
     private static final String DOE = "Doe";
     private static final String NAME = "name";
     private static final String TEMPLATE_XLS = "template.xls";
     public static final String NEW_URL = "newUrl";
+    private static final String URL = "http://google.com";
+    private static final String GIFT_NAME = "Gift";
+    private static final String GIFT_DESCRIPTION = "Some sample description";
     private MockMvc giftsRestCtrl;
     @Mock
     private AccountService accSrvMock;
@@ -102,9 +107,9 @@ public class GiftRestControllerTest extends MockedAccountTestBase {
     public void createGiftSuccess() throws Exception {
         Category cat = createCategory("cat", 1L, Integer.MAX_VALUE);
         Gift form = new Gift();
-        form.setName("Gift");
-        form.setDescription("Some sample description");
-        form.addLink("http://google.com");
+        form.setName(GIFT_NAME);
+        form.setDescription(GIFT_DESCRIPTION);
+        form.addLink(URL);
         form.setUserId(testAccount.getId());
         List<Long> idList = Arrays.asList(1L, 2L);
         form.setEngines(Collections.singleton(createSearchEngine(NAME, "link", "icon")));
@@ -120,9 +125,9 @@ public class GiftRestControllerTest extends MockedAccountTestBase {
     @Test
     public void createGiftNotFamily() throws Exception {
         Gift form = new Gift();
-        form.setName("Gift");
-        form.setDescription("Some sample description");
-        form.addLink("http://google.com");
+        form.setName(GIFT_NAME);
+        form.setDescription(GIFT_DESCRIPTION);
+        form.addLink(URL);
         form.setUserId(TestUtil.ADMIN_RANDOM_ID);
         List<Long> idList = Arrays.asList(1L, 2L);
         form.setEngines(Collections.singleton(createSearchEngine(NAME, "link", "icon")));
@@ -135,9 +140,32 @@ public class GiftRestControllerTest extends MockedAccountTestBase {
     @Test
     public void createGiftEmptyName() throws Exception {
         GiftForm form = new GiftForm();
-        form.setLink("http://google.com");
+        form.setLink(URL);
         giftsRestCtrl.perform(post(API_GIFT_CREATE).contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(form)))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void createGiftAccountNotFound() throws Exception {
+        Gift form = new Gift();
+        form.setName(GIFT_NAME);
+        form.setDescription(GIFT_DESCRIPTION);
+        form.addLink(URL);
+        form.setUserId(TestUtil.ADMIN_RANDOM_ID);
+        when(accSrvMock.findById(TestUtil.ADMIN_RANDOM_ID)).thenThrow(AccountNotFoundException.class);
+        giftsRestCtrl.perform(post(API_GIFT_CREATE).contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(form)))
+                .andExpect(status().is4xxClientError());
+    }
+
+    @Test
+    public void createGiftAccountIdNotFound() throws Exception {
+        Gift form = new Gift();
+        form.setName(GIFT_NAME);
+        form.setDescription(GIFT_DESCRIPTION);
+        form.addLink(URL);
+        when(accSrvMock.findById(TestUtil.ADMIN_RANDOM_ID)).thenThrow(AccountNotFoundException.class);
+        giftsRestCtrl.perform(post(API_GIFT_CREATE).contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(form)))
+                .andExpect(status().is4xxClientError());
     }
 
     @Test
@@ -149,9 +177,10 @@ public class GiftRestControllerTest extends MockedAccountTestBase {
         gift.setUserId(testAccount.getId());
         Gift form = new Gift();
         form.setId(1L);
-        form.setName("Gift");
-        form.setDescription("Some sample new description");
-        form.addLink("http://google.com");
+        form.setName(GIFT_NAME);
+        form.setDescription(GIFT_DESCRIPTION);
+        form.addLink(URL);
+        form.setImageData("DATA");
         Set<SearchEngine> idList = Collections.singleton(createSearchEngine(NAME, "link", "icon"));
         form.setEngines(idList);
         form.setCategory(cat);
@@ -170,6 +199,7 @@ public class GiftRestControllerTest extends MockedAccountTestBase {
         Gift result = TestUtil.convertJsonToObject(contentAsString, Gift.class);
         verify(giftServiceMock, times(1)).update(any(Gift.class));
         verify(categoryServiceMock, times(1)).findByName(anyString());
+        verify(giftServiceMock, times(1)).updateGiftImage(any(Gift.class), anyString());
         assertEquals(form.getName(), result.getName());
         assertEquals(form.getDescription(), result.getDescription());
         assertTrue(result.getEngines().size() == 1);
@@ -202,9 +232,23 @@ public class GiftRestControllerTest extends MockedAccountTestBase {
                 .andExpect(status().isConflict());
     }
 
+    @Test
+    public void editGiftAccountNotFound() throws Exception {
+        GiftForm form = new GiftForm();
+        form.setId(1L);
+        Gift gift = new Gift();
+        gift.setId(1L);
+        gift.setUserId("other");
+        gift.setUserId(OTHER_USER);
+        when(giftServiceMock.findById(1L)).thenReturn(gift);
+        when(accSrvMock.findById(OTHER_USER)).thenThrow(AccountNotFoundException.class);
+        giftsRestCtrl.perform(post(API_GIFT_EDIT).contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(form)))
+                .andExpect(status().isConflict());
+    }
+
 
     @Test
-    public void getGiiftsAccountNotFound() throws Exception {
+    public void getGiftsAccountNotFound() throws Exception {
         when(accSrvMock.findById(anyString())).thenThrow(AccountNotFoundException.class);
         giftsRestCtrl.perform(post(API_GIFT_LIST + "/notExisting"))
                 .andExpect(status().isNotFound());
@@ -298,6 +342,14 @@ public class GiftRestControllerTest extends MockedAccountTestBase {
     }
 
     @Test
+    public void claimGiftAccountNotFound() throws Exception {
+        when(accSrvMock.findByUsername(testAccount.getUsername())).thenReturn(Optional.empty());
+        giftsRestCtrl.perform(
+                put(API_GIFT_CLAIM + 1))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
     public void unClaimGift() throws Exception {
         Account owner = TestUtil.createAccount(JOHN, DOE);
         owner.setId("2");
@@ -314,6 +366,15 @@ public class GiftRestControllerTest extends MockedAccountTestBase {
         gift.setClaimed(null);
         verify(giftServiceMock, times(1)).update(gift);
     }
+
+    @Test
+    public void unClaimGiftAccountNotFound() throws Exception {
+        when(accSrvMock.findByUsername(testAccount.getUsername())).thenReturn(Optional.empty());
+        giftsRestCtrl.perform(
+                put(API_GIFT_UNCLAIM + 1))
+                .andExpect(status().isNotFound());
+    }
+
 
     @Test
     public void unClaimGiftNotClaimed() throws Exception {
@@ -369,12 +430,26 @@ public class GiftRestControllerTest extends MockedAccountTestBase {
         Gift gift = new Gift();
         gift.setId(1L);
         gift.setName(NAME);
-        gift.setUserId(OTHER_USER);
+        gift.setUserId(testAccount.getId());
         when(giftServiceMock.findById(gift.getId())).thenReturn(gift);
+        when(giftServiceMock.update(any(Gift.class))).then(returnsFirstArg());
+        giftsRestCtrl.perform(
+                put(API_GIFT_COMPLETE + gift.getId()))
+                .andExpect(status().is4xxClientError());
+    }
+
+    @Test
+    public void completeGiftNoUser() throws Exception {
+        Gift gift = new Gift();
+        gift.setId(1L);
+        gift.setName(NAME);
+        gift.setUserId(OTHER_USER);
         Account giftOwner = TestUtil.createAccount();
         giftOwner.setId(OTHER_USER);
+        when(giftServiceMock.findById(gift.getId())).thenReturn(gift);
+        doThrow(AccountNotFoundException.class).when(eventServiceMock).addEvent(gift, AppEventType.REALISED);
         when(accSrvMock.findById(OTHER_USER)).thenReturn(giftOwner);
-
+        when(accSrvMock.findByUsername(testAccount.getUsername())).thenReturn(Optional.of(testAccount));
         giftsRestCtrl.perform(
                 put(API_GIFT_COMPLETE + gift.getId()))
                 .andExpect(status().is4xxClientError());
@@ -410,6 +485,22 @@ public class GiftRestControllerTest extends MockedAccountTestBase {
         giftsRestCtrl.perform(
                 put(API_GIFT_UNDO_COMPLETE + gift.getId()))
                 .andExpect(status().is4xxClientError());
+    }
+
+    @Test
+    public void undoCompleteGiftEventAccountError() throws Exception {
+        Gift gift = new Gift();
+        gift.setId(1L);
+        gift.setName(NAME);
+        gift.setUserId(testAccount.getId());
+        gift.setStatus(GiftStatus.REALISED);
+        when(giftServiceMock.findById(gift.getId())).thenReturn(gift);
+        when(giftServiceMock.update(any(Gift.class))).then(returnsFirstArg());
+        when(accSrvMock.findById(testAccount.getId())).thenReturn(testAccount);
+        doThrow(AccountNotFoundException.class).when(eventServiceMock).addEvent(gift, AppEventType.REALISED);
+        giftsRestCtrl.perform(
+                put(API_GIFT_UNDO_COMPLETE + gift.getId()))
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -605,44 +696,71 @@ public class GiftRestControllerTest extends MockedAccountTestBase {
         giftsRestCtrl.perform(get(API_GIFT_ALLOWED_CATEGORY).param("category", "other")).andExpect(status().isConflict());
     }
 
-    //TODO Test links
-//    @Test
-//    public void testUpdateGiftWithLinks() throws Exception {
-//        Gift gift = TestUtil.createGift(1L, testAccount);
-//        GiftForm form = new GiftForm();
-//        form.setName(gift.getName());
-//        form.setId(gift.getId());
-//        Link link = createLink(1L);
-//        Link link2 = createLink(2L);
-//        Link link3 = createLink(3L);
-//        Link link4 = createLink(4L);
-//        List<Link> linksCollection = new ArrayList<>(Arrays.asList(link, link2, link3, link4));
-//        Link emptyLink = new Link();
-//        Link newlink = createLink(null);
-//        Link updatedLink = createLink(4L);
-//        updatedLink.setUrl(NEW_URL);
-//        gift.setLinks(linksCollection);
-//        form.setLinks(Arrays.asList(link, link2, newlink, updatedLink, emptyLink));
-//        when(giftServiceMock.findById(gift.getId())).thenReturn(gift);
-//        when(accSrvMock.findById(testAccount.getId())).thenReturn(testAccount);
-//        when(giftServiceMock.update(any(Gift.class))).then(returnsFirstArg());
-//        MvcResult mvcResult = giftsRestCtrl.perform(post(API_GIFT_EDIT).contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(form)))
-//                .andExpect(status().isOk()).andReturn();
-//        String contentAsString = mvcResult.getResponse().getContentAsString();
-//        Gift result = TestUtil.convertJsonToObject(contentAsString, Gift.class);
-//        assertEquals(4, result.getLinks().size());
-//        Optional<Link> updatedLinkOptional = result.getLinks().stream().filter(link1 -> link1.getId().equals(4L)).findFirst();
-//        assertTrue(updatedLinkOptional.isPresent());
-//        assertTrue(updatedLinkOptional.get().getUrl().equals(NEW_URL));
-//        verify(linkRepositoryMock, times(1)).deleteAll(anyCollection());
-//        verify(linkRepositoryMock, times(1)).save(any(Link.class));
-//    }
-//
-//    private Link createLink(Long id) {
-//        Link link = new Link("url");
-//        if (id != null) {
-//            link.setId(id);
-//        }
-//        return link;
-//    }
+    @Test
+    public void giftPictureGiftNotFound() throws Exception {
+        giftsRestCtrl.perform(get(API_GIFT_PICTURE + 1L)).andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void giftPictureAccountNotFound() throws Exception {
+        Gift gift = new Gift();
+        gift.setId(1L);
+        gift.setName(NAME);
+        gift.setUserId(testAccount.getId());
+        when(giftServiceMock.findById(gift.getId())).thenReturn(gift);
+        when(accSrvMock.findById(testAccount.getId())).thenThrow(AccountNotFoundException.class);
+        giftsRestCtrl.perform(get(API_GIFT_PICTURE + 1L)).andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void giftPictureAccountCannotView() throws Exception {
+        Account account = TestUtil.createAccount();
+        account.setId(account.getId() + 1);
+        Group group = new Group();
+        group.addMember(account);
+        Gift gift = new Gift();
+        gift.setId(1L);
+        gift.setName(NAME);
+        gift.setUserId(account.getId());
+        when(giftServiceMock.findById(gift.getId())).thenReturn(gift);
+        when(accSrvMock.findById(account.getId())).thenReturn(account);
+        giftsRestCtrl.perform(get(API_GIFT_PICTURE + 1L)).andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void giftPictureIsGroupMember() throws Exception {
+        Account account = TestUtil.createAccount();
+        account.setId(account.getId() + 1);
+        Group group = new Group();
+        group.addMember(account);
+        group.addMember(testAccount);
+        Gift gift = new Gift();
+        gift.setId(1L);
+        gift.setName(NAME);
+        gift.setUserId(account.getId());
+        gift.setImage(new GiftImage());
+        when(giftServiceMock.findById(gift.getId())).thenReturn(gift);
+        when(accSrvMock.findById(account.getId())).thenReturn(account);
+        giftsRestCtrl.perform(get(API_GIFT_PICTURE + 1L)).andExpect(status().isOk());
+    }
+
+    @Test
+    public void giftPicturePublicList() throws Exception {
+        Account account = TestUtil.createAccount();
+        account.setId(account.getId() + 1);
+        account.setPublicList(true);
+        Group group = new Group();
+        group.addMember(account);
+        Gift gift = new Gift();
+        gift.setId(1L);
+        gift.setName(NAME);
+        gift.setUserId(account.getId());
+        gift.setImage(new GiftImage());
+        when(giftServiceMock.findById(gift.getId())).thenReturn(gift);
+        when(accSrvMock.findById(account.getId())).thenReturn(account);
+        when(securityMock.getAuthentication()).thenReturn(annonymousTokenMock);
+        giftsRestCtrl.perform(get(API_GIFT_PICTURE + 1L)).andExpect(status().isOk());
+    }
+
+
 }

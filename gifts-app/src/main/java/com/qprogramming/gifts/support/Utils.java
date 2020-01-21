@@ -9,6 +9,7 @@ import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,6 +17,9 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.net.URLConnection;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -24,7 +28,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Utils {
-    public static final Comparator<Account> ACCOUNT_COMPARATOR = Comparator.comparing(Account::getName).thenComparing(Account::getSurname).thenComparing(Account::getUsername);
+    public static final Comparator<Account> ACCOUNT_COMPARATOR = Comparator.comparing(Account::getName).thenComparing(Account::getSurname).thenComparing(Account::getUsername).thenComparing(Account::getId);
     public static final Comparator<Gift> GIFT_COMPARATOR = Comparator.nullsFirst(Comparator.comparing(Gift::getRealised)).thenComparing(Gift::getName);
     private static final String DATE_FORMAT = "dd-MM-yyyy";
     private static final String DATE_FORMAT_TIME = "dd-MM-yyyy HH:mm";
@@ -228,6 +232,20 @@ public class Utils {
 
     public static <T> Predicate<T> not(Predicate<T> t) {
         return t.negate();
+    }
+
+
+    public static String decodeTypeFromBytes(byte[] bytes) {
+        String type = "";
+        try {
+            type = URLConnection.guessContentTypeFromStream(new ByteArrayInputStream(bytes));
+        } catch (IOException e) {
+            LOG.error("Failed to determine type from bytes, presuming jpg");
+        }
+        if (StringUtils.isEmpty(type)) {
+            type = MediaType.IMAGE_JPEG_VALUE;
+        }
+        return type;
     }
 
 }

@@ -1,8 +1,8 @@
 import {Injectable} from '@angular/core';
-import {Account} from "../../model/Account";
+import {Account} from "@model/Account";
 import {NGXLogger} from "ngx-logger";
 import {ApiService} from "./api.service";
-import {environment} from "../../../environments/environment";
+import {environment} from "@env/environment";
 import {Observable} from "rxjs";
 
 @Injectable()

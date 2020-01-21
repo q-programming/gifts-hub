@@ -179,6 +179,7 @@
       "text": "Usuń prezent"
     },
     "description": "Opis",
+    "details": "Dane prezentu",
     "edit": {
       "success": "Prezent został zaktualizowany",
       "text": "Edytuj prezent"
@@ -222,9 +223,15 @@
     "name": "Nazwa",
     "new": {
       "add": "Dodaj nowy",
+      "addHeader": "Dodaj nowy prezent",
       "added": "Nowy prezent został dodany do listy życzeń"
     },
     "noGifts": "Nic tu nie ma, zacznij dodawać prezenty !",
+    "picture": {
+      "help": "Dodaj opcjonalne zdjęcie lub obrazek prezentu",
+      "remove": "Usuń obraz",
+      "text": "Obrazek prezentu"
+    },
     "search": {
       "help": "Wybierz które wyszukiwarki mają być wyświetlone obok tego prezętu.<br>Wszyscy będą mogli szybko wyszukać ten prezent, klikając na ikonę",
       "with": "Szukaj z"

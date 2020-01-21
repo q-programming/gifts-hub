@@ -1,7 +1,9 @@
 package com.qprogramming.gifts.gift;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.gift.category.Category;
+import com.qprogramming.gifts.gift.image.GiftImage;
 import com.qprogramming.gifts.settings.SearchEngine;
 import io.jsonwebtoken.lang.Collections;
 import org.apache.commons.lang3.StringUtils;
@@ -59,6 +61,15 @@ public class Gift implements Serializable, Comparable<Gift> {
 
     @Column
     private Boolean hidden = false;
+
+    @Transient
+    private String imageData;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    private GiftImage image;
+
+    @Column
+    private Boolean hasImage = false;
 
     public Gift() {
         this.created = new Date();
@@ -217,5 +228,34 @@ public class Gift implements Serializable, Comparable<Gift> {
 
     public void setRealised(Date realised) {
         this.realised = realised;
+    }
+
+    @JsonProperty
+    public String getImageData() {
+        return imageData;
+    }
+
+    @JsonProperty
+    public void setImageData(String imageData) {
+        this.imageData = imageData;
+    }
+
+    public GiftImage getImage() {
+        return image;
+    }
+
+    public void setImage(GiftImage image) {
+        this.image = image;
+    }
+
+    public Boolean isHasImage() {
+        if (hasImage == null) {
+            hasImage = false;
+        }
+        return hasImage;
+    }
+
+    public void setHasImage(Boolean hasImage) {
+        this.hasImage = hasImage;
     }
 }

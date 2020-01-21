@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.account.group.GroupService;
-import com.qprogramming.gifts.api.gift.dto.ClaimedGiftsDTO;
 import com.qprogramming.gifts.config.mail.MailService;
 import com.qprogramming.gifts.exceptions.AccountNotFoundException;
 import com.qprogramming.gifts.gift.Gift;
@@ -24,6 +23,7 @@ import com.qprogramming.gifts.support.Utils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
+import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -127,7 +127,7 @@ public class GiftRestController {
             return ResponseEntity.notFound().build();
         }
         if (canOperateOnGift(gift)) {
-            gift = updateGiftFromForm(giftForm);
+            gift = updateGiftFromForm(giftForm, gift);
             return new ResponseEntity<>(gift, HttpStatus.OK);
         }
         return ResponseEntity.status(HttpStatus.CONFLICT).body("group");
@@ -168,7 +168,7 @@ public class GiftRestController {
 
     @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/claim/{giftID}", method = RequestMethod.PUT)
-    public ResponseEntity clameGift(@PathVariable(value = "giftID") String id) {
+    public ResponseEntity claimGift(@PathVariable(value = "giftID") String id) {
         Optional<Account> optionalAccount = accountService.findByUsername(Utils.getCurrentAccount().getUsername());
         if (!optionalAccount.isPresent()) {
             return ResponseEntity.notFound().build();
@@ -183,7 +183,7 @@ public class GiftRestController {
 
     @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/unclaim/{giftID}", method = RequestMethod.PUT)
-    public ResponseEntity unClameGift(@PathVariable(value = "giftID") String id) {
+    public ResponseEntity unClaimGift(@PathVariable(value = "giftID") String id) {
         Optional<Account> optionalAccount = accountService.findByUsername(Utils.getCurrentAccount().getUsername());
         if (!optionalAccount.isPresent()) {
             return ResponseEntity.notFound().build();
@@ -262,30 +262,69 @@ public class GiftRestController {
         return ResponseEntity.ok().build();
     }
 
+    @Transactional
+    @RequestMapping("/image/{giftID}")
+    public ResponseEntity<?> giftPicture(@PathVariable(value = "giftID") String giftID) {
+        Gift gift = giftService.findById(Long.valueOf(giftID));
+        if (gift == null) {
+            return new ResultData.ResultBuilder().notFound().build();
+        }
+        try {
+            Account account = accountService.findById(gift.getUserId());
+            if (pictureCanBeViewed(account)) {
+                Hibernate.initialize(gift.getImage());
+                return ResponseEntity.ok(gift.getImage());
+            } else {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+        } catch (AccountNotFoundException e) {
+            LOG.error("Failed to fetch gift account with id,{}", gift.getUserId());
+            return new ResultData.ResultBuilder().notFound().build();
+        }
+    }
+
+    private boolean pictureCanBeViewed(Account account) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return (authentication instanceof AnonAuthentication && account.getPublicList()) ||
+                account.getGroups()
+                        .stream()
+                        .anyMatch(group -> group.getMembers().contains(Utils.getCurrentAccount()));
+    }
+
 
     /**
-     * Update gift with data from {@link GiftForm}
+     * Update giftForm with data from {@link GiftForm}
      *
-     * @param gift updated  created gift
+     * @param giftForm updated  created giftForm
      * @return updated {@link Gift}
      */
-    private Gift updateGiftFromForm(Gift gift) {
-        if (gift.getCategory() != null && StringUtils.isNotBlank(gift.getCategory().getName())) {
-            Category category = categoryService.findByName(gift.getCategory().getName());
-            gift.setCategory(category);
+    private Gift updateGiftFromForm(Gift giftForm, Gift gift) {
+        if (giftForm.getCategory() != null && StringUtils.isNotBlank(giftForm.getCategory().getName())) {
+            Category category = categoryService.findByName(giftForm.getCategory().getName());
+            giftForm.setCategory(category);
         }
-        gift.setEngines(searchEngineService.getSearchEngines(
-                gift.getEngines()
+        giftForm.setEngines(searchEngineService.getSearchEngines(
+                giftForm.getEngines()
                         .stream()
                         .map(SearchEngine::getId)
                         .collect(Collectors.toList())));
-        gift.setLinks(gift.getLinks().stream().filter(not(String::isEmpty)).collect(Collectors.toSet()));
+        giftForm.setLinks(giftForm.getLinks().stream().filter(not(String::isEmpty)).collect(Collectors.toSet()));
         //update or create
-        if (gift.getId() == null) {
-            return giftService.create(gift);
+        if (giftForm.getId() == null) {
+            Gift createdGift = giftService.create(giftForm);
+            giftService.updateGiftImage(createdGift, giftForm.getImageData());
+            return createdGift;
         } else {
-            return giftService.update(gift);
+            //load image which is lazy loaded and put it in form
+            giftForm.setImage(gift.getImage());
+            Gift updatedGift = giftService.update(giftForm);
+            giftService.updateGiftImage(updatedGift, giftForm.getImageData());
+            return updatedGift;
         }
+    }
+
+    private Gift updateGiftFromForm(Gift giftForm) {
+        return this.updateGiftFromForm(giftForm, null);
     }
 
     @PreAuthorize("hasRole('ROLE_USER')")
@@ -303,7 +342,7 @@ public class GiftRestController {
         if (Utils.getCurrentAccount() != null) {
             return new ResponseEntity<>(giftService.findAllClaimedByCurrentUser(), HttpStatus.OK);
         } else
-            return ResponseEntity.ok(new ClaimedGiftsDTO());
+            return ResponseEntity.ok(Collections.EMPTY_MAP);
     }
 
     @RequestMapping("/user/{usernameOrId}")

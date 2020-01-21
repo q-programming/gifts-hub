@@ -3,8 +3,11 @@ package com.qprogramming.gifts.gift;
 import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.config.property.PropertyService;
 import com.qprogramming.gifts.gift.category.Category;
+import com.qprogramming.gifts.gift.image.GiftImage;
+import com.qprogramming.gifts.gift.image.GiftImageRepository;
 import com.qprogramming.gifts.settings.SearchEngine;
 import com.qprogramming.gifts.support.Utils;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
@@ -16,6 +19,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.qprogramming.gifts.settings.Settings.APP_GIFT_AGE;
+import static com.qprogramming.gifts.support.Utils.decodeTypeFromBytes;
 import static com.qprogramming.gifts.support.Utils.not;
 import static java.util.stream.Collectors.groupingBy;
 
@@ -24,10 +28,12 @@ public class GiftService {
 
     private GiftRepository giftRepository;
     private PropertyService propertyService;
+    private GiftImageRepository imageRepository;
 
-    public GiftService(GiftRepository giftRepository, PropertyService propertyService) {
+    public GiftService(GiftRepository giftRepository, PropertyService propertyService, GiftImageRepository imageRepository) {
         this.giftRepository = giftRepository;
         this.propertyService = propertyService;
+        this.imageRepository = imageRepository;
     }
 
     /**
@@ -153,6 +159,30 @@ public class GiftService {
             gift.setCategory(null);
         }
         return giftRepository.save(gift);
+    }
+
+    /**
+     * Updates image on gift. {@link Gift#getImageData()} will be evaluated and base on it's content ( or it's lack ) update will happen
+     *
+     * @param gift gift to be updated
+     */
+    public void updateGiftImage(Gift gift, String imageData) {
+        GiftImage image = gift.getImage();
+        if (StringUtils.isNotBlank(imageData)) {
+            if (image == null) {
+                image = new GiftImage();
+            }
+            image.setImage(Base64.decodeBase64(imageData));
+            image.setType(decodeTypeFromBytes(image.getImage()));
+            gift.setImage(imageRepository.save(image));
+            gift.setHasImage(true);
+        } else {
+            if (image != null) {
+                gift.setImage(null);
+                gift.setHasImage(false);
+                imageRepository.delete(image);
+            }
+        }
     }
 
     /**

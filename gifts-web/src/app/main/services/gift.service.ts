@@ -62,4 +62,13 @@ export class GiftService {
   undoComplete(gift: Gift): Observable<Gift> {
     return this.apiSrv.put(`${environment.gift_url}/undo-complete/${gift.id}`)
   }
+
+  loadImage(gift: Gift): Observable<Gift> {
+    return this.apiSrv.get(`${environment.gift_url}/image/${gift.id}`)
+      .map(result => {
+        gift.image = result;
+        return gift;
+      });
+  }
+
 }

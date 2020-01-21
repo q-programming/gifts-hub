@@ -6,11 +6,11 @@ import com.qprogramming.gifts.config.property.PropertyService;
 import com.qprogramming.gifts.gift.Gift;
 import com.qprogramming.gifts.gift.GiftRepository;
 import com.qprogramming.gifts.gift.GiftService;
+import com.qprogramming.gifts.gift.image.GiftImageRepository;
 import edu.emory.mathcs.backport.java.util.Collections;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -34,12 +34,14 @@ public class SearchEngineServiceTest extends MockedAccountTestBase {
     private GiftRepository giftRepositoryMock;
     @Mock
     private PropertyService propertyServiceMock;
+    @Mock
+    private GiftImageRepository imageRepositoryMock;
 
 
     @Before
     public void setUp() throws Exception {
         super.setup();
-        this.giftService = new GiftService(giftRepositoryMock, propertyServiceMock);
+        this.giftService = new GiftService(giftRepositoryMock, propertyServiceMock, imageRepositoryMock);
         searchEngineService = new SearchEngineService(searchEngineRepositoryMock, giftService);
     }
 

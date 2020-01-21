@@ -1,6 +1,6 @@
-import {Component, Inject, OnInit} from '@angular/core';
+import {Component, Inject, OnInit, ViewChild} from '@angular/core';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
-import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
+import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {Gift} from "@model/Gift";
 import {ApiService} from "@core-services/api.service";
 import {environment} from "@env/environment";
@@ -10,6 +10,9 @@ import {Observable} from "rxjs";
 import {debounceTime, map, startWith} from "rxjs/operators";
 import * as _ from "lodash";
 import {distinctUntilChanged} from "rxjs/internal/operators/distinctUntilChanged";
+import {CropperSettings, ImageCropperComponent} from "ngx-img-cropper";
+import {getBase64Image} from "../../../../utils/utils";
+import {GiftImage} from "@model/GiftImage";
 
 @Component({
   selector: 'app-gift-dialog',
@@ -24,6 +27,13 @@ export class GiftDialogComponent implements OnInit {
   categories: Category[];
   links: string[] = [];
   familyUser: boolean;
+
+  // gift image
+  @ViewChild('cropper', {static: false})
+  cropper: ImageCropperComponent;
+  cropperSettings: CropperSettings;
+  imageData: any = {};
+  uploadInProgress: boolean;
 
   // categories
   filterTerm: string;
@@ -55,6 +65,25 @@ export class GiftDialogComponent implements OnInit {
     }
     this.getSearchEngines();
     this.getCategories();
+    this.setCropperSettings();
+    this.getImage();
+  }
+
+  private setCropperSettings() {
+    this.cropperSettings = new CropperSettings();
+    this.cropperSettings.width = 100;
+    this.cropperSettings.height = 100;
+    this.cropperSettings.cropperClass = '';
+    this.cropperSettings.croppingClass = '';
+    this.cropperSettings.compressRatio = 0.75;
+    this.cropperSettings.croppedWidth = 500;
+    this.cropperSettings.croppedHeight = 500;
+    this.cropperSettings.canvasWidth = 500;
+    this.cropperSettings.canvasHeight = 500;
+    this.cropperSettings.noFileInput = true;
+    this.cropperSettings.rounded = false;
+    this.cropperSettings.keepAspect = true;
+
   }
 
   ngOnInit() {
@@ -120,6 +149,10 @@ export class GiftDialogComponent implements OnInit {
     return (this.form.get('links') as FormArray).controls
   }
 
+  get LinksExpanded() {
+    return this.gift.links.length > 0
+  }
+
 // CATEGORIES
   categoryDisplay(category?: Category): string | undefined {
     return category ? category.name : undefined;
@@ -174,7 +207,40 @@ export class GiftDialogComponent implements OnInit {
           searchString: eng.get('searchString').value
         }
       });
+      if (this.imageData.image) {
+        this.gift.imageData = getBase64Image(this.imageData.image)
+      }
       this.dialogRef.close(this.gift)
     }
+  }
+
+  fileChangeListener($event) {
+    this.uploadInProgress = true;
+    let image: any = new Image();
+    let file: File = $event.target.files[0];
+    const myReader: FileReader = new FileReader();
+    const that = this;
+    myReader.onloadend = function (loadEvent: any) {
+      image.src = loadEvent.target.result;
+      that.cropper.setImage(image);
+    };
+    myReader.readAsDataURL(file);
+  }
+
+  private getImage() {
+    if (this.gift.hasImage) {
+      this.apiSrv.getObject<GiftImage>(`${environment.gift_url}/image/${this.gift.id}`).subscribe((data) => {
+        if (data) {
+          const dataType = "data:" + data.type + ";base64,";
+          this.imageData.image = dataType + data.image
+        }
+      });
+    }
+  }
+
+  removePicture() {
+    this.gift.image = undefined;
+    this.gift.hasImage = false;
+    this.imageData.image = undefined;
   }
 }

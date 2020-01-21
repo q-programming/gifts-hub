@@ -6,6 +6,8 @@ import {GiftService} from "@services/gift.service";
 import {AlertService} from "@core-services/alert.service";
 import {NGXLogger} from "ngx-logger";
 import {UserService} from "@services/user.service";
+import {MatDialog, MatDialogConfig} from "@angular/material/dialog";
+import {ImageDialogComponent} from "../../../../components/dialogs/image/image-dialog.component";
 
 @Component({
   selector: 'gift',
@@ -26,7 +28,12 @@ export class GiftComponent implements OnInit {
   createdBy: Account;
 
 
-  constructor(private authSrv: AuthenticationService, private giftSrv: GiftService, private alertSrv: AlertService, private userSrv: UserService, private logger: NGXLogger) {
+  constructor(private authSrv: AuthenticationService,
+              private giftSrv: GiftService,
+              private alertSrv: AlertService,
+              private userSrv: UserService,
+              public dialog: MatDialog,
+              private logger: NGXLogger) {
   }
 
 
@@ -98,5 +105,20 @@ export class GiftComponent implements OnInit {
     this.edit.emit(this.gift);
   }
 
-
+  showImage() {
+    const dialogConfig: MatDialogConfig = {
+      disableClose: true,
+      panelClass: 'gifts-dialog-modal',
+      data: this.gift.image
+    };
+    if (!this.gift.image) {
+      this.giftSrv.loadImage(this.gift).subscribe(gift => {
+        this.gift = gift;
+        dialogConfig.data = gift.image;
+        this.dialog.open(ImageDialogComponent, dialogConfig);
+      })
+    } else {
+      this.dialog.open(ImageDialogComponent, dialogConfig);
+    }
+  }
 }

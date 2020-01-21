@@ -58,7 +58,7 @@ body {
   padding: 0 0 24px 0;
 }
 
-.modal-content-m-0{
+.modal-content-m-0 {
   margin: 0 !important;
 }
 
@@ -112,6 +112,13 @@ body {
   .gifts-modal {
     max-width: 100% !important;
   }
+  .gifts-modal-normal > mat-dialog-container {
+    padding: 0 0 0 0 !important;
+  }
+  .gifts-modal-normal .mat-expansion-panel {
+    padding: 1px 10px !important;
+  }
+
 
   .mat-card {
     margin: 0 5px;
@@ -142,7 +149,7 @@ body {
 .mat-tooltip {
   font-size: 17px; // current default is 10px :-/
   word-wrap: break-word !important;
-  white-space: pre-line!important;
+  white-space: pre-line !important;
   text-align: center;
 }
 

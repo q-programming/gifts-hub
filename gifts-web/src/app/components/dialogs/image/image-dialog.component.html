@@ -1,0 +1,14 @@
+<h2 mat-dialog-title class="modal-header">
+  <button mat-icon-button mat-dialog-close class="pull-right close-btn">
+    <mat-icon>close</mat-icon>
+  </button>
+</h2>
+<mat-dialog-content class="mat-typography text-center ml-0 mr-0 p-3" *ngIf="image">
+  <img [src]="image">
+</mat-dialog-content>
+<!--<mat-dialog-actions align="end" class="pr-2 pl-2">-->
+<!--  <button mat-raised-button cdkFocusRegionstart mat-dialog-close>{{'app.general.cancel'|translate}}</button>-->
+<!--  <button mat-raised-button color="{{action_class}}" (click)="confirm()">-->
+<!--    {{action|translate}}-->
+<!--  </button>-->
+<!--</mat-dialog-actions>-->
