@@ -1,10 +1,9 @@
-import {Component, Inject, OnInit, ViewChild} from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
 import {Router} from "@angular/router";
 import {NGXLogger} from "ngx-logger";
 import {TranslateService} from "@ngx-translate/core";
-import { MAT_DIALOG_DATA, MatDialog, MatDialogConfig } from "@angular/material/dialog";
+import {MatDialog, MatDialogConfig} from "@angular/material/dialog";
 import {DOCUMENT} from "@angular/common";
-import {CropperSettings, ImageCropperComponent} from "ngx-img-cropper";
 import {AuthenticationService} from "@core-services/authentication.service";
 import {languages} from "../../../../assets/i18n/languages";
 import {Account} from "@model/Account";
@@ -13,7 +12,8 @@ import {ApiService} from "@core-services/api.service";
 import {AlertService} from "@core-services/alert.service";
 import {AvatarService} from "@core-services/avatar.service";
 import {getBase64Image} from "../../../utils/utils";
-import {ConfirmDialogData, ConfirmDialogComponent} from "../../../components/dialogs/confirm/confirm-dialog.component";
+import {ConfirmDialogComponent, ConfirmDialogData} from "../../../components/dialogs/confirm/confirm-dialog.component";
+import {ImageCroppedEvent} from "ngx-image-cropper";
 
 
 @Component({
@@ -26,6 +26,10 @@ export class SettingsComponent implements OnInit {
   languages: any = languages;
   avatarData: any = {};
   emailList: string;
+  croppedAvatar: any = '';
+  uploadInProgress: boolean;
+  imageChangedEvent: any = '';
+
 
   constructor(private authSrv: AuthenticationService,
               private apiSrv: ApiService,
@@ -40,27 +44,12 @@ export class SettingsComponent implements OnInit {
 
   ngOnInit() {
     this.account = this.authSrv.currentAccount;
-    this.avatarData.image = this.account.avatar;
-  }
-
-  openAvatarDialog() {
-    const dialogRef = this.dialog.open(AvatarUploadComponent, {
-      panelClass: 'gifts-modal-normal',
-      data: {
-        account: this.account,
-        avatarData: this.avatarData
-      }
-    });
-    dialogRef.afterClosed().subscribe((upload) => {
-      if (upload) {
-        this.uploadNewAvatar();
-      }
-    });
+    this.croppedAvatar = this.account.avatar;
   }
 
   uploadNewAvatar() {
-    this.avatarSrv.updateAvatar(getBase64Image(this.avatarData.image), this.account);
-    // this.avatarUploadModal.hide();
+    this.uploadInProgress = false;
+    this.avatarSrv.updateAvatar(getBase64Image(this.croppedAvatar), this.account);
     this.alertSrv.success('user.settings.avatar.success');
   }
 
@@ -137,59 +126,17 @@ export class SettingsComponent implements OnInit {
           this.alertSrv.success('user.delete.success');
           this.authSrv.currentAccount = null;
           this.router.navigate(['/login'])
-
         })
       }
     })
   }
-}
 
-@Component({
-  selector: 'settings-avatar-upload',
-  templateUrl: './avatar-upload.component.html',
-  styles: []
-})
-export class AvatarUploadComponent implements OnInit {
-
-  @ViewChild('cropper', {static:true})
-  cropper: ImageCropperComponent;
-  cropperSettings: CropperSettings;
-  account: Account;
-  avatarData: any;
-  uploadInProgress: boolean;
-
-
-  constructor(@Inject(MAT_DIALOG_DATA) public data: any) {
-    this.account = data.account;
-    this.avatarData = data.avatarData;
-    this.cropperSettings = new CropperSettings();
-    this.cropperSettings.width = 100;
-    this.cropperSettings.height = 100;
-    this.cropperSettings.cropperClass = '';
-    this.cropperSettings.croppingClass = '';
-    this.cropperSettings.croppedWidth = 100;
-    this.cropperSettings.croppedHeight = 100;
-    this.cropperSettings.canvasWidth = 350;
-    this.cropperSettings.canvasHeight = 300;
-    this.cropperSettings.noFileInput = true;
-    this.cropperSettings.rounded = true;
-  }
-
-  ngOnInit(): void {
-  }
-
-  fileChangeListener($event) {
+  fileChangeEvent(event: any): void {
     this.uploadInProgress = true;
-    let image: any = new Image();
-    let file: File = $event.target.files[0];
-    const myReader: FileReader = new FileReader();
-    const that = this;
-    myReader.onloadend = function (loadEvent: any) {
-      image.src = loadEvent.target.result;
-      that.cropper.setImage(image);
-    };
-    myReader.readAsDataURL(file);
+    this.imageChangedEvent = event;
   }
 
-
+  imageCropped(event: ImageCroppedEvent) {
+    this.croppedAvatar = event.base64;
+  }
 }

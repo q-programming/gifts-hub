@@ -115,6 +115,9 @@ body {
   .gifts-modal-normal > mat-dialog-container {
     padding: 0 0 0 0 !important;
   }
+  .gifts-modal-normal > .mat-dialog-content {
+    margin: 0 !important;
+  }
   .gifts-modal-normal .mat-expansion-panel {
     padding: 1px 10px !important;
   }

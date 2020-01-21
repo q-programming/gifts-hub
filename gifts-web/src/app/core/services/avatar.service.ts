@@ -64,7 +64,7 @@ export class AvatarService {
      */
     updateAvatar(base64Image: String, account: Account) {
         return this.api.post(`${environment.account_url}${environment.avatar_upload_url}`, base64Image).subscribe(() => {
-            localStorage.removeItem("avatar:" + account.username);
+          sessionStorage.removeItem("avatar:" + account.username);
             this.getUserAvatar(account).subscribe(avatar => {
                 account.avatar = avatar;
             });
@@ -76,7 +76,7 @@ export class AvatarService {
    * @param account account for which avatar will be reloaded
    */
   reloadAvatar(account: Account){
-    localStorage.removeItem("avatar:" + account.username);
+    sessionStorage.removeItem("avatar:" + account.username);
     this.getUserAvatar(account).subscribe(avatar => {
       account.avatar = avatar;
     });

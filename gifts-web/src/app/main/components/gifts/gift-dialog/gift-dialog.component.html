@@ -2,9 +2,9 @@
   <i class="fa fa-gift mr-1"></i>
   {{update ? ('gift.edit.text'|translate) : ('gift.new.addHeader'|translate)}}
 </h1>
-<mat-dialog-content>
+<mat-dialog-content class="gift-dialog" [@.disabled]="disableAnimation">
   <form [formGroup]="form">
-    <div fxLayout="row wrap" fxLayoutAlign="center">
+    <div fxLayout="row wrap" fxLayoutAlign="center" fxLayoutGap.gt-sm="20px">
       <div [fxFlex]="65" [fxFlex.lt-sm]="100">
         <!--GIFT DETAIL-->
         <mat-card class="mb-2">
@@ -48,7 +48,7 @@
           </div>
         </mat-expansion-panel>
         <!--PICTURE-->
-        <mat-expansion-panel expanded="true" class="mb-2">
+        <mat-expansion-panel [expanded]="gift.hasImage" class="mb-2">
           <mat-expansion-panel-header class="mb-2">
             <strong>
               <i class="fa fa-picture-o mr-1"></i>
@@ -57,11 +57,16 @@
           </mat-expansion-panel-header>
           <div>
             <div>
-              <input #fileInput type="file" (change)="fileChangeListener($event)" style="display:none;">
-              <img-cropper #cropper [image]="imageData" [settings]="cropperSettings"
-                           *ngIf="uploadInProgress"></img-cropper>
-              <img *ngIf="imageData.image && !uploadInProgress" [src]="imageData.image"
-                   [width]="cropperSettings.croppedWidth" [height]="cropperSettings.croppedHeight">
+              <input type="file" #fileInput (change)="fileChangeEvent($event)" style="display: none"/>
+              <image-cropper
+                [imageChangedEvent]="imageChangedEvent"
+                [resizeToHeight]="400"
+                [onlyScaleDown]=true
+                [maintainAspectRatio]="false"
+                format="png"
+                (imageCropped)="imageCropped($event)"
+              ></image-cropper>
+              <img *ngIf="giftCroppedImage && !uploadInProgress" [src]="giftCroppedImage"/>
             </div>
             <div>
               <button mat-raised-button (click)="fileInput.click()" class="mb-1">
