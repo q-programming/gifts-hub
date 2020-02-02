@@ -12,10 +12,10 @@ import com.qprogramming.gifts.gift.GiftService;
 import com.qprogramming.gifts.gift.GiftStatus;
 import com.qprogramming.gifts.gift.category.Category;
 import com.qprogramming.gifts.gift.category.CategoryService;
-import com.qprogramming.gifts.login.AnonAuthentication;
 import com.qprogramming.gifts.messages.MessagesService;
 import com.qprogramming.gifts.schedule.AppEventService;
 import com.qprogramming.gifts.schedule.AppEventType;
+import com.qprogramming.gifts.security.AnonAuthentication;
 import com.qprogramming.gifts.settings.SearchEngine;
 import com.qprogramming.gifts.settings.SearchEngineService;
 import com.qprogramming.gifts.support.ResultData;
@@ -360,6 +360,7 @@ public class GiftRestController {
         }
         //check if anonymous user can view user gifts
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        //TODO anonymous ?
         if ((authentication instanceof AnonAuthentication)) {
             if (!account.getPublicList()) {
                 return new ResultData.ResultBuilder().badReqest().error().message(msgSrv.getMessage("gift.list.public.error")).build();

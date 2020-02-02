@@ -16,7 +16,7 @@ import com.qprogramming.gifts.gift.GiftStatus;
 import com.qprogramming.gifts.gift.category.Category;
 import com.qprogramming.gifts.gift.category.CategoryService;
 import com.qprogramming.gifts.gift.image.GiftImage;
-import com.qprogramming.gifts.login.AnonAuthentication;
+import com.qprogramming.gifts.security.AnonAuthentication;
 import com.qprogramming.gifts.messages.MessagesService;
 import com.qprogramming.gifts.schedule.AppEventService;
 import com.qprogramming.gifts.schedule.AppEventType;

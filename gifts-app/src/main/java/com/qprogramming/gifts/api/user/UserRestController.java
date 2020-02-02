@@ -13,7 +13,6 @@ import com.qprogramming.gifts.exceptions.AccountNotFoundException;
 import com.qprogramming.gifts.exceptions.GroupNotAdminException;
 import com.qprogramming.gifts.exceptions.GroupNotFoundException;
 import com.qprogramming.gifts.gift.GiftService;
-import com.qprogramming.gifts.login.token.TokenBasedAuthentication;
 import com.qprogramming.gifts.messages.MessagesService;
 import com.qprogramming.gifts.schedule.AppEventService;
 import com.qprogramming.gifts.support.ResultData;
@@ -711,9 +710,11 @@ public class UserRestController {
         }
         if (user != null && user instanceof UsernamePasswordAuthenticationToken) {
             return (Account) ((UsernamePasswordAuthenticationToken) user).getPrincipal();
-        } else if (user != null && user instanceof TokenBasedAuthentication) {
-            return (Account) ((TokenBasedAuthentication) user).getPrincipal();
         }
+        //TODO
+//        } else if (user != null && user instanceof TokenBasedAuthentication) {
+//            return (Account) ((TokenBasedAuthentication) user).getPrincipal();
+//        }
         return null;
     }
 

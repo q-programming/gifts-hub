@@ -1,4 +1,4 @@
-package com.qprogramming.gifts.filters;
+package com.qprogramming.gifts.security;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -47,7 +47,7 @@ public class AuthUtils {
     }
 
     /**
-     * By default if user is not authenticated or is using {@link com.qprogramming.gifts.login.AnonAuthentication}
+     * By default if user is not authenticated or is using
      * authentication is null or it's princiapl is
      *
      * @return true if user correctly previously authenticated in filter chain

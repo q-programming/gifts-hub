@@ -1,7 +1,6 @@
-package com.qprogramming.gifts.login;
+package com.qprogramming.gifts.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.qprogramming.gifts.login.token.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;

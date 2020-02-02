@@ -1,8 +1,8 @@
 package com.qprogramming.gifts.api;
 
 import com.qprogramming.gifts.account.AccountService;
-import com.qprogramming.gifts.login.token.TokenService;
 import com.qprogramming.gifts.login.token.UserTokenState;
+import com.qprogramming.gifts.security.TokenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -117,6 +117,7 @@ public class AuthenticationController {
      * @param response Response
      * @return refreshed token
      */
+    //TODO is it still valid ?
     @RequestMapping(value = "/api/refresh", method = RequestMethod.GET)
     public ResponseEntity<?> refreshAuthenticationToken(HttpServletRequest request, HttpServletResponse response) {
 

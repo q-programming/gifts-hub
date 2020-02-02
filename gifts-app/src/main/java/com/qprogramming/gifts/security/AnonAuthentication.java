@@ -1,4 +1,4 @@
-package com.qprogramming.gifts.login;
+package com.qprogramming.gifts.security;
 
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 
@@ -30,8 +30,7 @@ public class AnonAuthentication extends AbstractAuthenticationToken {
 
     @Override
     public int hashCode() {
-        int hash = 7;
-        return hash;
+        return 31;
     }
 
     @Override
