@@ -59,13 +59,11 @@ public class TokenService {
 
     public String createToken(Authentication authentication) {
         Account account = (Account) authentication.getPrincipal();
-        Date now = new Date();
         return generateToken(account.getEmail());
     }
 
     public String getToken(HttpServletRequest request) {
         Optional<Cookie> authCookie = CookieUtils.getCookie(request, AUTH_COOKIE);
-
         if (authCookie.isPresent()) {
             return authCookie.get().getValue();
         }
@@ -140,12 +138,25 @@ public class TokenService {
         return refreshedToken;
     }
 
-    public void addCookie(HttpServletResponse response, String name, String value, int maxAge) {
+    public void addCookies(HttpServletResponse response, String name, String value, int maxAge) {
         Cookie cookie = new Cookie(name, value);
         cookie.setPath(getPath());
         cookie.setHttpOnly(true);
         cookie.setMaxAge(maxAge);
         response.addCookie(cookie);
+    }
+
+    public void addTokenCookie(HttpServletResponse response, Account account, String tokenValue){
+        Cookie authCookie = new Cookie(TOKEN_COOKIE, (tokenValue));
+        authCookie.setPath(getPath());
+        authCookie.setHttpOnly(true);
+        authCookie.setMaxAge(EXPIRES_IN);
+        Cookie userCookie = new Cookie(USER_COOKIE, (account.getId()));
+        userCookie.setPath(getPath());
+        userCookie.setMaxAge(EXPIRES_IN);
+        response.addCookie(authCookie);
+        response.addCookie(userCookie);
+
     }
 
     public void refreshCookie(String authToken, HttpServletResponse response) {

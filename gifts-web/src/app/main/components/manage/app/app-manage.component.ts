@@ -73,12 +73,4 @@ export class AppManageComponent implements OnInit {
     this.form.controls.sort.setValue(this.settings.sort);
 
   }
-
-
-  fixRealisedDates() {
-    this.apiSrv.get(`${environment.gift_url}/complete/realised`).subscribe(res => {
-      console.log(res);
-      this.alertSrv.warningMessage('All gifts without realised dates amended! Please check data base manually')
-    })
-  }
 }

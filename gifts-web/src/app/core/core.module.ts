@@ -22,7 +22,7 @@ import {NavigationUnauthenticatedComponent} from "./navigation/unauthenticated/n
 import {GoTopButtonModule} from "ng2-go-top-button";
 import {RouterModule} from "@angular/router";
 import {AvatarComponent} from "./components/avatar/avatar.component";
-import { InnerLoaderComponent } from './components/inner-loader/inner-loader.component';
+import {InnerLoaderComponent} from './components/inner-loader/inner-loader.component';
 
 @NgModule({
   declarations: [

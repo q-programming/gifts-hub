@@ -33,14 +33,15 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         if (!AuthUtils.isAuthenticated()) {
             try {
-                String jwt = getJwtFromRequest(request);
+                String jwt =_tokenService.getToken(request);
                 if (StringUtils.hasText(jwt) && _tokenService.validateToken(jwt)) {
                     String userId = _tokenService.getUserIdFromToken(jwt);
                     UserDetails userDetails = _accountService.loadUserByUsername(userId);
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authentication);
-                } else {
+                }
+                else {
                     SecurityContextHolder.getContext().setAuthentication(new AnonAuthentication());
                 }
             } catch (Exception ex) {
@@ -49,13 +50,5 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             }
         }
         filterChain.doFilter(request, response);
-    }
-
-    private String getJwtFromRequest(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7, bearerToken.length());
-        }
-        return null;
     }
 }

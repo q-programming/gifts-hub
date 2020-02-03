@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {environment} from "@env/environment";
 import {AuthenticationService} from "@core-services/authentication.service";
-import {Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {FormControl, Validators} from "@angular/forms";
 
 @Component({
@@ -11,11 +11,15 @@ import {FormControl, Validators} from "@angular/forms";
 })
 export class LoginComponent implements OnInit {
 
+  GOOGLE_AUTH_URL = environment.context + environment.login_url + 'google?redirect_uri=' + environment.redirect_url;
+  FACEBOOK_AUTH_URL = environment.context + environment.login_url + 'facebook?redirect_uri=' + environment.redirect_url;
+
+
   login_url = environment.context + environment.login_url;
   usernameCtrl = new FormControl('', Validators.required);
   passwordCtrl = new FormControl('', Validators.required);
 
-  constructor(private authSrv: AuthenticationService, private router: Router) {
+  constructor(private authSrv: AuthenticationService, private router: Router, private activatedRoute: ActivatedRoute,) {
   }
 
   ngOnInit() {

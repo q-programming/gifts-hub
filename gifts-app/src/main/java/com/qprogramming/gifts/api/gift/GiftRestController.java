@@ -390,13 +390,6 @@ public class GiftRestController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @Deprecated
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @RequestMapping(value = "/complete/realised", method = RequestMethod.GET)
-    public ResponseEntity setRealisedDates() {
-        return ResponseEntity.ok(giftService.setRealisedDates());
-    }
-
     private boolean allowedCategoryName(String category) {
         return prohibitedCategories.stream().noneMatch(s -> s.equalsIgnoreCase(category));
     }

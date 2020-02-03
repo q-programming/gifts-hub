@@ -288,16 +288,6 @@ public class GiftService {
         giftRepository.saveAll(gifts);
     }
 
-    /**
-     * Remove after executed on old database
-     */
-    @Deprecated
-    public List<Gift> setRealisedDates() {
-        List<Gift> giftList = giftRepository.findByStatusAndRealisedIsNull(GiftStatus.REALISED);
-        giftList.forEach(gift -> gift.setRealised(gift.getCreated()));
-        return giftRepository.saveAll(giftList);
-    }
-
     public void mergeCategories(Category newCategory, List<Category> categoriesList) {
         List<Gift> allInOldCategories = giftRepository.findAllByCategoryIsIn(categoriesList);
         allInOldCategories.forEach(gift -> gift.setCategory(newCategory));
