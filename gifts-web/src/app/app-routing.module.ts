@@ -8,13 +8,15 @@ import {GiftsPublicComponent} from "./components/gifts-public/gifts-public.compo
 import {ResetPasswordComponent} from "./components/login/reset-password/reset-password.component";
 import {ChangePasswordComponent} from "./components/login/change-password/change-password.component";
 import {ConfirmComponent} from "./components/confirm/confirm.component";
+import {environment} from "@env/environment";
 
 const routes: Routes = [
   {
     path: '',
     loadChildren: () => import('./main/main.module').then(m => m.MainModule),
-    canActivate:[AuthGuard],
+    canActivate: [AuthGuard],
   },
+  {path: '_', component: LoginComponent},
   {path: 'login', component: LoginComponent},
   {path: 'public/:user', component: GiftsPublicComponent},
   {path: 'confirm/:token', component: ConfirmComponent},
@@ -31,6 +33,7 @@ const routes: Routes = [
     RouterModule.forRoot(routes, {
       anchorScrolling: 'enabled',
       useHash: true,
+      enableTracing: environment.routing_log,
       scrollPositionRestoration: 'enabled',
       onSameUrlNavigation: 'reload'
     })],

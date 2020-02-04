@@ -11,7 +11,6 @@ export const environment = {
   whoami_url: '/api/account/whoami',
   oauth_login_url: '/oauth2/authorize/',
   login_url: '/login',
-  redirect_url: '/',
   logout_url: '/logout',
   account_url: '/api/account',
   avatar_url: '/avatar',
@@ -21,4 +20,5 @@ export const environment = {
   app_url: '/api/app',
   gift_url: '/api/gift',
   version: version,
+  routing_log: true
 };
