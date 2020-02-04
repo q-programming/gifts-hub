@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {environment} from "@env/environment";
-import {AuthenticationService} from "@core-services/authentication.service";
+import {AuthenticationService, FACEBOOK_AUTH_URL, GOOGLE_AUTH_URL} from "@core-services/authentication.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {FormControl, Validators} from "@angular/forms";
 
@@ -11,11 +11,8 @@ import {FormControl, Validators} from "@angular/forms";
 })
 export class LoginComponent implements OnInit {
 
-  GOOGLE_AUTH_URL = environment.context + environment.login_url + 'google?redirect_uri=' + environment.redirect_url;
-  FACEBOOK_AUTH_URL = environment.context + environment.login_url + 'facebook?redirect_uri=' + environment.redirect_url;
-
-
-  login_url = environment.context + environment.login_url;
+  GOOGLE_AUTH_URL = GOOGLE_AUTH_URL;
+  FACEBOOK_AUTH_URL = FACEBOOK_AUTH_URL;
   usernameCtrl = new FormControl('', Validators.required);
   passwordCtrl = new FormControl('', Validators.required);
 
@@ -31,10 +28,8 @@ export class LoginComponent implements OnInit {
   }
 
   login() {
-    this.authSrv.login(this.usernameCtrl.value, this.passwordCtrl.value).subscribe((account) => {
-      if (account) {
-        this.router.navigate(['/']);
-      }
+    this.authSrv.login(this.usernameCtrl.value, this.passwordCtrl.value).subscribe(() => {
+      this.router.navigate(['/']);
     })
   }
 

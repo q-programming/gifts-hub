@@ -146,7 +146,12 @@ public class TokenService {
         response.addCookie(cookie);
     }
 
-    public void addTokenCookie(HttpServletResponse response, Account account, String tokenValue){
+    public void addTokenCookies(HttpServletResponse response, Account account){
+        String tokenValue = generateToken(account.getEmail());
+        addTokenCookies(response, account, tokenValue);
+    }
+
+    public void addTokenCookies(HttpServletResponse response, Account account, String tokenValue){
         Cookie authCookie = new Cookie(TOKEN_COOKIE, (tokenValue));
         authCookie.setPath(getPath());
         authCookie.setHttpOnly(true);

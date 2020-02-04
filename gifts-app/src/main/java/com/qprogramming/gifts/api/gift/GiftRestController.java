@@ -286,6 +286,7 @@ public class GiftRestController {
     private boolean pictureCanBeViewed(Account account) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return (authentication instanceof AnonAuthentication && account.getPublicList()) ||
+                account.equals(Utils.getCurrentAccount()) ||
                 account.getGroups()
                         .stream()
                         .anyMatch(group -> group.getMembers().contains(Utils.getCurrentAccount()));

@@ -1,10 +1,7 @@
 package com.qprogramming.gifts.config;
 
 import com.qprogramming.gifts.account.AccountService;
-import com.qprogramming.gifts.security.LogoutSuccess;
-import com.qprogramming.gifts.security.RestAuthenticationEntryPoint;
-import com.qprogramming.gifts.security.TokenAuthenticationFilter;
-import com.qprogramming.gifts.security.TokenService;
+import com.qprogramming.gifts.security.*;
 import com.qprogramming.gifts.security.oauth2.CustomOAuth2UserService;
 import com.qprogramming.gifts.security.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
 import com.qprogramming.gifts.security.oauth2.OAuth2AuthenticationFailureHandler;
@@ -66,6 +63,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
 
     @Autowired
+    private AuthenticationSuccessHandler authenticationSuccessHandler;
+    @Autowired
+    private AuthenticationFailureHandler authenticationFailureHandler;
+
+    @Autowired
     private HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
 
     @Autowired
@@ -119,9 +121,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .csrf()
                     .disable()
                 .formLogin()
-                    .disable()
-                .httpBasic()
-                    .disable()
+                    .successHandler(authenticationSuccessHandler)
+                    .failureHandler(authenticationFailureHandler)
+                .and()
+                    .httpBasic()
+                        .disable()
                 .exceptionHandling()
                     .authenticationEntryPoint(new RestAuthenticationEntryPoint())
                 .and()

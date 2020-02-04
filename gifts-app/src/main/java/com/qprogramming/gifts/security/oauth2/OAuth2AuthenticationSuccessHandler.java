@@ -35,7 +35,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         String token = _tokenService.createToken(authentication);
-        _tokenService.addTokenCookie(response, (Account) authentication.getPrincipal(), token);
+        _tokenService.addTokenCookies(response, (Account) authentication.getPrincipal(), token);
         String targetUrl = determineTargetUrl(request, response);
         if (response.isCommitted()) {
             logger.debug("Response has already been committed. Unable to redirect to " + targetUrl);

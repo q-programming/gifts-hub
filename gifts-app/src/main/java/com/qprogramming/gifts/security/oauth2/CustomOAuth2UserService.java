@@ -56,7 +56,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         account = new Account();
         account.setId(_accountService.generateID());
         account.setType(AccountType.type(oAuth2UserRequest.getClientRegistration().getRegistrationId()));
-        account.setName(oAuth2UserInfo.getName());
+        account.setName(oAuth2UserInfo.getFirstName());
+        account.setSurname(oAuth2UserInfo.getSurname());
         account.setEmail(oAuth2UserInfo.getEmail());
         account.setEnabled(true);
         _accountService.setLocale(account);
