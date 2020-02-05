@@ -21,14 +21,24 @@ import org.springframework.util.StringUtils;
 import java.net.MalformedURLException;
 import java.util.Optional;
 
+/**
+ * Service to handle OAuthUsers logging and registering
+ */
 @Service
-public class CustomOAuth2UserService extends DefaultOAuth2UserService {
+public class OAuth2UserService extends DefaultOAuth2UserService {
 
     private final Logger LOG = LoggerFactory.getLogger(this.getClass());
 
-    @Autowired
-    private AccountService _accountService;
+    private final AccountService _accountService;
 
+    @Autowired
+    public OAuth2UserService(AccountService _accountService) {
+        this._accountService = _accountService;
+    }
+
+    /**
+     * Loads OAuth user from request and processes it
+     */
     @Override
     public OAuth2User loadUser(OAuth2UserRequest oAuth2UserRequest) throws OAuth2AuthenticationException {
         OAuth2User oAuth2User = super.loadUser(oAuth2UserRequest);
@@ -42,6 +52,10 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
     }
 
+    /**
+     * Process OAuth user.
+     * If user already has account in application , return it. Otherwise grab all data from attributes, fetch avatar and then return freshly saved Account
+     */
     private OAuth2User processOAuth2User(OAuth2UserRequest oAuth2UserRequest, OAuth2User oAuth2User) {
         OAuth2UserInfo oAuth2UserInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(oAuth2UserRequest.getClientRegistration().getRegistrationId(), oAuth2User.getAttributes());
         if (StringUtils.isEmpty(oAuth2UserInfo.getEmail())) {

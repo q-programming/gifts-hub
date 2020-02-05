@@ -2,7 +2,7 @@ package com.qprogramming.gifts.config;
 
 import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.security.*;
-import com.qprogramming.gifts.security.oauth2.CustomOAuth2UserService;
+import com.qprogramming.gifts.security.oauth2.OAuth2UserService;
 import com.qprogramming.gifts.security.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
 import com.qprogramming.gifts.security.oauth2.OAuth2AuthenticationFailureHandler;
 import com.qprogramming.gifts.security.oauth2.OAuth2AuthenticationSuccessHandler;
@@ -54,7 +54,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private AccountService accountService;
 
     @Autowired
-    private CustomOAuth2UserService customOAuth2UserService;
+    private OAuth2UserService oAuth2UserService;
 
     @Autowired
     private OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
@@ -155,7 +155,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .baseUri("/oauth2/callback/*")
                 .and()
                     .userInfoEndpoint()
-                    .userService(customOAuth2UserService)
+                    .userService(oAuth2UserService)
                 .and()
                     .successHandler(oAuth2AuthenticationSuccessHandler)
                     .failureHandler(oAuth2AuthenticationFailureHandler)

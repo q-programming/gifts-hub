@@ -25,7 +25,7 @@ public class HttpCookieOAuth2AuthorizationRequestRepository implements Authoriza
 
     @Override
     public OAuth2AuthorizationRequest loadAuthorizationRequest(HttpServletRequest request) {
-        return _tokenService.getDeserializeCookie(request, OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME);
+        return _tokenService.getDeserializedCookie(request, OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME);
     }
 
     @Override

@@ -18,12 +18,11 @@ Application settings are stored in `application.yml` (please see sample `db/appl
 
 Customise following entries : 
 * Point to your database `spring.datasource.*`
-* Facebook `facebook.client.clientId` and app `facebook.client.clientSecret` updated with facebook app values 
-(same value goes to `spring.social.facebook.*` 
-* Google `google.client.clientId`  and app `google.client.clientSecret` updated
+* Facebook `spring.security.oauth2.client.registration.facebook.clientId` and app `spring.security.oauth2.client.registration.facebook.client.clientSecret` updated with facebook app values 
+* Google `spring.security.oauth2.client.registration.google.clientId`  and app `spring.security.oauth2.client.registration.google.clientSecret` updated
 * Default `spring.mail.*` mail server information ( can be then  overwrote with databse based parameter via application ) 
 * Change `jwt.secret` secret token with some random value
-* Default `app.gift.age` for how long gifts are treated as "New" and `gift.newsletter.scheduler` how often newsletter will be sent (cron)
+* Default `app.gift.age` for how long gifts are treated as "New" and `gift.newsletter.scheduler` how often newsletter will be sent (cron) (this can be changed via application management as well )
 
 Point to correct properties, using one of methods - order of looking for properties file 
 1. Edit context value . For Apache Tomcat 8.x  `context.xml` adding following parameter: 
@@ -31,8 +30,8 @@ Point to correct properties, using one of methods - order of looking for propert
 2. Set system property `-Dgifts.properties.path=MY_PROPERTY_PATH/application.yml`
 3. If none above is set, package built in properties from `src/main/resources/application.yml` will be used. 
     
-Build package (or grab latest artefact built by CircleCI to use defaults) and deploy to Tomcat container
-Create database in your datasource and all tables will be created automatically onb first run
+Build package (or grab latest artifacts built by CircleCI to use defaults) and deploy to Tomcat container
+Create database in your datasource and all tables will be created automatically on first run
 
 First logged in user will be made administrator
 

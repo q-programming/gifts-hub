@@ -23,7 +23,7 @@ public class OAuth2AuthenticationFailureHandler extends SimpleUrlAuthenticationF
     private final TokenService _tokenService;
 
     @Autowired
-    public OAuth2AuthenticationFailureHandler(HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository, TokenService tokenService) {
+    public OAuth2AuthenticationFailureHandler(TokenService tokenService, HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository) {
         _httpCookieOAuth2AuthorizationRequestRepository = httpCookieOAuth2AuthorizationRequestRepository;
         _tokenService = tokenService;
     }
