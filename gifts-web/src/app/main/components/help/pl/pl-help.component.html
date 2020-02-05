@@ -15,7 +15,7 @@
     Możesz pobrać aplikację na androida z tąd :
     <a mat-stroked-button href="https://q-programming.pl/apps/gifts-hub-1.0.1.apk">
       <mat-icon>cloud_download</mat-icon>
-      gifts-hub-1.0.0.apk
+      gifts-hub-1.0.1.apk
     </a>
     <br>
     i zainstalować ją na swoim telefonie (wymagane jest pozwolenie na instalację z nieznanych źródeł )
@@ -83,7 +83,8 @@
       </button>
     </div>
     <div fxFlex="60">
-      Lista zarezerwowanych prezentów. Tutaj pokazane są wszystkie prezenty, które zostały zarezerwowane przez obecnego użytkowika. Można też z tą usunąć rezerwację.
+      Lista zarezerwowanych prezentów. Tutaj pokazane są wszystkie prezenty, które zostały zarezerwowane przez obecnego
+      użytkowika. Można też z tą usunąć rezerwację.
     </div>
   </div>
   <div fxLayout="row wrap" fxLayoutGap="20px" class="mt-2" *ngIf="isAdmin">
@@ -437,6 +438,12 @@
       <mat-icon>add</mat-icon>
     </button>
   </help-list>
+  <help-list name="Obrazek prezentu" icon="fa-picture-o">
+    Opcjonalny obrazek prezentu, który może pomóc w identyfikacji prezentu. <br>
+    Po wybraniu pliku , należy go odpowiednio wykadrować i zatwierdzić. Obrazek zostanie dodany po zatwierdzeniu całego
+    prezentu.<br>
+    Finalny obrazek zostanie przeskalowany do wysokości max 400 pixeli
+  </help-list>
   <help-list name="Kategoria" icon="fa-archive">
     Kategoria prezentu . Wszystkie prezenty z danej kategorii będą zgrupowane w jedną zakładkę.
     Można wybrać jedną z kategorii stworzonych przez innych użytkowinków, lub wprowadzić nową.<br>
@@ -511,7 +518,8 @@
     Zarezerwowane prezenty
   </h3>
   <p>
-    Ekran aby podejrzeć swoje rezerwacje na prezentach wszystkich innych użytkowników z twoich grup. Wszystkie prezenty pogrupowane są po użytkownikach<br>
+    Ekran aby podejrzeć swoje rezerwacje na prezentach wszystkich innych użytkowników z twoich grup. Wszystkie prezenty
+    pogrupowane są po użytkownikach<br>
     Z tego ekranu można też szybko usunąć rezerwację z prezentu klikająć na ikonę
     <span class="fa-stack">
           <i class="fa fa-times fa-stack-1x"></i>

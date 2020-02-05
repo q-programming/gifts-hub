@@ -228,6 +228,7 @@
     },
     "noGifts": "Nic tu nie ma, zacznij dodawać prezenty !",
     "picture": {
+      "click": "Kliknij aby pokazać obrazek prezentu",
       "help": "Dodaj opcjonalne zdjęcie lub obrazek prezentu",
       "remove": "Usuń obraz",
       "text": "Obrazek prezentu"
