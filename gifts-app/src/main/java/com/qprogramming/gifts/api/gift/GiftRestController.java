@@ -12,10 +12,10 @@ import com.qprogramming.gifts.gift.GiftService;
 import com.qprogramming.gifts.gift.GiftStatus;
 import com.qprogramming.gifts.gift.category.Category;
 import com.qprogramming.gifts.gift.category.CategoryService;
-import com.qprogramming.gifts.login.AnonAuthentication;
 import com.qprogramming.gifts.messages.MessagesService;
 import com.qprogramming.gifts.schedule.AppEventService;
 import com.qprogramming.gifts.schedule.AppEventType;
+import com.qprogramming.gifts.security.AnonAuthentication;
 import com.qprogramming.gifts.settings.SearchEngine;
 import com.qprogramming.gifts.settings.SearchEngineService;
 import com.qprogramming.gifts.support.ResultData;
@@ -286,6 +286,7 @@ public class GiftRestController {
     private boolean pictureCanBeViewed(Account account) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return (authentication instanceof AnonAuthentication && account.getPublicList()) ||
+                account.equals(Utils.getCurrentAccount()) ||
                 account.getGroups()
                         .stream()
                         .anyMatch(group -> group.getMembers().contains(Utils.getCurrentAccount()));
@@ -387,13 +388,6 @@ public class GiftRestController {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
         return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    @Deprecated
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @RequestMapping(value = "/complete/realised", method = RequestMethod.GET)
-    public ResponseEntity setRealisedDates() {
-        return ResponseEntity.ok(giftService.setRealisedDates());
     }
 
     private boolean allowedCategoryName(String category) {

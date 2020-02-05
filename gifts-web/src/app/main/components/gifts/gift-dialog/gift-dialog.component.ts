@@ -23,7 +23,7 @@ export class GiftDialogComponent implements OnInit, AfterViewInit {
   gift: Gift;
   form: FormGroup;
   update: boolean;
-  searchEngines: SearchEngine[] = [];//TODO needed?
+  searchEngines: SearchEngine[] = [];
   categories: Category[];
   links: string[] = [];
   familyUser: boolean;

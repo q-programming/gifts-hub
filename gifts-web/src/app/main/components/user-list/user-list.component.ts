@@ -211,7 +211,7 @@ export class UserListComponent implements OnInit {
    */
   editKidDialog(kid: Account) {
     const dialogRef = this.dialog.open(KidDialogComponent, {
-      panelClass: 'gifts-modal-normal', //TODO class needed
+      panelClass: 'gifts-modal-normal',
       data: {
         account: kid
       }

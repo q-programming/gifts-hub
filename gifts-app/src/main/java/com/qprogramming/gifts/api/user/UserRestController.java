@@ -13,7 +13,6 @@ import com.qprogramming.gifts.exceptions.AccountNotFoundException;
 import com.qprogramming.gifts.exceptions.GroupNotAdminException;
 import com.qprogramming.gifts.exceptions.GroupNotFoundException;
 import com.qprogramming.gifts.gift.GiftService;
-import com.qprogramming.gifts.login.token.TokenBasedAuthentication;
 import com.qprogramming.gifts.messages.MessagesService;
 import com.qprogramming.gifts.schedule.AppEventService;
 import com.qprogramming.gifts.support.ResultData;
@@ -62,13 +61,13 @@ public class UserRestController {
     private static final Logger LOG = LoggerFactory.getLogger(UserRestController.class);
     public static final String RESULT = "result";
     private static final List<AccountEventType> ALLOWED_EVENTS = Arrays.asList(AccountEventType.ACCOUNT_CONFIRM, AccountEventType.GROUP_KID);
-    private AccountService _accountService;
-    private MessagesService _msgSrv;
-    private GroupService _groupService;
-    private GiftService _giftService;
-    private MailService _mailService;
-    private AppEventService _eventService;
-    private LogoutHandler _logoutHandler;
+    private final AccountService _accountService;
+    private final MessagesService _msgSrv;
+    private final GroupService _groupService;
+    private final GiftService _giftService;
+    private final MailService _mailService;
+    private final AppEventService _eventService;
+    private final LogoutHandler _logoutHandler;
 
     @Autowired
     public UserRestController(AccountService accountService, MessagesService msgSrv, GroupService groupService, GiftService giftService, MailService mailService, AppEventService eventService, LogoutHandler logoutHandler) {
@@ -711,9 +710,11 @@ public class UserRestController {
         }
         if (user != null && user instanceof UsernamePasswordAuthenticationToken) {
             return (Account) ((UsernamePasswordAuthenticationToken) user).getPrincipal();
-        } else if (user != null && user instanceof TokenBasedAuthentication) {
-            return (Account) ((TokenBasedAuthentication) user).getPrincipal();
         }
+        //TODO
+//        } else if (user != null && user instanceof TokenBasedAuthentication) {
+//            return (Account) ((TokenBasedAuthentication) user).getPrincipal();
+//        }
         return null;
     }
 

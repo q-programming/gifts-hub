@@ -1,8 +1,8 @@
-import {Component, OnInit} from '@angular/core';
-import {environment} from "@env/environment";
-import {AuthenticationService} from "@core-services/authentication.service";
+import {Component, Inject, OnInit} from '@angular/core';
+import {AuthenticationService, FACEBOOK_AUTH_URL, GOOGLE_AUTH_URL} from "@core-services/authentication.service";
 import {Router} from "@angular/router";
 import {FormControl, Validators} from "@angular/forms";
+import {DOCUMENT} from "@angular/common";
 
 @Component({
   selector: 'app-login',
@@ -11,11 +11,15 @@ import {FormControl, Validators} from "@angular/forms";
 })
 export class LoginComponent implements OnInit {
 
-  login_url = environment.context + environment.login_url;
   usernameCtrl = new FormControl('', Validators.required);
   passwordCtrl = new FormControl('', Validators.required);
+  FacebookLoginURL;
+  GoogleLoginURL;
+  redirect_url;
 
-  constructor(private authSrv: AuthenticationService, private router: Router) {
+  constructor(private authSrv: AuthenticationService,
+              private router: Router,
+              @Inject(DOCUMENT) private document: Document) {
   }
 
   ngOnInit() {
@@ -24,14 +28,14 @@ export class LoginComponent implements OnInit {
     }
     sessionStorage.clear();
     this.authSrv.setLanguage();
+    this.redirect_url = `${this.document.location.href.split("#")[0]}#/`;
+    this.FacebookLoginURL = FACEBOOK_AUTH_URL + this.redirect_url;
+    this.GoogleLoginURL = GOOGLE_AUTH_URL + this.redirect_url;
   }
 
   login() {
-    this.authSrv.login(this.usernameCtrl.value, this.passwordCtrl.value).subscribe((account) => {
-      if (account) {
-        this.router.navigate(['/']);
-      }
+    this.authSrv.login(this.usernameCtrl.value, this.passwordCtrl.value).subscribe(() => {
+      this.router.navigate(['/']);
     })
   }
-
 }

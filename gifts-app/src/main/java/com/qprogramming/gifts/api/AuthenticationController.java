@@ -1,8 +1,8 @@
 package com.qprogramming.gifts.api;
 
 import com.qprogramming.gifts.account.AccountService;
-import com.qprogramming.gifts.login.token.TokenService;
 import com.qprogramming.gifts.login.token.UserTokenState;
+import com.qprogramming.gifts.security.TokenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,11 +29,7 @@ public class AuthenticationController {
 
     private static final Logger LOG = LoggerFactory.getLogger(AuthenticationController.class);
 
-    private TokenService _tokenService;
-
-    private AuthenticationManager _authenticationManager;
-
-    private AccountService _accountService;
+    private final TokenService _tokenService;
 
     @Value("${jwt.expires_in}")
     private int EXPIRES_IN;
@@ -41,74 +37,7 @@ public class AuthenticationController {
     @Autowired
     public AuthenticationController(TokenService tokenService, AuthenticationManager authenticationManager, AccountService accountService) {
         this._tokenService = tokenService;
-        this._authenticationManager = authenticationManager;
-        _accountService = accountService;
     }
-
-//    @RequestMapping(value = "/auth", method = RequestMethod.POST)
-//    public ResponseEntity createAuthenticationToken(
-//            @RequestBody JwtAuthenticationRequest authenticationRequest, HttpServletResponse response) throws AuthenticationException, IOException {
-//        final Authentication authentication = _authenticationManager.authenticate(
-//                new UsernamePasswordAuthenticationToken(
-//                        authenticationRequest.getUsername(),
-//                        authenticationRequest.getPassword()
-//                )
-//        );
-//        SecurityContextHolder.getContext().setAuthentication(authentication);
-//        Account account = (Account) authentication.getPrincipal();
-//        _tokenService.createTokenCookies(response, account);
-//        return ResponseEntity.ok().build();
-//    }
-
-//    @RequestMapping(value = "/auth/register", method = RequestMethod.POST)
-//    @Transactional
-//    public ResponseEntity register(
-//            @RequestBody RegisterForm form) throws AuthenticationException {
-//        Optional<Account> byEmail = _accountService.findByEmail(form.getEmail());
-//        if (byEmail.isPresent()) {
-//            return ResponseEntity.status(CONFLICT).body("email");
-//        }
-//        if (!form.getPassword().equals(form.getConfirmPassword())) {
-//            return ResponseEntity.status(CONFLICT).body("passwords");
-//        }
-//        if (form.getPassword().length() < 8) {
-//            return ResponseEntity.status(CONFLICT).body("weak");
-//        }
-//        try {
-//            Account account = form.createAccount();
-//            _accountService.createLocalAccount(account);
-//            _accountService.sendConfirmEmail(account);
-//        } catch (MessagingException e) {
-//            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body("mailing");
-//        }
-//        return ResponseEntity.ok().build();
-//    }
-
-//    @RequestMapping(value = "/auth/confirm", method = RequestMethod.GET)
-//    public void confirmAccount(@RequestParam("token") String token, HttpServletRequest request, HttpServletResponse response) {
-//        String uri = Utils.getFullPathFromRequest(request);
-//        try {
-//            try {
-//                Account account = _accountService.findByUuid(token);
-//                UUID uuid = UUID.fromString(account.getUuid());
-//                DateTime date = new DateTime(Utils.getTimeFromUUID(uuid));
-//                DateTime expireDate = date.plusHours(24);
-//                if (date.isAfter(expireDate)) {
-//                    _accountService.sendConfirmEmail(account);
-//                    response.sendRedirect(uri + "/#/error?type=expired");
-//                }
-//                _accountService.confirm(account);
-//                response.sendRedirect(uri + "/#/success?type=confirmed");
-//            } catch (AccountNotFoundException e) {
-//                response.sendRedirect(uri + "/#/error?type=account");
-//            } catch (MessagingException e) {
-//                LOG.error("Error while trying to send email{}", e);
-//            }
-//        } catch (IOException e) {
-//            LOG.error("Error while trying to redirect {}", e);
-//        }
-//    }
-
 
     /**
      * Refreshes token (if it can be refreshed ) passed in request and returns back the token

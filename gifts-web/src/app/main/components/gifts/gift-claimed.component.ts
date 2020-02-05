@@ -31,6 +31,10 @@ export class GiftClaimedComponent implements OnInit {
     this.isLoading = true;
     this.giftSrv.getClaimedGifts().subscribe(result => {
       let keys = Object.keys(result);
+      if (keys.length == 0) {
+        this.progress.complete();
+        this.isLoading = false;
+      }
       for (let accountID of keys) {
         this.userSrv.geUserById(accountID).subscribe(account => {
           this.accountsList.push(account);

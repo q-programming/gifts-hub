@@ -25,9 +25,6 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -37,13 +34,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -180,17 +175,12 @@ public class AccountService implements UserDetailsService {
             }
         }
         Account account = optionalAccount.get();
-        //TODO Depreciated part fix. Due to changes in roles if none of authorities were found add them
-        if (account.getAuthorities().isEmpty()) {
-            Authority role = _authorityService.findByRole(Role.ROLE_USER);
-            account.addAuthority(role);
-            account = update(account);
-        }
         return account;
     }
 
-    public void signin(Account account) {
+    public Account signin(Account account) {
         SecurityContextHolder.getContext().setAuthentication(authenticate(account));
+        return account;
     }
 
     private Authentication authenticate(Account account) {

@@ -72,7 +72,7 @@ public class AppRestControllerTest extends MockedAccountTestBase {
         super.setup();
         when(msgSrvMock.getMessage(anyString())).thenReturn("MESSAGE");
         SecurityContextHolder.setContext(securityMock);
-        AppRestController mngCtrl = new AppRestController(propertyServiceMock, searchEngineServiceMock, mailServiceMock, categoryServiceMock, giftServiceMock, accountServiceMock, msgSrvMock);
+        AppRestController mngCtrl = new AppRestController(propertyServiceMock, searchEngineServiceMock, mailServiceMock, categoryServiceMock, giftServiceMock, accountServiceMock);
         this.manageRestController = MockMvcBuilders.standaloneSetup(mngCtrl).build();
     }
 

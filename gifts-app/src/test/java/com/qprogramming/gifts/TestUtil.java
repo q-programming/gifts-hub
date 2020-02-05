@@ -1,5 +1,8 @@
 package com.qprogramming.gifts;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.authority.Authority;
 import com.qprogramming.gifts.account.authority.Role;
@@ -9,9 +12,6 @@ import com.qprogramming.gifts.gift.category.Category;
 import com.qprogramming.gifts.schedule.AppEvent;
 import com.qprogramming.gifts.schedule.AppEventType;
 import com.qprogramming.gifts.settings.SearchEngine;
-import org.codehaus.jackson.map.DeserializationConfig;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.type.TypeFactory;
 import org.springframework.http.MediaType;
 
 import java.io.IOException;
@@ -42,41 +42,41 @@ public class TestUtil {
             throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.writerWithView(MappingConfiguration.Members.class);
-        mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         return mapper.writeValueAsBytes(object);
     }
 
     public static <T> T convertJsonToObject(String json, Class<T> object) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.writerWithView(MappingConfiguration.Members.class);
-        mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         return mapper.readValue(json, object);
     }
 
     public static <T> List<T> convertJsonToList(String json, Class<? extends List> collectionClass, Class<T> elementClass) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.writerWithView(MappingConfiguration.Members.class);
-        mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         return mapper.readValue(json, TypeFactory.defaultInstance().constructCollectionType(collectionClass, elementClass));
     }
 
     public static <T> Set<T> convertJsonToSet(String json, Class<? extends Set> collectionClass, Class<T> elementClass) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.writerWithView(MappingConfiguration.Members.class);
-        mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         return mapper.readValue(json, TypeFactory.defaultInstance().constructCollectionType(collectionClass, elementClass));
     }
 
     public static <T, V> Map<T, V> convertJsonToTreeMap(String json, Class<T> keyClass, Class<V> valueClass) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.writerWithView(MappingConfiguration.Members.class);
-        mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         return mapper.readValue(json, TypeFactory.defaultInstance().constructMapType(TreeMap.class, keyClass, valueClass));
     }
     public static <T, V> Map<T, V> convertJsonToHashMap(String json, Class<T> keyClass, Class<V> valueClass) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.writerWithView(MappingConfiguration.Members.class);
-        mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         return mapper.readValue(json, TypeFactory.defaultInstance().constructMapType(HashMap.class, keyClass, valueClass));
     }
 

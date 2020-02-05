@@ -17,6 +17,15 @@
       "^/gifts/login": ""
     }
   },
+  "/gifts/oauth2": {
+    "target": "http://localhost:8080/gifts/oauth2",
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/gifts/oauth2": ""
+    }
+  },
   "/gifts/auth": {
     "target": "http://localhost:8080/gifts/auth",
     "secure": false,
