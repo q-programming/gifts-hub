@@ -9,6 +9,7 @@ export const environment = {
   api_url: '/api',
   refresh_token_url: '/api/refresh',
   whoami_url: '/api/account/whoami',
+  oauth_login_url: '/oauth2/authorize/',
   login_url: '/login',
   logout_url: '/logout',
   account_url: '/api/account',
@@ -18,5 +19,6 @@ export const environment = {
   default_lang_url: '/api/app/default-language',
   app_url: '/api/app',
   gift_url: '/api/gift',
-  version: version
+  version: version,
+  routing_log: true
 };

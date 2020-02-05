@@ -13,14 +13,12 @@ import com.qprogramming.gifts.exceptions.AccountNotFoundException;
 import com.qprogramming.gifts.exceptions.GroupNotAdminException;
 import com.qprogramming.gifts.exceptions.GroupNotFoundException;
 import com.qprogramming.gifts.gift.GiftService;
-import com.qprogramming.gifts.login.token.TokenBasedAuthentication;
 import com.qprogramming.gifts.messages.MessagesService;
 import com.qprogramming.gifts.schedule.AppEventService;
 import com.qprogramming.gifts.support.ResultData;
 import com.qprogramming.gifts.support.Utils;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.Hibernate;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,13 +61,13 @@ public class UserRestController {
     private static final Logger LOG = LoggerFactory.getLogger(UserRestController.class);
     public static final String RESULT = "result";
     private static final List<AccountEventType> ALLOWED_EVENTS = Arrays.asList(AccountEventType.ACCOUNT_CONFIRM, AccountEventType.GROUP_KID);
-    private AccountService _accountService;
-    private MessagesService _msgSrv;
-    private GroupService _groupService;
-    private GiftService _giftService;
-    private MailService _mailService;
-    private AppEventService _eventService;
-    private LogoutHandler _logoutHandler;
+    private final AccountService _accountService;
+    private final MessagesService _msgSrv;
+    private final GroupService _groupService;
+    private final GiftService _giftService;
+    private final MailService _mailService;
+    private final AppEventService _eventService;
+    private final LogoutHandler _logoutHandler;
 
     @Autowired
     public UserRestController(AccountService accountService, MessagesService msgSrv, GroupService groupService, GiftService giftService, MailService mailService, AppEventService eventService, LogoutHandler logoutHandler) {
@@ -206,7 +204,7 @@ public class UserRestController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @RequestMapping(value = "/usersList", method = RequestMethod.GET)
     public ResponseEntity<?> userList(@RequestParam(required = false) boolean users) {
-        Set<Account> list = new HashSet<>();
+        Set<Account> list;
         if (users) {
             list = new LinkedHashSet<>(_accountService.findUsers());
         } else {
@@ -712,9 +710,11 @@ public class UserRestController {
         }
         if (user != null && user instanceof UsernamePasswordAuthenticationToken) {
             return (Account) ((UsernamePasswordAuthenticationToken) user).getPrincipal();
-        } else if (user != null && user instanceof TokenBasedAuthentication) {
-            return (Account) ((TokenBasedAuthentication) user).getPrincipal();
         }
+        //TODO
+//        } else if (user != null && user instanceof TokenBasedAuthentication) {
+//            return (Account) ((TokenBasedAuthentication) user).getPrincipal();
+//        }
         return null;
     }
 

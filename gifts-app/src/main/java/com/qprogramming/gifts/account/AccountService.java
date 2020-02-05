@@ -25,9 +25,6 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -37,18 +34,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static com.qprogramming.gifts.support.Utils.ACCOUNT_COMPARATOR;
+import static com.qprogramming.gifts.support.Utils.decodeTypeFromBytes;
 
 @Service
 @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -179,17 +175,12 @@ public class AccountService implements UserDetailsService {
             }
         }
         Account account = optionalAccount.get();
-        //TODO Depreciated part fix. Due to changes in roles if none of authorities were found add them
-        if (account.getAuthorities().isEmpty()) {
-            Authority role = _authorityService.findByRole(Role.ROLE_USER);
-            account.addAuthority(role);
-            account = update(account);
-        }
         return account;
     }
 
-    public void signin(Account account) {
+    public Account signin(Account account) {
         SecurityContextHolder.getContext().setAuthentication(authenticate(account));
+        return account;
     }
 
     private Authentication authenticate(Account account) {
@@ -230,12 +221,11 @@ public class AccountService implements UserDetailsService {
      *
      * @param account account for which avatar is created
      * @param url     url from which avatar image will be fetched
-     * @return new {@link Avatar}
-     * @throws MalformedURLException
+     * @throws MalformedURLException if URL is in wrong format
      */
-    public Avatar createAvatar(Account account, String url) throws MalformedURLException {
+    public void createAvatar(Account account, String url) throws MalformedURLException {
         byte[] bytes = downloadFromUrl(new URL(url));
-        return createAvatar(account, bytes);
+        createAvatar(account, bytes);
     }
 
 
@@ -245,28 +235,19 @@ public class AccountService implements UserDetailsService {
      *
      * @param account Account for which avatar is created
      * @param bytes   bytes containing avatar
-     * @return new {@link Avatar}
      */
-    public Avatar createAvatar(Account account, byte[] bytes) {
+    public void createAvatar(Account account, byte[] bytes) {
         Avatar avatar = new Avatar();
         avatar.setId(account.getId());
         setAvatarTypeAndBytes(bytes, avatar);
-        return _avatarRepository.save(avatar);
+        _avatarRepository.save(avatar);
     }
 
     private void setAvatarTypeAndBytes(byte[] bytes, Avatar avatar) {
         avatar.setImage(bytes);
-        String type = "";
-        try {
-            type = URLConnection.guessContentTypeFromStream(new ByteArrayInputStream(bytes));
-        } catch (IOException e) {
-            LOG.error("Failed to determine type from bytes, presuming jpg");
-        }
-        if (StringUtils.isEmpty(type)) {
-            type = MediaType.IMAGE_JPEG_VALUE;
-        }
-        avatar.setType(type);
+        avatar.setType(decodeTypeFromBytes(bytes));
     }
+
 
     /**
      * !Visible for testing

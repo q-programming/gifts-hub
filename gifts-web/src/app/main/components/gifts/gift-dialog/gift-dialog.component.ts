@@ -1,6 +1,6 @@
-import {Component, Inject, OnInit} from '@angular/core';
+import {AfterViewInit, Component, Inject, OnInit, ViewChild} from '@angular/core';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
-import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
+import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {Gift} from "@model/Gift";
 import {ApiService} from "@core-services/api.service";
 import {environment} from "@env/environment";
@@ -10,20 +10,27 @@ import {Observable} from "rxjs";
 import {debounceTime, map, startWith} from "rxjs/operators";
 import * as _ from "lodash";
 import {distinctUntilChanged} from "rxjs/internal/operators/distinctUntilChanged";
+import {getBase64Image} from "../../../../utils/utils";
+import {GiftImage} from "@model/GiftImage";
+import {ImageCroppedEvent} from "ngx-image-cropper";
 
 @Component({
   selector: 'app-gift-dialog',
   templateUrl: './gift-dialog.component.html',
-  styles: []
+  styleUrls: ['./gift-dialog.component.css']
 })
-export class GiftDialogComponent implements OnInit {
+export class GiftDialogComponent implements OnInit, AfterViewInit {
   gift: Gift;
   form: FormGroup;
   update: boolean;
-  searchEngines: SearchEngine[] = [];//TODO needed?
+  searchEngines: SearchEngine[] = [];
   categories: Category[];
   links: string[] = [];
   familyUser: boolean;
+  disableAnimation = true;
+  imageChangedEvent: any = '';
+  giftCroppedImage: any = '';
+  uploadInProgress: boolean;
 
   // categories
   filterTerm: string;
@@ -55,6 +62,7 @@ export class GiftDialogComponent implements OnInit {
     }
     this.getSearchEngines();
     this.getCategories();
+    this.getImage();
   }
 
   ngOnInit() {
@@ -68,6 +76,12 @@ export class GiftDialogComponent implements OnInit {
         this.form.controls['category'].setErrors({prohibited: true});
       });
     })
+  }
+
+  // Workaround for angular component issue #13870
+  ngAfterViewInit(): void {
+    // timeout required to avoid the dreaded 'ExpressionChangedAfterItHasBeenCheckedError'
+    setTimeout(() => this.disableAnimation = false);
   }
 
   // SEARCH ENGINES
@@ -118,6 +132,10 @@ export class GiftDialogComponent implements OnInit {
 
   get LinksControls() {
     return (this.form.get('links') as FormArray).controls
+  }
+
+  get LinksExpanded() {
+    return this.gift.links.length > 0
   }
 
 // CATEGORIES
@@ -174,7 +192,36 @@ export class GiftDialogComponent implements OnInit {
           searchString: eng.get('searchString').value
         }
       });
+      if (this.giftCroppedImage) {
+        this.gift.imageData = getBase64Image(this.giftCroppedImage)
+      }
       this.dialogRef.close(this.gift)
     }
+  }
+
+  private getImage() {
+    if (this.gift.hasImage) {
+      this.apiSrv.getObject<GiftImage>(`${environment.gift_url}/image/${this.gift.id}`).subscribe((data) => {
+        if (data) {
+          const dataType = "data:" + data.type + ";base64,";
+          this.giftCroppedImage = dataType + data.image
+        }
+      });
+    }
+  }
+
+  fileChangeEvent(event: any): void {
+    this.uploadInProgress = true;
+    this.imageChangedEvent = event;
+  }
+
+  imageCropped(event: ImageCroppedEvent) {
+    this.giftCroppedImage = event.base64;
+  }
+
+  removePicture() {
+    this.gift.image = undefined;
+    this.gift.hasImage = false;
+    this.giftCroppedImage = '';
   }
 }

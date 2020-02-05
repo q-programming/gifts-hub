@@ -6,7 +6,7 @@ import {GiftsComponent} from "./components/gifts/gifts.component";
 import {GiftComponent} from "./components/gifts/gift/gift.component";
 import {AccountListComponent} from "./components/gifts/account-list/account-list.component";
 import {UserComponent} from "./components/user-list/user/user.component";
-import {AvatarUploadComponent, SettingsComponent} from "./components/settings/settings.component";
+import {SettingsComponent} from "./components/settings/settings.component";
 import {KidDialogComponent} from "./components/user-list/kid-dialog/kid-dialog.component";
 import {GiftDialogComponent} from "./components/gifts/gift-dialog/gift-dialog.component";
 import {ManageComponent} from "./components/manage/manage.component";
@@ -17,7 +17,6 @@ import {AdminsComponent} from "./components/manage/admins/admins.component";
 import {CategoryListComponent} from "./components/gifts/category-list/category-list.component";
 import {GroupDialogComponent} from "./components/user-list/group-dialog/group-dialog.component";
 import {PermissionComponent} from "./components/user-list/permission/permission.component";
-import {ImageCropperModule} from "ngx-img-cropper";
 import {NgxMatSelectSearchModule} from "ngx-mat-select-search";
 import {MainRoutingModule} from "./main-routing.module";
 import {MainComponent} from './main.component';
@@ -30,6 +29,7 @@ import { CategoriesComponent } from './components/manage/categories/categories.c
 import {DragDropModule} from "@angular/cdk/drag-drop";
 import { EditCategoryDialogComponent } from './components/manage/categories/edit-category-dialog/edit-category-dialog.component';
 import { GiftClaimedComponent } from './components/gifts/gift-claimed.component';
+import {ImageCropperModule} from "ngx-image-cropper";
 
 @NgModule({
   declarations: [
@@ -39,7 +39,6 @@ import { GiftClaimedComponent } from './components/gifts/gift-claimed.component'
     AccountListComponent,
     UserComponent,
     SettingsComponent,
-    AvatarUploadComponent,
     KidDialogComponent,
     GiftDialogComponent,
     ManageComponent,
@@ -69,7 +68,6 @@ import { GiftClaimedComponent } from './components/gifts/gift-claimed.component'
     ScrollToModule.forRoot(),
   ],
   entryComponents: [
-    AvatarUploadComponent,
     KidDialogComponent,
     GiftDialogComponent,
     GroupDialogComponent,

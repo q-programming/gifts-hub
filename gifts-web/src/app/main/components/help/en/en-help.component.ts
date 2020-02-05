@@ -45,6 +45,7 @@ export class EnHelpComponent implements OnInit {
       category: {name: 'Toys'},
       description: 'Wooden if possible, can be metal',
       hidden: true,
+      hasImage:true,
       links: ['#'],
       createdBy: this.user.id,
       engines: [

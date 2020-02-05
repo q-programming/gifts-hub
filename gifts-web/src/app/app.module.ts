@@ -20,6 +20,7 @@ import {TranslateHttpLoader} from "@ngx-translate/http-loader";
 import {ErrorComponent} from "./components/error/error.component";
 import {ConfirmDialogComponent} from "./components/dialogs/confirm/confirm-dialog.component";
 import {MainModule} from "./main/main.module";
+import {ImageDialogComponent} from "./components/dialogs/image/image-dialog.component";
 
 
 @NgModule({
@@ -32,11 +33,13 @@ import {MainModule} from "./main/main.module";
     ResetPasswordComponent,
     ChangePasswordComponent,
     ConfirmDialogComponent,
+    ImageDialogComponent,
     ConfirmComponent
 
   ],
   entryComponents: [
-    ConfirmDialogComponent
+    ConfirmDialogComponent,
+    ImageDialogComponent
   ],
   imports: [
     CommonModule,

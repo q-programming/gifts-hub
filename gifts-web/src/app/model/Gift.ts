@@ -1,6 +1,7 @@
 import {SearchEngine} from "@model/SearchEngine";
 import {Category} from "@model/Category";
 import {Account} from "@model/Account";
+import {GiftImage} from "@model/GiftImage";
 
 export class Gift {
   id: number;
@@ -16,6 +17,9 @@ export class Gift {
   realised?: Date;
   status?: GiftStatus;
   hidden?: boolean;
+  image?: GiftImage;
+  imageData?: String;
+  hasImage?: boolean;
 }
 
 export enum GiftStatus {

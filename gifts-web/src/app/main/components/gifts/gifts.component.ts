@@ -187,7 +187,7 @@ export class GiftsComponent implements OnInit {
   addGiftDialog() {
     let gift = new Gift();
     const dialogRef = this.dialog.open(GiftDialogComponent, {
-      panelClass: 'gifts-modal-normal', //TODO class needed
+      panelClass: 'gifts-modal-normal',
       data: {
         gift: gift,
         familyUser: this.currentAccount.id !== this.viewedAccount.id
@@ -211,7 +211,7 @@ export class GiftsComponent implements OnInit {
   editGiftDialog(gift: Gift) {
     const oldCategory = gift.category;
     const dialogRef = this.dialog.open(GiftDialogComponent, {
-      panelClass: 'gifts-modal-normal', //TODO class needed
+      panelClass: 'gifts-modal-normal',
       data: {
         gift: gift,
         familyUser: this.currentAccount.id !== this.viewedAccount.id
@@ -222,9 +222,7 @@ export class GiftsComponent implements OnInit {
         this.giftSrv.editGift(gift).subscribe(edited => {
           if (edited) {
             gift = edited;
-            if (oldCategory.id !== gift.category.id) {
-              this.getGifts();
-            }
+            this.getGifts();
             this.alertSrv.success('gift.edit.success')
           }
         }, error => {

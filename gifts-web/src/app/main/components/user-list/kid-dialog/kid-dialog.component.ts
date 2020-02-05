@@ -1,13 +1,13 @@
-import {Component, Inject, OnInit, ViewChild} from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
 import {DOCUMENT} from "@angular/common";
-import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
+import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
-import {CropperSettings, ImageCropperComponent} from "ngx-img-cropper";
 import {Account} from "@model/Account";
 import {AlertService} from "@core-services/alert.service";
 import {ApiService} from "@core-services/api.service";
 import {environment} from "@env/environment";
 import {getBase64Image} from "../../../../utils/utils";
+import {ImageCroppedEvent} from "ngx-image-cropper";
 
 @Component({
   selector: 'app-kid',
@@ -15,12 +15,9 @@ import {getBase64Image} from "../../../../utils/utils";
   styles: []
 })
 export class KidDialogComponent implements OnInit {
-
-  @ViewChild('cropper',{static:true})
-  cropper: ImageCropperComponent;
-  cropperSettings: CropperSettings;
   kid: Account;
   avatarData: any = {};
+  imageChangedEvent: any = '';
   form: FormGroup;
   update: boolean;
   uploadInProgress: boolean;
@@ -32,7 +29,7 @@ export class KidDialogComponent implements OnInit {
               private alertSrv: AlertService) {
     this.kid = data.account;
     if (data.account.id) {
-      this.avatarData.image = this.kid.avatar;
+      this.avatarData = this.kid.avatar;
       this.update = true;
     }
     this.form = new FormGroup({
@@ -42,16 +39,6 @@ export class KidDialogComponent implements OnInit {
         publicList: new FormControl(this.kid.publicList)
       }
     );
-    //CROPER
-    this.cropperSettings = new CropperSettings();
-    this.cropperSettings.width = 100;
-    this.cropperSettings.height = 100;
-    this.cropperSettings.croppedWidth = 100;
-    this.cropperSettings.croppedHeight = 100;
-    this.cropperSettings.canvasWidth = 200;
-    this.cropperSettings.canvasHeight = 200;
-    this.cropperSettings.noFileInput = true;
-    this.cropperSettings.rounded = true;
   }
 
   ngOnInit() {
@@ -64,19 +51,6 @@ export class KidDialogComponent implements OnInit {
     })
 
 
-  }
-
-  fileChangeListener($event) {
-    this.uploadInProgress = true;
-    let image: any = new Image();
-    let file: File = $event.target.files[0];
-    const myReader: FileReader = new FileReader();
-    const that = this;
-    myReader.onloadend = function (loadEvent: any) {
-      image.src = loadEvent.target.result;
-      that.cropper.setImage(image);
-    };
-    myReader.readAsDataURL(file);
   }
 
   get publicUrl() {
@@ -96,9 +70,19 @@ export class KidDialogComponent implements OnInit {
       this.kid.surname = this.form.controls.surname.value;
       this.kid.username = this.form.controls.username.value;
       this.kid.publicList = this.form.controls.publicList.value;
-      this.kid.avatar = getBase64Image(this.avatarData.image);
+      this.kid.avatar = getBase64Image(this.avatarData);
       this.dialogRef.close(this.kid);
     }
   }
+
+  fileChangeEvent(event: any): void {
+    this.uploadInProgress = true;
+    this.imageChangedEvent = event;
+  }
+
+  imageCropped(event: ImageCroppedEvent) {
+    this.avatarData = event.base64;
+  }
+
 
 }

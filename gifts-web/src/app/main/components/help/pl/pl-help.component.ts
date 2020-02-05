@@ -43,6 +43,7 @@ export class PlHelpComponent implements OnInit {
       category: {name: 'Zabawki'},
       description: 'Najlepiej drewniania, ew metalowa',
       hidden: true,
+      hasImage: true,
       links: ['#'],
       createdBy: this.user.id,
       engines: [

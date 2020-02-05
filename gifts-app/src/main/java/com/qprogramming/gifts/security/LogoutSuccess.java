@@ -1,7 +1,6 @@
-package com.qprogramming.gifts.login;
+package com.qprogramming.gifts.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.qprogramming.gifts.login.token.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
@@ -23,23 +22,23 @@ import java.util.Map;
 public class LogoutSuccess implements LogoutSuccessHandler {
 
 
-    private ObjectMapper objectMapper;
-    private TokenService tokenService;
+    private final ObjectMapper _objectMapper;
+    private final TokenService _tokenService;
 
     @Autowired
     public LogoutSuccess(ObjectMapper objectMapper, TokenService tokenService) {
-        this.objectMapper = objectMapper;
-        this.tokenService = tokenService;
+        _objectMapper = objectMapper;
+        _tokenService = tokenService;
     }
 
     @Override
-    public void onLogoutSuccess(HttpServletRequest httpServletRequest, HttpServletResponse response, Authentication authentication)
+    public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication)
             throws IOException {
         Map<String, String> result = new HashMap<>();
         result.put("result", "success");
         response.setContentType("application/json");
-        response.getWriter().write(objectMapper.writeValueAsString(result));
-        tokenService.invalidateCookie(response);
+        response.getWriter().write(_objectMapper.writeValueAsString(result));
+        _tokenService.invalidateTokenCookie(request, response);
         response.setStatus(HttpServletResponse.SC_OK);
 
     }

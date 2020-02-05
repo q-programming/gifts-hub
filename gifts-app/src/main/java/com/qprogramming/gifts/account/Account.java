@@ -7,6 +7,7 @@ import com.qprogramming.gifts.account.group.Group;
 import io.jsonwebtoken.lang.Collections;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -18,7 +19,7 @@ import static com.qprogramming.gifts.support.Utils.ACCOUNT_COMPARATOR;
 //        generator = ObjectIdGenerators.PropertyGenerator.class,
 //        property = "id")
 @Entity
-public class Account implements Serializable, UserDetails, Comparable<Account> {
+public class Account implements Serializable, OAuth2User, UserDetails, Comparable<Account> {
 
     @Id
     private String id;
@@ -80,6 +81,9 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
             inverseJoinColumns = {@JoinColumn(name = "fk_group")})
     @JsonIgnore
     private Set<Group> groups;
+
+    @Transient
+    private Map<String, Object> attributes;
 
     public Account() {
         this.created = new Date();
@@ -157,6 +161,16 @@ public class Account implements Serializable, UserDetails, Comparable<Account> {
         Set<Authority> auths = new HashSet<>(getAuthorities());
         auths.add(authority);
         this.setAuthorities(auths);
+    }
+
+    @Override
+    public <A> A getAttribute(String name) {
+        return null;
+    }
+
+    @Override
+    public Map<String, Object> getAttributes() {
+        return null;
     }
 
     @Override

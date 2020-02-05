@@ -30,7 +30,10 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.security.RolesAllowed;
 import javax.mail.MessagingException;
 import javax.transaction.Transactional;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -43,23 +46,21 @@ import static java.util.stream.Collectors.groupingBy;
 public class AppRestController {
 
     private final Logger LOG = LoggerFactory.getLogger(this.getClass());
-    private PropertyService propertyService;
-    private SearchEngineService searchEngineService;
-    private MailService mailService;
-    private CategoryService categoryService;
-    private GiftService giftService;
-    private AccountService accountService;
-    private MessagesService msgSrv;
+    private final PropertyService propertyService;
+    private final SearchEngineService searchEngineService;
+    private final MailService mailService;
+    private final CategoryService categoryService;
+    private final GiftService giftService;
+    private final AccountService accountService;
 
     @Autowired
-    public AppRestController(PropertyService propertyService, SearchEngineService searchEngineService, MailService mailService, CategoryService categoryService, GiftService giftService, AccountService accountService, MessagesService messagesService) {
+    public AppRestController(PropertyService propertyService, SearchEngineService searchEngineService, MailService mailService, CategoryService categoryService, GiftService giftService, AccountService accountService) {
         this.propertyService = propertyService;
         this.searchEngineService = searchEngineService;
         this.mailService = mailService;
         this.categoryService = categoryService;
         this.giftService = giftService;
         this.accountService = accountService;
-        this.msgSrv = messagesService;
     }
 
     @RolesAllowed("ROLE_ADMIN")

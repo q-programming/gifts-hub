@@ -1,4 +1,4 @@
-package com.qprogramming.gifts.login;
+package com.qprogramming.gifts.security;
 
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;

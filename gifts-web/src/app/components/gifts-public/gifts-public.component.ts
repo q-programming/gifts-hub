@@ -1,15 +1,15 @@
 import {Component, OnInit} from '@angular/core';
-import {UserService} from "../../main/services/user.service";
+import {UserService} from "@services/user.service";
 import {ActivatedRoute, Router} from "@angular/router";
-import {GiftService} from "../../main/services/gift.service";
-import {AuthenticationService} from "../../core/services/authentication.service";
-import {AlertService} from "../../core/services/alert.service";
-import {Gift, GiftStatus} from "../../model/Gift";
-import {Account} from "../../model/Account";
+import {GiftService} from "@services/gift.service";
+import {AuthenticationService} from "@core-services/authentication.service";
+import {AlertService} from "@core-services/alert.service";
+import {Gift, GiftStatus} from "@model/Gift";
+import {Account} from "@model/Account";
 import {TranslateService} from "@ngx-translate/core";
-import {AvatarService} from "../../core/services/avatar.service";
-import {ApiService} from "../../core/services/api.service";
-import {environment} from "../../../environments/environment";
+import {AvatarService} from "@core-services/avatar.service";
+import {ApiService} from "@core-services/api.service";
+import {environment} from "@env/environment";
 import {ScrollToConfigOptions} from "@nicky-lenaers/ngx-scroll-to";
 
 @Component({
