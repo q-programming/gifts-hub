@@ -18,8 +18,8 @@ import java.io.IOException;
 
 public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
-    private TokenService _tokenService;
-    private AccountService _accountService;
+    private final TokenService _tokenService;
+    private final AccountService _accountService;
 
     private static final Logger logger = LoggerFactory.getLogger(TokenAuthenticationFilter.class);
 

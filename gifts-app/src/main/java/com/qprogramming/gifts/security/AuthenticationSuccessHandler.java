@@ -27,6 +27,5 @@ public class AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccess
                                         Authentication authentication) throws IOException, ServletException {
         clearAuthenticationAttributes(request);
         _tokenService.addTokenCookies(response, (Account) authentication.getPrincipal());
-//        getRedirectStrategy().sendRedirect(request, response, "/");
     }
 }

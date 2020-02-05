@@ -2,7 +2,6 @@ package com.qprogramming.gifts.security.oauth2;
 
 import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.security.TokenService;
-import com.qprogramming.gifts.support.CookieUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -21,15 +20,15 @@ import static com.qprogramming.gifts.security.oauth2.HttpCookieOAuth2Authorizati
 @Component
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-    private TokenService _tokenService;
-    private HttpCookieOAuth2AuthorizationRequestRepository _httpCookieOAuth2AuthorizationRequestRepository;
+    private final TokenService _tokenService;
+    private final HttpCookieOAuth2AuthorizationRequestRepository _httpCookieOAuth2AuthorizationRequestRepository;
 
 
     @Autowired
-    OAuth2AuthenticationSuccessHandler(TokenService _tokenService,
+    OAuth2AuthenticationSuccessHandler(TokenService tokenService,
                                        HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository) {
-        this._tokenService = _tokenService;
-        this._httpCookieOAuth2AuthorizationRequestRepository = httpCookieOAuth2AuthorizationRequestRepository;
+        _tokenService = tokenService;
+        _httpCookieOAuth2AuthorizationRequestRepository = httpCookieOAuth2AuthorizationRequestRepository;
     }
 
     @Override
@@ -46,7 +45,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     }
 
     protected String determineTargetUrl(HttpServletRequest request, HttpServletResponse response) {
-        Optional<String> redirectUri = CookieUtils.getCookie(request, REDIRECT_URI_PARAM_COOKIE_NAME)
+        Optional<String> redirectUri = _tokenService.getCookie(request, REDIRECT_URI_PARAM_COOKIE_NAME)
                 .map(Cookie::getValue);
         String targetUrl = redirectUri.orElse(getDefaultTargetUrl());
         return UriComponentsBuilder.fromUriString(targetUrl).build().toUriString();

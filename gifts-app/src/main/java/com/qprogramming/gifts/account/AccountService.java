@@ -175,12 +175,6 @@ public class AccountService implements UserDetailsService {
             }
         }
         Account account = optionalAccount.get();
-        //TODO Depreciated part fix. Due to changes in roles if none of authorities were found add them
-        if (account.getAuthorities().isEmpty()) {
-            Authority role = _authorityService.findByRole(Role.ROLE_USER);
-            account.addAuthority(role);
-            account = update(account);
-        }
         return account;
     }
 

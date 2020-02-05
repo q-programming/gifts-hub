@@ -361,7 +361,6 @@ public class GiftRestController {
         }
         //check if anonymous user can view user gifts
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        //TODO anonymous ?
         if ((authentication instanceof AnonAuthentication)) {
             if (!account.getPublicList()) {
                 return new ResultData.ResultBuilder().badReqest().error().message(msgSrv.getMessage("gift.list.public.error")).build();

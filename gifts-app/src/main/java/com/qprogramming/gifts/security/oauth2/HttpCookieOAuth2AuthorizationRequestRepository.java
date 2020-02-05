@@ -2,7 +2,7 @@ package com.qprogramming.gifts.security.oauth2;
 
 import com.nimbusds.oauth2.sdk.util.StringUtils;
 import com.qprogramming.gifts.security.TokenService;
-import com.qprogramming.gifts.support.CookieUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.client.web.AuthorizationRequestRepository;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.stereotype.Component;
@@ -15,31 +15,29 @@ public class HttpCookieOAuth2AuthorizationRequestRepository implements Authoriza
     public static final String OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME = "oauth2_auth_request";
     public static final String REDIRECT_URI_PARAM_COOKIE_NAME = "redirect_uri";
 
-    private TokenService _tokenService;
+    private final TokenService _tokenService;
     private static final int cookieExpireSeconds = 180;
 
+    @Autowired
     public HttpCookieOAuth2AuthorizationRequestRepository(TokenService tokenService) {
         _tokenService = tokenService;
     }
 
     @Override
     public OAuth2AuthorizationRequest loadAuthorizationRequest(HttpServletRequest request) {
-        return CookieUtils.getCookie(request, OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME)
-                .map(cookie -> CookieUtils.deserialize(cookie, OAuth2AuthorizationRequest.class))
-                .orElse(null);
+        return _tokenService.getDeserializeCookie(request, OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME);
     }
 
     @Override
     public void saveAuthorizationRequest(OAuth2AuthorizationRequest authorizationRequest, HttpServletRequest request, HttpServletResponse response) {
         if (authorizationRequest == null) {
-            CookieUtils.deleteCookie(request, response, OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME);
-            CookieUtils.deleteCookie(request, response, REDIRECT_URI_PARAM_COOKIE_NAME);
+            removeAuthorizationRequestCookies(request, response);
             return;
         }
-        _tokenService.addCookies(response, OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME, CookieUtils.serialize(authorizationRequest), cookieExpireSeconds);
+        _tokenService.addSerializedCookie(response, OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME, authorizationRequest, cookieExpireSeconds);
         String redirectUriAfterLogin = request.getParameter(REDIRECT_URI_PARAM_COOKIE_NAME);
         if (StringUtils.isNotBlank(redirectUriAfterLogin)) {
-            CookieUtils.addCookie(response, REDIRECT_URI_PARAM_COOKIE_NAME, redirectUriAfterLogin, cookieExpireSeconds);
+            _tokenService.addCookie(response, REDIRECT_URI_PARAM_COOKIE_NAME, redirectUriAfterLogin, cookieExpireSeconds);
         }
     }
 
@@ -49,7 +47,7 @@ public class HttpCookieOAuth2AuthorizationRequestRepository implements Authoriza
     }
 
     public void removeAuthorizationRequestCookies(HttpServletRequest request, HttpServletResponse response) {
-        CookieUtils.deleteCookie(request, response, OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME);
-        CookieUtils.deleteCookie(request, response, REDIRECT_URI_PARAM_COOKIE_NAME);
+        _tokenService.deleteCookie(request, response, OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME);
+        _tokenService.deleteCookie(request, response, REDIRECT_URI_PARAM_COOKIE_NAME);
     }
 }

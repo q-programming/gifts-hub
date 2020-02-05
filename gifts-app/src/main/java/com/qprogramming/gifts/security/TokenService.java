@@ -2,7 +2,6 @@ package com.qprogramming.gifts.security;
 
 import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.AccountService;
-import com.qprogramming.gifts.support.CookieUtils;
 import com.qprogramming.gifts.support.TimeProvider;
 import io.jsonwebtoken.*;
 import org.apache.commons.lang3.StringUtils;
@@ -12,15 +11,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.util.SerializationUtils;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Date;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class TokenService {
@@ -43,18 +42,18 @@ public class TokenService {
     private String AUTH_COOKIE;
 
     private String contextPath;
-    private ServletContext servletContext;
-    private TimeProvider timeProvider;
-    private AccountService accountService;
+    private final ServletContext _servletContext;
+    private final TimeProvider _timeProvider;
+    private final AccountService _accountService;
 
     private static final SignatureAlgorithm SIGNATURE_ALGORITHM = SignatureAlgorithm.HS512;
     private static final String BEARER = "Bearer ";
 
     @Autowired
     public TokenService(ServletContext servletContext, TimeProvider timeProvider, AccountService accountService) {
-        this.servletContext = servletContext;
-        this.timeProvider = timeProvider;
-        this.accountService = accountService;
+        _servletContext = servletContext;
+        _timeProvider = timeProvider;
+        _accountService = accountService;
     }
 
     public String createToken(Authentication authentication) {
@@ -63,18 +62,19 @@ public class TokenService {
     }
 
     public String getToken(HttpServletRequest request) {
-        Optional<Cookie> authCookie = CookieUtils.getCookie(request, AUTH_COOKIE);
-        if (authCookie.isPresent()) {
-            return authCookie.get().getValue();
+        Optional<Cookie> optionalCookie = getCookie(request, AUTH_COOKIE);
+        if (optionalCookie.isPresent()) {
+            return optionalCookie.get().getValue();
+        } else {
+            String authHeader = request.getHeader(AUTH_HEADER);
+            if (authHeader != null && authHeader.startsWith(BEARER)) {
+                return authHeader.substring(7);
+            }
+            return null;
         }
-        String authHeader = request.getHeader(AUTH_HEADER);
-        if (authHeader != null && authHeader.startsWith(BEARER)) {
-            return authHeader.substring(7);
-        }
-        return null;
     }
 
-    public String generateToken(String  email) {
+    public String generateToken(String email) {
         return Jwts.builder()
                 .setSubject(email)
                 .setIssuer(APP_NAME)
@@ -83,6 +83,7 @@ public class TokenService {
                 .signWith(SIGNATURE_ALGORITHM, SECRET)
                 .compact();
     }
+
     private String generateToken(Map<String, Object> claims) {
         return Jwts.builder()
                 .setClaims(claims)
@@ -92,8 +93,13 @@ public class TokenService {
     }
 
     public String getUserIdFromToken(String token) {
+        try{
         final Claims claims = getClaimsFromToken(token);
         return claims.getSubject();
+        }catch (ExpiredJwtException e){
+            logger.debug("Token has expired, {}",e.getMessage());
+            return null;
+        }
     }
 
     public boolean validateToken(String authToken) {
@@ -119,7 +125,7 @@ public class TokenService {
         try {
             final Date expirationDate = getClaimsFromToken(token).getExpiration();
             String username = getUserIdFromToken(token);
-            UserDetails userDetails = accountService.loadUserByUsername(username);
+            UserDetails userDetails = _accountService.loadUserByUsername(username);
             return expirationDate.compareTo(generateCurrentDate()) > 0;
         } catch (Exception e) {
             return false;
@@ -138,7 +144,11 @@ public class TokenService {
         return refreshedToken;
     }
 
-    public void addCookies(HttpServletResponse response, String name, String value, int maxAge) {
+    public void addSerializedCookie(HttpServletResponse response, String name, Object value, int maxAge) {
+        addCookie(response, name, serialize(value), maxAge);
+    }
+
+    public void addCookie(HttpServletResponse response, String name, String value, int maxAge) {
         Cookie cookie = new Cookie(name, value);
         cookie.setPath(getPath());
         cookie.setHttpOnly(true);
@@ -146,12 +156,12 @@ public class TokenService {
         response.addCookie(cookie);
     }
 
-    public void addTokenCookies(HttpServletResponse response, Account account){
+    public void addTokenCookies(HttpServletResponse response, Account account) {
         String tokenValue = generateToken(account.getEmail());
         addTokenCookies(response, account, tokenValue);
     }
 
-    public void addTokenCookies(HttpServletResponse response, Account account, String tokenValue){
+    public void addTokenCookies(HttpServletResponse response, Account account, String tokenValue) {
         Cookie authCookie = new Cookie(TOKEN_COOKIE, (tokenValue));
         authCookie.setPath(getPath());
         authCookie.setHttpOnly(true);
@@ -173,37 +183,50 @@ public class TokenService {
         response.addCookie(authCookie);
     }
 
-    public void invalidateCookie(HttpServletResponse response) {
-        Cookie authCookie = new Cookie(TOKEN_COOKIE, null);
-        authCookie.setPath(getPath());
-        authCookie.setHttpOnly(true);
-        authCookie.setMaxAge(0);
-        response.addCookie(authCookie);
+    public void invalidateTokenCookie(HttpServletRequest request, HttpServletResponse response) {
+        deleteCookie(request, response, TOKEN_COOKIE);
     }
+
+    public Optional<Cookie> getCookie(HttpServletRequest request, String name) {
+        return Arrays.stream(request.getCookies()).filter(cookie -> cookie.getName().equals(name)).findFirst();
+    }
+
+    public OAuth2AuthorizationRequest getDeserializeCookie(HttpServletRequest request, String name) {
+        return getCookie(request, name)
+                .map(cookie -> deserialize(cookie, OAuth2AuthorizationRequest.class))
+                .orElse(null);
+    }
+
+
+    public void deleteCookie(HttpServletRequest request, HttpServletResponse response, String name) {
+        Optional<Cookie> optionalCookie = getCookie(request, name);
+        optionalCookie.ifPresent(cookie -> {
+            cookie.setValue("");
+            cookie.setPath(getPath());
+            cookie.setMaxAge(0);
+            response.addCookie(cookie);
+        });
+        Cookie[] cookies = request.getCookies();
+    }
+
 
     private String getPath() {
         if (StringUtils.isBlank(contextPath)) {
-            String path = servletContext.getContextPath();
+            String path = _servletContext.getContextPath();
             contextPath = StringUtils.isEmpty(path) ? "/" : path;
         }
         return contextPath;
     }
 
-    private Claims getClaimsFromToken(String token) {
-        Claims claims;
-        try {
-            claims = Jwts.parser()
+    private Claims getClaimsFromToken(String token) throws ExpiredJwtException{
+            return Jwts.parser()
                     .setSigningKey(this.SECRET)
                     .parseClaimsJws(token)
                     .getBody();
-        } catch (Exception e) {
-            claims = null;
-        }
-        return claims;
     }
 
     private long getCurrentTimeMillis() {
-        return timeProvider.getCurrentTimeMillis();
+        return _timeProvider.getCurrentTimeMillis();
     }
 
     private Date generateCurrentDate() {
@@ -212,6 +235,16 @@ public class TokenService {
 
     private Date generateExpirationDate() {
         return new Date(getCurrentTimeMillis() + this.EXPIRES_IN * 1000);
+    }
+
+    private String serialize(Object object) {
+        return Base64.getUrlEncoder()
+                .encodeToString(SerializationUtils.serialize(object));
+    }
+
+    private <T> T deserialize(Cookie cookie, Class<T> cls) {
+        return cls.cast(SerializationUtils.deserialize(
+                Base64.getUrlDecoder().decode(cookie.getValue())));
     }
 
 

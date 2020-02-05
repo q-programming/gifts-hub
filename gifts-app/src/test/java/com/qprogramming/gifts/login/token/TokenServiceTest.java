@@ -78,14 +78,14 @@ public class TokenServiceTest {
         assertThat(tokenService.getUserIdFromToken(token)).isEqualTo(TestUtil.EMAIL);
     }
 
-    //TODO disabled
-//    @Test
-//    public void getUsernameFromExpiredToken() throws Exception {
-//        ReflectionTestUtils.setField(tokenService, "EXPIRES_IN", -1);
-//        String token = tokenService.generateToken(testAccount.getUsername());
-//        String result = tokenService.getUserIdFromToken(token);
-//        assertNull(result);
-//    }
+    @Test
+    public void getUsernameFromExpiredToken() throws Exception {
+        ReflectionTestUtils.setField(tokenService, "EXPIRES_IN", -1);
+        ReflectionTestUtils.setField(tokenService, "SECRET", "secret");
+        String token = tokenService.generateToken(testAccount.getUsername());
+        String result = tokenService.getUserIdFromToken(token);
+        assertNull(result);
+    }
 
     @Test
     public void getToken() throws Exception {

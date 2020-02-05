@@ -1,7 +1,7 @@
 logging:
   level:
     org.hibernate.engine.jdbc.env.internal.LobCreatorBuilderImpl: ERROR
-    org.springframework.security: ERROR
+    org.springframework.security: DEBUG
     org.springframework.web.filter.CommonsRequestLoggingFilter: ERROR
     org.springframework.web.socket.config.WebSocketMessageBrokerStats: ERROR
     org.springframework.cache: ERROR

@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -55,14 +56,13 @@ public class TokenAuthenticationFilterTest {
         testAccount = TestUtil.createAccount();
     }
 
-    //TODO disabled
-//    @Test
-//    public void doFilterInternalNoAuth() throws Exception {
-//        when(securityMock.getAuthentication()).thenReturn(null);
-//        tokenAuthenticationFilter.doFilterInternal(requestMock, responseMock, chainMock);
-//        verify(securityMock, times(1)).setAuthentication(any(AnonAuthentication.class));
-//        verify(tokenServiceMock, times(1)).getToken(requestMock);
-//    }
+    @Test
+    public void doFilterInternalNoAuth() throws Exception {
+        when(securityMock.getAuthentication()).thenReturn(null);
+        tokenAuthenticationFilter.doFilterInternal(requestMock, responseMock, chainMock);
+        verify(securityMock, times(1)).setAuthentication(any(AnonAuthentication.class));
+        verify(tokenServiceMock, times(1)).getToken(requestMock);
+    }
 
     @Test
     public void doFilterInternalAnonAuth() throws Exception {
@@ -81,18 +81,18 @@ public class TokenAuthenticationFilterTest {
         verify(securityMock, times(1)).setAuthentication(any(AnonAuthentication.class));
     }
 
-    //TODO disabled
-//    @Test
-//    public void doFilterInternalTokenAndUserFound() throws Exception {
-//        when(securityMock.getAuthentication()).thenReturn(null);
-//        when(tokenServiceMock.getToken(requestMock)).thenReturn(TOKEN);
-//        when(tokenServiceMock.getUserIdFromToken(TOKEN)).thenReturn(testAccount.getUsername());
-//        when(accountServiceMock.loadUserByUsername(testAccount.getUsername())).thenReturn(testAccount);
-//        when(requestMock.getServletPath()).thenReturn("/");
-//        when(requestMock.getPathInfo()).thenReturn("accounts");
-//        tokenAuthenticationFilter.doFilterInternal(requestMock, responseMock, chainMock);
-//        verify(securityMock, times(1)).setAuthentication(any(UsernamePasswordAuthenticationToken.class));
-//    }
+    @Test
+    public void doFilterInternalTokenAndUserFound() throws Exception {
+        when(securityMock.getAuthentication()).thenReturn(null);
+        when(tokenServiceMock.getToken(requestMock)).thenReturn(TOKEN);
+        when(tokenServiceMock.getUserIdFromToken(TOKEN)).thenReturn(testAccount.getUsername());
+        when(tokenServiceMock.validateToken(TOKEN)).thenReturn(true);
+        when(accountServiceMock.loadUserByUsername(testAccount.getUsername())).thenReturn(testAccount);
+        when(requestMock.getServletPath()).thenReturn("/");
+        when(requestMock.getPathInfo()).thenReturn("accounts");
+        tokenAuthenticationFilter.doFilterInternal(requestMock, responseMock, chainMock);
+        verify(securityMock, times(1)).setAuthentication(any(UsernamePasswordAuthenticationToken.class));
+    }
 
 
 }
