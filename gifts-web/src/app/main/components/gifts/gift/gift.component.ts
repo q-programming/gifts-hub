@@ -106,19 +106,21 @@ export class GiftComponent implements OnInit {
   }
 
   showImage() {
-    const dialogConfig: MatDialogConfig = {
-      disableClose: true,
-      panelClass: 'gifts-dialog-modal',
-      data: this.gift.image
-    };
-    if (!this.gift.image) {
-      this.giftSrv.loadImage(this.gift).subscribe(gift => {
-        this.gift = gift;
-        dialogConfig.data = gift.image;
+    if (this.gift.id > -1) {
+      const dialogConfig: MatDialogConfig = {
+        disableClose: true,
+        panelClass: 'gifts-dialog-modal',
+        data: this.gift.image
+      };
+      if (!this.gift.image) {
+        this.giftSrv.loadImage(this.gift).subscribe(gift => {
+          this.gift = gift;
+          dialogConfig.data = gift.image;
+          this.dialog.open(ImageDialogComponent, dialogConfig);
+        })
+      } else {
         this.dialog.open(ImageDialogComponent, dialogConfig);
-      })
-    } else {
-      this.dialog.open(ImageDialogComponent, dialogConfig);
+      }
     }
   }
 }

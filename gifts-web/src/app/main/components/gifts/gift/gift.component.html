@@ -53,7 +53,8 @@
   </div>
   <!--DESCRIPTION-->
   <div fxFlex="35" fxFlex.lt-md="100%">
-    <span *ngIf="gift.hasImage" class="fa fa-fw fa-picture-o clickable" (click)="showImage()"></span>
+    <span *ngIf="gift.hasImage" class="fa fa-fw fa-picture-o clickable" (click)="showImage()"
+          matTooltip="{{'gift.picture.click'|translate}}"></span>
     <span>{{gift.description}}</span>
   </div>
   <!--LINKS-->

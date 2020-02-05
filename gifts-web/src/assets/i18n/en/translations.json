@@ -228,6 +228,7 @@
     },
     "noGifts": "There is nothing here, start adding gifts!",
     "picture": {
+      "click": "Click to show gift picture",
       "help": "Add optional picture or photo of gift",
       "remove": "Remove picture",
       "text": "Gift picture"
