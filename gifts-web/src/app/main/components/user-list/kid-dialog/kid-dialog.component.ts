@@ -8,6 +8,7 @@ import {ApiService} from "@core-services/api.service";
 import {environment} from "@env/environment";
 import {getBase64Image} from "../../../../utils/utils";
 import {ImageCroppedEvent} from "ngx-image-cropper";
+import {debounceTime} from 'rxjs/operators';
 
 @Component({
   selector: 'app-kid',
@@ -43,12 +44,13 @@ export class KidDialogComponent implements OnInit {
 
   ngOnInit() {
     this.form.controls.username.valueChanges
-      .debounceTime(300).subscribe(value => {
-      this.apiSrv.post(`${environment.account_url}/validate-username`, value).subscribe(() => {
-      }, error => {
-        this.form.controls.username.setErrors({username: true})
+      .pipe(debounceTime(300))
+      .subscribe(value => {
+        this.apiSrv.post(`${environment.account_url}/validate-username`, value).subscribe(() => {
+        }, () => {
+          this.form.controls.username.setErrors({username: true})
+        })
       })
-    })
 
 
   }

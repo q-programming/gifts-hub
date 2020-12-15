@@ -1,10 +1,11 @@
 import {AfterViewInit, Component, ElementRef, OnInit} from '@angular/core';
 import {TranslateService} from "@ngx-translate/core";
 import {ActivatedRoute} from "@angular/router";
-import {ScrollToService} from "@nicky-lenaers/ngx-scroll-to";
 import {Account} from "@model/Account";
 import {AuthenticationService} from "@core-services/authentication.service";
 import {environment} from "@env/environment";
+import {first} from 'rxjs/operators';
+import {ViewportScroller} from '@angular/common';
 
 @Component({
   selector: 'app-help',
@@ -22,10 +23,12 @@ export class HelpComponent implements OnInit, AfterViewInit {
 
   constructor(private translate: TranslateService,
               private route: ActivatedRoute,
-              private scrollToService: ScrollToService,
               private elem: ElementRef,
+              private viewportScroller: ViewportScroller,
               private authSrv: AuthenticationService) {
   }
+
+  //TODO needs viewportScroller
 
   ngOnInit() {
     this.lang = this.translate.currentLang;
@@ -38,7 +41,10 @@ export class HelpComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     setTimeout(() => {
-      this.toc = this.elem.nativeElement.querySelectorAll('h3,h4');
+      this.toc = this.elem.nativeElement.querySelectorAll('h3,h4,h5');
+      this.route.fragment.pipe(first()).subscribe(fragment => {
+        this.viewportScroller.scrollToAnchor(fragment)
+      });
     }, 0)
   }
 }

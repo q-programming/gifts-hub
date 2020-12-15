@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ApiService} from "@core-services/api.service";
 import {AppSettings} from "@model/AppSettings";
 import {environment} from "@env/environment";
+import {NgProgress, NgProgressRef} from 'ngx-progressbar';
 
 @Component({
   selector: 'app-manage',
@@ -10,17 +11,22 @@ import {environment} from "@env/environment";
 })
 export class ManageComponent implements OnInit {
 
-  settings:AppSettings;
+  settings: AppSettings;
+  private progress: NgProgressRef;
 
-  constructor(private apiSrv:ApiService) { }
+  constructor(private apiSrv: ApiService, public ngProgress: NgProgress) {
+    this.progress = ngProgress.ref()
+  }
 
   ngOnInit() {
     this.getSettings();
   }
 
   getSettings() {
+    this.progress.start()
     this.apiSrv.getObject<AppSettings>(`${environment.app_url}/settings`).subscribe(result => {
       this.settings = result;
+      this.progress.complete();
     })
   }
 }

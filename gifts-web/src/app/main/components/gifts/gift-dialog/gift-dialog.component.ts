@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, Inject, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, Inject, OnInit} from '@angular/core';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {Gift} from "@model/Gift";
@@ -7,9 +7,8 @@ import {environment} from "@env/environment";
 import {SearchEngine} from "@model/SearchEngine";
 import {Category} from "@model/Category";
 import {Observable} from "rxjs";
-import {debounceTime, map, startWith} from "rxjs/operators";
+import {debounceTime, distinctUntilChanged, map, startWith} from "rxjs/operators";
 import * as _ from "lodash";
-import {distinctUntilChanged} from "rxjs/internal/operators/distinctUntilChanged";
 import {getBase64Image} from "../../../../utils/utils";
 import {GiftImage} from "@model/GiftImage";
 import {ImageCroppedEvent} from "ngx-image-cropper";

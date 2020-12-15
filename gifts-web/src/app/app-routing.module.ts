@@ -34,8 +34,10 @@ const routes: Routes = [
       anchorScrolling: 'enabled',
       useHash: true,
       enableTracing: environment.routing_log,
+      scrollOffset: [0, 70],
       scrollPositionRestoration: 'enabled',
-      onSameUrlNavigation: 'reload'
+      onSameUrlNavigation: 'reload',
+      relativeLinkResolution: 'legacy'
     })],
   exports: [RouterModule]
 })

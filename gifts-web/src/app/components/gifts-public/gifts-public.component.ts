@@ -10,7 +10,7 @@ import {TranslateService} from "@ngx-translate/core";
 import {AvatarService} from "@core-services/avatar.service";
 import {ApiService} from "@core-services/api.service";
 import {environment} from "@env/environment";
-import {ScrollToConfigOptions} from "@nicky-lenaers/ngx-scroll-to";
+
 
 @Component({
   selector: 'app-gifts-public',
