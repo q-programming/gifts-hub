@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {ApiService} from "@core-services/api.service";
 import {Gift} from "@model/Gift";
-import {Account} from "@model/Account";
+import {map} from 'rxjs/operators';
 import {Observable} from "rxjs";
 import {environment} from "@env/environment.prod";
 
@@ -65,10 +65,10 @@ export class GiftService {
 
   loadImage(gift: Gift): Observable<Gift> {
     return this.apiSrv.get(`${environment.gift_url}/image/${gift.id}`)
-      .map(result => {
+      .pipe(map(result => {
         gift.image = result;
         return gift;
-      });
+      }));
   }
 
 }

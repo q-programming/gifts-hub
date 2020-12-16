@@ -133,7 +133,7 @@
         <tbody>
         <tr>
             <td valign="top" style="vertical-align: top; width:70px">
-                <img class="avatar" src='cid:userAvatar.png'>
+                <img class="avatar" src='cid:userAvatar.png' style="height: 50px;padding: 2px;border-radius: 50%">
             </td>
             <td>
                 <#if name??>

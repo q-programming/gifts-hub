@@ -4,7 +4,7 @@ import {Router} from "@angular/router";
 import {Gift} from "@model/Gift";
 import {Account} from "@model/Account";
 import {UserService} from "@services/user.service";
-import {NgProgress, NgProgressRef} from "@ngx-progressbar/core";
+import {NgProgress, NgProgressRef} from "ngx-progressbar";
 
 @Component({
   selector: 'app-gift-claimed',

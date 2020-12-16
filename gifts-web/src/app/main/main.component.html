@@ -3,8 +3,7 @@
 <main class="container" fxLayout="row wrap" fxLayout.xs="column" fxLayoutGap="0.5%"
       fxLayoutAlign="center">
   <div fxFlex="80%">
-    <go-top-button
-      [animate]="true"
+    <ng-go-top-button
       [speed]="50"
       [acceleration]="2"
       [styles]="{   'right': '5px',
@@ -15,7 +14,7 @@
                     'width': '40px',
                     'height': '40px'}">
       <i class="fa fa-arrow-up"></i>
-    </go-top-button>
+    </ng-go-top-button>
     <!--CONTENT-->
     <router-outlet></router-outlet>
   </div>

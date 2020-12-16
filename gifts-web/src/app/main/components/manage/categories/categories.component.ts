@@ -4,7 +4,7 @@ import {ApiService} from "@core-services/api.service";
 import {AppSettings, CategoryDTO} from "@model/AppSettings";
 import {CdkDragDrop, moveItemInArray} from "@angular/cdk/drag-drop";
 import {environment} from "@env/environment";
-import {MatDialog, MatDialogConfig} from "@angular/material";
+import {MatDialog, MatDialogConfig} from "@angular/material/dialog";
 import {CategoryEditType, EditCategoryDialogComponent} from "./edit-category-dialog/edit-category-dialog.component";
 import {
   ConfirmDialogComponent,

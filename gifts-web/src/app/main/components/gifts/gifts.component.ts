@@ -1,4 +1,4 @@
-import {Component, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {GiftService} from "@services/gift.service";
 import {Gift, GiftStatus} from "@model/Gift";
@@ -14,9 +14,9 @@ import {MatDialog} from "@angular/material/dialog";
 import {GiftDialogComponent} from "./gift-dialog/gift-dialog.component";
 import {TranslateService} from "@ngx-translate/core";
 import {CategoryOption} from "@model/Category";
-import {NgProgress, NgProgressRef} from "@ngx-progressbar/core";
 import {MatExpansionPanel} from "@angular/material/expansion";
-import {ScrollToConfigOptions, ScrollToService} from "@nicky-lenaers/ngx-scroll-to";
+import {NgProgress, NgProgressRef} from 'ngx-progressbar';
+import {ViewportScroller} from '@angular/common';
 
 @Component({
   selector: 'gifts-list',
@@ -51,7 +51,7 @@ export class GiftsComponent implements OnInit {
 
   progress: NgProgressRef;
 
-  @ViewChild('realisedPanel', {static: false}) realised: MatExpansionPanel;
+  @ViewChild('realisedPanel') realised: MatExpansionPanel;
 
   constructor(private activatedRoute: ActivatedRoute,
               private router: Router,
@@ -63,8 +63,8 @@ export class GiftsComponent implements OnInit {
               public dialog: MatDialog,
               private logger: NGXLogger,
               private translate: TranslateService,
-              public ngProgress: NgProgress,
-              private scrollToService: ScrollToService) {
+              private viewportScroller: ViewportScroller,
+              public ngProgress: NgProgress) {
     this.progress = ngProgress.ref();
     this.isLoading = true;
   }
@@ -104,14 +104,10 @@ export class GiftsComponent implements OnInit {
   getRealisedGifts(refresh?: boolean) {
     if (refresh || !this.realizedGifts || this.realizedGifts.length == 0) {
       this.isRealisedLoading = !refresh;
-      const config: ScrollToConfigOptions = {
-        target: 'realisedPanel',
-        offset: -165
-      };
-      this.scrollToService.scrollTo(config);
       this.giftSrv.getRealisedGifts(this.identification).subscribe(result => {
         this.realizedGifts = result[GiftStatus.REALISED];
         this.isRealisedLoading = false;
+        this.viewportScroller.scrollToAnchor('realisedPanel');
       })
     }
   }

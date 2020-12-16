@@ -3,13 +3,11 @@ import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
 import {LoginComponent} from './components/login/login.component';
 import {RegisterComponent} from "./components/login/register/register.component";
-import {PasswordStrengthBarModule} from "ng2-password-strength-bar";
+import {Ng9PasswordStrengthBarModule} from "ng9-password-strength-bar";
 import {GiftsPublicComponent} from './components/gifts-public/gifts-public.component';
 import {ResetPasswordComponent} from './components/login/reset-password/reset-password.component';
 import {ChangePasswordComponent} from './components/login/change-password/change-password.component';
 import {CoreModule} from "./core";
-import {NgProgressModule} from "@ngx-progressbar/core";
-import {NgProgressRouterModule} from "@ngx-progressbar/router";
 import {ConfirmComponent} from "./components/confirm/confirm.component";
 import {CommonModule} from "@angular/common";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
@@ -21,6 +19,7 @@ import {ErrorComponent} from "./components/error/error.component";
 import {ConfirmDialogComponent} from "./components/dialogs/confirm/confirm-dialog.component";
 import {MainModule} from "./main/main.module";
 import {ImageDialogComponent} from "./components/dialogs/image/image-dialog.component";
+import {NgProgressModule} from 'ngx-progressbar';
 
 
 @NgModule({
@@ -37,10 +36,6 @@ import {ImageDialogComponent} from "./components/dialogs/image/image-dialog.comp
     ConfirmComponent
 
   ],
-  entryComponents: [
-    ConfirmDialogComponent,
-    ImageDialogComponent
-  ],
   imports: [
     CommonModule,
     CoreModule.forRoot(),
@@ -48,8 +43,7 @@ import {ImageDialogComponent} from "./components/dialogs/image/image-dialog.comp
     BrowserAnimationsModule,
     AppRoutingModule,
     NgProgressModule,
-    NgProgressRouterModule,
-    PasswordStrengthBarModule,
+    Ng9PasswordStrengthBarModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,

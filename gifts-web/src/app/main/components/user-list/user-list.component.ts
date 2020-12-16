@@ -1,8 +1,8 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {UserService} from "@services/user.service";
-import { MatButtonToggleGroup } from "@angular/material/button-toggle";
-import { MatDialog } from "@angular/material/dialog";
-import { MatMenuTrigger } from "@angular/material/menu";
+import {MatButtonToggleGroup} from "@angular/material/button-toggle";
+import {MatDialog} from "@angular/material/dialog";
+import {MatMenuTrigger} from "@angular/material/menu";
 import {NGXLogger} from "ngx-logger";
 import {Group} from "@model/Group";
 import {Account} from "@model/Account";
@@ -14,6 +14,7 @@ import {GroupDialogComponent} from "./group-dialog/group-dialog.component";
 import * as _ from "lodash";
 import {SortBy} from "@model/AppSettings";
 import * as utils from "../../../utils/utils";
+import {debounceTime} from 'rxjs/operators';
 
 @Component({
   selector: 'user-list',
@@ -22,8 +23,8 @@ import * as utils from "../../../utils/utils";
 })
 export class UserListComponent implements OnInit {
   SortBy = SortBy;
-  @ViewChild("sortBy",{static:true}) sortBy: MatButtonToggleGroup;
-  @ViewChild(MatMenuTrigger, {static:true}) trigger: MatMenuTrigger;
+  @ViewChild("sortBy", {static: true}) sortBy: MatButtonToggleGroup;
+  @ViewChild(MatMenuTrigger, {static: true}) trigger: MatMenuTrigger;
   group: Group;
   groups: Group[] = [];
   withoutFamily: Account[] = [];
@@ -47,10 +48,8 @@ export class UserListComponent implements OnInit {
 
     });
     this.sortBy.valueChange
-      .debounceTime(1) //small delay not to trigger multiple times
-      .subscribe(() => {
-        this.getUsers();
-      })
+      .pipe(debounceTime(1)) //small delay not to trigger multiple times
+      .subscribe(() => this.getUsers())
   }
 
   /**

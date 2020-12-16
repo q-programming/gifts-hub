@@ -1,7 +1,7 @@
 Gifts-hub
 =========================================
 
-Latest build : [![CircleCI](https://circleci.com/gh/q-programming/gifts-hub.svg?style=svg)](https://circleci.com/gh/q-programming/gifts-hub)
+Latest build : [![Build, Test and Publish](https://github.com/q-programming/gifts-hub/workflows/Build,%20Test%20and%20Publish/badge.svg)](https://github.com/AndreSand/BornInApp/actions)
 
 
 Gifts hub is a place where you can share your gifts wish list with your friends and family. Every application member

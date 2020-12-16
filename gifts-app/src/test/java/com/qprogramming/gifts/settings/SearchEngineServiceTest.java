@@ -7,15 +7,11 @@ import com.qprogramming.gifts.gift.Gift;
 import com.qprogramming.gifts.gift.GiftRepository;
 import com.qprogramming.gifts.gift.GiftService;
 import com.qprogramming.gifts.gift.image.GiftImageRepository;
-import edu.emory.mathcs.backport.java.util.Collections;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static com.qprogramming.gifts.TestUtil.createSearchEngine;
 import static org.junit.Assert.assertEquals;
