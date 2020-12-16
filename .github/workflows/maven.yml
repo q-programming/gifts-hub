@@ -1,6 +1,10 @@
 name: Build, Test and Publish
 
-on: [ push, release ]
+on:
+  push:
+  release:
+    types:
+      - created
 
 jobs:
   build:
