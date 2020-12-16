@@ -23,13 +23,13 @@ import {MainComponent} from './main.component';
 import {HelpComponent} from "./components/help/help.component";
 import {EnHelpComponent} from "./components/help/en/en-help.component";
 import {PlHelpComponent} from "./components/help/pl/pl-help.component";
-import {ScrollToModule} from "@nicky-lenaers/ngx-scroll-to";
-import { HelpListComponent } from './components/help/help-list/help-list.component';
-import { CategoriesComponent } from './components/manage/categories/categories.component';
+import {HelpListComponent} from './components/help/help-list/help-list.component';
+import {CategoriesComponent} from './components/manage/categories/categories.component';
 import {DragDropModule} from "@angular/cdk/drag-drop";
-import { EditCategoryDialogComponent } from './components/manage/categories/edit-category-dialog/edit-category-dialog.component';
-import { GiftClaimedComponent } from './components/gifts/gift-claimed.component';
+import {EditCategoryDialogComponent} from './components/manage/categories/edit-category-dialog/edit-category-dialog.component';
+import {GiftClaimedComponent} from './components/gifts/gift-claimed.component';
 import {ImageCropperModule} from "ngx-image-cropper";
+import {GoTopButtonModule} from 'ng-go-top-button';
 
 @NgModule({
   declarations: [
@@ -62,16 +62,10 @@ import {ImageCropperModule} from "ngx-image-cropper";
     CommonModule,
     CoreModule,
     ImageCropperModule,
+    GoTopButtonModule,
     NgxMatSelectSearchModule,
     MainRoutingModule,
     DragDropModule,
-    ScrollToModule.forRoot(),
-  ],
-  entryComponents: [
-    KidDialogComponent,
-    GiftDialogComponent,
-    GroupDialogComponent,
-    EditCategoryDialogComponent
   ],
   schemas: [NO_ERRORS_SCHEMA],
   exports: [

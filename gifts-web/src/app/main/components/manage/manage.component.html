@@ -3,7 +3,7 @@
     <mat-tab>
       <ng-template mat-tab-label>
         <mat-icon>build</mat-icon>
-        <span fxShow.xs="false" class="ml-1">{{'app.manage.app.text'|translate}}</span>
+        <span class="ml-1" fxShow.xs="false">{{'app.manage.app.text'| translate}}</span>
       </ng-template>
       <ng-template matTabContent>
         <manage-app [settings]="settings" (commit)="getSettings()"></manage-app>

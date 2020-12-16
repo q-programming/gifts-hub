@@ -1,4 +1,12 @@
-import {APP_INITIALIZER, LOCALE_ID, NgModule, NO_ERRORS_SCHEMA, Optional, SkipSelf} from '@angular/core';
+import {
+  APP_INITIALIZER,
+  LOCALE_ID,
+  ModuleWithProviders,
+  NgModule,
+  NO_ERRORS_SCHEMA,
+  Optional,
+  SkipSelf
+} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
@@ -19,10 +27,10 @@ import {AlertService} from "@core-services/alert.service";
 import {HighlightPipe} from "./pipes/highlight.directive";
 import {NavigationComponent} from "./navigation/authenticated/navigation.component";
 import {NavigationUnauthenticatedComponent} from "./navigation/unauthenticated/navigation-unauthenticated.component";
-import {GoTopButtonModule} from "ng2-go-top-button";
 import {RouterModule} from "@angular/router";
 import {AvatarComponent} from "./components/avatar/avatar.component";
-import {InnerLoaderComponent} from './components/inner-loader/inner-loader.component';
+import {InnerLoaderComponent} from "./components/inner-loader/inner-loader.component";
+
 
 @NgModule({
   declarations: [
@@ -47,7 +55,6 @@ import {InnerLoaderComponent} from './components/inner-loader/inner-loader.compo
     }),
     TranslateModule.forChild(),
     LayoutModule,
-    GoTopButtonModule
   ],
   providers: [
     AuthGuard,
@@ -79,7 +86,6 @@ import {InnerLoaderComponent} from './components/inner-loader/inner-loader.compo
     FlexLayoutModule,
     LoggerModule,
     HighlightPipe,
-    GoTopButtonModule,
     InnerLoaderComponent
   ]
 })
@@ -87,7 +93,7 @@ export class CoreModule {
   constructor(@Optional() @SkipSelf() parentModule: CoreModule) {
   }
 
-  static forRoot() {
+  static forRoot(): ModuleWithProviders<CoreModule> {
     return {
       ngModule: CoreModule,
       providers: [
@@ -96,7 +102,7 @@ export class CoreModule {
         AlertService,
         AvatarService
       ]
-    }
+    };
   }
 }
 

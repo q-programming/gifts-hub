@@ -1,8 +1,7 @@
 Gifts-hub
 =========================================
 
-Latest build : [![CircleCI](https://circleci.com/gh/q-programming/gifts-hub.svg?style=svg)](https://circleci.com/gh/q-programming/gifts-hub)
-
+Latest build : ![Github Actions](https://github.com/q-programming/gifts-hub/workflows/.github/workflows/maven.yml/badge.svg)
 
 Gifts hub is a place where you can share your gifts wish list with your friends and family. Every application member
 has his own list, to which can easily add, edit or remove gifts which he/she would like to receive.

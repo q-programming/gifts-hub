@@ -7,8 +7,9 @@ import {environment} from "@env/environment.prod";
 import {AvatarService} from "@core-services/avatar.service";
 import {MatDialog, MatDialogConfig} from "@angular/material/dialog";
 import * as _ from "lodash";
-import {ConfirmDialogData, ConfirmDialogComponent} from "../../components/dialogs/confirm/confirm-dialog.component";
+import {ConfirmDialogComponent, ConfirmDialogData} from "../../components/dialogs/confirm/confirm-dialog.component";
 import {SortBy} from "@model/AppSettings";
+import {map} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -21,10 +22,7 @@ export class UserService {
     return this.apiSrv.get(`${environment.account_url}/users`, {
       username: identification,
       gifts: gifts
-    }).map(accounts => {
-        return this.fetchAvatars(accounts);
-      }
-    )
+    }).pipe(map(accounts => this.fetchAvatars(accounts)))
   }
 
 
@@ -33,19 +31,19 @@ export class UserService {
   }
 
   getAllGroups(): Observable<Group[]> {
-    return this.apiSrv.get(`${environment.account_url}/groups`).map(groups => {
-      (groups as Group[]).forEach(group => {
-        this.fetchAvatars(group.members);
-        this.markAdmins(group)
-      });
-      return groups;
-    })
+    return this.apiSrv.get(`${environment.account_url}/groups`)
+      .pipe(map(groups => {
+        (groups as Group[]).forEach(group => {
+          this.fetchAvatars(group.members);
+          this.markAdmins(group)
+        });
+        return groups;
+      }))
   }
 
   getAllUsers(users?: boolean): Observable<Account[]> {
-    return this.apiSrv.get(`${environment.account_url}/usersList`, {users: users}).map(users => {
-      return this.fetchAvatars(users as Account[]);
-    })
+    return this.apiSrv.get(`${environment.account_url}/usersList`, {users: users})
+      .pipe(map(users => this.fetchAvatars(users as Account[])));
   }
 
   geUserById(id: string): Observable<Account> {
@@ -58,9 +56,8 @@ export class UserService {
       })
     }
     //missing account info , force fetch all
-    return this.apiSrv.get(`${environment.account_url}/users`).map(users => {
-      return this.fetchAvatars(users as Account[]);
-    })
+    return this.apiSrv.get(`${environment.account_url}/users`)
+      .pipe(map(users => this.fetchAvatars(users as Account[])));
   }
 
 
@@ -146,8 +143,6 @@ export class UserService {
   }
 
   getUser(identification: string): Observable<Account> {
-    return this.apiSrv.get(`${environment.account_url}/get/${identification}`).map(user => {
-      return this.fetchAvatars(user as Account);
-    })
+    return this.apiSrv.get(`${environment.account_url}/get/${identification}`).pipe(map(user => this.fetchAvatars(user as Account)))
   }
 }

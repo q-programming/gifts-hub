@@ -14,6 +14,10 @@ $general-typography: mat-typography-config(
 
 @include mat-core($general-typography);
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   font-family: 'Roboto', cursive;
   font-weight: 300;

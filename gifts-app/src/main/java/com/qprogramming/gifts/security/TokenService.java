@@ -265,7 +265,11 @@ public class TokenService {
      * @return Optional.of(Cookie) if cookie with that name is present in request
      */
     public Optional<Cookie> getCookie(HttpServletRequest request, String name) {
-        return Arrays.stream(request.getCookies()).filter(cookie -> cookie.getName().equals(name)).findFirst();
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            return Arrays.stream(cookies).filter(cookie -> cookie.getName().equals(name)).findFirst();
+        }
+        return Optional.empty();
     }
 
     /**

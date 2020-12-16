@@ -1,6 +1,4 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {ScrollToConfigOptions, ScrollToService} from "@nicky-lenaers/ngx-scroll-to";
-import {ActivatedRoute} from "@angular/router";
 import {Account} from "@model/Account";
 import {Gift, GiftStatus} from "@model/Gift";
 
@@ -21,20 +19,10 @@ export class EnHelpComponent implements OnInit {
   gift_claimed: Gift;
   gift_realized: Gift;
 
-  constructor(private route: ActivatedRoute,
-              private scrollToService: ScrollToService) {
+  constructor() {
   }
 
   ngOnInit() {
-    this.route.fragment.subscribe(fragment => {
-      this.fragment = fragment;
-      const config: ScrollToConfigOptions = {
-        target: this.fragment,
-        offset: -75
-      };
-      this.scrollToService.scrollTo(config);
-      this.fragment = undefined
-    });
     this.createGifts();
   }
 
@@ -45,7 +33,7 @@ export class EnHelpComponent implements OnInit {
       category: {name: 'Toys'},
       description: 'Wooden if possible, can be metal',
       hidden: true,
-      hasImage:true,
+      hasImage: true,
       links: ['#'],
       createdBy: this.user.id,
       engines: [

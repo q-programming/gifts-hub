@@ -14,6 +14,7 @@ import {Router} from "@angular/router";
 import {ApiService} from "@core-services/api.service";
 import {AlertService} from "@core-services/alert.service";
 import {AuthenticationService, FACEBOOK_AUTH_URL, GOOGLE_AUTH_URL} from "@core-services/authentication.service";
+import {debounceTime, distinctUntilChanged} from 'rxjs/operators';
 
 @Component({
   selector: 'app-register',
@@ -54,19 +55,21 @@ export class RegisterComponent implements OnInit {
       confirmPassword: [null, [Validators.required]]
     }, {validator: this.matchingPasswords});
     this.passwordForm.controls.password.valueChanges
-      .debounceTime(100)
-      .distinctUntilChanged()
+      .pipe(
+        debounceTime(100),
+        distinctUntilChanged())
       .subscribe(value => {
         this.currentPass = value;
       });
     this.baseForm.controls.username.valueChanges
-      .debounceTime(300).subscribe(value => {
-      this.apiSrv.post(`${environment.account_url}/validate-username`, value).subscribe(() => {
-        this.validUsername = true;
-      }, error => {
-        this.baseForm.controls.username.setErrors({username: true})
+      .pipe(debounceTime(300))
+      .subscribe(value => {
+        this.apiSrv.post(`${environment.account_url}/validate-username`, value).subscribe(() => {
+          this.validUsername = true;
+        }, () => {
+          this.baseForm.controls.username.setErrors({username: true})
+        })
       })
-    })
   }
 
   matchingPasswords(c: AbstractControl): { [key: string]: any } {
@@ -90,7 +93,7 @@ export class RegisterComponent implements OnInit {
         username: this.baseForm.controls.username.value,
         password: this.passwordForm.controls.password.value,
         confirmpassword: this.passwordForm.controls.confirmPassword.value,
-      }).subscribe(result => {
+      }).subscribe(() => {
         this.alertSrv.success('user.register.success', {email: this.baseForm.controls.email.value});
         this.router.navigate(['/login'])
       }, error => {

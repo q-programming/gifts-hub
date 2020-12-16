@@ -8,6 +8,7 @@ import {AlertService} from "./alert.service";
 import {NGXLogger} from "ngx-logger";
 import {Observable} from "rxjs";
 import {isAdmin} from "../../utils/utils";
+import {map} from 'rxjs/operators';
 
 @Injectable()
 export class AuthenticationService {
@@ -54,16 +55,17 @@ export class AuthenticationService {
    */
   logout() {
     return this.apiSrv.post(environment.logout_url, {})
-      .map(() => {
-        this.currentAccount = null;
-      });
+      .pipe(
+        map(() => {
+          this.currentAccount = null;
+        }));
   }
 
   /**
    * Return currently logged in account information
    */
   getMyInfo() {
-    return this.apiSrv.post(environment.whoami_url, {},).map(account => this.currentAccount = account);
+    return this.apiSrv.post(environment.whoami_url, {},).pipe(map(account => this.currentAccount = account));
   }
 
   /**
