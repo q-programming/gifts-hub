@@ -1,9 +1,9 @@
 {
   "name": "gifts-web",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --proxy-config proxy.conf.json --base-href=/gifts/",
+    "start": "ng serve --proxy-config proxy.conf.json",
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",

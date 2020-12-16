@@ -1,9 +1,11 @@
 <mat-form-field class="pr-2 mat-form-field-full-width" appearance="standard">
   <mat-select required [formControl]="categoryControl" #categorySelect disableOptionCentering="true" autofocus>
-    <ngx-mat-select-search [formControl]="categoryFilterControl"
-                           [placeholderLabel]="'gift.category.filter.choose' | translate"
-                           [noEntriesFoundLabel]="'gift.category.filter.notfound'|translate">
-    </ngx-mat-select-search>
+    <mat-option>
+      <ngx-mat-select-search [formControl]="categoryFilterControl"
+                             [placeholderLabel]="'gift.category.filter.choose' | translate"
+                             [noEntriesFoundLabel]="'gift.category.filter.notfound'|translate">
+      </ngx-mat-select-search>
+    </mat-option>
     <mat-option *ngFor="let category of filteredCategories |async" [value]="category">
       <span [innerHTML]="category.name | highlight: filterTerm"></span>
     </mat-option>
