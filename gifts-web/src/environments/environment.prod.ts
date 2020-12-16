@@ -20,5 +20,5 @@ export const environment = {
   app_url: '/api/app',
   gift_url: '/api/gift',
   version: version,
-  routing_log: true
+  routing_log: false
 };
