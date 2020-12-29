@@ -294,7 +294,7 @@ public class MailService {
                 avatarBuffer.put(account, avatarTempFile);
             }
         } catch (IOException e) {
-            LOG.error("Failed to properly resize image. {}", e);
+            LOG.error("Failed to properly resize image. {}", e.getMessage());
         }
         return avatarTempFile;
     }
@@ -451,9 +451,19 @@ public class MailService {
         LOG.info("Newsletter sent to {} recipients", mailsSent);
     }
 
+    /**
+     * Filter-out events which are not from recipients groups , or are regarding recipient
+     *
+     * @param eventMap         map containing Account List of AppEvents
+     * @param recipientAccount account who should receive mail
+     * @return Filtered events
+     */
     private Map<Account, List<AppEvent>> filterEventMap(Map<Account, List<AppEvent>> eventMap, Account recipientAccount) {
+        Set<Account> membersFromRecipientGroups = recipientAccount.getGroups().stream().map(Group::getMembers).flatMap(Collection::stream)
+                .collect(Collectors.toSet());
+
         Map<Account, List<AppEvent>> eventsWithoutRecipient = eventMap.entrySet().stream()
-                .filter(eventAccount -> !eventAccount.getKey().equals(recipientAccount))
+                .filter(eventAccount -> membersFromRecipientGroups.contains(eventAccount.getKey()) && !eventAccount.getKey().equals(recipientAccount))
                 .collect(Collectors
                         .toMap(Map.Entry::getKey,
                                 entry -> new ArrayList<>(filterEventList(entry.getValue(), recipientAccount))));
