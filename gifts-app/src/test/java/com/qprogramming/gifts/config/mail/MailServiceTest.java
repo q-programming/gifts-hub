@@ -248,5 +248,43 @@ public class MailServiceTest {
         verify(mailSenderMock, times(1)).send(any(MimeMessage.class));
     }
 
+    @Test
+    public void sendEventsForDifferentGroupsTest() throws MessagingException {
+        Account account = TestUtil.createAccount("John", "Doe");
+        account.setNotifications(true);
+        Account account2 = TestUtil.createAccount("Johny", "Doe");
+        account2.setNotifications(true);
+        account2.setId(USER_RANDOM_ID + 1);
+        Account account3 = TestUtil.createAccount("Johny", "Smith");
+        account3.setNotifications(true);
+        account3.setId(USER_RANDOM_ID + 2);
+        Account account4 = TestUtil.createAccount("Mark", "Smith");
+        account4.setNotifications(true);
+        account4.setId(USER_RANDOM_ID + 3);
+        Group group = new Group();
+        group.setId(1L);
+        group.addMember(testAccount);
+        group.addMember(account);
+        group.addMember(account2);
+        Group group2 = new Group();
+        group.setId(2L);
+        group2.addMember(account3);
+        group2.addMember(account4);
+        AppEvent event1 = TestUtil.createEvent(testAccount);
+        AppEvent event2 = TestUtil.createEvent(testAccount);
+        AppEvent event3 = TestUtil.createEvent(testAccount);
+        AppEvent event4 = TestUtil.createEvent(testAccount);
+        AppEvent event5 = TestUtil.createEvent(account3);
+        AppEvent event6 = TestUtil.createEvent(account3);
+        event4.setCreatedBy(account2);
+        Map<Account, List<AppEvent>> events = new HashMap<>();
+        events.put(testAccount, Arrays.asList(event1, event2, event3, event4));
+        events.put(account3, Arrays.asList(event5, event6));
+        when(eventServiceMock.getEventsGroupedByAccount()).thenReturn(events);
+        when(msgSrvMock.getMessage("schedule.event.summary", null, "", locale)).thenReturn(SUBJECT);
+        mailService.sendEvents();
+        verify(mailSenderMock, times(3)).send(any(MimeMessage.class));
+    }
+
 
 }
