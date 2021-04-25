@@ -11,7 +11,7 @@ import com.qprogramming.gifts.gift.category.CategoriesDTO;
 import com.qprogramming.gifts.gift.category.Category;
 import com.qprogramming.gifts.gift.category.CategoryDTO;
 import com.qprogramming.gifts.gift.category.CategoryService;
-import com.qprogramming.gifts.messages.MessagesService;
+import com.qprogramming.gifts.settings.SearchEngine;
 import com.qprogramming.gifts.settings.SearchEngineService;
 import com.qprogramming.gifts.settings.Settings;
 import com.qprogramming.gifts.support.Utils;
@@ -65,7 +65,7 @@ public class AppRestController {
 
     @RolesAllowed("ROLE_ADMIN")
     @RequestMapping(value = "/settings", method = RequestMethod.PUT)
-    public ResponseEntity changeSettings(@RequestBody Settings settings) {
+    public ResponseEntity<?> changeSettings(@RequestBody Settings settings) {
         Account currentAccount = Utils.getCurrentAccount();
         if (currentAccount == null || !currentAccount.getIsAdmin()) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -103,7 +103,7 @@ public class AppRestController {
 
     @RolesAllowed("ROLE_ADMIN")
     @RequestMapping(value = "/remove-category", method = RequestMethod.DELETE)
-    public ResponseEntity removeCategory(@RequestBody Category category) {
+    public ResponseEntity<?> removeCategory(@RequestBody Category category) {
         Account currentAccount = Utils.getCurrentAccount();
         if (currentAccount == null || !currentAccount.getIsAdmin()) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -120,7 +120,7 @@ public class AppRestController {
 
     @RolesAllowed("ROLE_ADMIN")
     @RequestMapping(value = "/update-category", method = RequestMethod.PUT)
-    public ResponseEntity updateCategory(@RequestBody Category category) {
+    public ResponseEntity<?> updateCategory(@RequestBody Category category) {
         Account currentAccount = Utils.getCurrentAccount();
         if (currentAccount == null || !currentAccount.getIsAdmin()) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -136,7 +136,7 @@ public class AppRestController {
 
     @RolesAllowed("ROLE_ADMIN")
     @RequestMapping(value = "/merge-categories", method = RequestMethod.PUT)
-    public ResponseEntity mergeCategories(@RequestBody CategoriesDTO categories) {
+    public ResponseEntity<?> mergeCategories(@RequestBody CategoriesDTO categories) {
         Account currentAccount = Utils.getCurrentAccount();
         if (currentAccount == null || !currentAccount.getIsAdmin()) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -156,7 +156,7 @@ public class AppRestController {
 
     @RolesAllowed("ROLE_ADMIN")
     @RequestMapping(value = "/settings/email", method = RequestMethod.PUT)
-    public ResponseEntity changeEmailSettings(@RequestBody Email settings) {
+    public ResponseEntity<?> changeEmailSettings(@RequestBody Email settings) {
         Account currentAccount = Utils.getCurrentAccount();
         if (currentAccount == null || !currentAccount.getIsAdmin()) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -164,7 +164,7 @@ public class AppRestController {
         try {
             mailService.testConnection(settings.getHost(), settings.getPort(), settings.getUsername(), settings.getPassword());
         } catch (MessagingException e) {
-            LOG.warn("Bad SMTP configuration: {}", e);
+            LOG.warn("Bad SMTP configuration:", e);
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         }
         propertyService.update(APP_EMAIL_HOST, settings.getHost());
@@ -179,7 +179,7 @@ public class AppRestController {
 
     @RolesAllowed("ROLE_ADMIN")
     @RequestMapping(value = "/settings", method = RequestMethod.GET)
-    public ResponseEntity applicationSettings() {
+    public ResponseEntity<?> applicationSettings() {
         Account currentAccount = Utils.getCurrentAccount();
         if (currentAccount == null || !currentAccount.getIsAdmin()) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -228,7 +228,7 @@ public class AppRestController {
 
     @RolesAllowed("ROLE_ADMIN")
     @RequestMapping(value = "/setup", method = RequestMethod.GET)
-    public ResponseEntity setupNeeded() {
+    public ResponseEntity<Boolean> setupNeeded() {
         Account currentAccount = Utils.getCurrentAccount();
         if (currentAccount == null || !currentAccount.getIsAdmin()) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -238,7 +238,7 @@ public class AppRestController {
 
     @RolesAllowed("ROLE_ADMIN")
     @RequestMapping(value = "/add-admin", method = RequestMethod.PUT)
-    public ResponseEntity addAdmin(@RequestBody String id) {
+    public ResponseEntity<?> addAdmin(@RequestBody String id) {
         Account currentAccount = Utils.getCurrentAccount();
         if (currentAccount == null || !currentAccount.getIsAdmin()) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -257,7 +257,7 @@ public class AppRestController {
     @RolesAllowed("ROLE_ADMIN")
     @Transactional
     @RequestMapping(value = "/remove-admin", method = RequestMethod.PUT)
-    public ResponseEntity removeAdmin(@RequestBody String id) {
+    public ResponseEntity<String> removeAdmin(@RequestBody String id) {
         Account currentAccount = Utils.getCurrentAccount();
         if (currentAccount == null || !currentAccount.getIsAdmin()) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -277,24 +277,24 @@ public class AppRestController {
     }
 
     @RequestMapping(value = "/search-engines", method = RequestMethod.GET)
-    public ResponseEntity getAllSearchEngines() {
+    public ResponseEntity<List<SearchEngine>> getAllSearchEngines() {
         return ResponseEntity.ok(searchEngineService.getAllSearchEngines());
     }
 
     @RequestMapping(value = "/languages", method = RequestMethod.GET)
-    public ResponseEntity getAllLanguages() {
+    public ResponseEntity<Map<String, String>> getAllLanguages() {
         return ResponseEntity.ok(propertyService.getLanguages());
     }
 
     @RequestMapping(value = "/default-language", method = RequestMethod.GET)
-    public ResponseEntity getDefaultLanguage() {
+    public ResponseEntity<Map<String, Object>> getDefaultLanguage() {
         Map<String, Object> model = new HashMap<>();
         model.put("language", propertyService.getDefaultLang());
         return ResponseEntity.ok(model);
     }
 
     @RequestMapping(value = "/sort", method = RequestMethod.GET)
-    public ResponseEntity getSortBy() {
+    public ResponseEntity<SortBy> getSortBy() {
         return ResponseEntity.ok(Settings.SortBy.fromString(propertyService.getProperty(APP_DEFAULT_SORT)));
     }
 
