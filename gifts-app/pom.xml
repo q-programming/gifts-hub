@@ -20,7 +20,7 @@
         <spring-boot.version>2.3.2.RELEASE</spring-boot.version>
         <freemarker.version>2.3.30</freemarker.version>
         <imgscalr-lib.version>4.2</imgscalr-lib.version>
-        <jsoup.version>1.10.2</jsoup.version>
+        <jsoup.version>1.14.2</jsoup.version>
         <commons-io.version>2.7</commons-io.version>
         <joda-time.version>2.10.6</joda-time.version>
         <commons-lang3.version>3.11</commons-lang3.version>
