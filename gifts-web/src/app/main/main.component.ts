@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
+import {ViewportScroller} from "@angular/common";
 
 @Component({
   selector: 'app-main',
@@ -7,9 +8,14 @@ import { Component, OnInit } from '@angular/core';
 })
 export class MainComponent implements OnInit {
 
-  constructor() { }
+  constructor(private viewportScroller: ViewportScroller) {
+  }
 
   ngOnInit() {
+  }
+
+  backToTop() {
+    this.viewportScroller.scrollToAnchor('top');
   }
 
 }

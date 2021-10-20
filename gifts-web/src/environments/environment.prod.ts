@@ -1,5 +1,5 @@
 import {NgxLoggerLevel} from "ngx-logger";
-import {version} from "../../package.json"
+import packageInfo from "../../package.json";
 
 export const environment = {
   production: true,
@@ -19,6 +19,6 @@ export const environment = {
   default_lang_url: '/api/app/default-language',
   app_url: '/api/app',
   gift_url: '/api/gift',
-  version: version,
+  version: packageInfo.version,
   routing_log: false
 };

@@ -42,6 +42,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -61,15 +62,15 @@ public class GiftRestController {
     private static final int CATEGORY_CELL = 3;
     private static final String COLS = "ABCDEFGHIJKLMNOPRSTUVWXYZ";
     private final Logger LOG = LoggerFactory.getLogger(this.getClass());
-    private Set<String> prohibitedCategories = new HashSet<>();
-    private AccountService accountService;
-    private GiftService giftService;
-    private SearchEngineService searchEngineService;
-    private CategoryService categoryService;
-    private MessagesService msgSrv;
-    private GroupService groupService;
-    private AppEventService eventService;
-    private MailService mailService;
+    private final Set<String> prohibitedCategories = new HashSet<>();
+    private final AccountService accountService;
+    private final GiftService giftService;
+    private final SearchEngineService searchEngineService;
+    private final CategoryService categoryService;
+    private final MessagesService msgSrv;
+    private final GroupService groupService;
+    private final AppEventService eventService;
+    private final MailService mailService;
 
     @Autowired
     public GiftRestController(AccountService accountService, GiftService giftService, SearchEngineService searchEngineService, CategoryService categoryService, MessagesService msgSrv, GroupService groupService, AppEventService eventService, MailService mailService) {
@@ -101,7 +102,7 @@ public class GiftRestController {
     @PreAuthorize("hasRole('ROLE_USER')")
     @Transactional
     @RequestMapping("/create")
-    public ResponseEntity createGift(@RequestBody Gift giftForm) {
+    public ResponseEntity<?> createGift(@RequestBody Gift giftForm) {
         if (StringUtils.isEmpty(giftForm.getName())) {
             return new ResponseEntity<>("Name field is required", HttpStatus.BAD_REQUEST);
         }
@@ -121,7 +122,7 @@ public class GiftRestController {
     @PreAuthorize("hasRole('ROLE_USER')")
     @Transactional
     @RequestMapping("/edit")
-    public ResponseEntity editGift(@RequestBody Gift giftForm) {
+    public ResponseEntity<?> editGift(@RequestBody Gift giftForm) {
         Gift gift = giftService.findById(giftForm.getId());
         if (gift == null) {
             return ResponseEntity.notFound().build();
@@ -168,7 +169,7 @@ public class GiftRestController {
 
     @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/claim/{giftID}", method = RequestMethod.PUT)
-    public ResponseEntity claimGift(@PathVariable(value = "giftID") String id) {
+    public ResponseEntity<?> claimGift(@PathVariable(value = "giftID") String id) {
         Optional<Account> optionalAccount = accountService.findByUsername(Utils.getCurrentAccount().getUsername());
         if (!optionalAccount.isPresent()) {
             return ResponseEntity.notFound().build();
@@ -183,7 +184,7 @@ public class GiftRestController {
 
     @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/unclaim/{giftID}", method = RequestMethod.PUT)
-    public ResponseEntity unClaimGift(@PathVariable(value = "giftID") String id) {
+    public ResponseEntity<?> unClaimGift(@PathVariable(value = "giftID") String id) {
         Optional<Account> optionalAccount = accountService.findByUsername(Utils.getCurrentAccount().getUsername());
         if (!optionalAccount.isPresent()) {
             return ResponseEntity.notFound().build();
@@ -199,7 +200,7 @@ public class GiftRestController {
 
     @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/complete/{giftID}", method = RequestMethod.PUT)
-    public ResponseEntity completeGift(@PathVariable(value = "giftID") String id) {
+    public ResponseEntity<?> completeGift(@PathVariable(value = "giftID") String id) {
         Gift gift = giftService.findById(Long.valueOf(id));
         if (!canOperateOnGift(gift)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -218,7 +219,7 @@ public class GiftRestController {
 
     @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/undo-complete/{giftID}", method = RequestMethod.PUT)
-    public ResponseEntity undoCompleteGift(@PathVariable(value = "giftID") String id) {
+    public ResponseEntity<?> undoCompleteGift(@PathVariable(value = "giftID") String id) {
         Gift gift = giftService.findById(Long.valueOf(id));
         if (!canOperateOnGift(gift)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -238,7 +239,7 @@ public class GiftRestController {
     @Transactional
     @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/delete/{giftID}", method = RequestMethod.DELETE)
-    public ResponseEntity deleteGift(@PathVariable(value = "giftID") String id) {
+    public ResponseEntity<?> deleteGift(@PathVariable(value = "giftID") String id) {
         Gift gift = giftService.findById(Long.valueOf(id));
         if (gift == null) {
             return new ResultData.ResultBuilder().notFound().build();
@@ -254,8 +255,8 @@ public class GiftRestController {
         } catch (AccountNotFoundException e) {
             LOG.debug("Current account not found");
             return ResponseEntity.notFound().build();
-        } catch (MessagingException e) {
-            LOG.debug("Error while trying to send notification {}", e);
+        } catch (MessagingException | UnsupportedEncodingException e) {
+            LOG.debug("Error while trying to send notification", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
         giftService.delete(gift);
@@ -330,16 +331,16 @@ public class GiftRestController {
 
     @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping("/mine")
-    public ResponseEntity getMineGifts(@RequestParam(required = false) boolean realised) {
+    public ResponseEntity<?> getMineGifts(@RequestParam(required = false) boolean realised) {
         if (Utils.getCurrentAccount() != null) {
             return new ResponseEntity<>(giftService.findAllByCurrentUser(realised), HttpStatus.OK);
         } else
-            return ResponseEntity.ok(Collections.EMPTY_LIST);
+            return ResponseEntity.ok(Collections.EMPTY_MAP);
     }
 
     @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping("/claimed")
-    public ResponseEntity getMineClaimedGifts() {
+    public ResponseEntity<?> getMineClaimedGifts() {
         if (Utils.getCurrentAccount() != null) {
             return new ResponseEntity<>(giftService.findAllClaimedByCurrentUser(), HttpStatus.OK);
         } else
@@ -347,7 +348,7 @@ public class GiftRestController {
     }
 
     @RequestMapping("/user/{usernameOrId}")
-    public ResponseEntity getUserGifts(@PathVariable String usernameOrId, @RequestParam(required = false) boolean realised) {
+    public ResponseEntity<?> getUserGifts(@PathVariable String usernameOrId, @RequestParam(required = false) boolean realised) {
         Account account;
         Optional<Account> optionalAccount = accountService.findByUsername(usernameOrId);
         if (optionalAccount.isPresent()) {
@@ -373,7 +374,7 @@ public class GiftRestController {
 
     @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping("/categories")
-    public ResponseEntity getCategories(@RequestParam(required = false) String term) {
+    public ResponseEntity<Collection<Category>> getCategories(@RequestParam(required = false) String term) {
         if (StringUtils.isBlank(term)) {
             return ResponseEntity.ok(categoryService.findAll());
         } else {
@@ -383,7 +384,7 @@ public class GiftRestController {
 
     @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/allowed-category")
-    public ResponseEntity checkProhibited(@RequestParam String category) {
+    public ResponseEntity<?> checkProhibited(@RequestParam String category) {
         if (!allowedCategoryName(category)) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
@@ -397,7 +398,7 @@ public class GiftRestController {
     @PreAuthorize("hasRole('ROLE_USER')")
     @Transactional
     @RequestMapping(value = "/import", method = RequestMethod.POST)
-    public ResponseEntity importGifts(@RequestParam(value = "file") MultipartFile importFile, @RequestParam(value = "user", required = false) String username) {
+    public ResponseEntity<?> importGifts(@RequestParam(value = "file") MultipartFile importFile, @RequestParam(value = "user", required = false) String username) {
         if (StringUtils.isNotBlank(username) && !canOperateOnUsernameGifts(username)) {
             ResponseEntity.status(HttpStatus.CONFLICT).body("group");
         }
@@ -407,14 +408,14 @@ public class GiftRestController {
             workbook = WorkbookFactory.create(importFileInputStream);
             Sheet sheet = workbook.getSheetAt(0);
             processImportSheet(sheet, logger, username);
-        } catch (InvalidFormatException | org.apache.poi.openxml4j.exceptions.InvalidFormatException e) {
+        } catch (InvalidFormatException e) {
             LOG.error("Failed to determine excel type");
             return new ResultData.ResultBuilder().badReqest().error().message(msgSrv.getMessage("gift.import.wrongType")).build();
         } catch (IOException e) {
-            LOG.error("IOException: {}", e);
+            LOG.error("IOException: ", e);
             return new ResultData.ResultBuilder().badReqest().error().message(msgSrv.getMessage("error.fileIO")).build();
         } catch (AccountNotFoundException e) {
-            LOG.error("Errors while trying to find account {}", e);
+            LOG.error("Errors while trying to find account ", e);
             return new ResultData.ResultBuilder().badReqest().error().message("Errors while trying to find account").build();
         }
         return new ResultData.ResultBuilder().ok().message(logger.toString()).build();
@@ -438,7 +439,7 @@ public class GiftRestController {
             out.flush();
             out.close();
         } catch (IOException e) {
-            LOG.error("IOException: {}", e);
+            LOG.error("IOException: ", e);
         }
     }
 
@@ -452,7 +453,7 @@ public class GiftRestController {
             Cell descriptionCell = row.getCell(DESCRIPTION_CELL);
             Cell linkCell = row.getCell(LINK_CELL);
             Cell categoryCell = row.getCell(CATEGORY_CELL);
-            if (nameCell != null && nameCell.getCellTypeEnum() != CellType.BLANK) {
+            if (nameCell != null && nameCell.getCellType() != CellType.BLANK) {
                 Gift giftForm = new Gift();
                 giftForm.setUserId(id);
                 //NAME
@@ -475,15 +476,14 @@ public class GiftRestController {
                         , ""
                         , Utils.getCurrentLocale());
                 logger.append(added);
-                logger.append(BR);
             } else {
                 String notEmpty = msgSrv.getMessage("gift.import.nameEmpty"
                         , new Object[]{rowNo, cellAddress}
                         , ""
                         , Utils.getCurrentLocale());
                 logger.append(notEmpty);
-                logger.append(BR);
             }
+            logger.append(BR);
             rowNo++;
         }
     }

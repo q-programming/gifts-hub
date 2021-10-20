@@ -1,0 +1,27 @@
+.btt-btn {
+  cursor: pointer;
+  position: fixed;
+  bottom: 0.5rem;
+  right: 1rem;
+  padding: 1rem 1rem 0.5rem;
+  text-decoration: none;
+  color: white;
+  font-size: 14px;
+  outline-style: none;
+  background: #748ba0;
+  opacity: 0;
+  transition: all .2s ease-in-out;
+}
+
+.btt-btn:hover {
+  background: #2c5aa0;
+}
+
+.btt-btn:active {
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.show-scrollTop {
+  opacity: 1;
+  transition: all .2s ease-in-out;
+}

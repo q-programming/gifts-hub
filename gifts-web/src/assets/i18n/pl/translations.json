@@ -7,7 +7,8 @@
       "name": "Nazwa",
       "return": "Powróć na stronę główną",
       "undo": "Cofnij",
-      "version": "wersja"
+      "version": "wersja",
+      "backToTop": "Powrót do góry"
     },
     "help": {
       "contents": "Spis treści:"

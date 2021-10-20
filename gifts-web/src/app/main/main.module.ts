@@ -29,7 +29,6 @@ import {DragDropModule} from "@angular/cdk/drag-drop";
 import {EditCategoryDialogComponent} from './components/manage/categories/edit-category-dialog/edit-category-dialog.component';
 import {GiftClaimedComponent} from './components/gifts/gift-claimed.component';
 import {ImageCropperModule} from "ngx-image-cropper";
-import {GoTopButtonModule} from 'ng-go-top-button';
 
 @NgModule({
   declarations: [
@@ -62,7 +61,6 @@ import {GoTopButtonModule} from 'ng-go-top-button';
     CommonModule,
     CoreModule,
     ImageCropperModule,
-    GoTopButtonModule,
     NgxMatSelectSearchModule,
     MainRoutingModule,
     DragDropModule,

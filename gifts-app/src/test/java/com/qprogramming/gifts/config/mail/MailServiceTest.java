@@ -29,6 +29,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
+import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 import static com.qprogramming.gifts.TestUtil.USER_RANDOM_ID;
@@ -121,7 +122,7 @@ public class MailServiceTest {
     }
 
     @Test
-    public void shareGiftList() throws MessagingException {
+    public void shareGiftList() throws MessagingException, UnsupportedEncodingException {
         Properties props = new Properties();
         props.setProperty("mail.debug", "true");
         Locale locale = new Locale("en");
@@ -135,7 +136,7 @@ public class MailServiceTest {
     }
 
     @Test
-    public void sendMemberConfirmMail() throws MessagingException {
+    public void sendMemberConfirmMail() throws MessagingException, UnsupportedEncodingException {
         AccountEvent event = new AccountEvent();
         Group group = new Group();
         group.setName(testAccount.getSurname());
@@ -150,7 +151,7 @@ public class MailServiceTest {
     }
 
     @Test
-    public void sendAdminConfirmMail() throws MessagingException {
+    public void sendAdminConfirmMail() throws MessagingException, UnsupportedEncodingException {
         AccountEvent event = new AccountEvent();
         Group group = new Group();
         group.setName(testAccount.getSurname());
@@ -165,7 +166,7 @@ public class MailServiceTest {
     }
 
     @Test
-    public void sendEvents() throws MessagingException {
+    public void sendEvents() throws MessagingException, UnsupportedEncodingException {
         Account account = TestUtil.createAccount("John", "Doe");
         account.setNotifications(true);
         Group group = new Group();
@@ -183,7 +184,7 @@ public class MailServiceTest {
     }
 
     @Test
-    public void sendEventsWithoutRecipient() throws MessagingException {
+    public void sendEventsWithoutRecipient() throws MessagingException, UnsupportedEncodingException {
         Account account = TestUtil.createAccount("John", "Doe");
         account.setNotifications(true);
         Account account2 = TestUtil.createAccount("Johny", "Doe");
@@ -207,7 +208,7 @@ public class MailServiceTest {
     }
 
     @Test
-    public void sendEventsHiddenGiftWithoutRecipient() throws MessagingException {
+    public void sendEventsHiddenGiftWithoutRecipient() throws MessagingException, UnsupportedEncodingException {
         Account account = TestUtil.createAccount("John", "Doe");
         account.setNotifications(true);
         Group group = new Group();
@@ -226,7 +227,7 @@ public class MailServiceTest {
     }
 
     @Test
-    public void sendEventsForNewAndRealised() throws MessagingException {
+    public void sendEventsForNewAndRealised() throws MessagingException, UnsupportedEncodingException {
         Account account = TestUtil.createAccount("John", "Doe");
         account.setNotifications(true);
         Group group = new Group();
@@ -249,7 +250,7 @@ public class MailServiceTest {
     }
 
     @Test
-    public void sendEventsForDifferentGroupsTest() throws MessagingException {
+    public void sendEventsForDifferentGroupsTest() throws MessagingException, UnsupportedEncodingException {
         Account account = TestUtil.createAccount("John", "Doe");
         account.setNotifications(true);
         Account account2 = TestUtil.createAccount("Johny", "Doe");

@@ -40,6 +40,9 @@
       <button mat-raised-button class="success-button pull-right" (click)="saveConfiguration()"
               [disabled]="form.invalid || !form.touched ">{{'app.manage.email.save'|translate}}
       </button>
+      <button mat-raised-button class="success-button pull-right" (click)="sendTest()">
+        Send test email
+      </button>
     </form>
   </div>
 </div>

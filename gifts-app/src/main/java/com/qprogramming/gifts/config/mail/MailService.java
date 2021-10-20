@@ -38,12 +38,10 @@ import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 
 import javax.imageio.ImageIO;
 import javax.mail.MessagingException;
+import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -67,6 +65,7 @@ public class MailService {
     private static final String GIFT = "gift";
     public static final String KID_NAME = "kidName";
     public static final String OWNER = "owner";
+    public static final String GIFTS_HUB = "Gifts Hub";
     private final Logger LOG = LoggerFactory.getLogger(this.getClass());
     JavaMailSender mailSender;
     private PropertyService propertyService;
@@ -182,20 +181,17 @@ public class MailService {
 
     //TODO to be removed
     @Deprecated
-    public void sendEmail(Mail mail) {
+    public void sendEmail(Mail mail) throws MessagingException, UnsupportedEncodingException {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
-        try {
-            String from = propertyService.getProperty(APP_EMAIL_FROM);
-            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
-            mimeMessageHelper.setSubject(mail.getMailSubject());
-            mimeMessageHelper.setFrom(from);
-            mimeMessageHelper.setTo(mail.getMailTo());
-            mail.setMailContent(geContentFromTemplate(mail.getModel(), "emailTemplate.ftl"));
-            mimeMessageHelper.setText(mail.getMailContent(), true);
-            mailSender.send(mimeMessageHelper.getMimeMessage());
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        }
+        String from = propertyService.getProperty(APP_EMAIL_FROM);
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
+        mimeMessageHelper.setSubject(mail.getMailSubject());
+        mimeMessageHelper.setFrom(new InternetAddress(from, GIFTS_HUB));
+        mimeMessageHelper.setTo(mail.getMailTo());
+        mail.setMailContent(geContentFromTemplate(mail.getModel(), "emailTemplate.ftl"));
+        mimeMessageHelper.setText(mail.getMailContent(), true);
+        LOG.info("Sending email to {}", mail.getMailTo());
+        mailSender.send(mimeMessageHelper.getMimeMessage());
     }
 
     private String geContentFromTemplate(Map<String, Object> model, String emailTemplate) {
@@ -215,7 +211,7 @@ public class MailService {
      * @param emails email list
      * @throws MessagingException if there were errors while sending email
      */
-    public void shareGiftList(List<Mail> emails) throws MessagingException {
+    public void shareGiftList(List<Mail> emails) throws MessagingException, UnsupportedEncodingException {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         String application = propertyService.getProperty(APP_URL);
         String from = propertyService.getProperty(APP_EMAIL_FROM);
@@ -224,7 +220,7 @@ public class MailService {
             Locale locale = getMailLocale(mail);
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, propertyService.getProperty(Settings.APP_EMAIL_ENCODING));
             mimeMessageHelper.setSubject(msgSrv.getMessage("gift.share.subject", new Object[]{Utils.getCurrentAccount().getFullname()}, "", locale));
-            mimeMessageHelper.setFrom(from);
+            mimeMessageHelper.setFrom(new InternetAddress(from, GIFTS_HUB));
             mimeMessageHelper.setTo(mail.getMailTo());
             mail.addToModel(PUBLIC_LINK, publicLink);
             mail.addToModel(APPLICATION, application);
@@ -243,7 +239,7 @@ public class MailService {
      * @param gift gift which was removed
      * @throws MessagingException if there were errors while sending email
      */
-    public void notifyAboutGiftRemoved(Gift gift) throws MessagingException, AccountNotFoundException {
+    public void notifyAboutGiftRemoved(Gift gift) throws MessagingException, AccountNotFoundException, UnsupportedEncodingException {
         Account owner = accountService.findById(gift.getUserId());
         Mail mail = Utils.createMail(gift.getClaimed(), owner);
         MimeMessage mimeMessage = mailSender.createMimeMessage();
@@ -253,7 +249,7 @@ public class MailService {
         Locale locale = getMailLocale(mail);
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, propertyService.getProperty(Settings.APP_EMAIL_ENCODING));
         mimeMessageHelper.setSubject(msgSrv.getMessage("gift.delete.notify", new Object[]{owner.getFullname()}, "", locale));
-        mimeMessageHelper.setFrom(from);
+        mimeMessageHelper.setFrom(new InternetAddress(from, GIFTS_HUB));
         mimeMessageHelper.setTo(mail.getMailTo());
         mail.addToModel(LIST_LINK, listLink);
         mail.addToModel(GIFT, gift.getName());
@@ -311,7 +307,7 @@ public class MailService {
      * @param event Event which requires confirmation
      * @throws MessagingException if there were errors while sending email
      */
-    public void sendConfirmMail(Mail mail, AccountEvent event) throws MessagingException {
+    public void sendConfirmMail(Mail mail, AccountEvent event) throws MessagingException, UnsupportedEncodingException {
         MimeMessageHelper mimeMessageHelper = createBaseMimeMessage(mail);
         Locale locale = getMailLocale(mail);
         String confirmLink = mail.getModel().get(APPLICATION) + "#/confirm/" + event.getToken();
@@ -389,18 +385,18 @@ public class MailService {
         mimeMessageHelper.setText(mail.getMailContent(), true);
     }
 
-    private MimeMessageHelper createBaseMimeMessage(Mail mail) throws MessagingException {
+    private MimeMessageHelper createBaseMimeMessage(Mail mail) throws MessagingException, UnsupportedEncodingException {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         String application = propertyService.getProperty(APP_URL);
         String from = propertyService.getProperty(APP_EMAIL_FROM);
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
-        mimeMessageHelper.setFrom(from);
+        mimeMessageHelper.setFrom(new InternetAddress(from, GIFTS_HUB));
         mimeMessageHelper.setTo(mail.getMailTo());
         mail.addToModel(APPLICATION, application);
         return mimeMessageHelper;
     }
 
-    public void sendInvite(Mail mail, String familyName) throws MessagingException {
+    public void sendInvite(Mail mail, String familyName) throws MessagingException, UnsupportedEncodingException {
         MimeMessageHelper mimeMessageHelper = createBaseMimeMessage(mail);
         Locale locale = getMailLocale(mail);
         mimeMessageHelper.setSubject(msgSrv.getMessage("user.group.invite", new Object[]{familyName}, "", locale));
@@ -421,7 +417,7 @@ public class MailService {
      */
     @Scheduled(cron = "${app.newsletter.schedule}")
     @Transactional
-    public void sendEvents() throws MessagingException {
+    public void sendEvents() throws MessagingException, UnsupportedEncodingException {
         LOG.info("Begin sending scheduled newsletter");
         int mailsSent = 0;
         MimeMessage mimeMessage = mailSender.createMimeMessage();
@@ -509,13 +505,13 @@ public class MailService {
      * @param account     account which will recieve email
      * @throws MessagingException if there were errors while sending email
      */
-    private void sendEventForAccount(MimeMessage mimeMessage, String application, Map<Account, List<AppEvent>> eventMap, Account account) throws MessagingException {
+    private void sendEventForAccount(MimeMessage mimeMessage, String application, Map<Account, List<AppEvent>> eventMap, Account account) throws MessagingException, UnsupportedEncodingException {
         Mail mail = Utils.createMail(account);
         String from = propertyService.getProperty(APP_EMAIL_FROM);
         Locale locale = getMailLocale(mail);
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, propertyService.getProperty(Settings.APP_EMAIL_ENCODING));
         mimeMessageHelper.setSubject(msgSrv.getMessage("schedule.event.summary", null, "", locale));
-        mimeMessageHelper.setFrom(from);
+        mimeMessageHelper.setFrom(new InternetAddress(from, GIFTS_HUB));
         mimeMessageHelper.setTo(mail.getMailTo());
         mail.addToModel(APPLICATION, application);
         mail.addToModel(NAME, account.getName());

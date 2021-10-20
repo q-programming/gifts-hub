@@ -7,7 +7,8 @@
       "name": "Name",
       "return": "Return to home page",
       "undo": "Undo",
-      "version": "version"
+      "version": "version",
+      "backToTop": "Back to top"
     },
     "help": {
       "contents": "Contents:"

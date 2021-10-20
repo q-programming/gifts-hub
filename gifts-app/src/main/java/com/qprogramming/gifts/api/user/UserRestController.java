@@ -39,6 +39,7 @@ import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.UnsupportedEncodingException;
 import java.security.Principal;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -118,7 +119,8 @@ public class UserRestController {
         Mail mail = Utils.createMail(newAccount);
         try {
             _mailService.sendConfirmMail(mail, event);
-        } catch (MessagingException e) {
+        } catch (MessagingException | UnsupportedEncodingException e) {
+            LOG.error("Error while trying to send email", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
 //        _accountService.createAvatar(newAccount);
@@ -135,7 +137,8 @@ public class UserRestController {
             Mail mail = Utils.createMail(account);
             try {
                 _mailService.sendConfirmMail(mail, event);
-            } catch (MessagingException e) {
+            } catch (MessagingException | UnsupportedEncodingException e) {
+                LOG.error("Error while trying to send email", e);
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
             }
         }
@@ -282,7 +285,7 @@ public class UserRestController {
             Set<Account> members = _accountService.findByEmailsOrUsernames(form.getMembers());
             try {
                 sendInvites(members, group, AccountEventType.GROUP_MEMEBER);
-            } catch (MessagingException e) {
+            } catch (MessagingException | UnsupportedEncodingException e) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
             }
             HashMap<String, String> model = new HashMap<>();
@@ -319,7 +322,8 @@ public class UserRestController {
                 membersToInvite.removeAll(adminsToInvite);
                 sendInvites(membersToInvite, group, AccountEventType.GROUP_MEMEBER);
                 sendInvites(adminsToInvite, group, AccountEventType.GROUP_ADMIN);
-            } catch (MessagingException e) {
+            } catch (MessagingException | UnsupportedEncodingException e) {
+                LOG.error("Error while trying to send email ", e);
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
             }
             if (StringUtils.isBlank(form.getName())) {
@@ -371,7 +375,7 @@ public class UserRestController {
     @Transactional
     @RequestMapping("/confirm")
     @CacheEvict(value = {"accounts", "groups"}, allEntries = true)
-    public ResponseEntity confirmOperation(@RequestBody String token) {
+    public ResponseEntity<?> confirmOperation(@RequestBody String token) {
         UUID uuid = UUID.fromString(token);
         Optional<AccountEvent> eventOptional = _accountService.findEvent(token);
         if (!eventOptional.isPresent()) {
@@ -393,14 +397,13 @@ public class UserRestController {
             case GROUP_KID:
                 return handleAddKidToGroup(event);
             case ACCOUNT_CONFIRM:
-                return handleConfirmAccount(event);
             case PASSWORD_RESET:
                 return handleConfirmAccount(event);
         }
         return new ResultData.ResultBuilder().badReqest().build();
     }
 
-    private ResponseEntity handleAddKidToGroup(AccountEvent event) {
+    private ResponseEntity<?> handleAddKidToGroup(AccountEvent event) {
         try {
             HashMap<String, String> model = new HashMap<>();
             Group group = _groupService.getGroupFromEvent(event);
@@ -427,7 +430,7 @@ public class UserRestController {
         }
     }
 
-    private ResponseEntity handleConfirmAccount(AccountEvent event) {
+    private ResponseEntity<?> handleConfirmAccount(AccountEvent event) {
         Account account = event.getAccount();
         account.setEnabled(true);
         _accountService.update(account);
@@ -437,7 +440,7 @@ public class UserRestController {
         return ResponseEntity.ok(model);
     }
 
-    private ResponseEntity handleBecomeGroupAdmin(AccountEvent event) {
+    private ResponseEntity<?> handleBecomeGroupAdmin(AccountEvent event) {
         try {
             Group group = _groupService.getGroupFromEvent(event);
             if (!group.getMembers().contains(Utils.getCurrentAccount())) {
@@ -454,7 +457,7 @@ public class UserRestController {
         }
     }
 
-    private ResponseEntity handleBecomeGroupMember(AccountEvent event) {
+    private ResponseEntity<?> handleBecomeGroupMember(AccountEvent event) {
         try {
             Group group = _groupService.getGroupFromEvent(event);
             Account currentAccount = _accountService.getCurrentAccount();
@@ -473,13 +476,13 @@ public class UserRestController {
         }
     }
 
-    private void sendInvites(Set<Account> members, Group group, AccountEventType type) throws MessagingException {
+    private void sendInvites(Set<Account> members, Group group, AccountEventType type) throws MessagingException, UnsupportedEncodingException {
         List<Account> list = new ArrayList<>(members);
         sendInvites(list, group, type);
     }
 
     private void sendInvites(List<Account> members, Group group, AccountEventType type) throws
-            MessagingException {
+            MessagingException, UnsupportedEncodingException {
         for (Account account : members) {
             if (AccountType.KID.equals(account.getType())) {
                 sendKidAdditionConfirm(group, account);
@@ -494,7 +497,7 @@ public class UserRestController {
         }
     }
 
-    private void sendKidAdditionConfirm(Group group, Account kidAccount) throws MessagingException {
+    private void sendKidAdditionConfirm(Group group, Account kidAccount) throws MessagingException, UnsupportedEncodingException {
         boolean isKidGroupAdmin = kidAccount.getGroups().stream().anyMatch(g -> g.getAdmins().contains(Utils.getCurrentAccount()));
         if (isKidGroupAdmin) {
             group.addMember(kidAccount);
@@ -575,7 +578,7 @@ public class UserRestController {
 
 
     @RequestMapping(value = "/validate-email", method = RequestMethod.POST)
-    public ResponseEntity validateEmail(@RequestBody String email) {
+    public ResponseEntity<?> validateEmail(@RequestBody String email) {
         Optional<Account> acc = _accountService.findByEmail(email);
         if (!acc.isPresent()) {
             return ResponseEntity.ok(new ResultData.ResultBuilder().ok().build());
@@ -584,7 +587,7 @@ public class UserRestController {
     }
 
     @RequestMapping(value = "/validate-username", method = RequestMethod.POST)
-    public ResponseEntity validateUsername(@RequestBody String username) {
+    public ResponseEntity<?> validateUsername(@RequestBody String username) {
         Optional<Account> optionalAccount = _accountService.findByUsername(username);
         if (!optionalAccount.isPresent()) {
             return ResponseEntity.ok(new ResultData.ResultBuilder().ok().build());
@@ -594,15 +597,13 @@ public class UserRestController {
 
     @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/tour-complete", method = RequestMethod.POST)
-    public ResponseEntity completeTour() {
+    public ResponseEntity<?> completeTour() {
         Account account;
         try {
             account = _accountService.findById(Utils.getCurrentAccountId());
         } catch (AccountNotFoundException e) {
             LOG.error("Account with id {} not found", Utils.getCurrentAccountId());
             return new ResultData.ResultBuilder().notFound().build();
-        }
-        if (account == null) {
         }
         Utils.getCurrentAccount().setTourComplete(true);
         account.setTourComplete(true);
@@ -613,8 +614,8 @@ public class UserRestController {
 
     @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/tour-reset", method = RequestMethod.POST)
-    public ResponseEntity resetTour() {
-        Account account = null;
+    public ResponseEntity<?> resetTour() {
+        Account account;
         try {
             account = _accountService.findById(Utils.getCurrentAccountId());
         } catch (AccountNotFoundException e) {
@@ -629,7 +630,7 @@ public class UserRestController {
     }
 
     @RequestMapping(value = "/changelog", method = RequestMethod.POST)
-    public ResponseEntity changelogRead() {
+    public ResponseEntity<?> changelogRead() {
         Account account;
         try {
             account = _accountService.findById(Utils.getCurrentAccountId());
@@ -648,7 +649,7 @@ public class UserRestController {
     @Transactional
     @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/settings", method = RequestMethod.POST)
-    public ResponseEntity changeSettings(@RequestBody AccountSettings accountSettings) {
+    public ResponseEntity<?> changeSettings(@RequestBody AccountSettings accountSettings) {
         //TODO rewrite ?
         Account account;
         try {
@@ -671,7 +672,7 @@ public class UserRestController {
     @PreAuthorize("hasRole('ROLE_USER')")
     @CacheEvict(value = {"accounts", "groups"}, allEntries = true)
     @RequestMapping(value = "/delete/{userID}", method = RequestMethod.DELETE)
-    public ResponseEntity deleteAccount(HttpServletRequest requ, HttpServletResponse
+    public ResponseEntity<?> deleteAccount(HttpServletRequest requ, HttpServletResponse
             resp, @PathVariable(value = "userID") String id) {
         boolean logout = false;
         Account account;
@@ -708,7 +709,7 @@ public class UserRestController {
         if (StringUtils.isNotBlank(identification)) {
             return getAccountByUsernameOrId(identification);
         }
-        if (user != null && user instanceof UsernamePasswordAuthenticationToken) {
+        if (user instanceof UsernamePasswordAuthenticationToken) {
             return (Account) ((UsernamePasswordAuthenticationToken) user).getPrincipal();
         }
         //TODO
@@ -725,7 +726,7 @@ public class UserRestController {
      */
     @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "admins", method = RequestMethod.GET)
-    public ResponseEntity admins() {
+    public ResponseEntity<Set<Account>> admins() {
         Account currentAccount = Utils.getCurrentAccount();
         if (currentAccount == null) {
             return ResponseEntity.ok().build();
@@ -761,7 +762,7 @@ public class UserRestController {
     @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/share", method = RequestMethod.POST)
     @Transactional
-    public ResponseEntity shareGiftList(@RequestBody String emails) {
+    public ResponseEntity<?> shareGiftList(@RequestBody String emails) {
         if (!Utils.getCurrentAccount().getPublicList()) {
             return new ResultData.ResultBuilder().badReqest().error().build();
         }
@@ -781,8 +782,8 @@ public class UserRestController {
         }
         try {
             _mailService.shareGiftList(mailList);
-        } catch (MessagingException e) {
-            LOG.error("Error while sending emailLists {}", e);
+        } catch (MessagingException | UnsupportedEncodingException e) {
+            LOG.error("Error while sending emailLists", e);
             return new ResultData.ResultBuilder().badReqest().error().message(e.getMessage()).build();
         }
         HashMap<String, String> model = new HashMap<>();
@@ -792,11 +793,11 @@ public class UserRestController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @RequestMapping(value = "/scheduler", method = RequestMethod.POST)
-    public ResponseEntity sendScheduler() {
+    public ResponseEntity<?> sendScheduler() {
         try {
             _mailService.sendEvents();
-        } catch (MessagingException e) {
-            LOG.error("Error while sending emailLists {}", e);
+        } catch (MessagingException | UnsupportedEncodingException e) {
+            LOG.error("Error while sending emailLists", e);
             return new ResultData.ResultBuilder().badReqest().error().message(e.getMessage()).build();
         }
         String message = _msgSrv.getMessage("gift.share.success", null, "", Utils.getCurrentLocale());

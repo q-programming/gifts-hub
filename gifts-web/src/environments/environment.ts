@@ -3,7 +3,7 @@
 // The list of file replacements can be found in `angular.json`.
 
 import {NgxLoggerLevel} from "ngx-logger";
-import {version} from "../../package.json";
+import packageInfo from "../../package.json";
 
 export const environment = {
   production: false,
@@ -23,7 +23,7 @@ export const environment = {
   app_url: '/api/app',
   default_lang_url: '/api/app/default-language',
   gift_url: '/api/gift',
-  version: version,
+  version: packageInfo.version,
   routing_log: false
 };
 
@@ -34,4 +34,4 @@ export const environment = {
  * This import should be commented out in production mode because it will have a negative impact
  * on performance if an error is thrown.
  */
-// import 'zone.js/dist/zone-error';  // Included with Angular CLI.
+// import 'zone.js/plugins/zone-error';  // Included with Angular CLI.

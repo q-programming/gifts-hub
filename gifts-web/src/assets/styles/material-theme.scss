@@ -1,18 +1,23 @@
+@use '~@angular/material' as mat;
 @import '~@angular/material/theming';
 @import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Kalam');
 
-@include mat-core();
-$primary: mat-palette($mat-indigo, 500);
-$accent: mat-palette($mat-blue, 900);
-$theme: mat-light-theme($primary, $accent);
-@include angular-material-theme($theme);
+@include mat.core();
+$primary: mat.define-palette(mat.$indigo-palette, 500);
+$accent: mat.define-palette(mat.$blue-palette, 900);
+$theme: mat.define-light-theme($primary, $accent);
+@include mat.all-component-themes($theme);
 
-$general-typography: mat-typography-config(
+$general-typography: mat.define-typography-config(
   $font-family: '"Roboto", sans-serif',
-  $body-2: mat-typography-level(14px, 24px, 600)
+  $body-2: mat.define-typography-level(14px, 24px, 600)
 );
 
-@include mat-core($general-typography);
+$theme_accent: #2c5aa0;
+$theme_accent_lighter: #748ba0;
+$theme_accent_light_bg: #f2fcff;
+
+@include mat.core($general-typography);
 
 html {
   scroll-behavior: smooth;
@@ -35,13 +40,13 @@ body {
 }
 
 .navbar {
-  background-color: #2c5aa0 !important;
+  background-color: $theme_accent !important;
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .16), 0 2px 10px 0 rgba(0, 0, 0, .12);
   font-weight: 300;
 }
 
 .nav-modal {
-  background-color: #2c5aa0 !important;
+  background-color: $theme_accent !important;
   color: white;
   box-shadow: none !important;
 }
@@ -67,7 +72,7 @@ body {
 }
 
 .modal-header {
-  background: #2c5aa0;
+  background: $theme_accent;
   color: white;
   padding: 20px;
   margin-top: 0;
@@ -201,4 +206,38 @@ a.black {
   .mat-card {
     margin: 0;
   }
+}
+
+.scroll-to-top {
+  position: fixed;
+  bottom: 15px;
+  right: 15px;
+  opacity: 0;
+  transition: all .2s ease-in-out;
+}
+.show-scrollTop {
+  opacity: 1;
+  transition: all .2s ease-in-out;
+}
+
+
+.btt-btn {
+  cursor: pointer;
+  position: fixed;
+  bottom: 0.5rem;
+  right: 1rem;
+  padding: 1rem 1rem 0.5rem;
+  text-decoration: none;
+  color: white;
+  font-size: 14px;
+  outline-style: none;
+  background: $theme_accent_lighter
+}
+
+.btt-btn:hover {
+  background: $theme_accent
+}
+
+.btt-btn:active {
+  background: rgba(255, 255, 255, 0.8);
 }
