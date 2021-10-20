@@ -5,7 +5,7 @@
     <parent>
         <artifactId>gifts</artifactId>
         <groupId>com.qprogramming</groupId>
-        <version>1.2.3</version>
+        <version>1.2.4</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -14,18 +14,18 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <java.version>1.8</java.version>
-        <poi.version>3.16</poi.version>
+        <java.version>11</java.version>
+        <poi.version>5.0.0</poi.version>
         <app.debug.enabled>false</app.debug.enabled>
-        <spring-boot.version>2.3.2.RELEASE</spring-boot.version>
-        <freemarker.version>2.3.30</freemarker.version>
+        <spring-boot.version>2.5.5</spring-boot.version>
+        <freemarker.version>2.3.31</freemarker.version>
         <imgscalr-lib.version>4.2</imgscalr-lib.version>
-        <jsoup.version>1.10.2</jsoup.version>
-        <commons-io.version>2.7</commons-io.version>
-        <joda-time.version>2.10.6</joda-time.version>
-        <commons-lang3.version>3.11</commons-lang3.version>
+        <jsoup.version>1.14.3</jsoup.version>
+        <commons-io.version>2.11.0</commons-io.version>
+        <joda-time.version>2.10.12</joda-time.version>
+        <commons-lang3.version>3.12.0</commons-lang3.version>
         <java-uuid-generator.version>4.0.1</java-uuid-generator.version>
-        <postgresql.version>9.4.1212</postgresql.version>
+        <postgresql.version>42.2.18</postgresql.version>
         <jackson-datatype-hibernate5.version>2.11.1</jackson-datatype-hibernate5.version>
         <jjwt.version>0.9.1</jjwt.version>
     </properties>
@@ -159,7 +159,7 @@
         <dependency>
             <groupId>org.jacoco</groupId>
             <artifactId>jacoco-maven-plugin</artifactId>
-            <version>0.8.5</version>
+            <version>0.8.7</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

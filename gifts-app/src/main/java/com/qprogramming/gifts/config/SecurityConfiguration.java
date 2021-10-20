@@ -2,10 +2,10 @@ package com.qprogramming.gifts.config;
 
 import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.security.*;
-import com.qprogramming.gifts.security.oauth2.OAuth2UserService;
 import com.qprogramming.gifts.security.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
 import com.qprogramming.gifts.security.oauth2.OAuth2AuthenticationFailureHandler;
 import com.qprogramming.gifts.security.oauth2.OAuth2AuthenticationSuccessHandler;
+import com.qprogramming.gifts.security.oauth2.OAuth2UserService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,6 +30,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+
+import java.util.Objects;
 
 @Configuration
 @EnableWebSecurity
@@ -160,9 +162,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .successHandler(oAuth2AuthenticationSuccessHandler)
                     .failureHandler(oAuth2AuthenticationFailureHandler)
                 .and().logout()
-                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-                .logoutSuccessHandler(logoutSuccess)
-                .deleteCookies(TOKEN_COOKIE, USER_COOKIE, XSRF_TOKEN, JSESSIONID);
+                    .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                    .logoutSuccessHandler(logoutSuccess)
+                    .deleteCookies(TOKEN_COOKIE, USER_COOKIE, XSRF_TOKEN, JSESSIONID);
         // Add our custom Token based authentication filter
         http.addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
     }
@@ -185,7 +187,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         } else {
             ppc.setLocations(new ClassPathResource("/application.yml"));
         }
-        ppc.setProperties(yaml.getObject());
+        ppc.setProperties(Objects.requireNonNull(yaml.getObject()));
         ppc.setIgnoreUnresolvablePlaceholders(true);
         return ppc;
     }

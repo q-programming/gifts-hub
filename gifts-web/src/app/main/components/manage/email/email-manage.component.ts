@@ -34,6 +34,13 @@ export class EmailManageComponent implements OnInit {
     })
   }
 
+  sendTest(){
+    this.apiSrv.put(`${environment.app_url}/settings/email/test`).subscribe(()=>{
+      this.alertSrv.successMessage('Test msg sent');
+    },(error)=>{
+      console.log(error);
+    })
+  }
   saveConfiguration() {
     if (this.form.valid) {
       this.getSettings();

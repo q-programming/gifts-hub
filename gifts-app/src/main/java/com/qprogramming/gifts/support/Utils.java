@@ -27,7 +27,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Utils {
-    public static final Comparator<Account> ACCOUNT_COMPARATOR = Comparator.comparing(Account::getName).thenComparing(Account::getSurname).thenComparing(Account::getUsername).thenComparing(Account::getId);
+    public static final Comparator<Account> ACCOUNT_COMPARATOR = Comparator.nullsLast(Comparator.comparing(Account::getName).thenComparing(Account::getSurname).thenComparing(Account::getUsername).thenComparing(Account::getId));
     public static final Comparator<Gift> GIFT_COMPARATOR = Comparator.nullsFirst(Comparator.comparing(Gift::getRealised)).thenComparing(Gift::getName);
     private static final String DATE_FORMAT = "dd-MM-yyyy";
     private static final String DATE_FORMAT_TIME = "dd-MM-yyyy HH:mm";

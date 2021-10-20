@@ -54,14 +54,14 @@ public class AccountService implements UserDetailsService {
             Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
 
 
-    private AccountRepository _accountRepository;
-    private AccountPasswordEncoder _accountPasswordEncoder;
-    private AvatarRepository _avatarRepository;
-    private GroupService _groupService;
-    private PropertyService _propertyService;
-    private AccountEventRepository _accountEventRepository;
-    private GiftService _giftService;
-    private AuthorityService _authorityService;
+    private final AccountRepository _accountRepository;
+    private final AccountPasswordEncoder _accountPasswordEncoder;
+    private final AvatarRepository _avatarRepository;
+    private final GroupService _groupService;
+    private final PropertyService _propertyService;
+    private final AccountEventRepository _accountEventRepository;
+    private final GiftService _giftService;
+    private final AuthorityService _authorityService;
 
 
     @Autowired
@@ -114,7 +114,7 @@ public class AccountService implements UserDetailsService {
     }
 
     public void setLocale(Account account, String locale) {
-        if (StringUtils.isBlank(locale) || _propertyService.getLanguages().keySet().contains(locale)) {
+        if (StringUtils.isBlank(locale) || _propertyService.getLanguages().containsKey(locale)) {
             account.setLanguage(locale);
         } else {
             locale = _propertyService.getDefaultLang();
@@ -174,8 +174,7 @@ public class AccountService implements UserDetailsService {
                 throw new UsernameNotFoundException("user not found");
             }
         }
-        Account account = optionalAccount.get();
-        return account;
+        return optionalAccount.get();
     }
 
     public Account signin(Account account) {
@@ -359,9 +358,7 @@ public class AccountService implements UserDetailsService {
 
     public void delete(Account account) {
         Set<Group> allAccountGroups = _groupService.findAllAccountGroups(account);
-        allAccountGroups.forEach(group -> {
-            _groupService.removeFromGroup(account, group);
-        });
+        allAccountGroups.forEach(group -> _groupService.removeFromGroup(account, group));
         Avatar avatar = _avatarRepository.findOneById(account.getId());
         if (avatar != null) {
             _avatarRepository.delete(avatar);

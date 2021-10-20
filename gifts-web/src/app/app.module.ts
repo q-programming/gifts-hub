@@ -3,7 +3,6 @@ import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
 import {LoginComponent} from './components/login/login.component';
 import {RegisterComponent} from "./components/login/register/register.component";
-import {Ng9PasswordStrengthBarModule} from "ng9-password-strength-bar";
 import {GiftsPublicComponent} from './components/gifts-public/gifts-public.component';
 import {ResetPasswordComponent} from './components/login/reset-password/reset-password.component';
 import {ChangePasswordComponent} from './components/login/change-password/change-password.component';
@@ -43,7 +42,6 @@ import {NgProgressModule} from 'ngx-progressbar';
     BrowserAnimationsModule,
     AppRoutingModule,
     NgProgressModule,
-    Ng9PasswordStrengthBarModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,

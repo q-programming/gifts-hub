@@ -88,13 +88,6 @@
             </div>
             <div fxLayout="row" fxLayoutAlign="center center" class="text-left mt-3">
               <div fxFlex="80" fxFlex.lt-sm="100">
-                <div>
-                  <span fxShow.lt-sm="false">{{'user.register.password.strength'|translate}}</span>
-                  <ng2-password-strength-bar
-                    [passwordToCheck]="currentPass"
-                    [barColors]="myColors">
-                  </ng2-password-strength-bar>
-                </div>
                 <div class="text-center">
                   <button mat-raised-button [disabled]="baseForm.invalid || passwordForm.invalid"
                           (click)="register()"

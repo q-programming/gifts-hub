@@ -408,7 +408,7 @@ public class GiftRestController {
             workbook = WorkbookFactory.create(importFileInputStream);
             Sheet sheet = workbook.getSheetAt(0);
             processImportSheet(sheet, logger, username);
-        } catch (InvalidFormatException | org.apache.poi.openxml4j.exceptions.InvalidFormatException e) {
+        } catch (InvalidFormatException e) {
             LOG.error("Failed to determine excel type");
             return new ResultData.ResultBuilder().badReqest().error().message(msgSrv.getMessage("gift.import.wrongType")).build();
         } catch (IOException e) {
@@ -453,7 +453,7 @@ public class GiftRestController {
             Cell descriptionCell = row.getCell(DESCRIPTION_CELL);
             Cell linkCell = row.getCell(LINK_CELL);
             Cell categoryCell = row.getCell(CATEGORY_CELL);
-            if (nameCell != null && nameCell.getCellTypeEnum() != CellType.BLANK) {
+            if (nameCell != null && nameCell.getCellType() != CellType.BLANK) {
                 Gift giftForm = new Gift();
                 giftForm.setUserId(id);
                 //NAME

@@ -30,6 +30,7 @@ import {NavigationUnauthenticatedComponent} from "./navigation/unauthenticated/n
 import {RouterModule} from "@angular/router";
 import {AvatarComponent} from "./components/avatar/avatar.component";
 import {InnerLoaderComponent} from "./components/inner-loader/inner-loader.component";
+import {ScrollTopComponent} from './components/scroll-top/scroll-top.component';
 
 
 @NgModule({
@@ -39,7 +40,8 @@ import {InnerLoaderComponent} from "./components/inner-loader/inner-loader.compo
     HighlightPipe,
     NavigationComponent,
     NavigationUnauthenticatedComponent,
-    InnerLoaderComponent
+    InnerLoaderComponent,
+    ScrollTopComponent
   ],
   imports: [
     RouterModule,
@@ -74,20 +76,21 @@ import {InnerLoaderComponent} from "./components/inner-loader/inner-loader.compo
     {provide: LOCALE_ID, useValue: 'en_EN'}
   ],
   schemas: [NO_ERRORS_SCHEMA],
-  exports: [
-    AlertComponent,
-    AvatarComponent,
-    NavigationComponent,
-    NavigationUnauthenticatedComponent,
-    FormsModule,
-    ReactiveFormsModule,
-    AppMaterialModules,
-    TranslateModule,
-    FlexLayoutModule,
-    LoggerModule,
-    HighlightPipe,
-    InnerLoaderComponent
-  ]
+    exports: [
+        AlertComponent,
+        AvatarComponent,
+        NavigationComponent,
+        NavigationUnauthenticatedComponent,
+        FormsModule,
+        ReactiveFormsModule,
+        AppMaterialModules,
+        TranslateModule,
+        FlexLayoutModule,
+        LoggerModule,
+        HighlightPipe,
+        InnerLoaderComponent,
+        ScrollTopComponent
+    ]
 })
 export class CoreModule {
   constructor(@Optional() @SkipSelf() parentModule: CoreModule) {
