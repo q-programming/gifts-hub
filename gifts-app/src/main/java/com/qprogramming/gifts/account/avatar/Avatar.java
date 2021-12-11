@@ -1,5 +1,8 @@
 package com.qprogramming.gifts.account.avatar;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -10,6 +13,8 @@ import java.util.Date;
  * Created by Khobar on 06.03.2017.
  */
 @Entity
+@Getter
+@Setter
 public class Avatar {
 
     @Id
@@ -17,43 +22,7 @@ public class Avatar {
     @Lob
     private byte[] image;
     @Column
-    private Date created;
+    private Date created = new Date();
     @Column
     private String type;
-
-    public Avatar() {
-        created = new Date();
-    }
-
-    public byte[] getImage() {
-        return image;
-    }
-
-    public void setImage(byte[] image) {
-        this.image = image;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public Date getCreated() {
-        return created;
-    }
-
-    public void setCreated(Date created) {
-        this.created = created;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
 }

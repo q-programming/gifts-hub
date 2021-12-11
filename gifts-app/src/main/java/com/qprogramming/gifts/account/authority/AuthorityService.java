@@ -1,20 +1,16 @@
 package com.qprogramming.gifts.account.authority;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 /**
  * Created by Jakub Romaniszyn on 20.07.2018.
  */
 @Service
+@RequiredArgsConstructor
 public class AuthorityService {
 
-    private AuthorityRepository authorityRepository;
-
-    @Autowired
-    public AuthorityService(AuthorityRepository authorityRepository) {
-        this.authorityRepository = authorityRepository;
-    }
+    private final AuthorityRepository authorityRepository;
 
     /**
      * Find by role name. If authority was not yet created , create it and then return it

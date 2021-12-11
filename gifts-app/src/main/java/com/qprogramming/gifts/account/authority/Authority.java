@@ -1,6 +1,8 @@
 package com.qprogramming.gifts.account.authority;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
@@ -9,6 +11,8 @@ import javax.persistence.*;
  * Created by Jakub Romaniszyn on 20.07.2018.
  */
 @Entity
+@Getter
+@Setter
 public class Authority implements GrantedAuthority {
 
     @Id
@@ -30,17 +34,8 @@ public class Authority implements GrantedAuthority {
         return name;
     }
 
-    public void setName(Role name) {
-        this.name = name;
-    }
-
     @JsonIgnore
     public Long getId() {
         return id;
     }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
 }

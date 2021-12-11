@@ -54,7 +54,7 @@ public class AuthenticationController {
             // TODO check user password last update
             String refreshedToken = _tokenService.refreshToken(authToken);
             _tokenService.refreshCookie(refreshedToken, response);
-            UserTokenState userTokenState = new UserTokenState(refreshedToken, EXPIRES_IN);
+            UserTokenState userTokenState = new UserTokenState(refreshedToken, (long) EXPIRES_IN);
             return ResponseEntity.ok(userTokenState);
         } else {
             UserTokenState userTokenState = new UserTokenState();

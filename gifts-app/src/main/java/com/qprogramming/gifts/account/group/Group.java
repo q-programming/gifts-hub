@@ -3,6 +3,9 @@ package com.qprogramming.gifts.account.group;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.config.MappingConfiguration;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.util.CollectionUtils;
 
 import javax.persistence.*;
@@ -10,11 +13,11 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
-//@JsonIdentityInfo(
-//        generator = ObjectIdGenerators.PropertyGenerator.class,
-//        property = "id")
 @Entity
 @Table(name = "group_table")
+@Getter
+@Setter
+@EqualsAndHashCode
 public class Group {
 
     @Id
@@ -27,20 +30,14 @@ public class Group {
 
     @ManyToMany(mappedBy = "groups")
     @JsonView(MappingConfiguration.Members.class)
+    @EqualsAndHashCode.Exclude
     private Set<Account> members;
 
     @ManyToMany
     @JoinTable(name = "group_admins")
     @JsonView(MappingConfiguration.Members.class)
+    @EqualsAndHashCode.Exclude
     private Set<Account> admins;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public Set<Account> getAdmins() {
         if (CollectionUtils.isEmpty(admins)) {
@@ -49,19 +46,11 @@ public class Group {
         return admins;
     }
 
-    public void setAdmins(Set<Account> admins) {
-        this.admins = admins;
-    }
-
     public Set<Account> getMembers() {
         if (CollectionUtils.isEmpty(members)) {
             members = new TreeSet<>();
         }
         return members;
-    }
-
-    public void setMembers(Set<Account> members) {
-        this.members = members;
     }
 
     public Group addMember(Account account) {
@@ -74,14 +63,6 @@ public class Group {
         this.getMembers().remove(account);
         account.getGroups().remove(this);
         return this;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     @Override

@@ -1,5 +1,9 @@
 package com.qprogramming.gifts.support;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -8,18 +12,13 @@ import org.springframework.http.ResponseEntity;
  *
  * @author Khobar
  */
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class ResultData {
-    public Code code;
-    public String message;
-
-    public ResultData() {
-
-    }
-
-    public ResultData(Code code, String message) {
-        this.code = code;
-        this.message = message;
-    }
+    private Code code;
+    private String message;
 
     public ResultData(Code code) {
         this.code = code;
