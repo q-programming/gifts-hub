@@ -44,8 +44,8 @@ jobs:
       - name: Store artefact
         uses: actions/upload-artifact@v1
         with:
-          name: shopper.war
-          path: shopper-app/target/shopper.war
+          name: gifts.war
+          path: gifts-app/target/gifts.war
 
       - name: Upload coverage to Codecov
         if: github.event_name == 'push'
@@ -56,6 +56,6 @@ jobs:
         if: github.event_name == 'release' && github.event.action == 'created'
         uses: JasonEtco/upload-to-release@master
         with:
-          args: shopper-app/target/shopper.war application/zip
+          args: gifts-app/target/gifts.war application/zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
