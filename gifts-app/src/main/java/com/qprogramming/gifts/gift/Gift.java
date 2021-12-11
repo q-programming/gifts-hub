@@ -6,17 +6,24 @@ import com.qprogramming.gifts.gift.category.Category;
 import com.qprogramming.gifts.gift.image.GiftImage;
 import com.qprogramming.gifts.settings.SearchEngine;
 import io.jsonwebtoken.lang.Collections;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import static com.qprogramming.gifts.support.Utils.GIFT_COMPARATOR;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 public class Gift implements Serializable, Comparable<Gift> {
 
     @Id
@@ -51,7 +58,7 @@ public class Gift implements Serializable, Comparable<Gift> {
     private Account claimed;
 
     @Column
-    private Date created;
+    private Date created = new Date();
 
     @Column
     private Date realised;
@@ -71,67 +78,11 @@ public class Gift implements Serializable, Comparable<Gift> {
     @Column
     private Boolean hasImage = false;
 
-    public Gift() {
-        this.created = new Date();
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public Date getCreated() {
-        return created;
-    }
-
-    public void setCreated(Date created) {
-        this.created = created;
-    }
-
-    public GiftStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(GiftStatus status) {
-        this.status = status;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     public Set<SearchEngine> getEngines() {
         if (Collections.isEmpty(engines)) {
             this.engines = new HashSet<>();
         }
         return engines;
-    }
-
-    public void setEngines(Set<SearchEngine> engines) {
-        this.engines = engines;
     }
 
     public Category getCategory() {
@@ -143,27 +94,11 @@ public class Gift implements Serializable, Comparable<Gift> {
         return category;
     }
 
-    public void setCategory(Category category) {
-        this.category = category;
-    }
-
-    public Account getClaimed() {
-        return claimed;
-    }
-
-    public void setClaimed(Account claimed) {
-        this.claimed = claimed;
-    }
-
     public Set<String> getLinks() {
         if (Collections.isEmpty(links)) {
             links = new HashSet<>();
         }
         return links;
-    }
-
-    public void setLinks(Set<String> links) {
-        this.links = links;
     }
 
     @Override
@@ -176,7 +111,7 @@ public class Gift implements Serializable, Comparable<Gift> {
         if (!id.equals(gift.id)) return false;
         if (!name.equals(gift.name)) return false;
         if (!userId.equals(gift.userId)) return false;
-        return created != null ? created.equals(gift.created) : gift.created == null;
+        return Objects.equals(created, gift.created);
     }
 
     @Override
@@ -208,26 +143,6 @@ public class Gift implements Serializable, Comparable<Gift> {
 
     public Boolean isHidden() {
         return hidden != null ? hidden : false;
-    }
-
-    public void setHidden(Boolean hidden) {
-        this.hidden = hidden;
-    }
-
-    public String getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public Date getRealised() {
-        return realised;
-    }
-
-    public void setRealised(Date realised) {
-        this.realised = realised;
     }
 
     @JsonProperty

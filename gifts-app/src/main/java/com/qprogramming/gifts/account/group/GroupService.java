@@ -7,7 +7,7 @@ import com.qprogramming.gifts.account.event.AccountEventRepository;
 import com.qprogramming.gifts.exceptions.GroupNotAdminException;
 import com.qprogramming.gifts.exceptions.GroupNotFoundException;
 import com.qprogramming.gifts.support.Utils;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -21,16 +21,11 @@ import java.util.Set;
  * Created by Khobar on 04.04.2017.
  */
 @Service
+@RequiredArgsConstructor
 public class GroupService {
 
-    private GroupRepository groupRepository;
-    private AccountEventRepository accountEventRepository;
-
-    @Autowired
-    public GroupService(GroupRepository groupRepository, AccountEventRepository accountEventRepository) {
-        this.groupRepository = groupRepository;
-        this.accountEventRepository = accountEventRepository;
-    }
+    private final GroupRepository groupRepository;
+    private final AccountEventRepository accountEventRepository;
 
     /**
      * Creates new group. After creation currently logged in user is added as member and administrator of group

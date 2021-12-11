@@ -19,7 +19,6 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.test.web.servlet.MvcResult;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -27,14 +26,11 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.*;
 
-import static com.qprogramming.gifts.TestUtil.convertJsonToSet;
 import static com.qprogramming.gifts.TestUtil.createAccountList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.*;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class AccountServiceTest extends MockedAccountTestBase {
 
@@ -64,7 +60,7 @@ public class AccountServiceTest extends MockedAccountTestBase {
     private AccountService accountService;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp(){
         super.setup();
         when(giftServiceMock.countAllByAccountId(anyString())).thenReturn(1);
         AuthorityService authorityService = new AuthorityService(authorityRepositoryMock);

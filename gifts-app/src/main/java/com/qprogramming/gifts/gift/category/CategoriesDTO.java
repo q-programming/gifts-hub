@@ -1,10 +1,14 @@
 package com.qprogramming.gifts.gift.category;
 
 import io.jsonwebtoken.lang.Collections;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
 public class CategoriesDTO {
 
     private List<Category> categories;
@@ -15,17 +19,5 @@ public class CategoriesDTO {
             categories = new ArrayList<>();
         }
         return categories;
-    }
-
-    public void setCategories(List<Category> categories) {
-        this.categories = categories;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 }

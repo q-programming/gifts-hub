@@ -4,7 +4,7 @@ import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.exceptions.AccountNotFoundException;
 import com.qprogramming.gifts.gift.Gift;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,16 +12,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class AppEventService {
 
-    private AppEventRepo eventRepo;
-    private AccountService accountService;
-
-    @Autowired
-    public AppEventService(AppEventRepo eventRepo, AccountService accountService) {
-        this.eventRepo = eventRepo;
-        this.accountService = accountService;
-    }
+    private final AppEventRepo eventRepo;
+    private final AccountService accountService;
 
     List<AppEvent> findAllNotProcessed() {
         return eventRepo.findAll();

@@ -17,7 +17,7 @@ import {debounceTime} from 'rxjs/operators';
 })
 export class KidDialogComponent implements OnInit {
   kid: Account;
-  avatarData: any = {};
+  avatarData: any = undefined;
   imageChangedEvent: any = '';
   form: FormGroup;
   update: boolean;

@@ -5,6 +5,9 @@ import com.qprogramming.gifts.account.authority.Authority;
 import com.qprogramming.gifts.account.authority.Role;
 import com.qprogramming.gifts.account.group.Group;
 import io.jsonwebtoken.lang.Collections;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -19,6 +22,9 @@ import static com.qprogramming.gifts.support.Utils.ACCOUNT_COMPARATOR;
 //        generator = ObjectIdGenerators.PropertyGenerator.class,
 //        property = "id")
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 public class Account implements Serializable, OAuth2User, UserDetails, Comparable<Account> {
 
     @Id
@@ -37,7 +43,7 @@ public class Account implements Serializable, OAuth2User, UserDetails, Comparabl
     private String username;
 
     @Column
-    private Date created;
+    private Date created = new Date();
 
     @Enumerated(EnumType.STRING)
     private AccountType type;
@@ -70,7 +76,7 @@ public class Account implements Serializable, OAuth2User, UserDetails, Comparabl
 
     private Boolean groupAdmin = false;
 
-    private Integer giftsCount = 0;
+    private int giftsCount;
 
     @Transient
     private String tokenValue;
@@ -85,10 +91,6 @@ public class Account implements Serializable, OAuth2User, UserDetails, Comparabl
     @Transient
     private Map<String, Object> attributes;
 
-    public Account() {
-        this.created = new Date();
-    }
-
     public Account(String username, String email, String password) {
         this.username = username;
         this.email = email;
@@ -99,62 +101,6 @@ public class Account implements Serializable, OAuth2User, UserDetails, Comparabl
     public Account(String email) {
         this.email = email;
         this.type = AccountType.TEMP;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public Date getCreated() {
-        return created;
-    }
-
-    public void setCreated(Date created) {
-        this.created = created;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getLanguage() {
-        return language;
-    }
-
-    public void setLanguage(String language) {
-        this.language = language;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getSurname() {
-        return surname;
-    }
-
-    public void setSurname(String surname) {
-        this.surname = surname;
-    }
-
-    public Boolean getTourComplete() {
-        return tourComplete;
-    }
-
-    public void setTourComplete(Boolean tourComplete) {
-        this.tourComplete = tourComplete;
     }
 
     public void addAuthority(Authority authority) {
@@ -181,11 +127,6 @@ public class Account implements Serializable, OAuth2User, UserDetails, Comparabl
         return this.authorities;
     }
 
-    public void setAuthorities(Set<Authority> authorities) {
-        this.authorities = authorities;
-    }
-
-
     @JsonIgnore
     public String getPassword() {
         return password;
@@ -201,28 +142,8 @@ public class Account implements Serializable, OAuth2User, UserDetails, Comparabl
         return username;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public AccountType getType() {
-        return type;
-    }
-
-    public void setType(AccountType type) {
-        this.type = type;
-    }
-
     public String getFullname() {
         return StringUtils.isNotBlank(name) && StringUtils.isNotBlank(surname) ? name + " " + surname : null;
-    }
-
-    public Boolean getPublicList() {
-        return publicList;
-    }
-
-    public void setPublicList(Boolean publicList) {
-        this.publicList = publicList;
     }
 
     public boolean getGroupAdmin() {
@@ -231,30 +152,6 @@ public class Account implements Serializable, OAuth2User, UserDetails, Comparabl
 
     public void setGroupAdmin(boolean groupAdmin) {
         this.groupAdmin = groupAdmin;
-    }
-
-    public Integer getGiftsCount() {
-        return giftsCount != null ? giftsCount : 0;
-    }
-
-    public void setGiftsCount(Integer giftsCount) {
-        this.giftsCount = giftsCount;
-    }
-
-    public Boolean getSeenChangelog() {
-        return seenChangelog;
-    }
-
-    public void setSeenChangelog(Boolean seenChangelog) {
-        this.seenChangelog = seenChangelog;
-    }
-
-    public Boolean getNotifications() {
-        return notifications;
-    }
-
-    public void setNotifications(Boolean notifications) {
-        this.notifications = notifications;
     }
 
     public Set<Group> getGroups() {

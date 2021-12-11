@@ -1,10 +1,14 @@
 package com.qprogramming.gifts.gift.category;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.*;
 
 @Entity
+@Getter
+@Setter
 public class Category implements Comparable<Category> {
 
     public static final String REALISED = "REALISED";
@@ -29,30 +33,6 @@ public class Category implements Comparable<Category> {
     public Category() {
         this.id = (long) Integer.MIN_VALUE;
         this.priority = 0;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Integer getPriority() {
-        return priority;
-    }
-
-    public void setPriority(Integer priority) {
-        this.priority = priority;
     }
 
     @Override

@@ -1,5 +1,8 @@
 package com.qprogramming.gifts.settings;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.*;
 import java.util.Objects;
 
@@ -7,6 +10,8 @@ import java.util.Objects;
  * Created by XE050991499 on 2017-03-21.
  */
 @Entity
+@Getter
+@Setter
 public class SearchEngine {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "search_seq_gen")
@@ -18,38 +23,6 @@ public class SearchEngine {
     private String searchString;
     @Column(columnDefinition = "text")
     private String icon;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getSearchString() {
-        return searchString;
-    }
-
-    public void setSearchString(String searchString) {
-        this.searchString = searchString;
-    }
-
-    public String getIcon() {
-        return icon;
-    }
-
-    public void setIcon(String icon) {
-        this.icon = icon;
-    }
 
     @Override
     public boolean equals(Object o) {

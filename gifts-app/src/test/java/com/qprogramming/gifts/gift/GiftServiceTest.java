@@ -52,8 +52,8 @@ public class GiftServiceTest {
     private Account testAccount;
 
     @Before
-    public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
+    public void setUp() {
+        MockitoAnnotations.openMocks(this);
         giftService = new GiftService(giftRepositoryMock, propertyServiceMock, imageRepositoryMock);
         testAccount = TestUtil.createAccount();
         when(securityMock.getAuthentication()).thenReturn(authMock);
@@ -98,7 +98,7 @@ public class GiftServiceTest {
     }
 
     @Test
-    public void findAllByCurrentUser() throws Exception {
+    public void findAllByCurrentUser() {
         Gift newGift = createGift(1L, testAccount);
         newGift.setName("New");
         Gift oldestGift = createGift(2L, testAccount);
@@ -119,7 +119,7 @@ public class GiftServiceTest {
     }
 
     @Test
-    public void findAllByUser() throws Exception {
+    public void findAllByUser() {
         Gift gift1 = createGift(1L, testAccount);
         Gift gift2 = createGift(2L, testAccount);
         gift2.setCreated(new LocalDate().minusMonths(3).toDate());
@@ -132,7 +132,7 @@ public class GiftServiceTest {
     }
 
     @Test
-    public void deleteClaims() throws Exception {
+    public void deleteClaims() {
         Account account = TestUtil.createAccount("John", "Doe");
         account.setId("USER");
         Gift gift1 = createGift(1L, account);
@@ -198,7 +198,7 @@ public class GiftServiceTest {
         Gift gift2 = TestUtil.createGift(2L, account);
         Gift gift3 = TestUtil.createGift(3L, account);
         List<Gift> giftList = Arrays.asList(gift2, gift3);
-        when(giftRepositoryMock.findAllByClaimedAndStatusIsNull(testAccount)).thenReturn(giftList);
+        when(giftRepositoryMock.findAllByClaimedAndRealisedIsNull(testAccount)).thenReturn(giftList);
         Map<String, List<Gift>> allClaimedByCurrentUser = giftService.findAllClaimedByCurrentUser();
         assertEquals(2, allClaimedByCurrentUser.get(account.getId()).size());
 
