@@ -17,7 +17,7 @@
         <java.version>11</java.version>
         <poi.version>5.1.0</poi.version>
         <app.debug.enabled>false</app.debug.enabled>
-        <spring-boot.version>2.6.1</spring-boot.version>
+        <spring-boot.version>2.5.7</spring-boot.version>
         <freemarker.version>2.3.31</freemarker.version>
         <imgscalr-lib.version>4.2</imgscalr-lib.version>
         <jsoup.version>1.14.3</jsoup.version>
