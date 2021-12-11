@@ -80,7 +80,7 @@ public class GiftService {
      * @return List of all users gifts
      */
     private List<Gift> getCurrentUserGifts(boolean realised) {
-        int giftAge = Integer.valueOf(propertyService.getProperty(APP_GIFT_AGE));
+        int giftAge = Integer.parseInt(propertyService.getProperty(APP_GIFT_AGE));
         String id = Utils.getCurrentAccountId();
         List<Gift> giftList = realised ? giftRepository.findByUserIdAndRealisedIsNotNullOrderByRealisedDesc(id) : giftRepository.findByUserIdAndRealisedIsNullOrderByCreatedDesc(id);
         return giftList.stream().filter(not(Gift::isHidden)).peek(gift -> {
@@ -97,7 +97,7 @@ public class GiftService {
      * @return List of all Gifts for Account with ID
      */
     private List<Gift> getUserGifts(String id, boolean realised) {
-        int giftAge = Integer.valueOf(propertyService.getProperty(APP_GIFT_AGE));
+        int giftAge = Integer.parseInt(propertyService.getProperty(APP_GIFT_AGE));
         List<Gift> giftList = realised ? giftRepository.findByUserIdAndRealisedIsNotNullOrderByRealisedDesc(id) : giftRepository.findByUserIdAndRealisedIsNullOrderByCreatedDesc(id);
         List<Gift> gifts = giftList.stream().peek(gift -> setGiftStatus(gift, giftAge)).collect(Collectors.toList());
         if (Utils.getCurrentAccount() == null) {
@@ -253,7 +253,7 @@ public class GiftService {
      * Finds all gifts that were claimed by current account
      */
     public Map<String, List<Gift>> findAllClaimedByCurrentUser() {
-        List<Gift> gifts = giftRepository.findAllByClaimedAndStatusIsNull(Utils.getCurrentAccount());
+        List<Gift> gifts = giftRepository.findAllByClaimedAndRealisedIsNull(Utils.getCurrentAccount());
         return gifts.stream().collect(groupingBy(Gift::getUserId));
     }
 

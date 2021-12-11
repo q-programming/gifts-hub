@@ -13,3 +13,6 @@ hs_err_pid*
 .idea/
 target/
 gifts.iml
+*.iml
+gifts-app/*.iml
+gifts-web/*.iml

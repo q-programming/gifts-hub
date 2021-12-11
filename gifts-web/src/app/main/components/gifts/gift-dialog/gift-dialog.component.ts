@@ -149,12 +149,8 @@ export class GiftDialogComponent implements OnInit, AfterViewInit {
         .valueChanges
         .pipe(
           startWith<string | Category>(''),
-          map(value => {
-            return typeof value === 'string' ? value : value.name
-          }),
-          map(name => {
-            return name ? this._filter(name) : this.categories
-          })
+          map(value => typeof value === 'string' ? value : value.name),
+          map(name => name ? this._filter(name) : this.categories)
         );
 
     })

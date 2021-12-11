@@ -303,7 +303,7 @@ public class AccountService implements UserDetailsService {
      * @param account account for which group will be used to fetch all member
      * @return list of all sorted users
      */
-    @Cacheable("accounts")
+    @Cacheable(value = "accounts", keyGenerator = "accountKeyGenerator")
     public Set<Account> findAllFromGroups(Account account) {
         Set<Account> accounts = _accountRepository.findByGroupsIn(account.getGroups());
         Set<Account> result = accounts

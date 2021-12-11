@@ -15,9 +15,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>11</java.version>
-        <poi.version>5.0.0</poi.version>
+        <poi.version>5.1.0</poi.version>
         <app.debug.enabled>false</app.debug.enabled>
-        <spring-boot.version>2.5.5</spring-boot.version>
+        <spring-boot.version>2.6.1</spring-boot.version>
         <freemarker.version>2.3.31</freemarker.version>
         <imgscalr-lib.version>4.2</imgscalr-lib.version>
         <jsoup.version>1.14.3</jsoup.version>
@@ -25,9 +25,10 @@
         <joda-time.version>2.10.12</joda-time.version>
         <commons-lang3.version>3.12.0</commons-lang3.version>
         <java-uuid-generator.version>4.0.1</java-uuid-generator.version>
-        <postgresql.version>42.2.18</postgresql.version>
+        <postgresql.version>42.3.1</postgresql.version>
         <jackson-datatype-hibernate5.version>2.11.1</jackson-datatype-hibernate5.version>
         <jjwt.version>0.9.1</jjwt.version>
+        <log4j2.version>2.15.0</log4j2.version>
     </properties>
     <dependencies>
         <dependency>
@@ -130,11 +131,11 @@
         <!--<artifactId>jackson-datatype-jsr310</artifactId>-->
         <!--</dependency>-->
         <!--depent on web-->
-        <dependency>
-            <groupId>com.qprogramming</groupId>
-            <artifactId>gifts-web</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.qprogramming</groupId>-->
+<!--            <artifactId>gifts-web</artifactId>-->
+<!--            <version>${project.version}</version>-->
+<!--        </dependency>-->
         <!--mail-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -165,6 +166,16 @@
     </dependencies>
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-api</artifactId>
+                <version>${log4j2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-to-slf4j</artifactId>
+                <version>${log4j2.version}</version>
+            </dependency>
             <dependency>
                 <!-- Import dependency management from Spring Boot -->
                 <groupId>org.springframework.boot</groupId>
