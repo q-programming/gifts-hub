@@ -167,7 +167,6 @@ export class UserListComponent implements OnInit {
    * @param group group which current user would like to leave
    */
   leaveFamily(group) {
-    this.trigger.closeMenu();
     this.userSrv.confirmGroupLeave(group).subscribe(result => {
       if (result) {
         this.getUsers(true);
@@ -181,7 +180,6 @@ export class UserListComponent implements OnInit {
    * @param group group to which kid will be added
    */
   addKidDialog(group: Group) {
-    this.trigger.closeMenu();
     let kid = new Account();
     const dialogRef = this.dialog.open(KidDialogComponent, {
       panelClass: 'gifts-modal-normal',

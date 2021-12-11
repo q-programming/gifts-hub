@@ -5,7 +5,7 @@
     <parent>
         <artifactId>gifts</artifactId>
         <groupId>com.qprogramming</groupId>
-        <version>1.2.4</version>
+        <version>1.2.5</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -131,11 +131,11 @@
         <!--<artifactId>jackson-datatype-jsr310</artifactId>-->
         <!--</dependency>-->
         <!--depent on web-->
-<!--        <dependency>-->
-<!--            <groupId>com.qprogramming</groupId>-->
-<!--            <artifactId>gifts-web</artifactId>-->
-<!--            <version>${project.version}</version>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>com.qprogramming</groupId>
+            <artifactId>gifts-web</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <!--mail-->
         <dependency>
             <groupId>org.springframework.boot</groupId>

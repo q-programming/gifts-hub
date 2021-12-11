@@ -1,4 +1,4 @@
-@use '~@angular/material' as mat;
+@use '@angular/material' as mat;
 @import '~@angular/material/theming';
 @import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Kalam');
 
@@ -122,11 +122,15 @@ body {
     max-width: 100% !important;
   }
   .gifts-modal-normal > mat-dialog-container {
-    padding: 0 0 0 0 !important;
+    height: 100vh;
   }
   .gifts-modal-normal > .mat-dialog-content {
     margin: 0 !important;
   }
+  mat-dialog-content.mat-dialog-content.gifts-dialog-content {
+    max-height: initial;
+  }
+
   .gifts-modal-normal .mat-expansion-panel {
     padding: 1px 10px !important;
   }
@@ -241,3 +245,14 @@ a.black {
 .btt-btn:active {
   background: rgba(255, 255, 255, 0.8);
 }
+
+//modal action fix
+.gift-dialog-component{
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.spacer {
+  flex-grow: 1;
+}
+
