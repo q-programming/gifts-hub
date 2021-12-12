@@ -116,25 +116,24 @@ body {
 @media (max-width: 768px) {
   .gifts-modal-normal {
     max-width: 100% !important;
+    height: 100%;
   }
 
   .gifts-modal {
     max-width: 100% !important;
-  }
-  .gifts-modal-normal > mat-dialog-container {
     height: 100vh;
   }
+
   .gifts-modal-normal > .mat-dialog-content {
     margin: 0 !important;
   }
-  mat-dialog-content.mat-dialog-content.gifts-dialog-content {
-    max-height: 70vh;
+  .mat-dialog-content.gifts-modal {
+    max-height: 80vh;
   }
 
   .gifts-modal-normal .mat-expansion-panel {
     padding: 1px 10px !important;
   }
-
 
   .mat-card {
     margin: 0 5px;
@@ -248,7 +247,7 @@ a.black {
 
 //modal action fix
 .gift-dialog-component{
-  height: 90%;
+  height: 100%;
   display: flex;
   flex-direction: column;
 }
