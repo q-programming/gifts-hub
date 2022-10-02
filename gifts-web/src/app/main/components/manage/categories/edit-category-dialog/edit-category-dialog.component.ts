@@ -1,7 +1,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {ApiService} from "@core-services/api.service";
-import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators} from "@angular/forms";
 import {CategoryDTO} from "@model/AppSettings";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {environment} from "@env/environment";
@@ -13,7 +13,7 @@ import {environment} from "@env/environment";
 })
 export class EditCategoryDialogComponent implements OnInit {
 
-  form: FormGroup;
+  form: UntypedFormGroup;
   update: boolean;
   operation: CategoryEditType;
   categoryDTO: CategoryDTO;
@@ -22,10 +22,10 @@ export class EditCategoryDialogComponent implements OnInit {
   constructor(private dialogRef: MatDialogRef<EditCategoryDialogComponent>,
               @Inject(MAT_DIALOG_DATA) public data: any,
               private apiSrv: ApiService,
-              private formBuilder: FormBuilder) {
+              private formBuilder: UntypedFormBuilder) {
     this.operation = data.operation;
     this.form = this.formBuilder.group({
-      name: new FormControl('', [Validators.required])
+      name: new UntypedFormControl('', [Validators.required])
     });
     if (this.operation == CategoryEditType.UPDATE) {
       this.update = true;

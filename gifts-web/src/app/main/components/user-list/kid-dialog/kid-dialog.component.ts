@@ -1,7 +1,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {DOCUMENT} from "@angular/common";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
-import {FormControl, FormGroup, Validators} from "@angular/forms";
+import {UntypedFormControl, UntypedFormGroup, Validators} from "@angular/forms";
 import {Account} from "@model/Account";
 import {AlertService} from "@core-services/alert.service";
 import {ApiService} from "@core-services/api.service";
@@ -19,7 +19,7 @@ export class KidDialogComponent implements OnInit {
   kid: Account;
   avatarData: any = undefined;
   imageChangedEvent: any = '';
-  form: FormGroup;
+  form: UntypedFormGroup;
   update: boolean;
   uploadInProgress: boolean;
 
@@ -33,11 +33,11 @@ export class KidDialogComponent implements OnInit {
       this.avatarData = this.kid.avatar;
       this.update = true;
     }
-    this.form = new FormGroup({
-        name: new FormControl(this.kid.name, [Validators.required]),
-        surname: new FormControl(this.kid.surname, [Validators.required]),
-        username: new FormControl(this.kid.username, [Validators.required]),
-        publicList: new FormControl(this.kid.publicList)
+    this.form = new UntypedFormGroup({
+        name: new UntypedFormControl(this.kid.name, [Validators.required]),
+        surname: new UntypedFormControl(this.kid.surname, [Validators.required]),
+        username: new UntypedFormControl(this.kid.username, [Validators.required]),
+        publicList: new UntypedFormControl(this.kid.publicList)
       }
     );
   }

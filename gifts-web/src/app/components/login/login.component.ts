@@ -1,7 +1,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {AuthenticationService, FACEBOOK_AUTH_URL, GOOGLE_AUTH_URL} from "@core-services/authentication.service";
 import {Router} from "@angular/router";
-import {FormControl, Validators} from "@angular/forms";
+import {UntypedFormControl, Validators} from "@angular/forms";
 import {DOCUMENT} from "@angular/common";
 
 @Component({
@@ -11,8 +11,8 @@ import {DOCUMENT} from "@angular/common";
 })
 export class LoginComponent implements OnInit {
 
-  usernameCtrl = new FormControl('', Validators.required);
-  passwordCtrl = new FormControl('', Validators.required);
+  usernameCtrl = new UntypedFormControl('', Validators.required);
+  passwordCtrl = new UntypedFormControl('', Validators.required);
   FacebookLoginURL;
   GoogleLoginURL;
   redirect_url;
