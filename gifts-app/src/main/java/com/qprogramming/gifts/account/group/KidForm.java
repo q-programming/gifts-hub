@@ -7,6 +7,8 @@ import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
 
+import static com.qprogramming.gifts.support.Utils.convertToBirthday;
+
 /**
  * Created by Remote on 05.04.2017.
  */
@@ -24,6 +26,7 @@ public class KidForm {
     private String username;
     private String avatar;
     private Boolean publicList = false;
+    private String birthday;
 
     public Account createAccount() {
         Account kid = new Account();
@@ -31,6 +34,7 @@ public class KidForm {
         kid.setSurname(getSurname());
         kid.setUsername(getUsername());
         kid.setPublicList(getPublicList());
+        kid.setBirthday(convertToBirthday(getBirthday()));
         return kid;
     }
 }

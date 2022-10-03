@@ -526,6 +526,10 @@
         "upload": "Wybierz plik",
         "wronguser": "Bład podczas zmiany awatara. Złe zapytanie"
       },
+      "birthday": {
+        "text": "Urodziny",
+        "help": "Ustaw datę swoich urodzin , aby inni użytkownicy dostali informację kiedy się będą zbliżać"
+      },
       "language": "Język",
       "notifications": {
         "help": "Zaznacz aby otrzymywać powiadomienia email z informacjami o nowych lub zrealizowanych prezentach w aplikacji lub usuniętych zarezerwowanych prezentach.<br>Newsletter będzie wysyłany w każdy poniedziałek o ile wystąpiły jakieś wydarzenia",

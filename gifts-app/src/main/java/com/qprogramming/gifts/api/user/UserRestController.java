@@ -41,6 +41,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.UnsupportedEncodingException;
 import java.security.Principal;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -48,6 +49,7 @@ import java.util.stream.Collectors;
 
 import static com.qprogramming.gifts.exceptions.AccountNotFoundException.ACCOUNT_WITH_ID_WAS_NOT_FOUND;
 import static com.qprogramming.gifts.exceptions.GroupNotFoundException.GROUP_NOT_FOUND;
+import static com.qprogramming.gifts.support.Utils.convertToBirthday;
 import static com.qprogramming.gifts.support.Utils.not;
 
 @RestController
@@ -56,6 +58,7 @@ public class UserRestController {
 
     public static final String PASSWORD_REGEXP = "^^(?=.*[A-Z])(?=.*[0-9])(?=.*[a-z].*[a-z].*[a-z]).{8,}$";
     public static final String USERNAME_REGEXP = "^[a-zA-Z0-9_]+$";
+
     public static final String NEWSLETTER = "notifications";
     public static final String PUBLIC_LIST = "publicList";
     public static final String LANGUAGE = "language";
@@ -563,6 +566,7 @@ public class UserRestController {
             if (StringUtils.isNotBlank(form.getSurname())) {
                 kidAccount.setSurname(form.getSurname());
             }
+            kidAccount.setBirthday(convertToBirthday(form.getBirthday()));
             kidAccount.setPublicList(form.getPublicList());
             _accountService.update(kidAccount);
             if (StringUtils.isNotBlank(form.getAvatar())) {
@@ -650,7 +654,6 @@ public class UserRestController {
     @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/settings", method = RequestMethod.POST)
     public ResponseEntity<?> changeSettings(@RequestBody AccountSettings accountSettings) {
-        //TODO rewrite ?
         Account account;
         try {
             account = _accountService.findById(Utils.getCurrentAccountId());
@@ -661,8 +664,13 @@ public class UserRestController {
         if (StringUtils.isNotBlank(accountSettings.getLanguage())) {
             account.setLanguage(accountSettings.getLanguage());
         }
-        account.setPublicList(accountSettings.getPublicList());
-        account.setNotifications(accountSettings.getNewsletter());
+        account.setPublicList(accountSettings.isPublicList());
+        account.setNotifications(accountSettings.isNewsletter());
+        try {
+            account.setBirthday(convertToBirthday(accountSettings.getBirthday()));
+        } catch (DateTimeParseException e) {
+            LOG.error("Failed to parse date {} , value was not updated", accountSettings.getBirthday());
+        }
         _accountService.update(account);
         _accountService.signin(account);
         return new ResponseEntity<>(HttpStatus.OK);

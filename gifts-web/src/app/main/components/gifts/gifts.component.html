@@ -2,11 +2,21 @@
 <mat-card class="fixed-container header">
   <div fxLayout="row" fxLayoutAlign="center center">
     <div fxFlex="10" fxFlex.lt-sm="15%">
-      <img matCardAvatar [src]="avatar" class="avatar">
+      <img matCardAvatar [src]="avatar" class="avatar" alt="User Avatar">
+
     </div>
     <!--Accounts search bar-->
     <div fxFlex>
       <account-list (account)="changeViewedAccount($event)"></account-list>
+    </div>
+    <div *ngIf="viewedAccount && viewedAccount.birthday" fxFlex="15" fxFlex.lt-lg="15" fxFlex.lt-md="15" fxHide.lt-md="true" class="text-center">
+      <div>
+        <mat-icon class="v-sub">today</mat-icon>
+        <span class="font-weight-bold">{{'user.settings.birthday.text'|translate}}</span>
+      </div>
+      <div>
+        {{viewedAccount.birthday | date : 'dd-MM-yyyy' }}
+      </div>
     </div>
     <div fxFlex="22" fxFlex.lt-lg="30" fxFlex.lt-md="35">
       <!--mobile buttons-->

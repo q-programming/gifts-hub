@@ -526,6 +526,10 @@
         "upload": "Choose file",
         "wronguser": "Error while uploading avatar. Wrong request"
       },
+      "birthday": {
+        "text": "Birthday",
+        "help": "Set your birthday so that other users will receive information when it will be nearby"
+      },
       "language": "Language",
       "notifications": {
         "help": "Select to receive email notifications with information about removed claimed gifts and what was added or marked as completed in application.<br>Newsletter will be sent every monday if there actually will be some events",

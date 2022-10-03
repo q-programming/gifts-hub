@@ -20,6 +20,7 @@ export class Account {
   seenChangelog?: boolean;
   admin?:boolean;
   groups?:Group[];
+  birthday: string;
 }
 
 export class Authority {

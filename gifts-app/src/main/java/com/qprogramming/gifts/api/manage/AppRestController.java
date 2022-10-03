@@ -76,6 +76,9 @@ public class AppRestController {
         if (StringUtils.isNotBlank(settings.getGiftAge())) {
             propertyService.update(APP_GIFT_AGE, settings.getGiftAge());
         }
+        if (StringUtils.isNotBlank(settings.getBirthdayReminder())) {
+            propertyService.update(APP_BIRTHDAY_REMINDER, settings.getBirthdayReminder());
+        }
         if (!CollectionUtils.isEmpty(settings.getSearchEngines())) {
             searchEngineService.updateSearchEngines(settings.getSearchEngines());
         }
@@ -188,6 +191,7 @@ public class AppRestController {
         settings.setLanguage(propertyService.getDefaultLang());
         settings.setSearchEngines(searchEngineService.getAllSearchEngines());
         settings.setGiftAge(propertyService.getProperty(APP_GIFT_AGE));
+        settings.setBirthdayReminder(propertyService.getProperty(APP_BIRTHDAY_REMINDER));
         settings.setSort(Settings.SortBy.fromString(propertyService.getProperty(APP_DEFAULT_SORT)));
         Settings.Email emailSettings = new Settings.Email();
         emailSettings.setHost(propertyService.getProperty(APP_EMAIL_HOST));
