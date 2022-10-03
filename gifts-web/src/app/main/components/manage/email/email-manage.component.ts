@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {AlertService} from "@core-services/alert.service";
 import {ApiService} from "@core-services/api.service";
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {AppSettings} from "@model/AppSettings";
 import {environment} from "@env/environment";
 
@@ -12,11 +12,11 @@ import {environment} from "@env/environment";
 })
 export class EmailManageComponent implements OnInit {
 
-  form: FormGroup;
+  form: UntypedFormGroup;
   settings: AppSettings = new AppSettings();
   encodings = ["UTF-8"];
 
-  constructor(private alertSrv: AlertService, private apiSrv: ApiService, private formBuilder: FormBuilder) {
+  constructor(private alertSrv: AlertService, private apiSrv: ApiService, private formBuilder: UntypedFormBuilder) {
     this.form = this.formBuilder.group({
       host: [this.settings.email.host, Validators.required],
       port: [this.settings.email.port, Validators.required],

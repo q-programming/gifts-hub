@@ -2,11 +2,11 @@ import {Component, OnInit} from '@angular/core';
 import {environment} from "@env/environment";
 import {
   AbstractControl,
-  FormBuilder,
-  FormControl,
-  FormGroup,
   FormGroupDirective,
   NgForm,
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
   Validators
 } from "@angular/forms";
 import {ErrorStateMatcher} from "@angular/material/core";
@@ -25,14 +25,14 @@ export class RegisterComponent implements OnInit {
   GOOGLE_AUTH_URL = GOOGLE_AUTH_URL;
   FACEBOOK_AUTH_URL = FACEBOOK_AUTH_URL;
   login_url = environment.context + environment.oauth_login_url;
-  baseForm: FormGroup;
-  passwordForm: FormGroup;
+  baseForm: UntypedFormGroup;
+  passwordForm: UntypedFormGroup;
   myColors = ['#DD2C00', '#FF6D00', '#FFD600', '#AEEA00', '#00C853'];
   matcher = new MyErrorStateMatcher();
   currentPass;
   validUsername: boolean;
 
-  constructor(private formBuilder: FormBuilder,
+  constructor(private formBuilder: UntypedFormBuilder,
               private router: Router,
               private apiSrv: ApiService,
               private alertSrv: AlertService,
@@ -78,7 +78,7 @@ export class RegisterComponent implements OnInit {
     return (password.value !== confirmPassword.value) ? {notSame: true} : null;
   }
 
-  checkPasswords(group: FormGroup) {
+  checkPasswords(group: UntypedFormGroup) {
     let pass = group.controls.password.value;
     let confirmPass = group.controls.confirmPassword.value;
     return pass === confirmPass ? null : {notSame: true}
@@ -125,7 +125,7 @@ export class RegisterComponent implements OnInit {
 }
 
 export class MyErrorStateMatcher implements ErrorStateMatcher {
-  isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
+  isErrorState(control: UntypedFormControl | null, form: FormGroupDirective | NgForm | null): boolean {
     const invalidCtrl = !!(control && control.invalid && control.parent.dirty);
     const invalidParent = !!(control && control.parent && control.parent.invalid && control.parent.dirty);
     return (invalidCtrl || invalidParent);

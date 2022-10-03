@@ -4,7 +4,7 @@ import {ApiService} from "@core-services/api.service";
 import {languages} from "../../../../../assets/i18n/languages";
 import {AppSettings, SortBy} from "@model/AppSettings";
 import {environment} from "@env/environment";
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {DOCUMENT} from "@angular/common";
 
 @Component({
@@ -14,14 +14,14 @@ import {DOCUMENT} from "@angular/common";
 })
 export class AppManageComponent implements OnInit {
   SortBy = SortBy;
-  form: FormGroup;
+  form: UntypedFormGroup;
   languages: any = languages;
   @Input()
   settings: AppSettings;
   @Output()
   commit: EventEmitter<boolean> = new EventEmitter();
 
-  constructor(private alertSrv: AlertService, private apiSrv: ApiService, private formBuilder: FormBuilder, @Inject(DOCUMENT) private document: Document) {
+  constructor(private alertSrv: AlertService, private apiSrv: ApiService, private formBuilder: UntypedFormBuilder, @Inject(DOCUMENT) private document: Document) {
 
   }
 

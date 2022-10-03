@@ -8,7 +8,7 @@ import {
   SkipSelf
 } from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 import {AppMaterialModules} from "./material.module";
 import {FlexLayoutModule} from "@angular/flex-layout";
@@ -61,7 +61,7 @@ import {ScrollTopComponent} from './components/scroll-top/scroll-top.component';
   providers: [
     AuthGuard,
     AdminGuard,
-    FormBuilder,
+    UntypedFormBuilder,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,

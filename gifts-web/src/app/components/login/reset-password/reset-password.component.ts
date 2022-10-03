@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormControl, Validators} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormControl, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
 import {ApiService} from "@core-services/api.service";
 import {AlertService} from "@core-services/alert.service";
@@ -13,9 +13,9 @@ import {environment} from "@env/environment";
 })
 export class ResetPasswordComponent implements OnInit {
 
-  emailResetCtrl = new FormControl('', [Validators.required, Validators.email]);
+  emailResetCtrl = new UntypedFormControl('', [Validators.required, Validators.email]);
 
-  constructor(private formBuilder: FormBuilder,
+  constructor(private formBuilder: UntypedFormBuilder,
               private router: Router,
               private apiSrv: ApiService,
               private alertSrv: AlertService,

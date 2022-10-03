@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {AbstractControl, FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {AbstractControl, UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {MyErrorStateMatcher} from "../register/register.component";
 import {ActivatedRoute, Router} from "@angular/router";
 import {ApiService} from "@core-services/api.service";
@@ -16,7 +16,7 @@ import {environment} from "@env/environment";
 export class ChangePasswordComponent implements OnInit {
 
 
-  passwordForm: FormGroup;
+  passwordForm: UntypedFormGroup;
   myColors = ['#DD2C00', '#FF6D00', '#FFD600', '#AEEA00', '#00C853'];
   matcher = new MyErrorStateMatcher();
   currentPass;
@@ -24,7 +24,7 @@ export class ChangePasswordComponent implements OnInit {
 
 
   constructor(private activatedRoute: ActivatedRoute,
-              private formBuilder: FormBuilder,
+              private formBuilder: UntypedFormBuilder,
               private router: Router,
               private apiSrv: ApiService,
               private alertSrv: AlertService,

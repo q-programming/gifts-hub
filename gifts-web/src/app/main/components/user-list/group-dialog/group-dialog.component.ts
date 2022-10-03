@@ -1,6 +1,6 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
-import {FormControl} from "@angular/forms";
+import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
+import {UntypedFormControl} from "@angular/forms";
 import * as _ from "lodash";
 import {Group, GroupForm} from "@model/Group";
 import {Account, AccountType} from "@model/Account";
@@ -18,8 +18,8 @@ export class GroupDialogComponent implements OnInit {
   AccountType = AccountType;
   update: boolean;
   group: Group;
-  newMemberCtrl: FormControl;
-  nameCtrl: FormControl;
+  newMemberCtrl: UntypedFormControl;
+  nameCtrl: UntypedFormControl;
   currentAccount: Account;
   identifications: string[] = [];
   admins: string[] = [];
@@ -40,8 +40,8 @@ export class GroupDialogComponent implements OnInit {
       }, this);
       this.setMembers()
     }
-    this.newMemberCtrl = new FormControl('');
-    this.nameCtrl = new FormControl(this.group.name);
+    this.newMemberCtrl = new UntypedFormControl('');
+    this.nameCtrl = new UntypedFormControl(this.group.name);
   }
 
   private findAndSetAdmins(member) {
