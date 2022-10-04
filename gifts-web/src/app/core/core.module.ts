@@ -31,6 +31,7 @@ import {RouterModule} from "@angular/router";
 import {AvatarComponent} from "./components/avatar/avatar.component";
 import {InnerLoaderComponent} from "./components/inner-loader/inner-loader.component";
 import {ScrollTopComponent} from './components/scroll-top/scroll-top.component';
+import {AppService} from "@core-services/app.service";
 
 
 @NgModule({
@@ -103,7 +104,8 @@ export class CoreModule {
         AuthenticationService,
         ApiService,
         AlertService,
-        AvatarService
+        AvatarService,
+        AppService
       ]
     };
   }

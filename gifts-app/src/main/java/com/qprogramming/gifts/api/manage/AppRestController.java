@@ -297,6 +297,13 @@ public class AppRestController {
         return ResponseEntity.ok(model);
     }
 
+    @RequestMapping(value = "/birthday-reminder", method = RequestMethod.GET)
+    public ResponseEntity<Map<String, Object>> getDaysReminder() {
+        Map<String, Object> model = new HashMap<>();
+        model.put("days", propertyService.getProperty(APP_BIRTHDAY_REMINDER));
+        return ResponseEntity.ok(model);
+    }
+
     @RequestMapping(value = "/sort", method = RequestMethod.GET)
     public ResponseEntity<SortBy> getSortBy() {
         return ResponseEntity.ok(Settings.SortBy.fromString(propertyService.getProperty(APP_DEFAULT_SORT)));

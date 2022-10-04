@@ -8,8 +8,7 @@ import {Gift, GiftStatus} from "@model/Gift";
 import {Account} from "@model/Account";
 import {TranslateService} from "@ngx-translate/core";
 import {AvatarService} from "@core-services/avatar.service";
-import {ApiService} from "@core-services/api.service";
-import {environment} from "@env/environment";
+import {AppService} from "@core-services/app.service";
 
 
 @Component({
@@ -28,7 +27,7 @@ export class GiftsPublicComponent implements OnInit {
   label_realised: string;
   avatar: string = 'assets/images/avatar-placeholder.png';
   currentAccount: Account;
-  isLoading:boolean;
+  isLoading: boolean;
 
   constructor(private activatedRoute: ActivatedRoute,
               private router: Router,
@@ -38,20 +37,18 @@ export class GiftsPublicComponent implements OnInit {
               private userSrv: UserService,
               private translate: TranslateService,
               private avatarSrv: AvatarService,
-              private apiSrv: ApiService) {
+              private appSrv: AppService) {
   }
 
   ngOnInit() {
     this.currentAccount = this.authSrv.currentAccount;
-    this.apiSrv.get(`${environment.app_url}/default-language`).subscribe(defaults => {
-      if (defaults) {
-        let lang = defaults.language;
-        this.translate.setDefaultLang(lang);
-        this.translate.use(lang)
-        this.translate.get('gift.category.other').subscribe(value => this.label_other = value);
-        this.translate.get('gift.category.realised.text').subscribe(value => this.label_realised = value);
-      }
-    });
+    this.appSrv.getDefaultLanguage().subscribe(lang => {
+      this.translate.setDefaultLang(lang);
+      this.translate.use(lang)
+      this.translate.get('gift.category.other').subscribe(value => this.label_other = value);
+      this.translate.get('gift.category.realised.text').subscribe(value => this.label_realised = value);
+    })
+
     this.activatedRoute.params.subscribe(params => {
       this.identification = params['user'];
       //get gift list

@@ -1,10 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
-import {environment} from "@env/environment";
 import {TranslateService} from "@ngx-translate/core";
-import {ApiService} from "@core-services/api.service";
 import {AuthenticationService} from "@core-services/authentication.service";
 import {Account} from "@model/Account";
+import {AppService} from "@core-services/app.service";
 
 @Component({
   selector: 'app-error',
@@ -19,17 +18,15 @@ export class ErrorComponent implements OnInit {
 
   constructor(private activatedRoute: ActivatedRoute,
               private translate: TranslateService,
-              private apiSrv: ApiService,
+              private appSrv: AppService,
               private authSrv: AuthenticationService) {
     this.currentAccount = this.authSrv.currentAccount;
     if (!this.authSrv.currentAccount) {
-      this.apiSrv.get(`${environment.app_url}/default-language`).subscribe(defaults => {
-        if (defaults) {
-          let lang = defaults.language;
+      this.appSrv.getDefaultLanguage().subscribe(lang => {
           this.translate.setDefaultLang(lang);
-          this.translate.use(lang)
+          this.translate.use(lang);
         }
-      })
+      )
     }
   }
 

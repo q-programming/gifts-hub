@@ -528,7 +528,9 @@
       },
       "birthday": {
         "text": "Birthday",
-        "help": "Set your birthday so that other users will receive information when it will be nearby"
+        "help": "Set your birthday so that other users will receive information when it will be nearby",
+        "inDays": "Birthday in {{days}} days",
+        "tomorrow": "Birthday tomorrow!"
       },
       "language": "Language",
       "notifications": {

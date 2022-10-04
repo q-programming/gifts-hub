@@ -9,13 +9,18 @@
     <div fxFlex>
       <account-list (account)="changeViewedAccount($event)"></account-list>
     </div>
-    <div *ngIf="viewedAccount && viewedAccount.birthday" fxFlex="15" fxFlex.lt-lg="15" fxFlex.lt-md="15" fxHide.lt-md="true" class="text-center">
+    <div *ngIf="viewedAccount && viewedAccount.birthday" fxFlex="15" fxFlex.lt-lg="15" fxFlex.lt-md="15"
+         matTooltip="{{birthdayInDays === 1?
+                ('user.settings.birthday.tomorrow' | translate ) :
+                ('user.settings.birthday.inDays' | translate : {days:birthdayInDays})}}"
+         fxHide.lt-md="true" class="text-center"
+    >
       <div>
         <mat-icon class="v-sub">today</mat-icon>
         <span class="font-weight-bold">{{'user.settings.birthday.text'|translate}}</span>
       </div>
-      <div>
-        {{viewedAccount.birthday | date : 'dd-MM-yyyy' }}
+      <div [class.birthday-soon]="birthdaySoon">
+        {{viewedAccount.birthday | date : 'd MMMM' :'': lang }}
       </div>
     </div>
     <div fxFlex="22" fxFlex.lt-lg="30" fxFlex.lt-md="35">

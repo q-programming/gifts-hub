@@ -17,6 +17,10 @@
 .content-filtered {
   margin-top: 180px
 }
+.birthday-soon{
+  color: red;
+  font-weight: bold;
+}
 
 @media (max-width: 598px) {
   .content {
