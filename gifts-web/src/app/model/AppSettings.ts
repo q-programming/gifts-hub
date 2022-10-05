@@ -6,6 +6,7 @@ export class AppSettings {
   email: EmailSettings;
   appUrl: string;
   giftAge: number;
+  birthdayReminder: number;
   searchEngines: SearchEngine[];
   sort: SortBy;
   categories: CategoryDTO[];

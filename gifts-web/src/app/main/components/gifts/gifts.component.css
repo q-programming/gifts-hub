@@ -17,6 +17,9 @@
 .content-filtered {
   margin-top: 180px
 }
+.birthday{
+  cursor: help;
+}
 .birthday-soon{
   color: red;
   font-weight: bold;

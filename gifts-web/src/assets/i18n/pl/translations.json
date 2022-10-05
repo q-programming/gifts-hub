@@ -25,6 +25,10 @@
         "save": "Zapisz ustawienia",
         "text": "Ustawienia aplikacji"
       },
+      "birthdayReminder": {
+        "text": "Przypomnienia o urodzinach",
+        "help": "Ustaw kiedy aplikacja będzie starała się wyśłać przypomnienia o nadchodzących urodzinach i oznaczała to w aplikacji na liście użytkownika"
+      },
       "categories": {
         "count": "Prezentów w kategorii",
         "hint": "Możesz zmienić priorytet kategorii jak będa wyświetlane na listach zyczeń uzytkowników ( kategoria z najwyższym priorytetem będzie wyświetlana pierwsza ) poprzez podniesienie i przesunięcie <br>\nEdytuj kategorię klikająć guzik edycji , usuń klikająć ikonę kosza.",
@@ -530,7 +534,7 @@
         "text": "Urodziny",
         "help": "Ustaw datę swoich urodzin , aby inni użytkownicy dostali informację kiedy się będą zbliżać",
         "inDays": "Urodziny za {{days}} dni",
-        "tomorrow": "Jutro urodziny!"
+        "today": "Dzis urodziny!"
       },
       "language": "Język",
       "notifications": {

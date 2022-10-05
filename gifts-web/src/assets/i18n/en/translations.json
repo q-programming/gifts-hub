@@ -25,6 +25,10 @@
         "save": "Save settings",
         "text": "Application settings"
       },
+      "birthdayReminder": {
+        "text": "Birthday reminder",
+        "help": "Set when application will try to send reminders about incoming birthdays and on application user gift list"
+      },
       "categories": {
         "count": "Gifts in category",
         "hint": "You can change priority of how categories will be shown on user's wish lists (categories with top priority will be shown first)  by drag&droping it<br>\nEdit category by clicking edit button , or remove it by clicking trash icon.",
@@ -530,7 +534,7 @@
         "text": "Birthday",
         "help": "Set your birthday so that other users will receive information when it will be nearby",
         "inDays": "Birthday in {{days}} days",
-        "tomorrow": "Birthday tomorrow!"
+        "today": "Birthday today!"
       },
       "language": "Language",
       "notifications": {

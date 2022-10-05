@@ -10,13 +10,13 @@
       <account-list (account)="changeViewedAccount($event)"></account-list>
     </div>
     <div *ngIf="viewedAccount && viewedAccount.birthday" fxFlex="15" fxFlex.lt-lg="15" fxFlex.lt-md="15"
-         matTooltip="{{birthdayInDays === 1?
-                ('user.settings.birthday.tomorrow' | translate ) :
+         matTooltip="{{birthdayInDays === 0?
+                ('user.settings.birthday.today' | translate ) :
                 ('user.settings.birthday.inDays' | translate : {days:birthdayInDays})}}"
-         fxHide.lt-md="true" class="text-center"
+         fxHide.lt-md="true" class="text-center birthday"
     >
       <div>
-        <mat-icon class="v-sub">today</mat-icon>
+        <i class="fa fa-birthday-cake mr-1"></i>
         <span class="font-weight-bold">{{'user.settings.birthday.text'|translate}}</span>
       </div>
       <div [class.birthday-soon]="birthdaySoon">

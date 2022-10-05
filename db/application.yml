@@ -41,6 +41,7 @@ server:
   port: 8080
 app:
   name: Gifts hub
+  birthday-reminder: 14
   gift:
     age: 30
   newsletter:
