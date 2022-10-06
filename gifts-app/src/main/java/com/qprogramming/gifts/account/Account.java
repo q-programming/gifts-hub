@@ -100,6 +100,9 @@ public class Account implements Serializable, OAuth2User, UserDetails, Comparabl
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate birthday;
 
+    private Integer birthdayDay;
+    private Integer birthdayMonth;
+
     public Account(String username, String email, String password) {
         this.username = username;
         this.email = email;
@@ -250,6 +253,12 @@ public class Account implements Serializable, OAuth2User, UserDetails, Comparabl
                 ", name='" + name + '\'' +
                 ", surname='" + surname + '\'' +
                 '}';
+    }
+
+    public void setBirthday(LocalDate birthday) {
+        this.birthday = birthday;
+        this.birthdayDay = birthday.getDayOfMonth();
+        this.birthdayMonth = birthday.getMonthValue();
     }
 
     @Override

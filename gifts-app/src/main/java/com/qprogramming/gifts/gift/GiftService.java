@@ -257,6 +257,10 @@ public class GiftService {
         return gifts.stream().collect(groupingBy(Gift::getUserId));
     }
 
+    public List<Gift> findAllClaimedByUser(Account account, String accountId) {
+       return giftRepository.findAllByClaimedAndRealisedIsNullAndUserId(account,accountId);
+    }
+
     /**
      * Fetch all application accounts
      *

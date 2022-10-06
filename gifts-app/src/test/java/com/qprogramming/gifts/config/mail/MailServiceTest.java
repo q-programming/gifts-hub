@@ -9,6 +9,7 @@ import com.qprogramming.gifts.account.event.AccountEventType;
 import com.qprogramming.gifts.account.group.Group;
 import com.qprogramming.gifts.config.property.DataBasePropertySource;
 import com.qprogramming.gifts.config.property.PropertyService;
+import com.qprogramming.gifts.gift.GiftService;
 import com.qprogramming.gifts.messages.MessagesService;
 import com.qprogramming.gifts.schedule.AppEvent;
 import com.qprogramming.gifts.schedule.AppEventService;
@@ -46,6 +47,7 @@ public class MailServiceTest {
     private static final String URL = "url";
     private static final String EN = "en";
     private static final String CRON = "0 0 10-12 * * MON";
+    private static final String BIRTHDAYCRON = "0 0 10-12 * * *";
     private MailService mailService;
     private Account testAccount;
     @Mock
@@ -68,6 +70,9 @@ public class MailServiceTest {
     private MockSecurityContext securityMock;
     @Mock
     private Authentication authMock;
+    @Mock
+    private GiftService giftServiceMock;
+
     private Locale locale;
     private final Logger LOG = LoggerFactory.getLogger(this.getClass());
 
@@ -88,7 +93,7 @@ public class MailServiceTest {
         when(authMock.getPrincipal()).thenReturn(testAccount);
         when(mailSenderMock.createMimeMessage()).thenReturn(new MimeMessage(Session.getInstance(props)));
         SecurityContextHolder.setContext(securityMock);
-        mailService = new MailService(propertyServiceMock, freemarkerConfigurationMock, msgSrvMock, dbSourceMock, accountServiceMock, eventServiceMock, CRON) {
+        mailService = new MailService(propertyServiceMock, freemarkerConfigurationMock, msgSrvMock, dbSourceMock, accountServiceMock, giftServiceMock, eventServiceMock, CRON, BIRTHDAYCRON) {
             @Override
             public void initMailSender() {
                 this.mailSender = mailSenderMock;
@@ -102,7 +107,7 @@ public class MailServiceTest {
         when(propertyServiceMock.getProperty(APP_EMAIL_PORT)).thenReturn(UTF_8);
         when(propertyServiceMock.getProperty(APP_EMAIL_USERNAME)).thenReturn("user");
         when(propertyServiceMock.getProperty(APP_EMAIL_PASS)).thenReturn("pass");
-        mailService = new MailService(propertyServiceMock, freemarkerConfigurationMock, msgSrvMock, dbSourceMock, accountServiceMock, eventServiceMock, CRON);
+        mailService = new MailService(propertyServiceMock, freemarkerConfigurationMock, msgSrvMock, dbSourceMock, accountServiceMock, giftServiceMock, eventServiceMock, CRON, BIRTHDAYCRON);
     }
 
     @Test

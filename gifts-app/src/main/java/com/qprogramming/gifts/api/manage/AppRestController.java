@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.security.RolesAllowed;
 import javax.mail.MessagingException;
 import javax.transaction.Transactional;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -177,6 +178,12 @@ public class AppRestController {
         propertyService.update(APP_EMAIL_ENCODING, settings.getEncoding());
         propertyService.update(APP_EMAIL_FROM, settings.getFrom());
         mailService.initMailSender();
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "settings/email/test", method = RequestMethod.PUT)
+    public ResponseEntity<?> testEmailSchedule() throws UnsupportedEncodingException, MessagingException {
+        mailService.sendBirthDayReminders();
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

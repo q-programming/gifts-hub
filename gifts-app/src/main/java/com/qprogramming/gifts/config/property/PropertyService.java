@@ -92,4 +92,20 @@ public class PropertyService {
         }
         return property;
     }
+
+    /**
+     * Returns property or default value
+     * @see #getProperty
+     *
+     * @param key key for which value will be searched
+     * @param defaultValue default if value will be returned empty
+     * @return String representation of parameter
+     */
+    public String getPropertyOrDefault(String key, String defaultValue) {
+        String property = env.getProperty(key);
+        if (StringUtils.isEmpty(property)) {
+            return defaultValue;
+        }
+        return property;
+    }
 }
