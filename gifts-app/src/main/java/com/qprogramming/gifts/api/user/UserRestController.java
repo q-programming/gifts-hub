@@ -666,6 +666,7 @@ public class UserRestController {
         }
         account.setPublicList(accountSettings.isPublicList());
         account.setNotifications(accountSettings.isNewsletter());
+        account.setBirthdayReminder(accountSettings.isBirthdayReminders());
         try {
             account.setBirthday(convertToBirthday(accountSettings.getBirthday()));
         } catch (DateTimeParseException e) {

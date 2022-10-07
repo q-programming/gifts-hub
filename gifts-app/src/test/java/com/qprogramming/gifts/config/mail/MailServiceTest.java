@@ -17,8 +17,10 @@ import com.qprogramming.gifts.schedule.AppEventType;
 import com.qprogramming.gifts.support.Utils;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
+import lombok.val;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.slf4j.Logger;
@@ -30,18 +32,20 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 import static com.qprogramming.gifts.TestUtil.USER_RANDOM_ID;
+import static com.qprogramming.gifts.TestUtil.createGift;
 import static com.qprogramming.gifts.settings.Settings.*;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 public class MailServiceTest {
 
     private static final String SUBJECT = "Subject";
+    private static final String SUBJECT_PL = "Subject_PL";
     private static final String MAIL_FROM_COM = "mail@from.com";
     private static final String UTF_8 = "UTF-8";
     private static final String URL = "url";
@@ -292,5 +296,49 @@ public class MailServiceTest {
         verify(mailSenderMock, times(3)).send(any(MimeMessage.class));
     }
 
-
+    @Test
+    public void sendBirthdayReminderForDifferentGroupsTest() throws MessagingException, IOException {
+        Account account = TestUtil.createAccount("John", "Doe");
+        account.setNotifications(true);
+        account.setEmail("john.doe@mail.com");
+        Account account2 = TestUtil.createAccount("Johny", "Doe");
+        account2.setNotifications(true);
+        account2.setEmail("johny.doe@mail.com");
+        account2.setId(USER_RANDOM_ID + 1);
+        account2.setLanguage("pl");
+        Account account3 = TestUtil.createAccount("Johny", "Smith");
+        account3.setEmail("johny.smith@mail.com");
+        account3.setNotifications(true);
+        account3.setId(USER_RANDOM_ID + 2);
+        Account account4 = TestUtil.createAccount("Mark", "Smith");
+        account4.setEmail("mark.smith@mail.com");
+        account4.setNotifications(true);
+        account4.setId(USER_RANDOM_ID + 3);
+        Group group = new Group();
+        group.setId(1L);
+        group.addMember(testAccount);
+        group.addMember(account);
+        group.addMember(account2);
+        Group group2 = new Group();
+        group.setId(2L);
+        group2.addMember(account3);
+        group2.addMember(account4);
+        val gift1 = createGift(1L, testAccount);
+        gift1.setClaimed(account2);
+        val gift2 = createGift(2L, testAccount);
+        gift1.setClaimed(account2);
+        val gift3 = createGift(3L, testAccount);
+        gift1.setClaimed(account3);
+        val gift4 = createGift(4L, testAccount);
+        val giftList = Arrays.asList(gift1, gift2, gift3, gift4);
+        when(giftServiceMock.getUserClaimedGifts(testAccount.getId())).thenReturn(giftList);
+        when(accountServiceMock.findWithBirthdaySoon()).thenReturn(Collections.singletonList(testAccount));
+        val plLocale = new Locale("pl");
+        when(msgSrvMock.getMessage("schedule.birthday.summary", null, "", locale)).thenReturn(SUBJECT);
+        when(msgSrvMock.getMessage("schedule.birthday.summary", null, "", plLocale)).thenReturn(SUBJECT_PL);
+        mailService.sendBirthDayReminders();
+        val mimeCaptor = ArgumentCaptor.forClass(MimeMessage.class);
+        verify(mailSenderMock, times(2)).send(mimeCaptor.capture());
+        assertEquals(2, mimeCaptor.getAllValues().size());
+    }
 }

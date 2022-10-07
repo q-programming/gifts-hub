@@ -534,7 +534,9 @@
         "text": "Birthday",
         "help": "Set your birthday so that other users will receive information when it will be nearby",
         "inDays": "Birthday in {{days}} days",
-        "today": "Birthday today!"
+        "today": "Birthday today!",
+        "reminder": "Przypominaj o urodzinach",
+        "reminderHelp": "Zaznacz aby otrzymywać powiadomienia o nadchodzących urodzinach użytkowników, którzy są w twojej grupie"
       },
       "language": "Language",
       "notifications": {

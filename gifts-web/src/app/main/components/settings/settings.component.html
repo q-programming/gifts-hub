@@ -97,6 +97,19 @@
       </div>
     </div>
   </div>
+  <div fxLayout="row wrap" fxLayoutAlign="center" class="mt-2">
+    <div fxFlex="60" fxFlex.xs="100">
+      <div class="mb-2">
+        <mat-slide-toggle
+          [(ngModel)]="account.birthdayReminder"
+          (change)="updateSettings()">
+          {{'user.settings.birthday.reminder'|translate}}
+        </mat-slide-toggle>
+      </div>
+      <div [innerHTML]="'user.settings.birthday.reminderHelp'|translate" class="help">
+      </div>
+    </div>
+  </div>
   <!--PUBLIC LIST-->
   <div fxLayout="row" fxLayoutAlign="center">
     <div fxFlex="60" fxFlex.xs="100">

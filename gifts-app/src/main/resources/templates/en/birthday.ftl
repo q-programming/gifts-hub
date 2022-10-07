@@ -200,36 +200,65 @@
         <tr>
             <td colspan="2">
                 <#if name??>
-                    <p>Hello ${name},</p>
+                    <p>Witaj ${name},</p>
                 </#if>
-                <p>Soon somebody has birthday.</br>
-                Below list of your claimed gifts</p>
+                <p>Soon somebody has birthday</br>
+                    Below list of claimed gifts</p>
             </td>
         </tr>
         <#list (accountsMap)!?keys as account>
+            <#assign hasClaimed = false>
             <tr>
                 <td colspan="2">
-                    <div class="filler"></div>
+                    <div class="filler">
+                        <hr>
+                    </div>
                 </td>
             </tr>
             <tr>
                 <td valign="top" style="vertical-align: top; width:250px;">
                     <div>
                         <img src='cid:avatar_${account.id}' class="avatar">&nbsp;
-                        <a class="black" target="_blank" href="${application!'#'}#list/${account.username}">${account.fullname}</a>
+                        <a class="black" target="_blank"
+                           href="${application!'#'}#list/${account.username}">${account.fullname}</a>
                         (${account.birthdayDay}.${account.birthdayMonth})
                     </div>
                 </td>
                 <td>
-                    <#if accountsMap?values[account_index]?size = 0 >
-                        You have not yet claimed any gifts
-                    <#else>
+                    <table>
+                        <tr>
+                            <th>Claimed by</th>
+                            <th>Gift</th>
+                        </tr>
+                        <tbody>
                         <#list accountsMap?values[account_index] as gift>
-                            <div>
-                                ✋🎁 ${gift.name}
-                            </div>
+                            <tr>
+                                <td class="claimedBy">
+                                    <#if gift.claimed.id = accountId>
+                                        <b>✋ ( You ) </b>
+                                        <#assign hasClaimed = true>
+                                    <#else>
+                                        ${gift.claimed.name}
+                                    </#if>
+                                </td>
+                                <td>
+                                    <#if gift.claimed.id = accountId>
+                                        <b>🎁 ${gift.name}</b>
+                                    <#else>
+                                        🎁 ${gift.name}
+                                    </#if>
+                                </td>
+                            </tr>
                         </#list>
-                    </#if>
+                        <#if !hasClaimed>
+                            <tr>
+                                <td class="claimedBy" colspan="2">
+                                    <b>You have not yet claimed any gifts</b>
+                                </td>
+                            </tr>
+                        </#if>
+                        </tbody>
+                    </table>
                 </td>
             </tr>
         </#list>

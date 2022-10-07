@@ -26,7 +26,6 @@ import {AppService} from "@core-services/app.service";
   styleUrls: ['gifts.component.css'],
 })
 export class GiftsComponent implements OnInit {
-
   //accounts
   identification: string;
   group: Group;

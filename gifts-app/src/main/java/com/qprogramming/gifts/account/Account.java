@@ -63,7 +63,9 @@ public class Account implements Serializable, OAuth2User, UserDetails, Comparabl
     private Boolean seenChangelog = false;
 
     @Column(columnDefinition = "boolean default false")
-    private Boolean notifications = false;
+    private Boolean notifications = true;
+    @Column(columnDefinition = "boolean default true")
+    private Boolean birthdayReminder = true;
 
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(name = "user_authority",

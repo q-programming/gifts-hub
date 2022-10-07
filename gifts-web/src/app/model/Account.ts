@@ -17,6 +17,7 @@ export class Account {
   giftsCount?: number;
   publicList?: boolean;
   notifications?: boolean;
+  birthdayReminder?: boolean;
   seenChangelog?: boolean;
   admin?:boolean;
   groups?:Group[];

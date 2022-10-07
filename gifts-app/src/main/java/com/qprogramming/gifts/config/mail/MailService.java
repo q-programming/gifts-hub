@@ -54,6 +54,7 @@ public class MailService {
 
     private static final String APPLICATION = "application";
     private static final String NAME = "name";
+    private static final String ACCOUNT_ID = "accountId";
     private static final String ACCOUNT_MAP = "accountsMap";
     private static final String ACCOUNTS = "accounts";
     private static final String EVENTS = "events";
@@ -80,8 +81,6 @@ public class MailService {
     private final GiftService giftService;
     private final AppEventService eventService;
     private final Map<Account, File> avatarBuffer;
-    private final String newsletter_cron_scheduler;
-    private String birthday_cron_scheduler;
 
 
     @Autowired
@@ -103,8 +102,6 @@ public class MailService {
         this.eventService = eventService;
         avatarBuffer = new HashMap<>();
         this.giftService = giftService;
-        this.newsletter_cron_scheduler = cron;
-        this.birthday_cron_scheduler = birthdayCron;
         initMailSender();
         schedulerLookup(cron, "Newsletter");
         schedulerLookup(birthdayCron, "Birthday reminders");
@@ -464,6 +461,7 @@ public class MailService {
 
     /**
      * Sends birthday reminder  to all group members for accounts that have birthday soon ( based on application settings )
+     *
      * @throws MessagingException if there were errors while sending email
      */
     @Scheduled(cron = "${app.newsletter.birthday}")
@@ -479,37 +477,35 @@ public class MailService {
                     .collect(Collectors.toSet());
             val newsletterAccounts = getNewsletterAccountsFromGroups(groups);
             int mailsSent = 0;
+            val giftMap = new HashMap<Account, List<Gift>>();
+            withBirthdaySoon
+                    .forEach(account -> {
+                        val gifts = giftService.getUserClaimedGifts(account.getId());
+                        giftMap.put(account, gifts);
+                    });
             for (Account emailAccount : newsletterAccounts) {
-                mailsSent = sendBirthdayReminderOnlyForGroupMembers(withBirthdaySoon, emailAccount, mailsSent);
+                mailsSent = sendBirthdayReminderOnlyForGroupMembers(giftMap, emailAccount, mailsSent);
             }
             LOG.info("Birthday reminder sent to {} recipients", mailsSent);
         }
     }
 
-    private int sendBirthdayReminderOnlyForGroupMembers(List<Account> withBirthdaySoon, Account emailAccount, int count) throws MessagingException, UnsupportedEncodingException {
+    private int sendBirthdayReminderOnlyForGroupMembers(HashMap<Account, List<Gift>> withBirthdaySoon, Account emailAccount, int count) throws MessagingException, UnsupportedEncodingException {
         val membersFromGroup = emailAccount.getGroups()
                 .stream()
                 .map(Group::getMembers)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toSet());
-        val filteredWithBirthday = withBirthdaySoon
+        val filteredMap = withBirthdaySoon
+                .entrySet()
                 .stream()
-                .filter(membersFromGroup::contains)
-                .collect(Collectors.toList());
-        if (filteredWithBirthday.size() > 0) {
-            Map<Account, List<Gift>> giftMap = new HashMap<>();
+                .filter(accountEntry -> membersFromGroup.contains(accountEntry.getKey()) && accountEntry.getKey() != emailAccount)
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        if (filteredMap.keySet().size() > 0) {
             val application = propertyService.getProperty(APP_URL);
-            filteredWithBirthday.forEach(account -> {
-                val allClaimedByUser = giftService.findAllClaimedByUser(emailAccount, account.getId());
-                if (emailAccount != account) {
-                    giftMap.put(account, allClaimedByUser);
-                }
-            });
-            if (giftMap.keySet().size() > 0) {
-                val mimeMessage = mailSender.createMimeMessage();
-                sendBirthdayReminder(giftMap, mimeMessage, application, emailAccount);
-                count++;
-            }
+            val mimeMessage = mailSender.createMimeMessage();
+            sendBirthdayReminder(filteredMap, mimeMessage, application, emailAccount);
+            count++;
         }
         return count;
     }
@@ -524,6 +520,7 @@ public class MailService {
         mimeMessageHelper.setTo(mail.getMailTo());
         mail.addToModel(APPLICATION, application);
         mail.addToModel(NAME, emailAccount.getName());
+        mail.addToModel(ACCOUNT_ID, emailAccount.getId());
         mail.addToModel(ACCOUNT_MAP, giftMap);
         mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/birthday.ftl"));
         mimeMessageHelper.setText(mail.getMailContent(), true);

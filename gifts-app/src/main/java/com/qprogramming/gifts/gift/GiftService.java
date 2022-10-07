@@ -110,6 +110,20 @@ public class GiftService {
         return gifts;
     }
 
+    /**
+     * Retrieves gifts for user with id which are claimed
+     *
+     * @param id account id which gifts will be searched for
+     * @return list of all claimed gifts
+     */
+    public List<Gift> getUserClaimedGifts(String id) {
+        List<Gift> byUserIdAndRealisedIsNullOrderByCreatedDesc = giftRepository.findByUserIdAndRealisedIsNullOrderByCreatedDesc(id);
+        return byUserIdAndRealisedIsNullOrderByCreatedDesc
+                .stream()
+                .filter(gift -> gift.getClaimed() != null)
+                .collect(Collectors.toList());
+    }
+
 
     /**
      * Returns a tree map of Category,GiftList for user
@@ -258,7 +272,7 @@ public class GiftService {
     }
 
     public List<Gift> findAllClaimedByUser(Account account, String accountId) {
-       return giftRepository.findAllByClaimedAndRealisedIsNullAndUserId(account,accountId);
+        return giftRepository.findAllByClaimedAndRealisedIsNullAndUserId(account, accountId);
     }
 
     /**
