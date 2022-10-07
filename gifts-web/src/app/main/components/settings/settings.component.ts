@@ -85,7 +85,8 @@ export class SettingsComponent implements OnInit {
       newsletter: this.account.notifications,
       publicList: this.account.publicList,
       language: this.account.language,
-      birthday: this.account.birthday
+      birthday: this.account.birthday,
+      birthdayReminder: this.account.birthdayReminder
     }
   }
 

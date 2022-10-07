@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 public class AccountSettings {
     private boolean newsletter;
-    private boolean birthdayReminders;
+    private boolean birthdayReminder;
     private boolean publicList;
     private String language;
     private String birthday;
