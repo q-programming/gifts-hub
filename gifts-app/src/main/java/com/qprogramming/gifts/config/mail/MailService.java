@@ -11,6 +11,7 @@ import com.qprogramming.gifts.config.property.DataBasePropertySource;
 import com.qprogramming.gifts.config.property.PropertyService;
 import com.qprogramming.gifts.exceptions.AccountNotFoundException;
 import com.qprogramming.gifts.gift.Gift;
+import com.qprogramming.gifts.gift.GiftService;
 import com.qprogramming.gifts.messages.MessagesService;
 import com.qprogramming.gifts.schedule.AppEvent;
 import com.qprogramming.gifts.schedule.AppEventService;
@@ -18,6 +19,7 @@ import com.qprogramming.gifts.schedule.AppEventType;
 import com.qprogramming.gifts.settings.Settings;
 import com.qprogramming.gifts.support.Utils;
 import freemarker.template.Configuration;
+import lombok.val;
 import org.apache.commons.lang3.StringUtils;
 import org.imgscalr.Scalr;
 import org.slf4j.Logger;
@@ -52,6 +54,9 @@ public class MailService {
 
     private static final String APPLICATION = "application";
     private static final String NAME = "name";
+    private static final String ACCOUNT_ID = "accountId";
+    private static final String ACCOUNT_MAP = "accountsMap";
+    private static final String ACCOUNTS = "accounts";
     private static final String EVENTS = "events";
     private static final String GROUP_NAME = "groupName";
     private static final String CONFIRM_LINK = "confirmLink";
@@ -68,14 +73,14 @@ public class MailService {
     public static final String GIFTS_HUB = "Gifts Hub";
     private final Logger LOG = LoggerFactory.getLogger(this.getClass());
     JavaMailSender mailSender;
-    private PropertyService propertyService;
-    private Configuration freemarkerConfiguration;
-    private MessagesService msgSrv;
+    private final PropertyService propertyService;
+    private final Configuration freemarkerConfiguration;
+    private final MessagesService msgSrv;
     private DataBasePropertySource dbSource;
-    private AccountService accountService;
-    private AppEventService eventService;
-    private Map<Account, File> avatarBuffer;
-    private String cron_scheduler;
+    private final AccountService accountService;
+    private final GiftService giftService;
+    private final AppEventService eventService;
+    private final Map<Account, File> avatarBuffer;
 
 
     @Autowired
@@ -84,8 +89,11 @@ public class MailService {
                        MessagesService msgSrv,
                        DataBasePropertySource dataBasePropertySource,
                        AccountService accountService,
+                       GiftService giftService,
                        AppEventService eventService,
-                       @Value("${app.newsletter.schedule}") String cron) {
+                       @Value("${app.newsletter.schedule}") String cron,
+                       @Value("${app.newsletter.birthday}") String birthdayCron
+    ) {
         this.propertyService = propertyService;
         this.freemarkerConfiguration = freemarkerConfiguration;
         this.msgSrv = msgSrv;
@@ -93,9 +101,10 @@ public class MailService {
         this.accountService = accountService;
         this.eventService = eventService;
         avatarBuffer = new HashMap<>();
-        this.cron_scheduler = cron;
+        this.giftService = giftService;
         initMailSender();
-        schedulerLookup();
+        schedulerLookup(cron, "Newsletter");
+        schedulerLookup(birthdayCron, "Birthday reminders");
     }
 
     public void initMailSender() {
@@ -116,9 +125,9 @@ public class MailService {
         mailSender = jmsi;
     }
 
-    private void schedulerLookup() {
+    private void schedulerLookup(String cronString, String type) {
         org.springframework.scheduling.support.CronTrigger trigger =
-                new CronTrigger(cron_scheduler);
+                new CronTrigger(cronString);
         Calendar todayCal = Calendar.getInstance();
         final Date today = todayCal.getTime();
         Date nextExecutionTime = trigger.nextExecutionTime(
@@ -138,8 +147,7 @@ public class MailService {
                         return today;
                     }
                 });
-        String message = "Next scheduled email sending is : " + Utils.convertDateTimeToString(nextExecutionTime);
-        LOG.info(message);
+        LOG.info("Next scheduled email sending for {} is : {}", type, Utils.convertDateTimeToString(nextExecutionTime));
     }
 
     /**
@@ -245,7 +253,7 @@ public class MailService {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         String application = propertyService.getProperty(APP_URL);
         String from = propertyService.getProperty(APP_EMAIL_FROM);
-        String listLink = application + "#/list/" + Utils.getCurrentAccountId();
+        String listLink = application + "#/list/" + Utils.getCurrentAccount().getUsername();
         Locale locale = getMailLocale(mail);
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, propertyService.getProperty(Settings.APP_EMAIL_ENCODING));
         mimeMessageHelper.setSubject(msgSrv.getMessage("gift.delete.notify", new Object[]{owner.getFullname()}, "", locale));
@@ -429,13 +437,7 @@ public class MailService {
                 .map(Account::getGroups)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toSet());
-        Set<Account> newsletterEnabledAccountsFromGroup = groups
-                .stream()
-                .map(Group::getMembers)
-                .flatMap(Collection::stream)
-                .filter(account -> StringUtils.isNotBlank(account.getEmail()))
-                .filter(Account::getNotifications)
-                .collect(Collectors.toSet());
+        val newsletterEnabledAccountsFromGroup = getNewsletterAccountsFromGroups(groups);
         for (Account recipientAccount : newsletterEnabledAccountsFromGroup) {
             Map<Account, List<AppEvent>> eventsWithoutRecipient = filterEventMap(eventMap, recipientAccount);
             if (!eventsWithoutRecipient.isEmpty()) {
@@ -445,6 +447,87 @@ public class MailService {
         }
         eventService.processEvents();
         LOG.info("Newsletter sent to {} recipients", mailsSent);
+    }
+
+    private Set<Account> getNewsletterAccountsFromGroups(Set<Group> groups) {
+        return groups
+                .stream()
+                .map(Group::getMembers)
+                .flatMap(Collection::stream)
+                .filter(account -> StringUtils.isNotBlank(account.getEmail()))
+                .filter(Account::getNotifications)
+                .collect(Collectors.toSet());
+    }
+
+    /**
+     * Sends birthday reminder  to all group members for accounts that have birthday soon ( based on application settings )
+     *
+     * @throws MessagingException if there were errors while sending email
+     */
+    @Scheduled(cron = "${app.newsletter.birthday}")
+    @Transactional
+    public void sendBirthDayReminders() throws MessagingException, UnsupportedEncodingException {
+        List<Account> withBirthdaySoon = accountService.findWithBirthdaySoon();
+        if (withBirthdaySoon.size() > 0) {
+            withBirthdaySoon.forEach(account -> LOG.info("{} will have birthday soon!", account.getName()));
+            val groups = withBirthdaySoon
+                    .stream()
+                    .map(Account::getGroups)
+                    .flatMap(Collection::stream)
+                    .collect(Collectors.toSet());
+            val newsletterAccounts = getNewsletterAccountsFromGroups(groups);
+            int mailsSent = 0;
+            val giftMap = new HashMap<Account, List<Gift>>();
+            withBirthdaySoon
+                    .forEach(account -> {
+                        val gifts = giftService.getUserClaimedGifts(account.getId());
+                        giftMap.put(account, gifts);
+                    });
+            for (Account emailAccount : newsletterAccounts) {
+                mailsSent = sendBirthdayReminderOnlyForGroupMembers(giftMap, emailAccount, mailsSent);
+            }
+            LOG.info("Birthday reminder sent to {} recipients", mailsSent);
+        }
+    }
+
+    private int sendBirthdayReminderOnlyForGroupMembers(HashMap<Account, List<Gift>> withBirthdaySoon, Account emailAccount, int count) throws MessagingException, UnsupportedEncodingException {
+        val membersFromGroup = emailAccount.getGroups()
+                .stream()
+                .map(Group::getMembers)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toSet());
+        val filteredMap = withBirthdaySoon
+                .entrySet()
+                .stream()
+                .filter(accountEntry -> membersFromGroup.contains(accountEntry.getKey()) && accountEntry.getKey() != emailAccount)
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        if (filteredMap.keySet().size() > 0) {
+            val application = propertyService.getProperty(APP_URL);
+            val mimeMessage = mailSender.createMimeMessage();
+            sendBirthdayReminder(filteredMap, mimeMessage, application, emailAccount);
+            count++;
+        }
+        return count;
+    }
+
+    private void sendBirthdayReminder(Map<Account, List<Gift>> giftMap, MimeMessage mimeMessage, String application, Account emailAccount) throws MessagingException, UnsupportedEncodingException {
+        val mail = Utils.createMail(emailAccount);
+        val from = propertyService.getProperty(APP_EMAIL_FROM);
+        val locale = getMailLocale(mail);
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, propertyService.getProperty(Settings.APP_EMAIL_ENCODING));
+        mimeMessageHelper.setSubject(msgSrv.getMessage("schedule.birthday.summary", null, "", locale));
+        mimeMessageHelper.setFrom(new InternetAddress(from, GIFTS_HUB));
+        mimeMessageHelper.setTo(mail.getMailTo());
+        mail.addToModel(APPLICATION, application);
+        mail.addToModel(NAME, emailAccount.getName());
+        mail.addToModel(ACCOUNT_ID, emailAccount.getId());
+        mail.addToModel(ACCOUNT_MAP, giftMap);
+        mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/birthday.ftl"));
+        mimeMessageHelper.setText(mail.getMailContent(), true);
+        addAppLogo(mimeMessageHelper);
+        addAccountsAvatars(giftMap.keySet(), mimeMessageHelper);
+        LOG.debug("Sending scheduled email to {}", emailAccount.getEmail());
+        mailSender.send(mimeMessageHelper.getMimeMessage());
     }
 
     /**
@@ -519,15 +602,15 @@ public class MailService {
         mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/scheduler.ftl"));
         mimeMessageHelper.setText(mail.getMailContent(), true);
         addAppLogo(mimeMessageHelper);
-        addEventAccountsAvatars(eventMap, mimeMessageHelper);
+        addAccountsAvatars(eventMap.keySet(), mimeMessageHelper);
         LOG.debug("Sending scheduled email to {}", account.getEmail());
 
         mailSender.send(mimeMessageHelper.getMimeMessage());
     }
 
-    private void addEventAccountsAvatars(Map<Account, List<AppEvent>> eventMap, MimeMessageHelper mimeMessageHelper) throws MessagingException {
-        for (Account eventAccount : eventMap.keySet()) {
-            mimeMessageHelper.addInline(AVATAR + eventAccount.getId(), getUserAvatar(eventAccount));
+    private void addAccountsAvatars(Set<Account> accountList, MimeMessageHelper mimeMessageHelper) throws MessagingException {
+        for (Account account : accountList) {
+            mimeMessageHelper.addInline(AVATAR + account.getId(), getUserAvatar(account));
         }
     }
 

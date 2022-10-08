@@ -52,6 +52,29 @@
       </mat-form-field>
     </div>
   </div>
+  <div fxLayout="row" fxLayoutAlign="center">
+    <div fxFlex="60" fxFlex.xs="100">
+      <h3 class="underlined">
+        <mat-icon>today</mat-icon>
+        {{'user.settings.birthday.text'|translate}}
+      </h3>
+    </div>
+  </div>
+  <div fxLayout="row wrap" fxLayoutAlign="center">
+    <div fxFlex="60" fxFlex.xs="100">
+      <div fxLayout="row" fxLayoutAlign="center center">
+        <mat-form-field fxFlex="40%">
+          <input matInput [(ngModel)]="account.birthday" autocomplete="off" type="date" (blur)="updateSettings()">
+          <button *ngIf="!!account.birthday"
+                  mat-stroked-button matSuffix (click)="removeDOB()" matTooltip="{{'app.general.delete'|translate}}">
+            <mat-icon>clear</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+      <div [innerHTML]="'user.settings.birthday.help'|translate" class="help">
+      </div>
+    </div>
+  </div>
   <!--NEWSLETTER-->
   <div fxLayout="row" fxLayoutAlign="center">
     <div fxFlex="60" fxFlex.xs="100">
@@ -71,6 +94,19 @@
         </mat-slide-toggle>
       </div>
       <div [innerHTML]="'user.settings.notifications.help'|translate" class="help">
+      </div>
+    </div>
+  </div>
+  <div fxLayout="row wrap" fxLayoutAlign="center" class="mt-2">
+    <div fxFlex="60" fxFlex.xs="100">
+      <div class="mb-2">
+        <mat-slide-toggle
+          [(ngModel)]="account.birthdayReminder"
+          (change)="updateSettings()">
+          {{'user.settings.birthday.reminder'|translate}}
+        </mat-slide-toggle>
+      </div>
+      <div [innerHTML]="'user.settings.birthday.reminderHelp'|translate" class="help">
       </div>
     </div>
   </div>

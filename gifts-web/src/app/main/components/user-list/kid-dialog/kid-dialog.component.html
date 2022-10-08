@@ -43,6 +43,15 @@
           </mat-form-field>
         </div>
         <div fxFlex="80%">
+          <mat-form-field fxFlex="100%">
+            <input matInput placeholder="{{'user.settings.birthday.text'|translate}}" formControlName="birthday" type="date">
+            <button *ngIf="!!form.controls.birthday.value"
+              mat-stroked-button matSuffix (click)="removeDOB()" matTooltip="{{'app.general.delete'|translate}}">
+              <mat-icon>clear</mat-icon>
+            </button>
+          </mat-form-field>
+        </div>
+        <div fxFlex="80%">
           <mat-form-field fxFlex="100%" *ngIf="!update">
             <input matInput placeholder="{{'user.username'|translate}}" formControlName="username">
             <mat-error *ngIf="form.controls.username.hasError('username')">

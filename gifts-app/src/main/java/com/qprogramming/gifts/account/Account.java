@@ -1,6 +1,10 @@
 package com.qprogramming.gifts.account;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.qprogramming.gifts.account.authority.Authority;
 import com.qprogramming.gifts.account.authority.Role;
 import com.qprogramming.gifts.account.group.Group;
@@ -14,6 +18,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.*;
 
 import static com.qprogramming.gifts.support.Utils.ACCOUNT_COMPARATOR;
@@ -58,7 +63,9 @@ public class Account implements Serializable, OAuth2User, UserDetails, Comparabl
     private Boolean seenChangelog = false;
 
     @Column(columnDefinition = "boolean default false")
-    private Boolean notifications = false;
+    private Boolean notifications = true;
+    @Column(columnDefinition = "boolean default true")
+    private Boolean birthdayReminder = true;
 
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(name = "user_authority",
@@ -90,6 +97,13 @@ public class Account implements Serializable, OAuth2User, UserDetails, Comparabl
 
     @Transient
     private Map<String, Object> attributes;
+
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    private LocalDate birthday;
+
+    private Integer birthdayDay;
+    private Integer birthdayMonth;
 
     public Account(String username, String email, String password) {
         this.username = username;
@@ -241,6 +255,17 @@ public class Account implements Serializable, OAuth2User, UserDetails, Comparabl
                 ", name='" + name + '\'' +
                 ", surname='" + surname + '\'' +
                 '}';
+    }
+
+    public void setBirthday(LocalDate birthday) {
+        this.birthday = birthday;
+        if (birthday != null) {
+            this.birthdayDay = birthday.getDayOfMonth();
+            this.birthdayMonth = birthday.getMonthValue();
+        }else{
+            this.birthdayDay = null;
+            this.birthdayMonth = null;
+        }
     }
 
     @Override

@@ -84,7 +84,9 @@ export class SettingsComponent implements OnInit {
     return {
       newsletter: this.account.notifications,
       publicList: this.account.publicList,
-      language: this.account.language
+      language: this.account.language,
+      birthday: this.account.birthday,
+      birthdayReminder: this.account.birthdayReminder
     }
   }
 
@@ -138,5 +140,10 @@ export class SettingsComponent implements OnInit {
 
   imageCropped(event: ImageCroppedEvent) {
     this.croppedAvatar = event.base64;
+  }
+
+  removeDOB() {
+    this.account.birthday = undefined;
+    this.updateSettings();
   }
 }

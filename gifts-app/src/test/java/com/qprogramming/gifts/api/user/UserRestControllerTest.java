@@ -27,12 +27,14 @@ import com.qprogramming.gifts.messages.MessagesService;
 import com.qprogramming.gifts.schedule.AppEventService;
 import com.qprogramming.gifts.support.ResultData;
 import com.qprogramming.gifts.support.Utils;
+import lombok.val;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -45,6 +47,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDate;
 import java.util.*;
 
 import static com.qprogramming.gifts.TestUtil.*;
@@ -183,6 +186,40 @@ public class UserRestControllerTest extends MockedAccountTestBase {
                 .contentType(APPLICATION_JSON_UTF8)
                 .content(object.toString())).andExpect(status().isOk());
         verify(accSrvMock, times(1)).update(testAccount);
+    }
+
+    @Test
+    public void birthdayChangedForUser() throws Exception {
+        when(accSrvMock.findById(USER_RANDOM_ID)).thenReturn(testAccount);
+        JSONObject object = new JSONObject();
+        object.put("id", USER_RANDOM_ID);
+        object.put("language", "pl");
+        object.put("birthday", "1980-01-01");
+        userRestCtrl.perform(post(API_USER_SETTINGS)
+                .contentType(APPLICATION_JSON_UTF8)
+                .content(object.toString())).andExpect(status().isOk());
+        val valueCapture = ArgumentCaptor.forClass(Account.class);
+        verify(accSrvMock, times(1)).update(valueCapture.capture());
+        val result = valueCapture.getValue();
+        assertNotNull(result.getBirthday());
+        val expected = LocalDate.of(1980,1,1);
+        assertEquals(expected,result.getBirthday());
+    }
+
+    @Test
+    public void birthdayNotChangedForUser() throws Exception {
+        when(accSrvMock.findById(USER_RANDOM_ID)).thenReturn(testAccount);
+        JSONObject object = new JSONObject();
+        object.put("id", USER_RANDOM_ID);
+        object.put("language", "pl");
+        object.put("birthday", "N/A");
+        userRestCtrl.perform(post(API_USER_SETTINGS)
+                .contentType(APPLICATION_JSON_UTF8)
+                .content(object.toString())).andExpect(status().isOk());
+        val valueCapture = ArgumentCaptor.forClass(Account.class);
+        verify(accSrvMock, times(1)).update(valueCapture.capture());
+        val result = valueCapture.getValue();
+        assertNull(result.getBirthday());
     }
 
     @Test

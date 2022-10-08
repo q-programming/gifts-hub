@@ -34,4 +34,6 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     List<Account> findByAuthorities(Authority roles);
 
     Set<Account> findByGroupsIn(Set<Group> groups);
+
+    List<Account> findByBirthdayDayAndBirthdayMonth(int day, int month);
 }

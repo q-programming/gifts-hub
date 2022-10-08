@@ -17,6 +17,8 @@ import {CategoryOption} from "@model/Category";
 import {MatExpansionPanel} from "@angular/material/expansion";
 import {NgProgress, NgProgressRef} from 'ngx-progressbar';
 import {ViewportScroller} from '@angular/common';
+import {dateDiffInDays} from "../../../utils/utils";
+import {AppService} from "@core-services/app.service";
 
 @Component({
   selector: 'gifts-list',
@@ -24,13 +26,14 @@ import {ViewportScroller} from '@angular/common';
   styleUrls: ['gifts.component.css'],
 })
 export class GiftsComponent implements OnInit {
-
   //accounts
   identification: string;
   group: Group;
   isUserList: boolean;
   currentAccount: Account;
   viewedAccount: Account;
+  birthdayInDays: number;
+  birthdaySoon: boolean;
   //gifts
   categorizedGifts: Map<string, Gift[]>;
   categorizedKeys: string[];
@@ -48,7 +51,7 @@ export class GiftsComponent implements OnInit {
   noGifts: boolean;
   isLoading: boolean;
   isRealisedLoading: boolean;
-
+  lang: string;
   progress: NgProgressRef;
 
   @ViewChild('realisedPanel') realised: MatExpansionPanel;
@@ -60,6 +63,7 @@ export class GiftsComponent implements OnInit {
               private authSrv: AuthenticationService,
               private userSrv: UserService,
               private alertSrv: AlertService,
+              private appService: AppService,
               public dialog: MatDialog,
               private logger: NGXLogger,
               private translate: TranslateService,
@@ -67,6 +71,7 @@ export class GiftsComponent implements OnInit {
               public ngProgress: NgProgress) {
     this.progress = ngProgress.ref();
     this.isLoading = true;
+    this.lang = this.translate.currentLang;
   }
 
   ngOnInit() {
@@ -86,7 +91,6 @@ export class GiftsComponent implements OnInit {
 
 
   private getGifts() {
-
     this.giftSrv.getUserGifts(this.identification).subscribe(result => {
       if (this.identification) {
         this.userSrv.canEditAll(this.identification).subscribe(result => this.canEditAll = result);
@@ -236,6 +240,7 @@ export class GiftsComponent implements OnInit {
       this.categorizedKeys = [];
     }
     this.viewedAccount = account;
+    this.birthdayInDays = this.getBirthdayDays();
   }
 
 
@@ -251,6 +256,22 @@ export class GiftsComponent implements OnInit {
     } else {
       this.alertSrv.error('error.gif.general')
     }
+  }
+
+  getBirthdayDays(): number {
+    let diff;
+    if (this.viewedAccount?.birthday) {
+      const birthday = new Date(this.viewedAccount.birthday)
+      const now = new Date()
+      const nextBirthday = new Date(now.getFullYear(), birthday.getMonth(), birthday.getDate());
+      diff = dateDiffInDays(new Date(), nextBirthday);
+      if (diff < 0) {
+        nextBirthday.setFullYear(now.getFullYear() + 1);
+        diff = dateDiffInDays(new Date(), nextBirthday);
+      }
+      this.birthdaySoon = diff < this.appService.tillBirthDayReminder;
+    }
+    return diff;
   }
 
   canEdit(gift) {

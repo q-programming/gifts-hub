@@ -3,7 +3,7 @@ import {AlertService} from "@core-services/alert.service";
 import {ApiService} from "@core-services/api.service";
 import {AppSettings} from "@model/AppSettings";
 import {environment} from "@env/environment";
-import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
+import {UntypedFormArray, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators} from "@angular/forms";
 import {DOCUMENT} from "@angular/common";
 import {SearchEngine} from "@model/SearchEngine";
 import * as _ from "lodash";
@@ -15,11 +15,11 @@ import * as _ from "lodash";
 })
 export class EngineManageComponent implements OnInit {
 
-  form: FormGroup;
+  form: UntypedFormGroup;
   @Input() settings: AppSettings;
   @Output() commit : EventEmitter<boolean> = new EventEmitter();
 
-  constructor(private alertSrv: AlertService, private apiSrv: ApiService, private formBuilder: FormBuilder, @Inject(DOCUMENT) private document: Document) {
+  constructor(private alertSrv: AlertService, private apiSrv: ApiService, private formBuilder: UntypedFormBuilder, @Inject(DOCUMENT) private document: Document) {
     this.form = this.formBuilder.group({
       engines: this.formBuilder.array([])
     })
@@ -42,7 +42,7 @@ export class EngineManageComponent implements OnInit {
   }
 
   get EnginesControls() {
-    return (this.form.get('engines') as FormArray).controls
+    return (this.form.get('engines') as UntypedFormArray).controls
   }
 
   private getSettings() {
@@ -60,20 +60,20 @@ export class EngineManageComponent implements OnInit {
     if (this.settings.searchEngines.length > 0) {
       let that = this;
       this.settings.searchEngines.forEach((engine) => {
-        const enginesForm = <FormArray>that.form.controls['engines'];
+        const enginesForm = <UntypedFormArray>that.form.controls['engines'];
         enginesForm.push(this.addEngine(engine));
-        that.form.addControl(engine.name, new FormControl(true))
+        that.form.addControl(engine.name, new UntypedFormControl(true))
       })
     }
   }
 
   newEngine() {
-    const enginesForm = <FormArray>this.form.controls['engines'];
+    const enginesForm = <UntypedFormArray>this.form.controls['engines'];
     enginesForm.push(this.addEngine(new SearchEngine()));
   }
 
   removeEngine(i) {
-    const control = <FormArray>this.form.controls['engines'];
+    const control = <UntypedFormArray>this.form.controls['engines'];
     control.removeAt(i);
   }
 

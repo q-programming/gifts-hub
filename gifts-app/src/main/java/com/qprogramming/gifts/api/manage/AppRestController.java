@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.security.RolesAllowed;
 import javax.mail.MessagingException;
 import javax.transaction.Transactional;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,6 +76,9 @@ public class AppRestController {
         }
         if (StringUtils.isNotBlank(settings.getGiftAge())) {
             propertyService.update(APP_GIFT_AGE, settings.getGiftAge());
+        }
+        if (StringUtils.isNotBlank(settings.getBirthdayReminder())) {
+            propertyService.update(APP_BIRTHDAY_REMINDER, settings.getBirthdayReminder());
         }
         if (!CollectionUtils.isEmpty(settings.getSearchEngines())) {
             searchEngineService.updateSearchEngines(settings.getSearchEngines());
@@ -177,6 +181,12 @@ public class AppRestController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @RequestMapping(value = "settings/email/test", method = RequestMethod.PUT)
+    public ResponseEntity<?> testEmailSchedule() throws UnsupportedEncodingException, MessagingException {
+        mailService.sendBirthDayReminders();
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @RolesAllowed("ROLE_ADMIN")
     @RequestMapping(value = "/settings", method = RequestMethod.GET)
     public ResponseEntity<?> applicationSettings() {
@@ -188,6 +198,7 @@ public class AppRestController {
         settings.setLanguage(propertyService.getDefaultLang());
         settings.setSearchEngines(searchEngineService.getAllSearchEngines());
         settings.setGiftAge(propertyService.getProperty(APP_GIFT_AGE));
+        settings.setBirthdayReminder(propertyService.getProperty(APP_BIRTHDAY_REMINDER));
         settings.setSort(Settings.SortBy.fromString(propertyService.getProperty(APP_DEFAULT_SORT)));
         Settings.Email emailSettings = new Settings.Email();
         emailSettings.setHost(propertyService.getProperty(APP_EMAIL_HOST));
@@ -290,6 +301,13 @@ public class AppRestController {
     public ResponseEntity<Map<String, Object>> getDefaultLanguage() {
         Map<String, Object> model = new HashMap<>();
         model.put("language", propertyService.getDefaultLang());
+        return ResponseEntity.ok(model);
+    }
+
+    @RequestMapping(value = "/birthday-reminder", method = RequestMethod.GET)
+    public ResponseEntity<Map<String, Object>> getDaysReminder() {
+        Map<String, Object> model = new HashMap<>();
+        model.put("days", propertyService.getProperty(APP_BIRTHDAY_REMINDER));
         return ResponseEntity.ok(model);
     }
 

@@ -5,7 +5,7 @@
     <parent>
         <artifactId>gifts</artifactId>
         <groupId>com.qprogramming</groupId>
-        <version>1.2.6</version>
+        <version>1.3.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>gifts-web</artifactId>
@@ -53,7 +53,6 @@
                             <executable>ng</executable>
                             <arguments>
                                 <argument>build</argument>
-                                <argument>--prod</argument>
                                 <argument>--base-href=/${app.final.name}/</argument>
                             </arguments>
                         </configuration>

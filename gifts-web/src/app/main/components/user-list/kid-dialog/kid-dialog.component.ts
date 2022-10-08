@@ -1,7 +1,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {DOCUMENT} from "@angular/common";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
-import {FormControl, FormGroup, Validators} from "@angular/forms";
+import {FormControl, UntypedFormGroup, Validators} from "@angular/forms";
 import {Account} from "@model/Account";
 import {AlertService} from "@core-services/alert.service";
 import {ApiService} from "@core-services/api.service";
@@ -19,7 +19,7 @@ export class KidDialogComponent implements OnInit {
   kid: Account;
   avatarData: any = undefined;
   imageChangedEvent: any = '';
-  form: FormGroup;
+  form: UntypedFormGroup;
   update: boolean;
   uploadInProgress: boolean;
 
@@ -33,11 +33,12 @@ export class KidDialogComponent implements OnInit {
       this.avatarData = this.kid.avatar;
       this.update = true;
     }
-    this.form = new FormGroup({
-        name: new FormControl(this.kid.name, [Validators.required]),
-        surname: new FormControl(this.kid.surname, [Validators.required]),
-        username: new FormControl(this.kid.username, [Validators.required]),
-        publicList: new FormControl(this.kid.publicList)
+    this.form = new UntypedFormGroup({
+        name: new FormControl<string>(this.kid.name, [Validators.required]),
+        surname: new FormControl<string>(this.kid.surname, [Validators.required]),
+        username: new FormControl<string>(this.kid.username, [Validators.required]),
+        publicList: new FormControl<boolean>(this.kid.publicList),
+        birthday: new FormControl<any>(this.kid.birthday)
       }
     );
   }
@@ -72,6 +73,7 @@ export class KidDialogComponent implements OnInit {
       this.kid.surname = this.form.controls.surname.value;
       this.kid.username = this.form.controls.username.value;
       this.kid.publicList = this.form.controls.publicList.value;
+      this.kid.birthday = this.form.controls.birthday.value;
       this.kid.avatar = getBase64Image(this.avatarData);
       this.dialogRef.close(this.kid);
     }
@@ -86,5 +88,7 @@ export class KidDialogComponent implements OnInit {
     this.avatarData = event.base64;
   }
 
-
+  removeDOB() {
+    this.form.controls.birthday.setValue(undefined);
+  }
 }

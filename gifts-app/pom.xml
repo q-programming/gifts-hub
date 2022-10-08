@@ -3,32 +3,34 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>gifts</artifactId>
-        <groupId>com.qprogramming</groupId>
-        <version>1.2.6</version>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.6.2</version>
+        <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>gifts-app</artifactId>
     <packaging>war</packaging>
     <properties>
+        <gifts.project.version>1.3.0</gifts.project.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>11</java.version>
         <poi.version>5.1.0</poi.version>
         <app.debug.enabled>false</app.debug.enabled>
-        <spring-boot.version>2.5.7</spring-boot.version>
         <freemarker.version>2.3.31</freemarker.version>
         <imgscalr-lib.version>4.2</imgscalr-lib.version>
         <jsoup.version>1.14.3</jsoup.version>
         <commons-io.version>2.11.0</commons-io.version>
-        <joda-time.version>2.10.12</joda-time.version>
+        <joda-time.version>2.11.1</joda-time.version>
         <commons-lang3.version>3.12.0</commons-lang3.version>
         <java-uuid-generator.version>4.0.1</java-uuid-generator.version>
-        <postgresql.version>42.3.1</postgresql.version>
-        <jackson-datatype-hibernate5.version>2.11.1</jackson-datatype-hibernate5.version>
+        <postgresql.version>42.5.0</postgresql.version>
+        <jackson-datatype-hibernate5.version>2.13.4</jackson-datatype-hibernate5.version>
         <jjwt.version>0.9.1</jjwt.version>
         <log4j2.version>2.17.1</log4j2.version>
+        <lombok.version>1.18.22</lombok.version>
     </properties>
     <dependencies>
         <dependency>
@@ -124,7 +126,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.22</version>
+            <version>${lombok.version}</version>
         </dependency>
 
         <!-- JSON -->
@@ -140,7 +142,7 @@
         <dependency>
             <groupId>com.qprogramming</groupId>
             <artifactId>gifts-web</artifactId>
-            <version>${project.version}</version>
+            <version>${gifts.project.version}</version>
         </dependency>
         <!--mail-->
         <dependency>
@@ -182,17 +184,10 @@
                 <artifactId>log4j-to-slf4j</artifactId>
                 <version>${log4j2.version}</version>
             </dependency>
-            <dependency>
-                <!-- Import dependency management from Spring Boot -->
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-dependencies</artifactId>
-                <version>${spring-boot.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
         </dependencies>
     </dependencyManagement>
     <build>
+        <finalName>gifts</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

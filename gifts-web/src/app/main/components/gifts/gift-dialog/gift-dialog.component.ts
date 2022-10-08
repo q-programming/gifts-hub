@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, Inject, OnInit} from '@angular/core';
-import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
+import {UntypedFormArray, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators} from "@angular/forms";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {Gift} from "@model/Gift";
 import {ApiService} from "@core-services/api.service";
@@ -20,7 +20,7 @@ import {ImageCroppedEvent} from "ngx-image-cropper";
 })
 export class GiftDialogComponent implements OnInit, AfterViewInit {
   gift: Gift;
-  form: FormGroup;
+  form: UntypedFormGroup;
   update: boolean;
   searchEngines: SearchEngine[] = [];
   categories: Category[];
@@ -38,17 +38,17 @@ export class GiftDialogComponent implements OnInit, AfterViewInit {
   constructor(private dialogRef: MatDialogRef<GiftDialogComponent>,
               @Inject(MAT_DIALOG_DATA) public data: any,
               private apiSrv: ApiService,
-              private formBuilder: FormBuilder) {
+              private formBuilder: UntypedFormBuilder) {
     this.gift = data.gift;
     this.familyUser = data.familyUser;
     if (data.gift.id) {
       this.update = true;
     }
     this.form = this.formBuilder.group({
-      name: new FormControl(this.gift.name, [Validators.required]),
-      description: new FormControl(this.gift.description),
-      category: new FormControl(this.gift.category),
-      hidden: new FormControl(this.gift.hidden),
+      name: new UntypedFormControl(this.gift.name, [Validators.required]),
+      description: new UntypedFormControl(this.gift.description),
+      category: new UntypedFormControl(this.gift.category),
+      hidden: new UntypedFormControl(this.gift.hidden),
       engines: this.formBuilder.array([]),
       links: this.formBuilder.array([])
     });
@@ -90,9 +90,9 @@ export class GiftDialogComponent implements OnInit, AfterViewInit {
       if (this.searchEngines.length > 0) {
         let that = this;
         this.searchEngines.forEach((engine) => {
-          const enginesForm = <FormArray>that.form.controls['engines'];
+          const enginesForm = <UntypedFormArray>that.form.controls['engines'];
           enginesForm.push(this.addEngine(engine));
-          that.form.addControl(engine.name, new FormControl(true))
+          that.form.addControl(engine.name, new UntypedFormControl(true))
         })
       }
 
@@ -111,12 +111,12 @@ export class GiftDialogComponent implements OnInit, AfterViewInit {
   }
 
   get EnginesControls() {
-    return (this.form.get('engines') as FormArray).controls
+    return (this.form.get('engines') as UntypedFormArray).controls
   }
 
   // LINKS
   addLink(link?: string) {
-    const control = <FormArray>this.form.controls['links'];
+    const control = <UntypedFormArray>this.form.controls['links'];
     control.push(this.formBuilder.group(
       {
         link: [link ? link : '']
@@ -125,12 +125,12 @@ export class GiftDialogComponent implements OnInit, AfterViewInit {
   }
 
   removeLink(i: number) {
-    const control = <FormArray>this.form.controls['links'];
+    const control = <UntypedFormArray>this.form.controls['links'];
     control.removeAt(i);
   }
 
   get LinksControls() {
-    return (this.form.get('links') as FormArray).controls
+    return (this.form.get('links') as UntypedFormArray).controls
   }
 
   get LinksExpanded() {
@@ -176,8 +176,8 @@ export class GiftDialogComponent implements OnInit, AfterViewInit {
       let categoryValue = this.form.get('category').value;
       this.gift.category = typeof categoryValue === 'string' ? {name: categoryValue} : categoryValue;
       this.gift.hidden = this.form.get('hidden').value;
-      this.gift.links = _.map((this.form.get('links') as FormArray).controls, (linkCtr) => linkCtr.value['link']);
-      const engines = <FormArray>this.form.get('engines');
+      this.gift.links = _.map((this.form.get('links') as UntypedFormArray).controls, (linkCtr) => linkCtr.value['link']);
+      const engines = <UntypedFormArray>this.form.get('engines');
       const enabledEngines = _.filter(engines.controls, ctrl => ctrl.get('selected').value);
       this.gift.engines = _.map(enabledEngines, eng => {
         return {

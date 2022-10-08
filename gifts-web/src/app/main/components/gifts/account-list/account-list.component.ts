@@ -1,7 +1,7 @@
 import {AfterViewInit, Component, EventEmitter, OnDestroy, OnInit, Output, ViewChild} from '@angular/core';
-import {FormControl} from "@angular/forms";
+import {UntypedFormControl} from "@angular/forms";
 import {Account} from "@model/Account";
-import { MatSelect } from "@angular/material/select";
+import {MatSelect} from "@angular/material/select";
 import {ReplaySubject, Subject} from "rxjs";
 import {AuthenticationService} from "@core-services/authentication.service";
 import {UserService} from "@services/user.service";
@@ -19,8 +19,8 @@ export class AccountListComponent implements OnInit, AfterViewInit, OnDestroy {
   currentAccount: Account;
   viewedAccount: Account;
   identification: string;
-  usersControl: FormControl = new FormControl();
-  usersFilterControl: FormControl = new FormControl();
+  usersControl: UntypedFormControl = new UntypedFormControl();
+  usersFilterControl: UntypedFormControl = new UntypedFormControl();
   accounts: Account[];
   @ViewChild('accountSelect',{static:true}) accountSelect: MatSelect;
   filteredAccounts: ReplaySubject<Account[]> = new ReplaySubject<Account[]>(1);

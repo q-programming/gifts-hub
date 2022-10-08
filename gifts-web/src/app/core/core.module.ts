@@ -8,7 +8,7 @@ import {
   SkipSelf
 } from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 import {AppMaterialModules} from "./material.module";
 import {FlexLayoutModule} from "@angular/flex-layout";
@@ -31,6 +31,7 @@ import {RouterModule} from "@angular/router";
 import {AvatarComponent} from "./components/avatar/avatar.component";
 import {InnerLoaderComponent} from "./components/inner-loader/inner-loader.component";
 import {ScrollTopComponent} from './components/scroll-top/scroll-top.component';
+import {AppService} from "@core-services/app.service";
 
 
 @NgModule({
@@ -61,7 +62,7 @@ import {ScrollTopComponent} from './components/scroll-top/scroll-top.component';
   providers: [
     AuthGuard,
     AdminGuard,
-    FormBuilder,
+    UntypedFormBuilder,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
@@ -103,7 +104,8 @@ export class CoreModule {
         AuthenticationService,
         ApiService,
         AlertService,
-        AvatarService
+        AvatarService,
+        AppService
       ]
     };
   }

@@ -36,15 +36,17 @@
     <mat-expansion-panel expanded="true">
       <mat-expansion-panel-header>
         <mat-panel-title>
-          <h3 class="stylish-header" fxFill>
-            <avatar [avatar]="account.avatar" classes="avatar small v-middle mr-1"></avatar>
-            {{account.fullname}}
-            <button mat-stroked-button (click)="navigateToUser($event,account.username)" class="pull-right"
-                    matTooltip="{{'user.group.list'|translate}}">
-              <i class="fa fa-fw fa-arrow-right"></i>
-              <i class="fa fa-fw fa-gift"></i>
-            </button>
-          </h3>
+          <div fxFill>
+            <h3 class="stylish-header">
+              <avatar [avatar]="account.avatar" classes="avatar small v-middle mr-1"></avatar>
+              {{account.fullname}}
+              <button mat-stroked-button (click)="navigateToUser($event,account.username)" class="pull-right"
+                      matTooltip="{{'user.group.list'|translate}}">
+                <i class="fa fa-fw fa-arrow-right"></i>
+                <i class="fa fa-fw fa-gift"></i>
+              </button>
+            </h3>
+          </div>
         </mat-panel-title>
       </mat-expansion-panel-header>
       <div *ngFor="let gift of gifts.get(account.id);let even=even;trackBy: trackByFn">
