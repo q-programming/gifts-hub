@@ -5,8 +5,10 @@ app:
   name: Gifts hub
   gift:
     age: 30
+    birthday-reminder: 30
   newsletter:
     schedule: 0 0 20 * * MON
+    birthday: 0 0 18 * * *
 security:
 #  user:
 #    password: password

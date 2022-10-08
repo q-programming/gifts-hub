@@ -259,8 +259,13 @@ public class Account implements Serializable, OAuth2User, UserDetails, Comparabl
 
     public void setBirthday(LocalDate birthday) {
         this.birthday = birthday;
-        this.birthdayDay = birthday.getDayOfMonth();
-        this.birthdayMonth = birthday.getMonthValue();
+        if (birthday != null) {
+            this.birthdayDay = birthday.getDayOfMonth();
+            this.birthdayMonth = birthday.getMonthValue();
+        }else{
+            this.birthdayDay = null;
+            this.birthdayMonth = null;
+        }
     }
 
     @Override
