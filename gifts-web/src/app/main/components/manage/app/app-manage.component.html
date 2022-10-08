@@ -35,6 +35,16 @@
         </mat-form-field>
         <mat-hint>{{'app.manage.gift.age.help'|translate}}</mat-hint>
         <h4>
+          <i class="fa fa-birthday-cake"></i>
+          {{'app.manage.birthdayReminder.text'|translate}}
+        </h4>
+        <mat-form-field>
+          <input matInput type="number" formControlName="birthdayReminder">
+          <span matSuffix>{{'app.manage.gift.age.days'|translate}}</span>
+        </mat-form-field>
+        <mat-hint>{{'app.manage.birthdayReminder.help'|translate}}</mat-hint>
+
+        <h4>
           <i class="fa fa-sort-amount-desc" aria-hidden="true"></i>
           {{'user.sort.default'|translate}}
         </h4>

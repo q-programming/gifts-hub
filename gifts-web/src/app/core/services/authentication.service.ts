@@ -9,13 +9,19 @@ import {NGXLogger} from "ngx-logger";
 import {Observable} from "rxjs";
 import {isAdmin} from "../../utils/utils";
 import {map} from 'rxjs/operators';
+import {AppService} from "@core-services/app.service";
 
 @Injectable()
 export class AuthenticationService {
 
   currentAccount: Account;
 
-  constructor(private apiSrv: ApiService, private avatarSrv: AvatarService, private translate: TranslateService, private alertSrv: AlertService, private logger: NGXLogger) {
+  constructor(private apiSrv: ApiService,
+              private avatarSrv: AvatarService,
+              private translate: TranslateService,
+              private alertSrv: AlertService,
+              private appSrv: AppService,
+              private logger: NGXLogger) {
   }
 
   /**
@@ -111,13 +117,11 @@ export class AuthenticationService {
     if (this.currentAccount) {
       this.translate.use(this.currentAccount.language);
     } else {
-      this.apiSrv.get(`${environment.app_url}/default-language`).subscribe(defaults => {
-        if (defaults) {
-          let lang = defaults.language;
-          this.translate.setDefaultLang(lang);
-          this.translate.use(lang)
-        }
+      this.appSrv.getDefaultLanguage().subscribe((lang) => {
+        this.translate.setDefaultLang(lang);
+        this.translate.use(lang)
       })
+
     }
   }
 }

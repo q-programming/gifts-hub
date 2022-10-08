@@ -21,6 +21,9 @@ import java.io.IOException;
 import java.net.URLConnection;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
@@ -30,6 +33,7 @@ public class Utils {
     public static final Comparator<Account> ACCOUNT_COMPARATOR = Comparator.nullsLast(Comparator.comparing(Account::getName).thenComparing(Account::getSurname).thenComparing(Account::getUsername).thenComparing(Account::getId));
     public static final Comparator<Gift> GIFT_COMPARATOR = Comparator.nullsFirst(Comparator.comparing(Gift::getRealised)).thenComparing(Gift::getName);
     private static final String DATE_FORMAT = "dd-MM-yyyy";
+    private static final DateTimeFormatter birthdayDateFormater = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static final String DATE_FORMAT_TIME = "dd-MM-yyyy HH:mm";
     private static final Logger LOG = LoggerFactory.getLogger(Utils.class);
     private static final Pattern VALID_HTML_TAG_REGEX = Pattern.compile("<(\\/)?([A-Za-z][A-Za-z0-9]*)\\b[^>]*>");
@@ -39,7 +43,7 @@ public class Utils {
 
     public static Account getCurrentAccount() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (!(authentication instanceof AnonymousAuthenticationToken)) {
+        if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken)) {
             return (Account) authentication.getPrincipal();
         }
         return null;
@@ -245,6 +249,18 @@ public class Utils {
             type = MediaType.IMAGE_JPEG_VALUE;
         }
         return type;
+    }
+
+    public static LocalDate convertToBirthday(String date) {
+        LocalDate birthday = null;
+        if (StringUtils.isNotBlank(date)) {
+            try {
+                birthday = LocalDate.parse(date, birthdayDateFormater);
+            } catch (DateTimeParseException e) {
+                LOG.error("Failed to parse date {} , value was not updated", date);
+            }
+        }
+        return birthday;
     }
 
 }

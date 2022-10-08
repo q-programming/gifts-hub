@@ -15,6 +15,7 @@ import com.qprogramming.gifts.config.property.PropertyService;
 import com.qprogramming.gifts.exceptions.AccountNotFoundException;
 import com.qprogramming.gifts.gift.GiftService;
 import com.qprogramming.gifts.support.Utils;
+import lombok.val;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Hibernate;
 import org.joda.time.DateTime;
@@ -39,10 +40,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static com.qprogramming.gifts.settings.Settings.APP_BIRTHDAY_REMINDER;
 import static com.qprogramming.gifts.support.Utils.ACCOUNT_COMPARATOR;
 import static com.qprogramming.gifts.support.Utils.decodeTypeFromBytes;
 
@@ -192,6 +195,7 @@ public class AccountService implements UserDetailsService {
     }
 
     //User avatar handling
+    @Cacheable(value = "avatars", key = "#account.id")
     public Avatar getAccountAvatar(Account account) {
         return _avatarRepository.findOneById(account.getId());
     }
@@ -204,6 +208,7 @@ public class AccountService implements UserDetailsService {
      * @param account updated account
      * @param bytes   image bytes
      */
+    @CacheEvict(value = "avatars", key = "#account.id")
     public void updateAvatar(Account account, byte[] bytes) {
         Avatar avatar = _avatarRepository.findOneById(account.getId());
         if (avatar == null) {
@@ -513,5 +518,16 @@ public class AccountService implements UserDetailsService {
         return AccountEventType.PASSWORD_RESET.equals(event.getType()) ?
                 new DateTime().isAfter(passExpireDate) :
                 new DateTime().isAfter(expireDate);
+    }
+
+    /**
+     * Returns all users that will soon have birthday
+     *
+     * @return list of Accounts with birthday soon
+     */
+    public List<Account> findWithBirthdaySoon() {
+        String birthdayReminder = _propertyService.getPropertyOrDefault(APP_BIRTHDAY_REMINDER, "15");
+        val willHaveBirthday = LocalDate.now().plusDays(Long.parseLong(birthdayReminder));
+        return _accountRepository.findByBirthdayDayAndBirthdayMonth(willHaveBirthday.getDayOfMonth(), willHaveBirthday.getMonthValue());
     }
 }

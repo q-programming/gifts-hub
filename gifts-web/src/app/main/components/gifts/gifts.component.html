@@ -2,11 +2,26 @@
 <mat-card class="fixed-container header">
   <div fxLayout="row" fxLayoutAlign="center center">
     <div fxFlex="10" fxFlex.lt-sm="15%">
-      <img matCardAvatar [src]="avatar" class="avatar">
+      <img matCardAvatar [src]="avatar" class="avatar" alt="User Avatar">
+
     </div>
     <!--Accounts search bar-->
     <div fxFlex>
       <account-list (account)="changeViewedAccount($event)"></account-list>
+    </div>
+    <div *ngIf="viewedAccount && viewedAccount.birthday" fxFlex="15" fxFlex.lt-lg="15" fxFlex.lt-md="15"
+         matTooltip="{{birthdayInDays === 0?
+                ('user.settings.birthday.today' | translate ) :
+                ('user.settings.birthday.inDays' | translate : {days:birthdayInDays})}}"
+         fxHide.lt-md="true" class="text-center birthday"
+    >
+      <div>
+        <i class="fa fa-birthday-cake mr-1"></i>
+        <span class="font-weight-bold">{{'user.settings.birthday.text'|translate}}</span>
+      </div>
+      <div [class.birthday-soon]="birthdaySoon">
+        {{viewedAccount.birthday | date : 'd MMMM' :'': lang }}
+      </div>
     </div>
     <div fxFlex="22" fxFlex.lt-lg="30" fxFlex.lt-md="35">
       <!--mobile buttons-->

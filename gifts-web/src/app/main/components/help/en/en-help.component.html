@@ -437,7 +437,8 @@
   </help-list>
   <help-list name="Gift picture" icon="fa-picture-o">
     Optional gift picture, which might help to identify gift<br>
-    After chooing picture, please crop it accordingly and confirm. Picture will be uploaded when whole dialog will be confirmed.<br>
+    After chooing picture, please crop it accordingly and confirm. Picture will be uploaded when whole dialog will be
+    confirmed.<br>
     Final picture will be scaled to max 400 pixels
   </help-list>
   <help-list name="Category" icon="fa-archive">
@@ -510,7 +511,8 @@
     Claimed gifts
   </h3>
   <p>
-    Screen to preview all your gifts reservations for all other users from your groups. All gifts are grouped per account<br>
+    Screen to preview all your gifts reservations for all other users from your groups. All gifts are grouped per
+    account<br>
     In here you can also very quickly remove claim on that gift, by clicking on
     <span class="fa-stack">
           <i class="fa fa-times fa-stack-1x"></i>
@@ -551,6 +553,12 @@
     On this screen you can add your unique avatar, change application display language and define if your list will be
     publicly visible.
   </p>
+  <h4 class="help-title underlined" id="user-birthday">Birthday</h4>
+  <p>If you want for other application users to receive notification about your incoming birthday, set it up in here.
+    When your birthday will be close ( 30 days by default ) application will send message with your claimed gifts to all
+    users from your groups,
+    that marked option to receive this kind of information.
+  </p>
   <h4 class="help-title underlined" id="settings-newsletter">Email notifications</h4>
   <p>
     To recieve email notifications with new and realised gifts you have to select to receive those. This setting will
@@ -558,6 +566,13 @@
     Newsletter will be sent every monday ( if there were any events concerning your account ) to email linked with your
     account (given while registering or shared with facebook/google accounts)
   </p>
+  <p>
+    You can receive notifications about incoming birthdays of application users from your groups ( only those who set
+    birthday )<br>
+    Everyday application searches for users who will have birthday soon ( 30 days by default ) and sends message about
+    their claimed gifts.
+  </p>
+
   <h4 class="help-title underlined" id="user-public">Public wish list</h4>
   <p>
     <span [innerHTML]="'user.settings.public.help'|translate"></span>
@@ -599,6 +614,9 @@
   </help-list>
   <help-list name="{{'app.manage.gift.age.text'|translate}}" icon="fa-clock-o">
     {{'app.manage.gift.age.help'|translate}}
+  </help-list>
+  <help-list name="{{'app.manage.birthdayReminder.text'|translate}}" icon="fa-birthday-cake">
+    {{'app.manage.birthdayReminder.help'|translate}}
   </help-list>
   <help-list name="{{'user.sort.default'|translate}}" icon="fa-sort-amount-desc">
     How users are sorted by default on user list view

@@ -17,6 +17,7 @@ import com.qprogramming.gifts.messages.MessagesService;
 import com.qprogramming.gifts.settings.SearchEngine;
 import com.qprogramming.gifts.settings.SearchEngineService;
 import com.qprogramming.gifts.settings.Settings;
+import lombok.val;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -105,6 +106,30 @@ public class AppRestControllerTest extends MockedAccountTestBase {
                 .andExpect(status().isOk());
         verify(searchEngineServiceMock, times(1)).updateSearchEngines(settings.getSearchEngines());
     }
+
+    @Test
+    public void setApplicationSettingsTest() throws Exception {
+        testAccount.addAuthority(TestUtil.createAdminAuthority());
+        val birthdayReminder = "30";
+        val giftAge = "14";
+        String appUrl = "http://localhost:8080";
+        Settings settings = Settings.builder()
+                .birthdayReminder(birthdayReminder)
+                .giftAge(giftAge)
+                .language(EN)
+                .appUrl(appUrl)
+                .build();
+        manageRestController.perform(
+                put(API_APPLICATION_SETTINGS)
+                        .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                        .content(TestUtil.convertObjectToJsonBytes(settings)))
+                .andExpect(status().isOk());
+        verify(propertyServiceMock, times(1)).update(Settings.APP_DEFAULT_LANG, EN);
+        verify(propertyServiceMock, times(1)).update(Settings.APP_BIRTHDAY_REMINDER, birthdayReminder);
+        verify(propertyServiceMock, times(1)).update(Settings.APP_GIFT_AGE, giftAge);
+        verify(propertyServiceMock, times(1)).update(APP_URL, appUrl);
+    }
+
 
     @Test
     public void setApplicationSettingsBadAuthTest() throws Exception {

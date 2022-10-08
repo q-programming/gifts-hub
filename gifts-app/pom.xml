@@ -13,7 +13,7 @@
     <artifactId>gifts-app</artifactId>
     <packaging>war</packaging>
     <properties>
-        <gifts.project.version>1.2.6</gifts.project.version>
+        <gifts.project.version>1.3.0</gifts.project.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>11</java.version>

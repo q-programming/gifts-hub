@@ -2,9 +2,7 @@ package com.qprogramming.gifts.settings;
 
 import com.qprogramming.gifts.gift.category.CategoryDTO;
 import io.jsonwebtoken.lang.Collections;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
@@ -12,11 +10,15 @@ import java.util.List;
 
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Settings {
     public static final String APP_DEFAULT_LANG = "app.default.lang";
     public static final String APP_DEFAULT_SORT = "app.default.sort";
     public static final String APP_AVAILABLE_LANGS = "app.available.langs";
     public static final String APP_GIFT_AGE = "app.gift.age";
+    public static final String APP_BIRTHDAY_REMINDER = "app.gift.birthday-reminder";
     public static final String APP_URL = "app.url";
     public static final String APP_EMAIL_HOST = "spring.mail.host";
     public static final String APP_EMAIL_PORT = "spring.mail.port";
@@ -29,6 +31,7 @@ public class Settings {
     private String language;
     private List<SearchEngine> searchEngines;
     private String giftAge;
+    private String birthdayReminder;
     private SortBy sort;
     private Email email;
     private String appUrl;

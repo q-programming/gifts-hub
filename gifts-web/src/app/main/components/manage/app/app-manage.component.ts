@@ -30,6 +30,7 @@ export class AppManageComponent implements OnInit {
       language: [this.settings.language, Validators.required],
       appUrl: [this.settings.appUrl, Validators.required],
       giftAge: [this.settings.giftAge, Validators.required],
+      birthdayReminder: [this.settings.birthdayReminder, Validators.required],
       sort: [this.settings.sort, Validators.required]
     });
     this.setSettings();
@@ -63,6 +64,7 @@ export class AppManageComponent implements OnInit {
     this.settings.language = this.form.controls.language.value;
     this.settings.appUrl = this.form.controls.appUrl.value;
     this.settings.giftAge = this.form.controls.giftAge.value;
+    this.settings.birthdayReminder = this.form.controls.birthdayReminder.value;
     this.settings.sort = this.form.controls.sort.value;
   }
 
@@ -70,6 +72,7 @@ export class AppManageComponent implements OnInit {
     this.form.controls.language.setValue(this.settings.language);
     this.form.controls.appUrl.setValue(this.settings.appUrl);
     this.form.controls.giftAge.setValue(this.settings.giftAge);
+    this.form.controls.birthdayReminder.setValue(this.settings.birthdayReminder);
     this.form.controls.sort.setValue(this.settings.sort);
 
   }
