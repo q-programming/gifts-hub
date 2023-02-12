@@ -410,6 +410,23 @@ public class GiftRestControllerTest extends MockedAccountTestBase {
     }
 
     @Test
+    public void claimGiftAlreadyClaimed() throws Exception {
+        Account owner = TestUtil.createAccount(JOHN, DOE);
+        Account claimed = TestUtil.createAccount(JOHN, NAME);
+        owner.setId("2");
+        Gift gift = new Gift();
+        gift.setId(1L);
+        gift.setName(NAME);
+        gift.setUserId(owner.getId());
+        gift.setClaimed(claimed);
+        when(giftServiceMock.findById(gift.getId())).thenReturn(gift);
+        when(accSrvMock.findByUsername(testAccount.getUsername())).thenReturn(Optional.of(testAccount));
+        giftsRestCtrl.perform(
+                put(API_GIFT_CLAIM + gift.getId()))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     public void completeGift() throws Exception {
         Gift gift = new Gift();
         gift.setId(1L);

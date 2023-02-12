@@ -163,6 +163,7 @@
     "claim": {
       "calimed": "Zarezerwowane prezenty",
       "error": "Nie możesz zarezerwować własnego prezentu",
+      "claimedError": "Prezent już został zarezerwowany przez kogoś innego",
       "noClaimed": "Nie ma żadnych zarezerwowanych prezentów",
       "success": "Zarezerwowano prezent \"{{name}}\"",
       "text": "Zarezerwuj prezent"
