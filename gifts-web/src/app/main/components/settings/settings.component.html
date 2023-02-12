@@ -28,7 +28,7 @@
   </div>
   <div fxLayout="row" fxLayoutAlign="center">
     <div fxFlex="60" fxFlex.xs="100" fxLayoutAlign="center">
-      <button mat-raised-button (click)="fileInput.click()()" class="mt-2">{{'user.settings.avatar.change'|translate}}
+      <button mat-raised-button (click)="fileInput.click()" class="mt-2">{{'user.settings.avatar.change'|translate}}
       </button>
       <button mat-raised-button *ngIf="uploadInProgress" color="primary" (click)="uploadNewAvatar()"
               class="success-button mt-2">{{'user.settings.avatar.save'|translate}}</button>

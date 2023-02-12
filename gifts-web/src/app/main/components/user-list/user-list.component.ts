@@ -207,17 +207,18 @@ export class UserListComponent implements OnInit {
    * @param kid kid account that will be modified
    */
   editKidDialog(kid: Account) {
+    const editedKid = _.cloneDeep(kid);
     const dialogRef = this.dialog.open(KidDialogComponent, {
       panelClass: 'gifts-modal-normal',
       data: {
-        account: kid
+        account: editedKid
       }
     });
-    dialogRef.afterClosed().subscribe((kid) => {
-      if (kid) {
-        this.userSrv.updateKid(kid).subscribe(newKid => {
-          if (newKid) {
-            this.avatarSrv.reloadAvatar(kid);
+    dialogRef.afterClosed().subscribe((updatedKid) => {
+      if (updatedKid) {
+        this.userSrv.updateKid(updatedKid).subscribe(update => {
+          if (update) {
+            this.avatarSrv.reloadAvatar(update);
             this.getUsers(true);
             this.alertSrv.success('user.group.edit.kid.success')
           }

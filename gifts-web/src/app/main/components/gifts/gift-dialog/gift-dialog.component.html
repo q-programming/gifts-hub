@@ -34,7 +34,7 @@
               <div *ngFor="let link of LinksControls; let i=index">
                 <mat-form-field fxFlex="100%" [formGroupName]="i">
                   <input matInput placeholder=" {{'gift.link.url'|translate}}" formControlName="link" type="url"
-                         autocomplete="url">
+                         autocomplete="off">
                   <button
                     *ngIf="LinksControls.length-1 == i"
                     mat-stroked-button matSuffix (click)="addLink()" matTooltip="{{'gift.link.add'|translate}}">

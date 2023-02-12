@@ -61,6 +61,11 @@ export class GiftComponent implements OnInit {
       }
     }, error => {
       this.logger.error(error);
+      if(error.status === 409){
+        this.alertSrv.warning('gift.claim.claimedError');
+        this.refresh.emit(true);
+      }
+
     })
   }
 

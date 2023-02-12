@@ -171,14 +171,19 @@ public class GiftRestController {
     @RequestMapping(value = "/claim/{giftID}", method = RequestMethod.PUT)
     public ResponseEntity<?> claimGift(@PathVariable(value = "giftID") String id) {
         Optional<Account> optionalAccount = accountService.findByUsername(Utils.getCurrentAccount().getUsername());
-        if (!optionalAccount.isPresent()) {
+        if (optionalAccount.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
+        Account claimingAccount = optionalAccount.get();
         Gift gift = giftService.findById(Long.valueOf(id));
-        if (Objects.equals(gift.getUserId(), optionalAccount.get().getId())) {
-            return ResponseEntity.badRequest().body(msgSrv.getMessage("gift.claim.same"));
+        if (Objects.equals(gift.getUserId(), claimingAccount.getId())) {
+            return ResponseEntity.badRequest().body("gift.claim.same");
         }
-        gift.setClaimed(optionalAccount.get());
+        if(gift.getClaimed() != null ){
+            LOG.warn("User {} tried to claim gift {} which was already claimed by {}", claimingAccount.getName(), gift.getName(), gift.getClaimed().getName());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("gift.claim.claimed");
+        }
+        gift.setClaimed(claimingAccount);
         return ResponseEntity.ok(giftService.update(gift));
     }
 
@@ -186,7 +191,7 @@ public class GiftRestController {
     @RequestMapping(value = "/unclaim/{giftID}", method = RequestMethod.PUT)
     public ResponseEntity<?> unClaimGift(@PathVariable(value = "giftID") String id) {
         Optional<Account> optionalAccount = accountService.findByUsername(Utils.getCurrentAccount().getUsername());
-        if (!optionalAccount.isPresent()) {
+        if (optionalAccount.isEmpty()) {
             return ResponseEntity.notFound().build();
 
         }

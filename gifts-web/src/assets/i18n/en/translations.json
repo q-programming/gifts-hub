@@ -163,6 +163,7 @@
     "claim": {
       "calimed": "Claimed gifts",
       "error": "You cannot claim your gift",
+      "claimedError": "Gift was already claimed by somebody else",
       "noClaimed": "There are no claimed gifts",
       "success": "Gift \"{{name}}\" has been clamed",
       "text": "Claim gift"
