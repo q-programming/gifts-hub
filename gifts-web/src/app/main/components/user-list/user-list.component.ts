@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {UserService} from "@services/user.service";
 import {MatButtonToggleGroup} from "@angular/material/button-toggle";
 import {MatDialog} from "@angular/material/dialog";
@@ -15,16 +15,18 @@ import * as _ from "lodash";
 import {SortBy} from "@model/AppSettings";
 import * as utils from "../../../utils/utils";
 import {debounceTime} from 'rxjs/operators';
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'user-list',
   templateUrl: './user-list.component.html',
   styleUrls: ['user-list.component.css']
 })
-export class UserListComponent implements OnInit {
+export class UserListComponent implements OnInit,OnDestroy {
   SortBy = SortBy;
   @ViewChild("sortBy", {static: true}) sortBy: MatButtonToggleGroup;
   @ViewChild(MatMenuTrigger, {static: true}) trigger: MatMenuTrigger;
+  private sortBySubscription: Subscription;
   group: Group;
   groups: Group[] = [];
   withoutFamily: Account[] = [];
@@ -47,9 +49,15 @@ export class UserListComponent implements OnInit {
       this.sortBy.value = sorting;
 
     });
-    this.sortBy.valueChange
+    this.sortBySubscription = this.sortBy.valueChange
       .pipe(debounceTime(1)) //small delay not to trigger multiple times
       .subscribe(() => this.getUsers())
+  }
+
+  ngOnDestroy() {
+    if (this.sortBySubscription) {
+      this.sortBySubscription.unsubscribe();
+    }
   }
 
   /**
