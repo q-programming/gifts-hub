@@ -1,5 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import {UserService} from "@services/user.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {GiftService} from "@services/gift.service";
 import {AuthenticationService} from "@core-services/authentication.service";
@@ -9,6 +8,7 @@ import {Account} from "@model/Account";
 import {TranslateService} from "@ngx-translate/core";
 import {AvatarService} from "@core-services/avatar.service";
 import {AppService} from "@core-services/app.service";
+import {ViewportScroller} from "@angular/common";
 
 
 @Component({
@@ -22,6 +22,7 @@ export class GiftsPublicComponent implements OnInit {
   categorizedKeys: string[];
   realizedGifts: Gift[] = [];
   unCategorizedGifts: Gift[] = [];
+  isRealisedLoading: boolean;
   GiftStatus = GiftStatus;
   label_other: string;
   label_realised: string;
@@ -34,7 +35,7 @@ export class GiftsPublicComponent implements OnInit {
               private giftSrv: GiftService,
               private authSrv: AuthenticationService,
               private alertSrv: AlertService,
-              private userSrv: UserService,
+              private viewportScroller: ViewportScroller,
               private translate: TranslateService,
               private avatarSrv: AvatarService,
               private appSrv: AppService) {
@@ -53,8 +54,7 @@ export class GiftsPublicComponent implements OnInit {
       this.identification = params['user'];
       //get gift list
       this.isLoading = true;
-      this.giftSrv.getUserGifts(this.identification).subscribe(result => {
-        this.fetchRealised();
+      this.giftSrv.getUserGifts(this.identification).subscribe((result) => {
         this.avatarSrv.getUserAvatarByUsername(this.identification).subscribe(avatar => this.avatar = avatar);
         this.processList(result);
       }, () => {
@@ -64,10 +64,14 @@ export class GiftsPublicComponent implements OnInit {
     });
   }
 
-  private fetchRealised() {
+  fetchRealised() {
+    this.isRealisedLoading = false;
     this.giftSrv.getRealisedGifts(this.identification).subscribe(result => {
       this.realizedGifts = result[GiftStatus.REALISED];
-    })
+      this.isRealisedLoading = false;
+      this.viewportScroller.scrollToAnchor('realisedPanel');
+    },() => {},
+      () => this.isRealisedLoading = false);
   }
 
   private processList(result: Map<string, Gift[]>) {
