@@ -46,6 +46,7 @@
             <div *ngFor="let gift of categorizedGifts[key];let even=even;trackBy: trackByFn">
               <gift [gift]="gift"
                     [even]="even"
+                    [public]="true"
               ></gift>
             </div>
           </mat-expansion-panel>
@@ -60,19 +61,28 @@
           <div *ngFor="let gift of unCategorizedGifts;let even=even">
             <gift [gift]="gift"
                   [even]="even"
+                  [public]="true"
             ></gift>
           </div>
         </mat-expansion-panel>
         <!--REALISED-->
-        <mat-expansion-panel expanded="true" *ngIf="realizedGifts && realizedGifts.length > 0">
+        <mat-expansion-panel expanded="{{realizedGifts && realizedGifts.length > 0}}"
+                             *ngIf="!isLoading"
+                             (opened)="fetchRealised()">
           <mat-expansion-panel-header>
             <mat-panel-title>
               <h3>{{label_realised}}</h3>
             </mat-panel-title>
           </mat-expansion-panel-header>
+          <div *ngIf="isRealisedLoading">
+            <div class="text-center">
+              <inner-loader [blue]="true"></inner-loader>
+            </div>
+          </div>
           <div *ngFor="let gift of realizedGifts;let even=even">
             <gift [gift]="gift"
                   [even]="even"
+                  [public]="true"
             ></gift>
           </div>
         </mat-expansion-panel>

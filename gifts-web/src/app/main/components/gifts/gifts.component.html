@@ -137,7 +137,7 @@
   <!--REALISED-->
   <mat-expansion-panel #realisedPanel id="realisedPanel"
                        expanded="{{realizedGifts && realizedGifts.length > 0}}"
-                       *ngIf="!isLoading && (!filteredCategory ||  filteredCategory === GiftStatus.REALISED)"
+                       *ngIf="!isLoading"
                        (opened)="getRealisedGifts()">
     <mat-expansion-panel-header>
       <mat-panel-title>

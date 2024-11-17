@@ -39,7 +39,7 @@ export class GiftComponent implements OnInit {
 
   ngOnInit() {
     this.currentAccount = this.authSrv.currentAccount;
-    if (this.gift.createdBy && this.gift.userId != this.gift.createdBy) {
+    if (!this.public && this.gift.createdBy && this.gift.userId != this.gift.createdBy) {
       this.userSrv.geUserById(this.gift.createdBy).subscribe(acc => this.createdBy = acc)
     }
   }
