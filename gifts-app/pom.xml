@@ -5,7 +5,8 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.6.6</version>
+        <!-- Upgrade Spring Boot parent to latest 2.x line -->
+        <version>2.7.18</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -13,7 +14,7 @@
     <artifactId>gifts-app</artifactId>
     <packaging>war</packaging>
     <properties>
-        <gifts.project.version>1.3.2</gifts.project.version>
+        <gifts.project.version>1.3.3</gifts.project.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>11</java.version>
@@ -129,15 +130,6 @@
             <version>${lombok.version}</version>
         </dependency>
 
-        <!-- JSON -->
-        <!--<dependency>-->
-        <!--<groupId>com.fasterxml.jackson.core</groupId>-->
-        <!--<artifactId>jackson-databind</artifactId>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-        <!--<groupId>com.fasterxml.jackson.datatype</groupId>-->
-        <!--<artifactId>jackson-datatype-jsr310</artifactId>-->
-        <!--</dependency>-->
         <!--depent on web-->
         <dependency>
             <groupId>com.qprogramming</groupId>
@@ -166,9 +158,15 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.jacoco</groupId>
-            <artifactId>jacoco-maven-plugin</artifactId>
-            <version>0.8.7</version>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
+            <version>5.9.3</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -195,7 +193,8 @@
                 <executions>
                     <execution>
                         <id>unpack angular distribution</id>
-                        <phase>generate-resources</phase>
+                        <!-- Move execution later so gifts-web is already packaged -->
+                        <phase>prepare-package</phase>
                         <goals>
                             <goal>unpack</goal>
                         </goals>
@@ -218,7 +217,8 @@
             </plugin>
             <plugin>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>3.2.0</version>
+                <!-- bump to a newer compatible version -->
+                <version>3.3.2</version>
                 <configuration>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                 </configuration>
@@ -237,7 +237,8 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.4</version>
+                <!-- upgrade plugin version -->
+                <version>0.8.8</version>
                 <executions>
                     <execution>
                         <goals>
