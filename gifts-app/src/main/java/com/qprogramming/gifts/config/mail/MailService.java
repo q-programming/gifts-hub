@@ -362,9 +362,9 @@ public class MailService {
         mail.getModel().put(CONFIRM_LINK, confirmLink);
         mimeMessageHelper.setSubject(msgSrv.getMessage("user.login.reset", null, "", locale));
         if (event.getAccount().getType().equals(AccountType.GOOGLE)) {
-            mail.addToModel("linkGoogle", mail.getModel().get(APPLICATION) + "login/google");
+            mail.addToModel("linkGoogle", mail.getModel().get(APPLICATION) + "login");
         } else if (event.getAccount().getType().equals(AccountType.FACEBOOK)) {
-            mail.addToModel("linkFacebook", mail.getModel().get(APPLICATION) + "login/facebook");
+            mail.addToModel("linkFacebook", mail.getModel().get(APPLICATION) + "login");
         }
         mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/passwordReset.ftl"));
         mimeMessageHelper.setText(mail.getMailContent(), true);

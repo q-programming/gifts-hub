@@ -481,7 +481,7 @@ public class AccountService implements UserDetailsService {
         return token;
     }
 
-    @Cacheable("groups")
+    @Cacheable(value = "groups", keyGenerator = "accountKeyGenerator")
     public Set<Group> getGroupsForAccount(Account account) {
         Map<Account, Integer> counts = new HashMap<>();
         Set<Group> groups = account.getGroups();

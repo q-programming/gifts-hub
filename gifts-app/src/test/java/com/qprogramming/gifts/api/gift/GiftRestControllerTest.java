@@ -202,7 +202,7 @@ public class GiftRestControllerTest extends MockedAccountTestBase {
         verify(giftServiceMock, times(1)).updateGiftImage(any(Gift.class), anyString());
         assertEquals(form.getName(), result.getName());
         assertEquals(form.getDescription(), result.getDescription());
-        assertTrue(result.getEngines().size() == 1);
+        assertEquals(1, result.getEngines().size());
 
     }
 
@@ -423,7 +423,7 @@ public class GiftRestControllerTest extends MockedAccountTestBase {
         when(accSrvMock.findByUsername(testAccount.getUsername())).thenReturn(Optional.of(testAccount));
         giftsRestCtrl.perform(
                 put(API_GIFT_CLAIM + gift.getId()))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isConflict());
     }
 
     @Test
@@ -439,7 +439,7 @@ public class GiftRestControllerTest extends MockedAccountTestBase {
                 put(API_GIFT_COMPLETE + gift.getId()))
                 .andExpect(status().isOk());
         verify(giftServiceMock, times(1)).update(any(Gift.class));
-        assertTrue(GiftStatus.REALISED.equals(gift.getStatus()));
+        assertEquals(GiftStatus.REALISED, gift.getStatus());
     }
 
     @Test

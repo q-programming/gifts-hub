@@ -28,7 +28,8 @@ spring:
     protocol: smtp
     from: gifts-hub@q-programming.pl
   datasource:
-    url: jdbc:h2:mem:myDb;DB_CLOSE_DELAY=-1
+    # Add H2 legacy compatibility mode to avoid keyword conflicts (e.g., column named 'key') in tests
+    url: jdbc:h2:mem:myDb;DB_CLOSE_DELAY=-1;MODE=LEGACY
     username: sa
     password:
   mvc:
@@ -37,6 +38,9 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop
+    properties:
+      hibernate:
+        globally_quoted_identifiers: true
   main:
     allow-bean-definition-overriding: true
   security:
