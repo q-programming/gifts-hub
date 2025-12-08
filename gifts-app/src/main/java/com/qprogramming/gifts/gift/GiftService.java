@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.springframework.stereotype.Service;
+import org.springframework.cache.annotation.CacheEvict;
 
 import java.util.Date;
 import java.util.List;
@@ -26,9 +27,9 @@ import static java.util.stream.Collectors.groupingBy;
 @Service
 public class GiftService {
 
-    private GiftRepository giftRepository;
-    private PropertyService propertyService;
-    private GiftImageRepository imageRepository;
+    private final GiftRepository giftRepository;
+    private final PropertyService propertyService;
+    private final GiftImageRepository imageRepository;
 
     public GiftService(GiftRepository giftRepository, PropertyService propertyService, GiftImageRepository imageRepository) {
         this.giftRepository = giftRepository;
@@ -59,6 +60,7 @@ public class GiftService {
      * @param gift gift to be persisted
      * @return persisted gift
      */
+    @CacheEvict(cacheNames = {"accounts", "groups"}, allEntries = true)
     public Gift create(Gift gift) {
         gift.setCreated(new Date());
         gift.setCreatedBy(Utils.getCurrentAccountId());
@@ -168,6 +170,7 @@ public class GiftService {
      * @param gift Gift to be updated
      * @return updated gift
      */
+    @CacheEvict(cacheNames = {"accounts", "groups"}, allEntries = true)
     public Gift update(Gift gift) {
         if (hasOtherCategory(gift)) {
             gift.setCategory(null);
@@ -238,6 +241,7 @@ public class GiftService {
      *
      * @param gift gift to be deleted
      */
+    @CacheEvict(cacheNames = {"accounts", "groups"}, allEntries = true)
     public void delete(Gift gift) {
         giftRepository.delete(gift);
     }
@@ -247,6 +251,7 @@ public class GiftService {
      *
      * @param account account for which gifts will be found and deleted
      */
+    @CacheEvict(cacheNames = {"accounts", "groups"}, allEntries = true)
     public void deleteUserGifts(Account account) {
         List<Gift> userGifts = giftRepository.findByUserIdAndRealisedIsNullOrderByCreatedDesc(account.getId());
         giftRepository.deleteAll(userGifts);
