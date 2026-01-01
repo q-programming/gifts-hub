@@ -18,7 +18,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>11</java.version>
-        <poi.version>5.1.0</poi.version>
+        <poi.version>5.4.0</poi.version>
         <app.debug.enabled>false</app.debug.enabled>
         <freemarker.version>2.3.31</freemarker.version>
         <imgscalr-lib.version>4.2</imgscalr-lib.version>
