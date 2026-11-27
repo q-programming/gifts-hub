@@ -13,6 +13,7 @@ import com.qprogramming.gifts.account.group.Group;
 import com.qprogramming.gifts.account.group.GroupService;
 import com.qprogramming.gifts.config.property.PropertyService;
 import com.qprogramming.gifts.exceptions.AccountNotFoundException;
+import com.qprogramming.gifts.exceptions.OAuth2AuthenticationProcessingException;
 import com.qprogramming.gifts.gift.GiftService;
 import com.qprogramming.gifts.support.Utils;
 import lombok.val;
@@ -55,6 +56,8 @@ public class AccountService implements UserDetailsService {
     private final Logger LOG = LoggerFactory.getLogger(this.getClass());
     public static final Pattern VALID_EMAIL_ADDRESS_REGEX =
             Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
+    public static final String KID_CONVERT_INVALID = "kid_convert_invalid";
+    public static final String KID_CONVERT_EMAIL = "kid_convert_email";
 
 
     private final AccountRepository _accountRepository;
@@ -466,6 +469,93 @@ public class AccountService implements UserDetailsService {
         event.setType(AccountEventType.PASSWORD_RESET);
         event.setToken(generateToken());
         return _accountEventRepository.save(event);
+    }
+
+    /**
+     * Creates event used to invite kid to become regular account. Any previous pending conversion of that kid is replaced
+     */
+    @Transactional
+    public AccountEvent createKidConvertEvent(Account kid, String email) {
+        _accountEventRepository.findAllByAccount(kid).stream()
+                .filter(e -> AccountEventType.KID_CONVERT.equals(e.getType()))
+                .forEach(_accountEventRepository::delete);
+        AccountEvent event = new AccountEvent();
+        event.setAccount(kid);
+        event.setType(AccountEventType.KID_CONVERT);
+        event.setEmail(email);
+        event.setToken(generateToken());
+        return _accountEventRepository.save(event);
+    }
+
+    /**
+     * Finds valid ( existing, of KID_CONVERT type, not expired, still pointing to KID account ) conversion event.
+     * Expired events are removed
+     */
+    @Transactional
+    public Optional<AccountEvent> findValidKidConvertEvent(String token) {
+        if (StringUtils.isBlank(token)) {
+            return Optional.empty();
+        }
+        try {
+            UUID.fromString(token);
+        } catch (IllegalArgumentException e) {
+            return Optional.empty();
+        }
+        Optional<AccountEvent> optional = findEvent(token)
+                .filter(e -> AccountEventType.KID_CONVERT.equals(e.getType()));
+        if (optional.isPresent() && isExpired(optional.get())) {
+            removeEvent(optional.get());
+            return Optional.empty();
+        }
+        return optional.filter(e -> AccountType.KID.equals(e.getAccount().getType()));
+    }
+
+    /**
+     * Converts kid account into regular one. Account keeps its id, gifts and groups.
+     *
+     * @param event    KID_CONVERT event
+     * @param type     new type of account
+     * @param username new username, if blank current is kept
+     * @param password plain password, required only for {@link AccountType#LOCAL}
+     */
+    @Transactional
+    @CacheEvict(value = {"accounts", "groups"}, allEntries = true)
+    public Account convertKidAccount(AccountEvent event, AccountType type, String username, String password) {
+        Account kid = event.getAccount();
+        kid.setType(type);
+        kid.setEmail(event.getEmail());
+        if (StringUtils.isNotBlank(username)) {
+            kid.setUsername(username);
+        }
+        if (AccountType.LOCAL.equals(type)) {
+            kid.setPassword(password);
+            encodePassword(kid);
+        }
+        kid.setEnabled(true);
+        kid.addAuthority(_authorityService.findByRole(Role.ROLE_USER));
+        if (StringUtils.isEmpty(kid.getLanguage())) {
+            setDefaultLocale(kid);
+        }
+        Account saved = _accountRepository.save(kid);
+        eventConfirmed(event);
+        return saved;
+    }
+
+    /**
+     * Converts kid account into Google one, after Google account was verified by OAuth2 login.
+     *
+     * @throws OAuth2AuthenticationProcessingException {@link #KID_CONVERT_INVALID} if invite is not valid anymore,
+     *                                                 {@link #KID_CONVERT_EMAIL} if Google email differs from invited one or is already used
+     */
+    @Transactional
+    @CacheEvict(value = {"accounts", "groups"}, allEntries = true)
+    public Account convertKidAccountWithGoogle(String token, String googleEmail) {
+        AccountEvent event = findValidKidConvertEvent(token)
+                .orElseThrow(() -> new OAuth2AuthenticationProcessingException(KID_CONVERT_INVALID));
+        if (!event.getEmail().equalsIgnoreCase(googleEmail) || findByEmail(event.getEmail()).isPresent()) {
+            throw new OAuth2AuthenticationProcessingException(KID_CONVERT_EMAIL);
+        }
+        return convertKidAccount(event, AccountType.GOOGLE, null, null);
     }
 
     public AccountEvent createGroupAllowKidEvent(Account account, Group target) {

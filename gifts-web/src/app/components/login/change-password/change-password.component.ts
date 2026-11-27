@@ -32,6 +32,7 @@ export class ChangePasswordComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.authSrv.setLanguage();
     this.activatedRoute.params.subscribe(params => {
       this.token = params['token'];
     });

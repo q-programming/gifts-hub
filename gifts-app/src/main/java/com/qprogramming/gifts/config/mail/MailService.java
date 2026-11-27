@@ -69,6 +69,7 @@ public class MailService {
     private static final String LIST_LINK = "listLink";
     private static final String GIFT = "gift";
     public static final String KID_NAME = "kidName";
+    private static final String LOGIN_LINK = "loginLink";
     public static final String OWNER = "owner";
     public static final String GIFTS_HUB = "Gifts Hub";
     private final Logger LOG = LoggerFactory.getLogger(this.getClass());
@@ -119,7 +120,7 @@ public class MailService {
         jmsi.setUsername(propertyService.getProperty(APP_EMAIL_USERNAME));
         jmsi.setPassword(propertyService.getProperty(APP_EMAIL_PASS));
         Properties javaMailProperties = new Properties();
-        javaMailProperties.setProperty("mail.smtp.auth", "true");
+        javaMailProperties.setProperty("mail.smtp.auth", String.valueOf(StringUtils.isNotBlank(jmsi.getPassword())));
         javaMailProperties.setProperty("mail.smtp.starttls.enable", "true");
         jmsi.setJavaMailProperties(javaMailProperties);
         mailSender = jmsi;
@@ -181,7 +182,7 @@ public class MailService {
         jmsi.setUsername(username);
         jmsi.setPassword(password);
         Properties javaMailProperties = new Properties();
-        javaMailProperties.setProperty("mail.smtp.auth", "true");
+        javaMailProperties.setProperty("mail.smtp.auth", String.valueOf(StringUtils.isNotBlank(password)));
         javaMailProperties.setProperty("mail.smtp.starttls.enable", "true");
         jmsi.setJavaMailProperties(javaMailProperties);
         jmsi.testConnection();
@@ -339,6 +340,13 @@ public class MailService {
             case PASSWORD_RESET:
                 templatePasswordReset(mail, event, mimeMessageHelper, locale);
                 break;
+            case KID_CONVERT:
+                mail.getModel().put(CONFIRM_LINK, mail.getModel().get(APPLICATION) + "#/convert/" + event.getToken());
+                mimeMessageHelper.setSubject(msgSrv.getMessage("user.kid.convert.invite", null, "", locale));
+                mail.addToModel(KID_NAME, event.getAccount().getFullname());
+                mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/kidConvert.ftl"));
+                mimeMessageHelper.setText(mail.getMailContent(), true);
+                break;
         }
         if (Utils.getCurrentAccount() != null) {
             File avatarTempFile = getUserAvatar(Utils.getCurrentAccount());
@@ -402,6 +410,21 @@ public class MailService {
         mimeMessageHelper.setTo(mail.getMailTo());
         mail.addToModel(APPLICATION, application);
         return mimeMessageHelper;
+    }
+
+    /**
+     * Informs user that kid account was successfully converted to regular account
+     */
+    public void sendKidConverted(Mail mail) throws MessagingException, UnsupportedEncodingException {
+        MimeMessageHelper mimeMessageHelper = createBaseMimeMessage(mail);
+        Locale locale = getMailLocale(mail);
+        mimeMessageHelper.setSubject(msgSrv.getMessage("user.kid.convert.done", null, "", locale));
+        mail.addToModel(LOGIN_LINK, mail.getModel().get(APPLICATION) + "#/login");
+        mail.setMailContent(geContentFromTemplate(mail.getModel(), locale.toString() + "/kidConverted.ftl"));
+        mimeMessageHelper.setText(mail.getMailContent(), true);
+        addAppLogo(mimeMessageHelper);
+        LOG.info("Sending kid account converted message to {}", mail.getMailTo());
+        mailSender.send(mimeMessageHelper.getMimeMessage());
     }
 
     public void sendInvite(Mail mail, String familyName) throws MessagingException, UnsupportedEncodingException {

@@ -27,6 +27,8 @@ import static java.util.stream.Collectors.groupingBy;
 @Service
 public class GiftService {
 
+    private static final int DEFAULT_GIFT_AGE = 7;
+
     private final GiftRepository giftRepository;
     private final PropertyService propertyService;
     private final GiftImageRepository imageRepository;
@@ -81,8 +83,16 @@ public class GiftService {
      *
      * @return List of all users gifts
      */
+    private int getGiftAge() {
+        try {
+            return Integer.parseInt(propertyService.getProperty(APP_GIFT_AGE));
+        } catch (NumberFormatException e) {
+            return DEFAULT_GIFT_AGE;
+        }
+    }
+
     private List<Gift> getCurrentUserGifts(boolean realised) {
-        int giftAge = Integer.parseInt(propertyService.getProperty(APP_GIFT_AGE));
+        int giftAge = getGiftAge();
         String id = Utils.getCurrentAccountId();
         List<Gift> giftList = realised ? giftRepository.findByUserIdAndRealisedIsNotNullOrderByRealisedDesc(id) : giftRepository.findByUserIdAndRealisedIsNullOrderByCreatedDesc(id);
         return giftList.stream().filter(not(Gift::isHidden)).peek(gift -> {
@@ -99,7 +109,7 @@ public class GiftService {
      * @return List of all Gifts for Account with ID
      */
     private List<Gift> getUserGifts(String id, boolean realised) {
-        int giftAge = Integer.parseInt(propertyService.getProperty(APP_GIFT_AGE));
+        int giftAge = getGiftAge();
         List<Gift> giftList = realised ? giftRepository.findByUserIdAndRealisedIsNotNullOrderByRealisedDesc(id) : giftRepository.findByUserIdAndRealisedIsNullOrderByCreatedDesc(id);
         List<Gift> gifts = giftList.stream().peek(gift -> setGiftStatus(gift, giftAge)).collect(Collectors.toList());
         if (Utils.getCurrentAccount() == null) {

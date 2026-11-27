@@ -18,20 +18,28 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>11</java.version>
-        <poi.version>5.1.0</poi.version>
+        <poi.version>5.4.0</poi.version>
         <app.debug.enabled>false</app.debug.enabled>
-        <freemarker.version>2.3.31</freemarker.version>
+        <freemarker.version>2.3.35</freemarker.version>
         <imgscalr-lib.version>4.2</imgscalr-lib.version>
-        <jsoup.version>1.15.3</jsoup.version>
-        <commons-io.version>2.14.0</commons-io.version>
-        <joda-time.version>2.11.1</joda-time.version>
-        <commons-lang3.version>3.12.0</commons-lang3.version>
-        <java-uuid-generator.version>4.0.1</java-uuid-generator.version>
-        <postgresql.version>42.7.2</postgresql.version>
-        <jackson-datatype-hibernate5.version>2.13.4</jackson-datatype-hibernate5.version>
-        <jjwt.version>0.9.1</jjwt.version>
-        <log4j2.version>2.17.1</log4j2.version>
-        <lombok.version>1.18.22</lombok.version>
+        <jsoup.version>1.23.2</jsoup.version>
+        <commons-io.version>2.18.0</commons-io.version>
+        <joda-time.version>2.13.0</joda-time.version>
+        <commons-lang3.version>3.17.0</commons-lang3.version>
+        <java-uuid-generator.version>4.3.0</java-uuid-generator.version>
+        <postgresql.version>42.7.15</postgresql.version>
+        <jackson-datatype-hibernate5.version>2.18.12</jackson-datatype-hibernate5.version>
+        <jjwt.version>0.12.6</jjwt.version>
+        <log4j2.version>2.17.2</log4j2.version>
+        <lombok.version>1.18.36</lombok.version>
+        <!-- overrides of Spring Boot managed versions to address known CVEs -->
+        <spring-framework.version>5.3.39</spring-framework.version>
+        <spring-security.version>5.8.16</spring-security.version>
+        <jackson-bom.version>2.18.12</jackson-bom.version>
+        <snakeyaml.version>2.7</snakeyaml.version>
+        <logback.version>1.2.13</logback.version>
+        <h2.version>2.2.224</h2.version>
+        <nimbus-jose-jwt.version>9.37.3</nimbus-jose-jwt.version>
     </properties>
     <dependencies>
         <dependency>
@@ -238,7 +246,7 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <!-- upgrade plugin version -->
-                <version>0.8.8</version>
+                <version>0.8.12</version>
                 <executions>
                     <execution>
                         <goals>

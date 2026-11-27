@@ -36,7 +36,7 @@ public class TokenServiceTest {
     private static final String USER_COOKIE = "user_cookie";
     private static final String AUTH_HEADER = "auth_header";
     private static final String AUTH_COOKIE = "auth_cookie";
-    private static final String MY_SECRET = "mySecret";
+    private static final String MY_SECRET = "mySecretKeyForTestsMustBeAtLeast32Bytes!";
     private static final String APP = "app";
     private static final int EXPIRES_IN = 3000;
     private static final String COOKIE_1 = "Cookie1";
@@ -83,7 +83,7 @@ public class TokenServiceTest {
     @Test
     public void getUsernameFromExpiredToken() throws Exception {
         ReflectionTestUtils.setField(tokenService, "EXPIRES_IN", -1);
-        ReflectionTestUtils.setField(tokenService, "SECRET", "secret");
+        ReflectionTestUtils.setField(tokenService, "SECRET", "anotherSecretKeyForTestsAtLeast32Bytes");
         String token = tokenService.generateToken(testAccount.getUsername());
         String result = tokenService.getUserIdFromToken(token);
         assertNull(result);

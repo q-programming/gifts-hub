@@ -8,6 +8,7 @@ import {ResetPasswordComponent} from './components/login/reset-password/reset-pa
 import {ChangePasswordComponent} from './components/login/change-password/change-password.component';
 import {CoreModule} from "./core";
 import {ConfirmComponent} from "./components/confirm/confirm.component";
+import {KidConvertComponent} from "./components/kid-convert/kid-convert.component";
 import {CommonModule} from "@angular/common";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {BrowserModule} from "@angular/platform-browser";
@@ -32,7 +33,8 @@ import {NgProgressModule} from 'ngx-progressbar';
     ChangePasswordComponent,
     ConfirmDialogComponent,
     ImageDialogComponent,
-    ConfirmComponent
+    ConfirmComponent,
+    KidConvertComponent
 
   ],
   imports: [

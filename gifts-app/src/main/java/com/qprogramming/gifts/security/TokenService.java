@@ -4,6 +4,11 @@ import com.qprogramming.gifts.account.Account;
 import com.qprogramming.gifts.account.AccountService;
 import com.qprogramming.gifts.support.TimeProvider;
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
+import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,11 +100,11 @@ public class TokenService {
      */
     public String generateToken(String email) {
         return Jwts.builder()
-                .setSubject(email)
-                .setIssuer(APP_NAME)
-                .setIssuedAt(new Date())
-                .setExpiration(generateExpirationDate())
-                .signWith(SIGNATURE_ALGORITHM, SECRET)
+                .subject(email)
+                .issuer(APP_NAME)
+                .issuedAt(new Date())
+                .expiration(generateExpirationDate())
+                .signWith(signingKey())
                 .compact();
     }
 
@@ -124,9 +129,9 @@ public class TokenService {
      */
     public boolean validateToken(String authToken) {
         try {
-            Jwts.parser().setSigningKey(SECRET).parseClaimsJws(authToken);
+            Jwts.parser().verifyWith(signingKey()).build().parseSignedClaims(authToken);
             return true;
-        } catch (SignatureException ex) {
+        } catch (SecurityException ex) {
             logger.error("Invalid JWT signature");
         } catch (MalformedJwtException ex) {
             logger.error("Invalid JWT token");
@@ -150,8 +155,9 @@ public class TokenService {
         String refreshedToken;
         try {
             final Claims claims = getClaimsFromToken(token);
-            claims.setIssuedAt(generateCurrentDate());
-            refreshedToken = generateToken(claims);
+            Map<String, Object> refreshedClaims = new HashMap<>(claims);
+            refreshedClaims.put(Claims.ISSUED_AT, generateCurrentDate());
+            refreshedToken = generateToken(refreshedClaims);
         } catch (Exception e) {
             logger.debug("Failed to refresh token: {}", e.getMessage());
             refreshedToken = null;
@@ -161,9 +167,9 @@ public class TokenService {
 
     private String generateToken(Map<String, Object> claims) {
         return Jwts.builder()
-                .setClaims(claims)
-                .setExpiration(generateExpirationDate())
-                .signWith(SIGNATURE_ALGORITHM, SECRET)
+                .claims(claims)
+                .expiration(generateExpirationDate())
+                .signWith(signingKey())
                 .compact();
     }
 
@@ -311,9 +317,23 @@ public class TokenService {
 
     private Claims getClaimsFromToken(String token) throws ExpiredJwtException {
         return Jwts.parser()
-                .setSigningKey(this.SECRET)
-                .parseClaimsJws(token)
-                .getBody();
+                .verifyWith(signingKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+    }
+
+    private SecretKey signingKey() {
+        byte[] keyBytes;
+        try {
+            keyBytes = Decoders.BASE64.decode(SECRET);
+        } catch (RuntimeException e) {
+            keyBytes = new byte[0];
+        }
+        if (keyBytes.length < 32) {
+            keyBytes = SECRET.getBytes(StandardCharsets.UTF_8);
+        }
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 
     private long getCurrentTimeMillis() {

@@ -1,0 +1,78 @@
+<navigation-unauthenticated></navigation-unauthenticated>
+<main class="container" fxLayout="row wrap" fxLayout.xs="column" fxLayoutGap="0.5%"
+      fxLayoutAlign="center">
+  <div fxFlex="80%">
+    <mat-card class="text-center">
+      <mat-card-title>
+        <h4>
+          <img src="assets/images/logo.svg" height="50px" class="ml-2 v-middle">
+          <span class="stylish">Gifts hub</span>
+        </h4>
+        <h6 *ngIf="invite && !invalid">{{'user.kidConvert.welcome'|translate:{name: invite.name} }}</h6>
+      </mat-card-title>
+      <div *ngIf="invalid" class="mt-3" data-testid="kid-convert-invalid">
+        <h4>{{'user.kidConvert.invalid'|translate}}</h4>
+        <a routerLink="/login">{{'user.login.text'|translate}}</a>
+      </div>
+      <ng-container *ngIf="invite && !invalid">
+        <div class="help">{{'user.kidConvert.info'|translate:{email: invite.email} }}</div>
+        <div fxLayout="row wrap" fxLayoutAlign="center center">
+          <div fxFlex="50" fxFlex.lt-sm="100" class="register-form">
+            <form [formGroup]="form" (ngSubmit)="convert()">
+              <div fxLayout="row" fxLayoutAlign="center center" class="mt-3">
+                <mat-form-field fxFlex="80" fxFlex.lt-sm="100">
+                  <input matInput placeholder="{{'user.username'|translate}}" formControlName="username"
+                         autocomplete="username" required data-testid="kid-convert-username">
+                  <mat-hint>{{'user.register.username.chars'|translate}}</mat-hint>
+                  <mat-error *ngIf="form.controls.username.hasError('badusername') || form.controls.username.hasError('pattern')">
+                    {{'user.register.username.chars'|translate}}
+                  </mat-error>
+                  <mat-error *ngIf="form.controls.username.hasError('username')">
+                    {{'user.register.username.exists'|translate}}
+                  </mat-error>
+                </mat-form-field>
+              </div>
+              <div fxLayout="row" fxLayoutAlign="center center" class="mt-3">
+                <mat-form-field fxFlex="80" fxFlex.lt-sm="100">
+                  <input matInput type="password" placeholder="{{'user.password.text'|translate}}"
+                         formControlName="password" autocomplete="new-password" required data-testid="kid-convert-password">
+                  <mat-hint>{{'user.register.password.hint'|translate}}</mat-hint>
+                  <mat-error *ngIf="form.controls.password.hasError('minlength')">
+                    {{'user.register.password.tooweak'|translate}}
+                  </mat-error>
+                </mat-form-field>
+              </div>
+              <div fxLayout="row" fxLayoutAlign="center center" class="mt-3">
+                <mat-form-field fxFlex="80" fxFlex.lt-sm="100">
+                  <input matInput type="password" placeholder="{{'user.register.password.confirm'|translate}}"
+                         formControlName="confirmPassword" autocomplete="new-password" required
+                         data-testid="kid-convert-confirm">
+                  <mat-hint>{{'user.register.password.confirm'|translate}}</mat-hint>
+                  <mat-error *ngIf="form.hasError('notSame')">
+                    {{'user.register.password.nomatch'|translate}}
+                  </mat-error>
+                </mat-form-field>
+              </div>
+              <div class="text-center mt-3 mb-2">
+                <button mat-raised-button class="success-button" type="submit" [disabled]="form.invalid"
+                        data-testid="kid-convert-submit">
+                  {{'user.kidConvert.submit'|translate}}
+                </button>
+              </div>
+            </form>
+          </div>
+          <div fxFlex="50" fxFlex.lt-sm="100">
+            {{'user.kidConvert.googleTitle'|translate}}
+            <div class="mt-1">
+              <a class="btn-social google" href="{{googleUrl}}" data-testid="kid-convert-google">
+                <img src="assets/images/btn_google.svg" height="25px">
+                {{'user.kidConvert.googleButton'|translate}}
+              </a>
+            </div>
+            <div class="mt-2">{{'user.kidConvert.googleHelp'|translate:{email: invite.email} }}</div>
+          </div>
+        </div>
+      </ng-container>
+    </mat-card>
+  </div>
+</main>

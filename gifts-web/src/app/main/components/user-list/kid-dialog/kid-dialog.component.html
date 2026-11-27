@@ -75,8 +75,35 @@
             </button>
           </mat-form-field>
         </div>
-        <div fxFlex="80%" class="text-center" *ngIf="kid.id && update">
-          <button mat-flat-button color="warn">
+        <div fxFlex="80%" class="text-center mb-2" *ngIf="kid.id && update && !showConvert">
+          <button mat-stroked-button type="button" (click)="showConvert = true" data-testid="kid-convert-toggle">
+            <mat-icon>how_to_reg</mat-icon>
+            {{'user.kidConvert.title'|translate}}
+          </button>
+        </div>
+        <div fxFlex="80%" fxLayout="column" fxLayoutAlign="start stretch" class="text-center" *ngIf="kid.id && update && showConvert">
+          <h3>
+            <mat-icon>how_to_reg</mat-icon>
+            {{'user.kidConvert.title'|translate}}
+          </h3>
+          <div class="help" [innerHTML]="'user.kidConvert.help'|translate"></div>
+          <mat-form-field>
+            <input matInput type="email" placeholder="{{'user.email'|translate}}" [formControl]="convertEmail"
+                   autocomplete="off" data-testid="kid-convert-email">
+            <mat-error *ngIf="convertEmail.hasError('email')">
+              {{'user.register.email.invalid'|translate}}
+            </mat-error>
+            <mat-error *ngIf="convertEmail.hasError('duplicated')">
+              {{'user.register.email.exists'|translate}}
+            </mat-error>
+          </mat-form-field>
+          <button mat-stroked-button type="button" class="mb-2" style="align-self: center" [disabled]="convertEmail.invalid"
+                  (click)="convertKid()" data-testid="kid-convert-btn">
+            {{'user.kidConvert.button'|translate}}
+          </button>
+        </div>
+        <div fxFlex="80%" class="text-center mt-3 pt-2" style="border-top: 1px solid rgba(0,0,0,.12)" *ngIf="kid.id && update">
+          <button mat-flat-button color="warn" type="button">
             {{'user.group.delete.kid.text'|translate}}
           </button>
         </div>

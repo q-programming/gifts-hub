@@ -14,6 +14,7 @@ export const environment = {
   refresh_token_url: '/api/refresh',
   whoami_url: '/api/account/whoami',
   oauth_login_url: '/oauth2/authorize/',
+  oauth_kid_convert_url: '/oauth2/kid-convert/',
   login_url: '/login',
   logout_url: '/logout',
   account_url: '/api/account',
