@@ -14,6 +14,8 @@ import com.qprogramming.gifts.account.event.AccountEventType;
 import com.qprogramming.gifts.account.group.Group;
 import com.qprogramming.gifts.account.group.GroupForm;
 import com.qprogramming.gifts.account.group.GroupService;
+import com.qprogramming.gifts.account.group.KidConvertForm;
+import com.qprogramming.gifts.account.group.KidConvertLocalForm;
 import com.qprogramming.gifts.account.group.KidForm;
 import com.qprogramming.gifts.config.MappingConfiguration;
 import com.qprogramming.gifts.config.mail.Mail;
@@ -70,6 +72,7 @@ public class UserRestControllerTest extends MockedAccountTestBase {
     private static final String API_USER_GROUP_LEAVE = "/api/account/group/{}/leave";
     private static final String API_USER_KID_ADD = "/api/account/kid-add";
     private static final String API_USER_KID_UPDATE = "/api/account/kid-update";
+    private static final String API_USER_KID_CONVERT = "/api/account/kid-convert";
     private static final String API_USER_USER_DELETE = "/api/account/delete/";
     private static final String API_USER_SHARE = "/api/account/share";
     private static final String API_USER_ADMINS = "/api/account/admins";
@@ -101,7 +104,7 @@ public class UserRestControllerTest extends MockedAccountTestBase {
     @Before
     public void setUp() throws Exception {
         super.setup();
-        UserRestController userCtrl = new UserRestController(accSrvMock, msgSrvMock, groupServiceMock, giftServiceMock, mailServiceMock, eventServiceMock, logoutHandlerMock);
+        UserRestController userCtrl = new UserRestController(accSrvMock, msgSrvMock, groupServiceMock, giftServiceMock, mailServiceMock,         eventServiceMock, logoutHandlerMock);
         when(msgSrvMock.getMessage(anyString())).thenReturn("MESSAGE");
         this.userRestCtrl = MockMvcBuilders.standaloneSetup(userCtrl).build();
     }
@@ -120,6 +123,23 @@ public class UserRestControllerTest extends MockedAccountTestBase {
                 .andExpect(status().isCreated());
         verify(accSrvMock, times(1)).createLocalAccount(any(Account.class));
 
+    }
+
+    @Test
+    public void registerMailFailureRemovesNewAccount() throws Exception {
+        when(accSrvMock.createLocalAccount(any(Account.class))).thenReturn(testAccount);
+        doThrow(new org.springframework.mail.MailSendException("fail")).when(mailServiceMock).sendConfirmMail(any(), any());
+        RegisterForm form = new RegisterForm();
+        form.setName(testAccount.getName());
+        form.setSurname(testAccount.getSurname());
+        form.setUsername(testAccount.getUsername());
+        form.setEmail(testAccount.getEmail());
+        form.setPassword("PasswordPassword!23");
+        form.setConfirmpassword("PasswordPassword!23");
+        userRestCtrl.perform(post(API_USER_REGISTER).contentType(APPLICATION_JSON_UTF8).content(convertObjectToJsonBytes(form)))
+                .andExpect(status().isInternalServerError());
+        verify(accSrvMock, times(1)).removeAllEvents(testAccount);
+        verify(accSrvMock, times(1)).delete(testAccount);
     }
 
 //    @Test
@@ -459,6 +479,172 @@ public class UserRestControllerTest extends MockedAccountTestBase {
         userRestCtrl.perform(post(API_USER_KID_ADD)
                 .contentType(APPLICATION_JSON_UTF8)
                 .content(convertObjectToJsonBytes(form))).andExpect(status().is4xxClientError());
+    }
+
+    @Test
+    public void convertKidForbiddenWhenNotKidAdmin() throws Exception {
+        Account kid = createKid();
+        when(accSrvMock.findById(KID_ID)).thenReturn(kid);
+        when(accSrvMock.isKidAdmin(kid)).thenReturn(false);
+
+        userRestCtrl.perform(post(API_USER_KID_CONVERT)
+                .contentType(APPLICATION_JSON_UTF8)
+                .content(convertObjectToJsonBytes(convertForm("kid@test.com")))).andExpect(status().isForbidden());
+
+        verify(accSrvMock, never()).createKidConvertEvent(any(), any());
+    }
+
+    @Test
+    public void convertKidEmailAlreadyUsed() throws Exception {
+        Account kid = createKid();
+        when(accSrvMock.findById(KID_ID)).thenReturn(kid);
+        when(accSrvMock.isKidAdmin(kid)).thenReturn(true);
+        when(accSrvMock.findByEmail("kid@test.com")).thenReturn(Optional.of(testAccount));
+
+        userRestCtrl.perform(post(API_USER_KID_CONVERT)
+                .contentType(APPLICATION_JSON_UTF8)
+                .content(convertObjectToJsonBytes(convertForm("kid@test.com")))).andExpect(status().isConflict());
+
+        verify(accSrvMock, never()).createKidConvertEvent(any(), any());
+    }
+
+    @Test
+    public void convertKidInvalidEmailRejected() throws Exception {
+        userRestCtrl.perform(post(API_USER_KID_CONVERT)
+                .contentType(APPLICATION_JSON_UTF8)
+                .content(convertObjectToJsonBytes(convertForm("not-an-email")))).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void convertKidSendsInviteToGivenEmail() throws Exception {
+        Account kid = createKid();
+        AccountEvent event = new AccountEvent();
+        when(accSrvMock.findById(KID_ID)).thenReturn(kid);
+        when(accSrvMock.isKidAdmin(kid)).thenReturn(true);
+        when(accSrvMock.findByEmail("kid@test.com")).thenReturn(Optional.empty());
+        when(accSrvMock.createKidConvertEvent(kid, "kid@test.com")).thenReturn(event);
+
+        userRestCtrl.perform(post(API_USER_KID_CONVERT)
+                .contentType(APPLICATION_JSON_UTF8)
+                .content(convertObjectToJsonBytes(convertForm("kid@test.com")))).andExpect(status().isOk());
+
+        ArgumentCaptor<Mail> mailCaptor = ArgumentCaptor.forClass(Mail.class);
+        verify(mailServiceMock).sendConfirmMail(mailCaptor.capture(), eq(event));
+        assertEquals("kid@test.com", mailCaptor.getValue().getMailTo());
+    }
+
+    @Test
+    public void convertKidMailFailureRemovesEvent() throws Exception {
+        Account kid = createKid();
+        AccountEvent event = new AccountEvent();
+        when(accSrvMock.findById(KID_ID)).thenReturn(kid);
+        when(accSrvMock.isKidAdmin(kid)).thenReturn(true);
+        when(accSrvMock.findByEmail("kid@test.com")).thenReturn(Optional.empty());
+        when(accSrvMock.createKidConvertEvent(kid, "kid@test.com")).thenReturn(event);
+        doThrow(new javax.mail.MessagingException("fail")).when(mailServiceMock).sendConfirmMail(any(), any());
+
+        userRestCtrl.perform(post(API_USER_KID_CONVERT)
+                .contentType(APPLICATION_JSON_UTF8)
+                .content(convertObjectToJsonBytes(convertForm("kid@test.com")))).andExpect(status().isInternalServerError());
+
+        verify(accSrvMock).removeEvent(event);
+    }
+
+    @Test
+    public void kidConvertInviteInvalidToken() throws Exception {
+        when(accSrvMock.findValidKidConvertEvent("token")).thenReturn(Optional.empty());
+
+        userRestCtrl.perform(get(API_USER_KID_CONVERT + "/token")).andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void kidConvertInviteReturnsInvitedData() throws Exception {
+        AccountEvent event = convertEvent();
+        when(accSrvMock.findValidKidConvertEvent("token")).thenReturn(Optional.of(event));
+
+        MvcResult result = userRestCtrl.perform(get(API_USER_KID_CONVERT + "/token")).andExpect(status().isOk()).andReturn();
+
+        JSONObject json = new JSONObject(result.getResponse().getContentAsString());
+        assertEquals("kid@test.com", json.getString("email"));
+        assertEquals("kid", json.getString("username"));
+    }
+
+    @Test
+    public void kidConvertLocalSuccess() throws Exception {
+        AccountEvent event = convertEvent();
+        when(accSrvMock.findValidKidConvertEvent("token")).thenReturn(Optional.of(event));
+        when(accSrvMock.findByUsername("kid")).thenReturn(Optional.of(event.getAccount()));
+        when(accSrvMock.findByEmail("kid@test.com")).thenReturn(Optional.empty());
+        when(accSrvMock.convertKidAccount(event, AccountType.LOCAL, "kid", "Password1")).thenReturn(event.getAccount());
+
+        userRestCtrl.perform(post(API_USER_KID_CONVERT + "/token/local")
+                .contentType(APPLICATION_JSON_UTF8)
+                .content(convertObjectToJsonBytes(localForm("kid", "Password1", "Password1")))).andExpect(status().isOk());
+
+        verify(accSrvMock).convertKidAccount(event, AccountType.LOCAL, "kid", "Password1");
+        verify(mailServiceMock).sendKidConverted(any(Mail.class));
+    }
+
+    @Test
+    public void kidConvertLocalRejectsTakenUsernameAndBadPasswords() throws Exception {
+        AccountEvent event = convertEvent();
+        when(accSrvMock.findValidKidConvertEvent("token")).thenReturn(Optional.of(event));
+        when(accSrvMock.findByUsername("taken")).thenReturn(Optional.of(testAccount));
+        when(accSrvMock.findByUsername("kid")).thenReturn(Optional.empty());
+
+        userRestCtrl.perform(post(API_USER_KID_CONVERT + "/token/local")
+                .contentType(APPLICATION_JSON_UTF8)
+                .content(convertObjectToJsonBytes(localForm("taken", "Password1", "Password1")))).andExpect(status().isConflict());
+        userRestCtrl.perform(post(API_USER_KID_CONVERT + "/token/local")
+                .contentType(APPLICATION_JSON_UTF8)
+                .content(convertObjectToJsonBytes(localForm("kid", "Password1", "Different1")))).andExpect(status().isConflict());
+        userRestCtrl.perform(post(API_USER_KID_CONVERT + "/token/local")
+                .contentType(APPLICATION_JSON_UTF8)
+                .content(convertObjectToJsonBytes(localForm("kid", "short", "short")))).andExpect(status().isConflict());
+
+        verify(accSrvMock, never()).convertKidAccount(any(), any(), any(), any());
+    }
+
+    @Test
+    public void kidConvertLocalInvalidToken() throws Exception {
+        when(accSrvMock.findValidKidConvertEvent("token")).thenReturn(Optional.empty());
+
+        userRestCtrl.perform(post(API_USER_KID_CONVERT + "/token/local")
+                .contentType(APPLICATION_JSON_UTF8)
+                .content(convertObjectToJsonBytes(localForm("kid", "Password1", "Password1")))).andExpect(status().isNotFound());
+    }
+
+    private Account createKid() {
+        Account kid = new Account();
+        kid.setId(KID_ID);
+        kid.setName("Kid");
+        kid.setSurname("Kidson");
+        kid.setUsername("kid");
+        kid.setType(AccountType.KID);
+        return kid;
+    }
+
+    private AccountEvent convertEvent() {
+        AccountEvent event = new AccountEvent();
+        event.setAccount(createKid());
+        event.setType(AccountEventType.KID_CONVERT);
+        event.setEmail("kid@test.com");
+        return event;
+    }
+
+    private KidConvertForm convertForm(String email) {
+        KidConvertForm form = new KidConvertForm();
+        form.setKidId(KID_ID);
+        form.setEmail(email);
+        return form;
+    }
+
+    private KidConvertLocalForm localForm(String username, String password, String confirm) {
+        KidConvertLocalForm form = new KidConvertLocalForm();
+        form.setUsername(username);
+        form.setPassword(password);
+        form.setConfirmpassword(confirm);
+        return form;
     }
 
     @Test

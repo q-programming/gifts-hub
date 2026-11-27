@@ -22,6 +22,8 @@ export class KidDialogComponent implements OnInit {
   form: UntypedFormGroup;
   update: boolean;
   uploadInProgress: boolean;
+  showConvert = false;
+  convertEmail = new FormControl<string>('', [Validators.required, Validators.email]);
 
   constructor(private dialogRef: MatDialogRef<KidDialogComponent>,
               @Inject(MAT_DIALOG_DATA) public data: any,
@@ -74,7 +76,7 @@ export class KidDialogComponent implements OnInit {
       this.kid.username = this.form.controls.username.value;
       this.kid.publicList = this.form.controls.publicList.value;
       this.kid.birthday = this.form.controls.birthday.value;
-      this.kid.avatar = getBase64Image(this.avatarData);
+      this.kid.avatar = this.avatarData ? getBase64Image(this.avatarData) : undefined;
       this.dialogRef.close(this.kid);
     }
   }
@@ -90,5 +92,22 @@ export class KidDialogComponent implements OnInit {
 
   removeDOB() {
     this.form.controls.birthday.setValue(undefined);
+  }
+
+  convertKid() {
+    if (this.convertEmail.invalid) {
+      return;
+    }
+    const email = this.convertEmail.value.trim();
+    this.apiSrv.post(`${environment.account_url}/kid-convert`, {kidId: this.kid.id, email}).subscribe(() => {
+      this.alertSrv.success('user.kidConvert.invite.success', {email});
+      this.dialogRef.close();
+    }, error => {
+      if (error.status === 409) {
+        this.convertEmail.setErrors({duplicated: true});
+      } else if (error.status === 500) {
+        this.alertSrv.error('user.kidConvert.invite.error');
+      }
+    });
   }
 }

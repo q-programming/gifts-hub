@@ -124,12 +124,8 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.spec.json",
             "karmaConfig": "src/karma.conf.js",
-            "styles": [
-              "src/styles.scss"
-            ],
-            "scripts": [
-              "../node_modules/hammerjs/hammer.min.js"
-            ],
+            "styles": [],
+            "scripts": [],
             "assets": [
               "src/favicon.ico",
               "src/assets"

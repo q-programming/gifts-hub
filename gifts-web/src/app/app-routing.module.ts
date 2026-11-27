@@ -8,6 +8,7 @@ import {GiftsPublicComponent} from "./components/gifts-public/gifts-public.compo
 import {ResetPasswordComponent} from "./components/login/reset-password/reset-password.component";
 import {ChangePasswordComponent} from "./components/login/change-password/change-password.component";
 import {ConfirmComponent} from "./components/confirm/confirm.component";
+import {KidConvertComponent} from "./components/kid-convert/kid-convert.component";
 import {environment} from "@env/environment";
 
 const routes: Routes = [
@@ -20,6 +21,7 @@ const routes: Routes = [
   {path: 'login', component: LoginComponent},
   {path: 'public/:user', component: GiftsPublicComponent},
   {path: 'confirm/:token', component: ConfirmComponent},
+  {path: 'convert/:token', component: KidConvertComponent},
   {path: 'register', component: RegisterComponent},
   {path: 'reset', component: ResetPasswordComponent},
   {path: 'password-change/:token', component: ChangePasswordComponent},

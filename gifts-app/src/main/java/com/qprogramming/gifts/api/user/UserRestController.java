@@ -6,6 +6,8 @@ import com.qprogramming.gifts.account.event.AccountEventType;
 import com.qprogramming.gifts.account.group.Group;
 import com.qprogramming.gifts.account.group.GroupForm;
 import com.qprogramming.gifts.account.group.GroupService;
+import com.qprogramming.gifts.account.group.KidConvertForm;
+import com.qprogramming.gifts.account.group.KidConvertLocalForm;
 import com.qprogramming.gifts.account.group.KidForm;
 import com.qprogramming.gifts.config.mail.Mail;
 import com.qprogramming.gifts.config.mail.MailService;
@@ -24,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.mail.MailException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -122,8 +125,10 @@ public class UserRestController {
         Mail mail = Utils.createMail(newAccount);
         try {
             _mailService.sendConfirmMail(mail, event);
-        } catch (MessagingException | UnsupportedEncodingException e) {
-            LOG.error("Error while trying to send email", e);
+        } catch (MessagingException | UnsupportedEncodingException | MailException e) {
+            LOG.error("Error while trying to send email, removing newly created account {}", newAccount.getEmail(), e);
+            _accountService.removeAllEvents(newAccount);
+            _accountService.delete(newAccount);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
 //        _accountService.createAvatar(newAccount);
@@ -581,10 +586,104 @@ public class UserRestController {
     }
 
 
+    /**
+     * Invites kid to become regular account. Invitation is sent to passed email
+     */
+    @Transactional
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @RequestMapping(value = "/kid-convert", method = RequestMethod.POST)
+    public ResponseEntity<?> convertKid(@RequestBody @Valid KidConvertForm form) {
+        try {
+            Account kid = _accountService.findById(form.getKidId());
+            if (!_accountService.isKidAdmin(kid)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("group_admin");
+            }
+            String email = form.getEmail().trim();
+            if (_accountService.findByEmail(email).isPresent()) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("email");
+            }
+            AccountEvent event = _accountService.createKidConvertEvent(kid, email);
+            Mail mail = Utils.createMail(kid, Utils.getCurrentAccount());
+            mail.setMailTo(email);
+            try {
+                _mailService.sendConfirmMail(mail, event);
+            } catch (MessagingException | UnsupportedEncodingException | MailException e) {
+                LOG.error("Error while trying to send kid convert invite to {}", email, e);
+                _accountService.removeEvent(event);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("mailing");
+            }
+            return ResponseEntity.ok().build();
+        } catch (AccountNotFoundException e) {
+            LOG.error("Unable to find KID account with id {}", form.getKidId());
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    /**
+     * Returns data for landing page of kid conversion invitation
+     */
+    @RequestMapping(value = "/kid-convert/{token}", method = RequestMethod.GET)
+    public ResponseEntity<?> getKidConvertInvite(@PathVariable String token) {
+        Optional<AccountEvent> eventOptional = _accountService.findValidKidConvertEvent(token);
+        if (eventOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("invalid");
+        }
+        AccountEvent event = eventOptional.get();
+        Account kid = event.getAccount();
+        Map<String, String> model = new HashMap<>();
+        model.put("name", kid.getFullname());
+        model.put("username", kid.getUsername());
+        model.put("email", event.getEmail());
+        return ResponseEntity.ok(model);
+    }
+
+    /**
+     * Finishes kid account conversion by setting username and password
+     */
+    @Transactional
+    @RequestMapping(value = "/kid-convert/{token}/local", method = RequestMethod.POST)
+    public ResponseEntity<?> completeKidConvert(@PathVariable String token, @Valid @RequestBody KidConvertLocalForm form) {
+        Optional<AccountEvent> eventOptional = _accountService.findValidKidConvertEvent(token);
+        if (eventOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("invalid");
+        }
+        AccountEvent event = eventOptional.get();
+        Account kid = event.getAccount();
+        if (!Pattern.compile(USERNAME_REGEXP).matcher(form.getUsername()).matches()) {
+            return new ResponseEntity<>("bad_username", HttpStatus.CONFLICT);
+        }
+        Optional<Account> sameUsername = _accountService.findByUsername(form.getUsername());
+        if (sameUsername.isPresent() && !sameUsername.get().getId().equals(kid.getId())) {
+            return new ResponseEntity<>("username", HttpStatus.CONFLICT);
+        }
+        if (!form.getPassword().equals(form.getConfirmpassword())) {
+            return new ResponseEntity<>("passwords", HttpStatus.CONFLICT);
+        }
+        if (form.getPassword().length() < 8) {
+            return new ResponseEntity<>("weak", HttpStatus.CONFLICT);
+        }
+        if (_accountService.findByEmail(event.getEmail()).isPresent()) {
+            return new ResponseEntity<>("email", HttpStatus.CONFLICT);
+        }
+        return finishKidConvert(event, form.getUsername(), form.getPassword());
+    }
+
+    private ResponseEntity<?> finishKidConvert(AccountEvent event, String username, String password) {
+        Account converted = _accountService.convertKidAccount(event, AccountType.LOCAL, username, password);
+        try {
+            _mailService.sendKidConverted(Utils.createMail(converted));
+        } catch (MessagingException | UnsupportedEncodingException | MailException e) {
+            LOG.error("Failed to send kid conversion confirmation to {}", converted.getEmail(), e);
+        }
+        Map<String, String> model = new HashMap<>();
+        model.put(RESULT, "converted");
+        return ResponseEntity.ok(model);
+    }
+
     @RequestMapping(value = "/validate-email", method = RequestMethod.POST)
     public ResponseEntity<?> validateEmail(@RequestBody String email) {
         Optional<Account> acc = _accountService.findByEmail(email);
-        if (!acc.isPresent()) {
+        if (acc.isEmpty()) {
             return ResponseEntity.ok(new ResultData.ResultBuilder().ok().build());
         }
         return ResponseEntity.ok(new ResultData.ResultBuilder().error().message("User exists").build());
@@ -593,7 +692,7 @@ public class UserRestController {
     @RequestMapping(value = "/validate-username", method = RequestMethod.POST)
     public ResponseEntity<?> validateUsername(@RequestBody String username) {
         Optional<Account> optionalAccount = _accountService.findByUsername(username);
-        if (!optionalAccount.isPresent()) {
+        if (optionalAccount.isEmpty()) {
             return ResponseEntity.ok(new ResultData.ResultBuilder().ok().build());
         }
         return ResponseEntity.status(HttpStatus.CONFLICT).build();

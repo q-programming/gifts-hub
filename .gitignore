@@ -17,3 +17,4 @@ gifts.iml
 gifts-app/*.iml
 gifts-web/*.iml
 out/
+.playwright-mcp/

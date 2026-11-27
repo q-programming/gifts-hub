@@ -452,6 +452,28 @@
       "text": "Group"
     },
     "list": "User lists",
+    "kidConvert": {
+      "button": "Convert to regular account",
+      "error": {
+        "email": "Google account email does not match the email the invitation was sent to",
+        "google": "Could not convert account using Google. Please try again"
+      },
+      "googleHelp": "Use Google account with email {{email}}",
+      "googleTitle": "Verify your account with Google. You will be asked to sign in afterwards",
+      "googleButton": "Verify with Google",
+      "help": "Send an invitation to the kid. After accepting it, the kid account will become a regular account, which can sign in using Google or username and password. All gifts and groups are kept.",
+      "info": "Invitation was sent to {{email}}. Choose how you want to sign in to Gifts Hub",
+      "invalid": "This invitation is invalid or has expired",
+      "invite": {
+        "error": "Invitation could not be sent. Please try again later",
+        "success": "Invitation was sent to {{email}}"
+      },
+      "local": "Set username and password",
+      "submit": "Convert account",
+      "success": "Your account was converted. You can now sign in",
+      "title": "Convert to regular account",
+      "welcome": "Welcome {{name}}!"
+    },
     "login": {
       "existing": "Already have account?",
       "facebook": "Log in with Facebook",

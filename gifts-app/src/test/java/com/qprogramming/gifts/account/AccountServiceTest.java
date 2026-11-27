@@ -8,7 +8,9 @@ import com.qprogramming.gifts.account.authority.AuthorityService;
 import com.qprogramming.gifts.account.authority.Role;
 import com.qprogramming.gifts.account.avatar.Avatar;
 import com.qprogramming.gifts.account.avatar.AvatarRepository;
+import com.qprogramming.gifts.account.event.AccountEvent;
 import com.qprogramming.gifts.account.event.AccountEventRepository;
+import com.qprogramming.gifts.account.event.AccountEventType;
 import com.qprogramming.gifts.account.group.Group;
 import com.qprogramming.gifts.account.group.GroupService;
 import com.qprogramming.gifts.config.property.PropertyService;
@@ -28,6 +30,7 @@ import java.util.*;
 
 import static com.qprogramming.gifts.TestUtil.createAccountList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.Mockito.*;
@@ -88,6 +91,149 @@ public class AccountServiceTest extends MockedAccountTestBase {
                 .thenReturn(Optional.empty());
         accountService.generateID();
         verify(accountRepositoryMock, times(3)).findOneById(anyString());
+    }
+
+    @Test
+    public void convertKidAccountToLocalKeepsAccountAndRemovesEvent() {
+        Account kid = new Account();
+        kid.setId("KID");
+        kid.setType(AccountType.KID);
+        kid.setUsername("kid");
+        AccountEvent event = new AccountEvent();
+        event.setAccount(kid);
+        event.setEmail("kid@test.com");
+        when(passwordEncoderMock.encode("Password1")).thenReturn("ENCODED");
+        when(accountRepositoryMock.save(any(Account.class))).then(returnsFirstArg());
+
+        Account result = accountService.convertKidAccount(event, AccountType.LOCAL, "newkid", "Password1");
+
+        assertThat(result.getId()).isEqualTo("KID");
+        assertThat(result.getType()).isEqualTo(AccountType.LOCAL);
+        assertThat(result.getEmail()).isEqualTo("kid@test.com");
+        assertThat(result.getUsername()).isEqualTo("newkid");
+        assertThat(result.getPassword()).isEqualTo("ENCODED");
+        assertThat(result.isEnabled()).isTrue();
+        verify(accountEventRepositoryMock).delete(event);
+    }
+
+    @Test
+    public void convertKidAccountToOAuthKeepsUsernameAndSkipsPassword() {
+        Account kid = new Account();
+        kid.setType(AccountType.KID);
+        kid.setUsername("kid");
+        AccountEvent event = new AccountEvent();
+        event.setAccount(kid);
+        event.setEmail("kid@test.com");
+        when(accountRepositoryMock.save(any(Account.class))).then(returnsFirstArg());
+
+        Account result = accountService.convertKidAccount(event, AccountType.GOOGLE, null, null);
+
+        assertThat(result.getType()).isEqualTo(AccountType.GOOGLE);
+        assertThat(result.getUsername()).isEqualTo("kid");
+        assertThat(result.getPassword()).isNull();
+        verify(passwordEncoderMock, never()).encode(any());
+    }
+
+    @Test
+    public void createKidConvertEventReplacesPreviousPendingEvent() {
+        Account kid = new Account();
+        kid.setType(AccountType.KID);
+        AccountEvent previous = new AccountEvent();
+        previous.setType(AccountEventType.KID_CONVERT);
+        when(accountEventRepositoryMock.findAllByAccount(kid)).thenReturn(Collections.singletonList(previous));
+        when(accountEventRepositoryMock.findByToken(anyString())).thenReturn(Optional.empty());
+        when(accountEventRepositoryMock.save(any(AccountEvent.class))).then(returnsFirstArg());
+
+        AccountEvent event = accountService.createKidConvertEvent(kid, "kid@test.com");
+
+        verify(accountEventRepositoryMock).delete(previous);
+        assertThat(event.getType()).isEqualTo(AccountEventType.KID_CONVERT);
+        assertThat(event.getEmail()).isEqualTo("kid@test.com");
+        assertThat(event.getAccount()).isEqualTo(kid);
+    }
+
+    @Test
+    public void findValidKidConvertEventRejectsExpiredAndWrongTypeEvents() {
+        Account kid = new Account();
+        kid.setType(AccountType.KID);
+        AccountEvent expired = new AccountEvent();
+        expired.setAccount(kid);
+        expired.setType(AccountEventType.KID_CONVERT);
+        long eightDaysAgo = System.currentTimeMillis() - 8L * 24 * 60 * 60 * 1000;
+        long timestamp = eightDaysAgo * 10000 + 0x01B21DD213814000L;
+        long msb = ((timestamp & 0xFFFFFFFFL) << 32) | (((timestamp >> 32) & 0xFFFFL) << 16) | 0x1000L | ((timestamp >> 48) & 0x0FFFL);
+        String expiredToken = new UUID(msb, 0x8000000000000001L).toString();
+        expired.setToken(expiredToken);
+        when(accountEventRepositoryMock.findByToken(expiredToken)).thenReturn(Optional.of(expired));
+
+        AccountEvent confirm = new AccountEvent();
+        confirm.setAccount(kid);
+        confirm.setType(AccountEventType.ACCOUNT_CONFIRM);
+        String confirmToken = UUID.randomUUID().toString();
+        confirm.setToken(confirmToken);
+        when(accountEventRepositoryMock.findByToken(confirmToken)).thenReturn(Optional.of(confirm));
+
+        assertThat(accountService.findValidKidConvertEvent(expiredToken)).isEmpty();
+        verify(accountEventRepositoryMock).delete(expired);
+        assertThat(accountService.findValidKidConvertEvent(confirmToken)).isEmpty();
+        assertThat(accountService.findValidKidConvertEvent("not-a-uuid")).isEmpty();
+    }
+
+    @Test
+    public void findValidKidConvertEventReturnsFreshEventOnlyForKidAccount() {
+        Account kid = new Account();
+        kid.setType(AccountType.KID);
+        AccountEvent fresh = new AccountEvent();
+        fresh.setAccount(kid);
+        fresh.setType(AccountEventType.KID_CONVERT);
+        String token = com.fasterxml.uuid.Generators.timeBasedGenerator().generate().toString();
+        fresh.setToken(token);
+        when(accountEventRepositoryMock.findByToken(token)).thenReturn(Optional.of(fresh));
+
+        assertThat(accountService.findValidKidConvertEvent(token)).contains(fresh);
+
+        kid.setType(AccountType.LOCAL);
+        assertThat(accountService.findValidKidConvertEvent(token)).isEmpty();
+    }
+
+    @Test
+    public void convertKidAccountWithGoogleConvertsOnlyWhenEmailMatchesInvite() {
+        Account kid = new Account();
+        kid.setType(AccountType.KID);
+        AccountEvent event = new AccountEvent();
+        event.setAccount(kid);
+        event.setType(AccountEventType.KID_CONVERT);
+        event.setEmail("kid@test.com");
+        String token = com.fasterxml.uuid.Generators.timeBasedGenerator().generate().toString();
+        event.setToken(token);
+        when(accountEventRepositoryMock.findByToken(token)).thenReturn(Optional.of(event));
+        when(accountRepositoryMock.save(any(Account.class))).then(returnsFirstArg());
+
+        assertThatThrownBy(() -> accountService.convertKidAccountWithGoogle(token, "other@test.com"))
+                .hasMessage(AccountService.KID_CONVERT_EMAIL);
+        assertThat(kid.getType()).isEqualTo(AccountType.KID);
+
+        assertThat(accountService.convertKidAccountWithGoogle(token, "KID@test.com").getType()).isEqualTo(AccountType.GOOGLE);
+    }
+
+    @Test
+    public void convertKidAccountWithGoogleRejectsInvalidInviteOrUsedEmail() {
+        assertThatThrownBy(() -> accountService.convertKidAccountWithGoogle("not-a-uuid", "kid@test.com"))
+                .hasMessage(AccountService.KID_CONVERT_INVALID);
+
+        Account kid = new Account();
+        kid.setType(AccountType.KID);
+        AccountEvent event = new AccountEvent();
+        event.setAccount(kid);
+        event.setType(AccountEventType.KID_CONVERT);
+        event.setEmail("kid@test.com");
+        String token = com.fasterxml.uuid.Generators.timeBasedGenerator().generate().toString();
+        event.setToken(token);
+        when(accountEventRepositoryMock.findByToken(token)).thenReturn(Optional.of(event));
+        when(accountRepositoryMock.findOneByEmailIgnoreCase("kid@test.com")).thenReturn(Optional.of(new Account()));
+
+        assertThatThrownBy(() -> accountService.convertKidAccountWithGoogle(token, "kid@test.com"))
+                .hasMessage(AccountService.KID_CONVERT_EMAIL);
     }
 
     @Test

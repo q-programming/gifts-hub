@@ -27,6 +27,7 @@ public class PropertiesConfiguration {
     private static final String LOCAL_PROPERTIES = "localProperties";
     private static final String DATABASE_PROPERTIES = "database-properties";
     private static final String APP_PREFIX = "app";
+    private static final String MAIL_PREFIX = "spring.mail";
     private PropertyRepository propertyRepository;
     private ConfigurableEnvironment env;
     private PropertySourcesPlaceholderConfigurer ppc;
@@ -56,7 +57,7 @@ public class PropertiesConfiguration {
         Properties appProperties = new Properties();
         Properties localProperties = (Properties) Objects.requireNonNull(ppc.getAppliedPropertySources().get(LOCAL_PROPERTIES)).getSource();
         localProperties.stringPropertyNames().forEach(key -> {
-            if (key.startsWith(APP_PREFIX)) {
+            if (key.startsWith(APP_PREFIX) || key.startsWith(MAIL_PREFIX)) {
                 appProperties.setProperty(key, localProperties.getProperty(key));
             }
         });

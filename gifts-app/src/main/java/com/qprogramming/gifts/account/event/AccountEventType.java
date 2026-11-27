@@ -6,5 +6,6 @@ public enum AccountEventType {
     GROUP_REMOVE,
     GROUP_KID,
     ACCOUNT_CONFIRM,
-    PASSWORD_RESET
+    PASSWORD_RESET,
+    KID_CONVERT
 }
