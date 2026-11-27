@@ -79,7 +79,7 @@ public class AccountServiceTest extends MockedAccountTestBase {
     }
 
     @Test
-    public void generateIDFails2TimesTest() throws Exception {
+    public void generateIDFails2TimesTest() {
         Optional<Account> account1 = Optional.of(TestUtil.createAccount());
         Optional<Account> account2 = Optional.of(TestUtil.createAccount());
         when(accountRepositoryMock.findOneById(anyString()))
@@ -90,6 +90,45 @@ public class AccountServiceTest extends MockedAccountTestBase {
         verify(accountRepositoryMock, times(3)).findOneById(anyString());
     }
 
+    @Test
+    public void findByEmailsOrUsernamesIsCaseInsensitiveForEmail() {
+        Account existing = new Account("john.doe", "john.doe@gmail.com", "pass");
+        when(accountRepositoryMock.findByEmailLowerIn(Collections.singleton("john.doe@gmail.com")))
+                .thenReturn(new HashSet<>(Collections.singleton(existing)));
+        when(accountRepositoryMock.findByUsernameIn(any())).thenReturn(new HashSet<>());
+
+        Set<Account> result = accountService.findByEmailsOrUsernames(new HashSet<>(Collections.singleton("John.Doe@gmail.com")));
+
+        assertThat(result).containsExactly(existing);
+        assertThat(result).noneMatch(a -> AccountType.TEMP.equals(a.getType()));
+    }
+
+    @Test
+    public void loadUserByUsernameIsCaseInsensitiveForEmail() {
+        Account existing = new Account("john.doe", "john.doe@gmail.com", "pass");
+        when(accountRepositoryMock.findOneByEmailIgnoreCase("John.Doe@gmail.com")).thenReturn(Optional.of(existing));
+
+        assertThat(accountService.loadUserByUsername("John.Doe@gmail.com")).isSameAs(existing);
+    }
+
+    @Test
+    public void findByEmailDelegatesToCaseInsensitiveLookup() {
+        Account existing = new Account("john.doe", "john.doe@gmail.com", "pass");
+        when(accountRepositoryMock.findOneByEmailIgnoreCase("John.Doe@gmail.com")).thenReturn(Optional.of(existing));
+
+        assertThat(accountService.findByEmail("John.Doe@gmail.com")).contains(existing);
+    }
+
+    @Test
+    public void findByEmailsOrUsernamesUnknownEmailStillTemp() {
+        when(accountRepositoryMock.findByEmailLowerIn(any())).thenReturn(new HashSet<>());
+        when(accountRepositoryMock.findByUsernameIn(any())).thenReturn(new HashSet<>());
+
+        Set<Account> result = accountService.findByEmailsOrUsernames(new HashSet<>(Collections.singleton("New@Example.com")));
+
+        assertThat(result).hasSize(1);
+        assertThat(result.iterator().next().getType()).isEqualTo(AccountType.TEMP);
+    }
 
     @Test
     public void createLocalUserAccount() throws Exception {

@@ -5,11 +5,27 @@
     <parent>
         <artifactId>gifts</artifactId>
         <groupId>com.qprogramming</groupId>
-        <version>1.3.3</version>
+        <version>1.3.4</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>gifts-web</artifactId>
     <name>Gifts-Web</name>
+    <properties>
+        <npm.executable>npm</npm.executable>
+    </properties>
+    <profiles>
+        <profile>
+            <id>windows-npm</id>
+            <activation>
+                <os>
+                    <family>windows</family>
+                </os>
+            </activation>
+            <properties>
+                <npm.executable>npm.cmd</npm.executable>
+            </properties>
+        </profile>
+    </profiles>
     <build>
         <resources>
             <resource>
@@ -36,9 +52,10 @@
                         <phase>generate-sources</phase>
                         <configuration>
                             <workingDirectory>${project.basedir}</workingDirectory>
-                            <executable>npm</executable>
+                            <executable>${npm.executable}</executable>
                             <arguments>
-                                <argument>install</argument>
+                                <!-- Use CI for reproducible clean install -->
+                                <argument>ci</argument>
                             </arguments>
                         </configuration>
                         <goals>
@@ -50,9 +67,12 @@
                         <phase>generate-sources</phase>
                         <configuration>
                             <workingDirectory>${project.basedir}</workingDirectory>
-                            <executable>ng</executable>
+                            <executable>${npm.executable}</executable>
                             <arguments>
+                                <!-- Invoke local Angular CLI via npm script instead of global 'ng' -->
+                                <argument>run</argument>
                                 <argument>build</argument>
+                                <argument>--</argument>
                                 <argument>--base-href=/${app.final.name}/</argument>
                             </arguments>
                         </configuration>
