@@ -3,6 +3,8 @@ package com.qprogramming.gifts.account;
 import com.qprogramming.gifts.account.authority.Authority;
 import com.qprogramming.gifts.account.group.Group;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -15,7 +17,7 @@ import java.util.Set;
 @Repository
 public interface AccountRepository extends JpaRepository<Account, Long> {
 
-    Optional<Account> findOneByEmail(String email);
+    Optional<Account> findOneByEmailIgnoreCase(String email);
 
     Optional<Account> findOneByUsername(String username);
 
@@ -24,6 +26,9 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     Set<Account> findByIdIn(Set<String> list);
 
     Set<Account> findByEmailIn(Set<String> list);
+
+    @Query("select a from Account a where lower(a.email) in :emails")
+    Set<Account> findByEmailLowerIn(@Param("emails") Set<String> emails);
 
     Set<Account> findByUsernameIn(Set<String> list);
 

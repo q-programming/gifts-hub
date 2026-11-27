@@ -170,7 +170,7 @@ public class AccountService implements UserDetailsService {
 
     @Override
     public Account loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<Account> optionalAccount = _accountRepository.findOneByEmail(username);
+        Optional<Account> optionalAccount = _accountRepository.findOneByEmailIgnoreCase(username);
         if (!optionalAccount.isPresent()) {
             optionalAccount = _accountRepository.findOneByUsername(username);
             if (!optionalAccount.isPresent() || AccountType.KID.equals(optionalAccount.get().getType())) {
@@ -290,7 +290,7 @@ public class AccountService implements UserDetailsService {
     }
 
     public Optional<Account> findByEmail(String email) {
-        return _accountRepository.findOneByEmail(email);
+        return _accountRepository.findOneByEmailIgnoreCase(email);
     }
 
     public Set<Account> findAll() {
@@ -350,10 +350,15 @@ public class AccountService implements UserDetailsService {
     public Set<Account> findByEmailsOrUsernames(Set<String> id) {
         Set<Account> accounts = new HashSet<>();
         if (!id.isEmpty()) {
-            accounts = _accountRepository.findByEmailIn(id);
+            Set<String> lowerIds = id.stream().map(s -> s.toLowerCase(Locale.ROOT)).collect(Collectors.toSet());
+            accounts = new HashSet<>(_accountRepository.findByEmailLowerIn(lowerIds));
             accounts.addAll(_accountRepository.findByUsernameIn(id));
-            id.removeAll(accounts.stream().map(Account::getEmail).collect(Collectors.toSet()));
-            id.removeAll(accounts.stream().map(Account::getUsername).collect(Collectors.toSet()));
+            Set<String> found = new HashSet<>();
+            accounts.forEach(a -> {
+                if (a.getEmail() != null) found.add(a.getEmail().toLowerCase(Locale.ROOT));
+                if (a.getUsername() != null) found.add(a.getUsername().toLowerCase(Locale.ROOT));
+            });
+            id.removeIf(s -> found.contains(s.toLowerCase(Locale.ROOT)));
             if (!id.isEmpty()) {
                 accounts.addAll(id.stream().filter(s -> VALID_EMAIL_ADDRESS_REGEX.matcher(s).find()).map(Account::new).collect(Collectors.toSet()));
             }
