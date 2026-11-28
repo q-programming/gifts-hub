@@ -127,7 +127,7 @@ public class MailServiceTest {
 
     @Test(expected = MessagingException.class)
     public void testConnectionWithCredentialsThrowsException() throws MessagingException {
-        mailService.testConnection("", 25, "", "");
+        mailService.testConnection("localhost", 1, "user", "pass");
     }
 
     @Test

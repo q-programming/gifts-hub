@@ -452,6 +452,28 @@
       "text": "Grupa"
     },
     "list": "Lista użytkowników",
+    "kidConvert": {
+      "button": "Zamień na zwykłe konto",
+      "error": {
+        "email": "Email konta Google nie zgadza się z emailem, na który wysłano zaproszenie",
+        "google": "Nie udało się zamienić konta przy użyciu Google. Spróbuj ponownie"
+      },
+      "googleHelp": "Użyj konta Google z adresem email {{email}}",
+      "googleTitle": "Zweryfikuj swoje konto przez Google. Następnie zostaniesz poproszony o zalogowanie",
+      "googleButton": "Zweryfikuj przez Google",
+      "help": "Wyślij zaproszenie dziecku. Po jego przyjęciu konto dziecka stanie się zwykłym kontem, na które można się logować przez Google lub nazwą użytkownika i hasłem. Wszystkie prezenty i grupy zostaną zachowane.",
+      "info": "Zaproszenie wysłano na adres {{email}}. Wybierz jak chcesz logować się do Gifts Hub",
+      "invalid": "To zaproszenie jest nieprawidłowe lub wygasło",
+      "invite": {
+        "error": "Nie udało się wysłać zaproszenia. Spróbuj ponownie później",
+        "success": "Zaproszenie wysłano na adres {{email}}"
+      },
+      "local": "Ustaw nazwę użytkownika i hasło",
+      "submit": "Zamień konto",
+      "success": "Twoje konto zostało zmienione. Możesz się teraz zalogować",
+      "title": "Zamień na zwykłe konto",
+      "welcome": "Witaj {{name}}!"
+    },
     "login": {
       "existing": "Już posiadasz konto?",
       "facebook": "Zaloguj się z przez Facebooka",

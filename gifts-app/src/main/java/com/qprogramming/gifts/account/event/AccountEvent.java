@@ -29,4 +29,6 @@ public class AccountEvent {
 
     @Column(unique = true)
     private String token;
+
+    private String email;
 }

@@ -21,7 +21,7 @@ public class Property {
         this.key = key;
     }
 
-    public Object getValue() {
+    public String getValue() {
         return value;
     }
 
